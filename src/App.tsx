@@ -361,7 +361,7 @@ export default function App() {
         '[data-expanded-board],[role="gridcell"][tabindex="0"],.board2048,.snake-board,.race-board,.parking-board,.targets-board,.sliding-board,.sequence-board,.word-input,.reaction-board,.mines-board button:not(:disabled),[role="slider"][tabindex="0"],[data-game-cell]:not(:disabled),[data-domino-tile]:not(:disabled)',
       ) ||
       arenaElement?.querySelector<HTMLElement>(
-        '[role="gridcell"],.connect-controls button,.lights-board button,.memory-card,button:not(:disabled)',
+        '[role="gridcell"]:not([aria-disabled="true"]):not(:disabled),.connect-controls button:not(:disabled),.lights-board button:not(:disabled),.memory-card:not(:disabled),button:not(:disabled)',
       ) ||
       arenaElement;
     target?.focus({ preventScroll: true });
