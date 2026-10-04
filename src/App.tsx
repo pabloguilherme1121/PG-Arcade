@@ -362,8 +362,9 @@ export default function App() {
       ) ||
       arenaElement?.querySelector<HTMLElement>(
         '[role="gridcell"],.connect-controls button,.lights-board button,.memory-card,button:not(:disabled)',
-      );
-    target?.focus();
+      ) ||
+      arenaElement;
+    target?.focus({ preventScroll: true });
     target?.scrollIntoView({ block: "center", behavior: "instant" });
   }
   function askRestart() {
@@ -546,15 +547,66 @@ export default function App() {
         </a>
       </header>
       <main id="main" tabIndex={-1}>
-        <details className="play-preferences">
+        <details
+          className="play-preferences"
+          onToggle={(event) => {
+            if (event.currentTarget.open && game)
+              window.dispatchEvent(new Event("pg-arcade-pause"));
+          }}
+        >
           <summary>Conforto visual</summary>
           <div className="preference-options">
-            <label><input type="checkbox" checked={preferences.contrast} onChange={(e) => setPreferences((p) => ({ ...p, contrast: e.target.checked }))} /> Alto contraste</label>
-            <label>Movimento<select aria-label="Movimento da interface" value={preferences.motion} onChange={(e) => setPreferences((p) => ({ ...p, motion: e.target.value as "system" | "reduced" }))}>
-              <option value="system">Preferência do aparelho</option><option value="reduced">Reduzir efeitos</option>
-            </select></label>
+            <label>
+              <input
+                type="checkbox"
+                checked={preferences.contrast}
+                onChange={(e) =>
+                  setPreferences((p) => ({
+                    ...p,
+                    contrast: e.target.checked,
+                  }))
+                }
+              />
+              Alto contraste
+            </label>
+            <label>
+              Movimento
+              <select
+                aria-label="Movimento da interface"
+                value={preferences.motion}
+                onChange={(e) =>
+                  setPreferences((p) => ({
+                    ...p,
+                    motion: e.target.value as "system" | "reduced",
+                  }))
+                }
+              >
+                <option value="system">Preferência do aparelho</option>
+                <option value="reduced">Reduzir efeitos</option>
+              </select>
+            </label>
+            <label>
+              Tamanho dos controles
+              <select
+                aria-label="Tamanho dos controles"
+                value={preferences.controls}
+                onChange={(e) =>
+                  setPreferences((p) => ({
+                    ...p,
+                    controls: e.target.value as "standard" | "large",
+                  }))
+                }
+              >
+                <option value="standard">Padrão</option>
+                <option value="large">Ampliados</option>
+              </select>
+            </label>
           </div>
-          <p>As opções valem para todos os jogos. Reduzir efeitos mantém os movimentos necessários para jogar.</p>
+          <p>
+            As opções valem para todos os jogos. Reduzir efeitos mantém os
+            movimentos necessários para jogar; controles ampliados aumentam os
+            principais alvos de toque sem alterar os tabuleiros.
+          </p>
         </details>
         {!storageOk && (
           <p className="storage-notice" role="status">
@@ -616,12 +668,29 @@ export default function App() {
               <button onClick={focusBoard}>Ir para o tabuleiro</button>
               <button
                 aria-pressed={focusMode}
-                onClick={() => setFocusMode((v) => !v)}
+                onClick={() => {
+                  if (focusMode) {
+                    setFocusMode(false);
+                    setMessage("Modo foco desativado.");
+                    return;
+                  }
+                  setFocusMode(true);
+                  setMessage(
+                    "Modo foco ativado. O controle principal do jogo recebeu foco.",
+                  );
+                  window.requestAnimationFrame(focusBoard);
+                }}
               >
                 {focusMode ? "Sair do modo foco" : "Modo foco"}
               </button>
               <button onClick={askRestart}>Reiniciar jogo</button>
-              <details key={game.id}>
+              <details
+                key={game.id}
+                onToggle={(event) => {
+                  if (event.currentTarget.open)
+                    window.dispatchEvent(new Event("pg-arcade-pause"));
+                }}
+              >
                 <summary>Ajuda rápida e controles</summary>
                 <p>{gameHelp[game.id]}</p>
                 <p>
@@ -682,6 +751,9 @@ export default function App() {
                       : ""
                   }
                   data-arcade-arena
+                  role="region"
+                  aria-label={`${game.name}: área principal do jogo`}
+                  tabIndex={-1}
                 >
                   <Player
                     record={progress.records[game.id] || 0}
