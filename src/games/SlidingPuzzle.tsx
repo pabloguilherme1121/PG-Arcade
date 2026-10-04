@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { movePuzzle, puzzleSolved, shuffledPuzzle } from "../lib/puzzles";
 export default function SlidingPuzzle({
   record,
@@ -8,15 +8,14 @@ export default function SlidingPuzzle({
   onRecord: (n: number) => void;
 }) {
   const [board, setBoard] = useState(shuffledPuzzle);
+  const [showGoal, setShowGoal] = useState(false);
   const [moves, setMoves] = useState(0);
   const won = puzzleSolved(board);
-  useEffect(() => {
-    if (won && moves) onRecord(moves);
-  }, [won, moves, onRecord]);
   function move(i: number) {
     if (won) return;
     const next = movePuzzle(board, i);
     if (next) {
+      if (puzzleSolved(next)) onRecord(moves + 1);
       setBoard(next);
       setMoves((m) => m + 1);
     }
@@ -82,6 +81,19 @@ export default function SlidingPuzzle({
       </div>
       <aside className="instructions">
         <h2>Um espaço, muitas possibilidades</h2>
+        <button aria-pressed={showGoal} onClick={() => setShowGoal((v) => !v)}>
+          {showGoal ? "Ocultar modelo" : "Mostrar modelo"}
+        </button>
+        {showGoal && (
+          <div
+            className="puzzle-goal"
+            aria-label="Modelo: 1, 2, 3; 4, 5, 6; 7, 8, vazio"
+          >
+            {[1, 2, 3, 4, 5, 6, 7, 8, 0].map((n) => (
+              <span key={n}>{n || "·"}</span>
+            ))}
+          </div>
+        )}
         <p>
           Toque em uma peça ao lado do espaço vazio para movê-la. Organize de 1
           a 8, deixando o espaço vazio no canto inferior direito.

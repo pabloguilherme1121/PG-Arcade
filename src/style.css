@@ -1378,3 +1378,434 @@ footer a {
   color: #101522;
   font-size: clamp(12px, 3vw, 24px);
 }
+.experience-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 12px auto 20px;
+  max-width: 920px;
+}
+.experience-tools button,
+.experience-tools summary {
+  font-size: 13px;
+  min-height: 44px;
+}
+.experience-tools details {
+  flex-basis: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0 14px;
+  background: #121720;
+}
+.experience-tools summary {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.experience-tools summary::after {
+  content: "+";
+  font-size: 20px;
+}
+.experience-tools details[open] summary::after {
+  content: "−";
+}
+.experience-tools details p {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 0 0 12px;
+  line-height: 1.65;
+}
+.restart-dialog {
+  background: #151a24;
+  color: #f5f3e9;
+  border: 1px solid #485163;
+  border-radius: 16px;
+  padding: 24px;
+  width: min(460px, calc(100vw - 32px));
+  max-height: calc(100dvh - 40px);
+  overflow: auto;
+  margin: auto;
+}
+.restart-dialog::backdrop {
+  background: #050810c9;
+}
+.restart-dialog h2 {
+  font-size: 24px;
+  margin: 0 0 12px;
+}
+.restart-dialog p {
+  line-height: 1.65;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+.app-focus .site-header,
+.app-focus footer {
+  display: none;
+}
+.focus-game .player-description {
+  display: none;
+}
+.focus-game h1 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+.focus-game .game-layout {
+  grid-template-columns: minmax(0, 420px);
+  justify-content: center;
+}
+.focus-game .instructions {
+  display: none;
+}
+.legacy-game button:not([role="gridcell"]) {
+  min-height: 44px;
+}
+.puzzle-goal {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  max-width: 180px;
+  margin: 14px 0;
+}
+.puzzle-goal span {
+  background: #242c39;
+  border-radius: 5px;
+  text-align: center;
+  padding: 8px;
+  color: var(--ivory);
+}
+.race-board {
+  position: relative;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  background: linear-gradient(90deg, #18261e 0 2%, #242c39 2% 98%, #18261e 98%);
+  border: 2px solid #687158;
+  border-radius: 16px;
+  isolation: isolate;
+}
+.road-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: repeating-linear-gradient(
+    to bottom,
+    #9aa184 0 32px,
+    transparent 32px 64px
+  );
+  opacity: 0.7;
+}
+.line-one {
+  left: 33.33%;
+}
+.line-two {
+  left: 66.66%;
+}
+.race-car,
+.traffic-car {
+  position: absolute;
+  width: 19%;
+  height: 16%;
+  transform: translateX(-50%);
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  color: #0b0e14;
+  background: #c9f65a;
+  box-shadow:
+    inset 5px 0 #0003,
+    inset -5px 0 #0003;
+  border: 2px solid #edffa9;
+}
+.race-car {
+  top: 75%;
+}
+.traffic-car {
+  background: #ff957e;
+  border-color: #ffd7a8;
+}
+.race-car svg,
+.traffic-car svg {
+  width: 75%;
+  height: 75%;
+}
+.race-lives {
+  margin: 0 0 10px;
+  text-align: center;
+  color: #c9f65a;
+  font-size: 14px;
+}
+.wide-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 14px 0;
+}
+.wide-controls button {
+  min-height: 52px;
+  font-size: 15px;
+}
+.action-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 14px;
+  background: #0b0e14e8;
+  z-index: 2;
+  text-align: center;
+  padding: 24px;
+  pointer-events: none;
+}
+.action-overlay strong {
+  font: 700 28px var(--font-heading);
+}
+.action-overlay span {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+.parking-board {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 4px;
+  background: #101721;
+  padding: 8px;
+  border: 1px solid #414a58;
+  border-radius: 12px;
+}
+.parking-board > span {
+  aspect-ratio: 1;
+  min-width: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid #333e4b;
+  background: #1a2530;
+  border-radius: 5px;
+  color: #9ea8b8;
+  font-size: 24px;
+}
+.parking-board .parking-wall {
+  background: #414853;
+  color: #bcc2cc;
+}
+.parking-board .parking-car {
+  color: #0b0e14;
+  background: #c9f65a;
+}
+.parking-board .parking-goal {
+  background: #204736;
+  color: #c7ffdd;
+}
+.parking-board svg {
+  width: 75%;
+  height: 75%;
+}
+.lights-board {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 7px;
+  padding: 8px;
+  background: #101721;
+  border-radius: 12px;
+}
+.lights-board button {
+  aspect-ratio: 1;
+  min-width: 0;
+  padding: 0;
+  background: #242c39;
+  color: #8d98a9;
+  font-size: 24px;
+  border: 2px solid #3a4658;
+}
+.lights-board .light-on {
+  background: #c9f65a;
+  color: #101522;
+  border-color: #e0ff9a;
+}
+.targets-board {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid #414a58;
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+.space-targets {
+  background:
+    radial-gradient(circle at 25% 25%, #4e3772 0, transparent 48%), #111827;
+}
+.casual-targets {
+  background: linear-gradient(145deg, #193b32, #142927);
+}
+.targets-board button {
+  min-width: 0;
+  min-height: 0;
+  position: relative;
+  flex-direction: column;
+  padding: 6px;
+  background: #0b0e1466;
+  color: #8c95a5;
+  border-radius: 50%;
+  border: 1px solid #536277;
+}
+.targets-board button small {
+  position: absolute;
+  top: 3px;
+  font-size: 11px;
+  line-height: 1;
+}
+.targets-board button > span {
+  font-size: 32px;
+}
+.targets-board .target-present {
+  background: #27393b;
+  color: #c9f65a;
+  border: 2px solid #c9f65a;
+}
+.space-targets .target-present {
+  background: #40325b;
+  color: #dfc3ff;
+  border-color: #dfc3ff;
+}
+.targets-board svg {
+  width: 55%;
+  height: 55%;
+}
+.targets-board button:disabled {
+  opacity: 1;
+}
+.action-preview {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+.action-preview > span {
+  font-size: 65px;
+  font-weight: 700;
+  color: #c9f65a;
+  z-index: 1;
+  line-height: 1;
+}
+.preview-corrida {
+  background: repeating-linear-gradient(
+    90deg,
+    #26303d 0 31%,
+    #66715b 31% 32%,
+    #26303d 32% 33%
+  );
+}
+.preview-estacionamento {
+  background: repeating-linear-gradient(0deg, #1a2530 0 31%, #3a4658 31% 33%);
+}
+.preview-estacionamento > span {
+  border: 3px solid #c9f65a;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 55px;
+}
+.preview-tiro {
+  background: radial-gradient(ellipse, #593b83, #111827);
+}
+.preview-tiro > span {
+  color: #dfc3ff;
+  font-size: 90px;
+}
+.preview-luzes {
+  background: radial-gradient(ellipse, #4c5d32, #101721);
+}
+.preview-estrelas {
+  background: linear-gradient(145deg, #193b32, #142927);
+}
+.action-preview i {
+  position: absolute;
+  aspect-ratio: 1;
+  width: 12px;
+  border: 1px solid #c9f65a66;
+  border-radius: 50%;
+}
+.action-preview i:nth-of-type(1) {
+  top: 20%;
+  left: 15%;
+}
+.action-preview i:nth-of-type(2) {
+  top: 65%;
+  left: 77%;
+}
+.action-preview i:nth-of-type(3) {
+  top: 25%;
+  left: 82%;
+}
+@media (max-width: 700px) {
+  .experience-tools {
+    gap: 6px;
+  }
+  .experience-tools > button {
+    flex: 1 1 90px;
+    padding: 8px;
+    font-size: 12px;
+  }
+  .player-toolbar {
+    gap: 10px;
+  }
+  .targets-board {
+    gap: 8px;
+    padding: 10px;
+  }
+  .action-overlay strong {
+    font-size: 24px;
+  }
+  .focus-game h1 {
+    font-size: 28px;
+  }
+  .catalog-tools label {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .catalog-tools select {
+    margin-left: 0;
+  }
+  .instructions select {
+    max-width: 100%;
+  }
+}
+
+.player h1 {
+  font-size: clamp(30px, 5vw, 60px);
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+.race-car {
+  transition: left 0.1s ease-out;
+}
+.traffic-car {
+  transition: top 0.1s linear;
+}
+.racing-running .road-line {
+  animation: road-travel 0.8s linear infinite;
+}
+@keyframes road-travel {
+  from {
+    background-position-y: 0;
+  }
+  to {
+    background-position-y: 64px;
+  }
+}
+.player.focus-game h1 {
+  font-size: 32px;
+}
+.focus-game .race-board {
+  max-height: 56dvh;
+}

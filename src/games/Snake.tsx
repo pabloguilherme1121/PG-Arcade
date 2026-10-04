@@ -70,9 +70,11 @@ export default function Snake({
     const blur = () => setStatus((s) => (s === "running" ? "paused" : s));
     document.addEventListener("visibilitychange", pause);
     window.addEventListener("blur", blur);
+    window.addEventListener("pg-arcade-pause", blur);
     return () => {
       document.removeEventListener("visibilitychange", pause);
       window.removeEventListener("blur", blur);
+      window.removeEventListener("pg-arcade-pause", blur);
     };
   }, []);
   return (

@@ -41,6 +41,7 @@ const targetLabel: Record<MatchTarget, string> = {
 };
 
 export default function PortfolioCheckers() {
+  const [focusedSquare, setFocusedSquare] = useState(40);
   const [mode, setMode] = useState<GameMode>("bot");
   const [variant, setVariant] = useState<CheckersVariant>("quick");
   const [difficulty, setDifficulty] = useState<CheckersDifficulty>("normal");
@@ -273,6 +274,30 @@ export default function PortfolioCheckers() {
                   key={index}
                   type="button"
                   role="gridcell"
+                  tabIndex={focusedSquare === index ? 0 : -1}
+                  onFocus={() => setFocusedSquare(index)}
+                  onKeyDown={(event) => {
+                    const row = Math.floor(index / 8),
+                      col = index % 8;
+                    const next: Record<string, number> = {
+                      ArrowUp: Math.max(0, row - 1) * 8 + col,
+                      ArrowDown: Math.min(7, row + 1) * 8 + col,
+                      ArrowLeft: row * 8 + Math.max(0, col - 1),
+                      ArrowRight: row * 8 + Math.min(7, col + 1),
+                      Home: row * 8,
+                      End: row * 8 + 7,
+                    };
+                    if (event.key in next) {
+                      event.preventDefault();
+                      const target = next[event.key];
+                      setFocusedSquare(target);
+                      event.currentTarget.parentElement
+                        ?.querySelectorAll<HTMLButtonElement>(
+                          '[role="gridcell"]',
+                        )
+                        [target]?.focus();
+                    }
+                  }}
                   aria-selected={active}
                   data-checkers-cell="true"
                   data-legal-destination={legalDestination ? "true" : "false"}
@@ -303,8 +328,9 @@ export default function PortfolioCheckers() {
 
           <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
             <p className="font-body text-xs leading-5 text-[#8fa8c7]">
-              Toque em uma peça e depois em uma casa marcada. Capturas
-              encadeadas mantêm a mesma peça ativa até a sequência terminar.
+              Toque em uma peça e depois em uma casa marcada. No teclado, use as
+              setas e Enter. Capturas encadeadas mantêm a mesma peça ativa até a
+              sequência terminar.
             </p>
             <div className="flex flex-wrap gap-2">
               <button

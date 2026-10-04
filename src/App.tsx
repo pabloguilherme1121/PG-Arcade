@@ -21,9 +21,15 @@ import {
   Link as LinkIcon,
 } from "lucide-react";
 import { games, isGameId, type GameId } from "./lib/catalog";
+import { gameHelp, recordUnits } from "./lib/gameHelp";
 import { readProgress, saveProgress, type Progress } from "./lib/progress";
 import "./features/portfolio/components/PortfolioArcade.css";
 const players = {
+  corrida: lazy(() => import("./games/Racing")),
+  estacionamento: lazy(() => import("./games/Parking")),
+  tiro: lazy(() => import("./games/SpaceShooter")),
+  luzes: lazy(() => import("./games/LightsOut")),
+  estrelas: lazy(() => import("./games/StarCatch")),
   liga4: lazy(() => import("./games/ConnectFour")),
   puzzle: lazy(() => import("./games/SlidingPuzzle")),
   "2048": lazy(() => import("./games/Game2048")),
@@ -71,6 +77,28 @@ function route() {
         : "catalogo";
 }
 function Preview({ id }: { id: GameId }) {
+  if (["corrida", "estacionamento", "tiro", "luzes", "estrelas"].includes(id))
+    return (
+      <div
+        className={`preview action-preview preview-${id}`}
+        aria-hidden="true"
+      >
+        <span>
+          {id === "corrida"
+            ? "🏎"
+            : id === "estacionamento"
+              ? "P"
+              : id === "tiro"
+                ? "◎"
+                : id === "luzes"
+                  ? "☀"
+                  : "★"}
+        </span>
+        <i />
+        <i />
+        <i />
+      </div>
+    );
   if (id === "liga4" || id === "puzzle")
     return (
       <div className={`preview new-preview ${id}`}>
@@ -160,6 +188,27 @@ function Preview({ id }: { id: GameId }) {
 }
 export default function App() {
   const [page, setPage] = useState(route);
+  const [focusMode, setFocusMode] = useState(false);
+  const [session, setSession] = useState(0);
+  const restartDialog = useRef<HTMLDialogElement>(null);
+  function focusBoard() {
+    const arenaElement = arena.current?.querySelector<HTMLElement>(
+      "[data-arcade-arena]",
+    );
+    const target =
+      arenaElement?.querySelector<HTMLElement>(
+        '[role="gridcell"][tabindex="0"],.board2048,.snake-board,.race-board,.parking-board,.targets-board,.sliding-board,[role="slider"][tabindex="0"],[data-game-cell]:not(:disabled),[data-domino-tile]:not(:disabled)',
+      ) ||
+      arenaElement?.querySelector<HTMLElement>(
+        '[role="gridcell"],.connect-controls button,.lights-board button,.memory-card,button:not(:disabled)',
+      );
+    target?.focus();
+    target?.scrollIntoView({ block: "center", behavior: "instant" });
+  }
+  function askRestart() {
+    window.dispatchEvent(new Event("pg-arcade-pause"));
+    restartDialog.current?.showModal();
+  }
   const [progress, setProgress] = useState(readProgress);
   const [storageOk, setStorageOk] = useState(true);
   const [sort, setSort] = useState("destaques");
@@ -186,6 +235,7 @@ export default function App() {
     const change = () => {
       setPage(route());
       setMessage("");
+      restartDialog.current?.close();
     };
     window.addEventListener("hashchange", change);
     return () => window.removeEventListener("hashchange", change);
@@ -274,7 +324,7 @@ export default function App() {
         : 0,
   );
   return (
-    <>
+    <div className={focusMode && game ? "app-focus" : ""}>
       <a
         className="skip-link"
         href="#main"
@@ -327,7 +377,10 @@ export default function App() {
           </p>
         )}
         {game && Player ? (
-          <div ref={arena} className="player">
+          <div
+            ref={arena}
+            className={`player ${focusMode ? "focus-game" : ""}`}
+          >
             <div className="player-toolbar">
               <a className="button" href="#/">
                 <ArrowLeft size={19} />
@@ -372,7 +425,60 @@ export default function App() {
             <p className="feedback" role="status">
               {message}
             </p>
-            <GameError key={game.id}>
+            <div className="experience-tools">
+              <button onClick={focusBoard}>Ir para o tabuleiro</button>
+              <button
+                aria-pressed={focusMode}
+                onClick={() => setFocusMode((v) => !v)}
+              >
+                {focusMode ? "Sair do modo foco" : "Modo foco"}
+              </button>
+              <button onClick={askRestart}>Reiniciar jogo</button>
+              <details key={game.id}>
+                <summary>Ajuda rápida e controles</summary>
+                <p>{gameHelp[game.id]}</p>
+                <p>
+                  Favoritos e recordes ficam neste navegador. Trocar de jogo
+                  inicia outra partida.
+                </p>
+              </details>
+            </div>
+            <dialog
+              ref={restartDialog}
+              className="restart-dialog"
+              aria-labelledby="restart-title"
+              onClick={(e) => {
+                if (e.target === e.currentTarget)
+                  restartDialog.current?.close();
+              }}
+            >
+              <h2 id="restart-title">Reiniciar {game.name}?</h2>
+              <p>
+                A partida atual será encerrada. Seus favoritos e recordes ficam
+                guardados.
+              </p>
+              <div className="game-actions">
+                <button
+                  autoFocus
+                  onClick={() => restartDialog.current?.close()}
+                >
+                  Continuar esta partida
+                </button>
+                <button
+                  className="primary"
+                  onClick={() => {
+                    setSession((n) => n + 1);
+                    restartDialog.current?.close();
+                    setMessage(
+                      "Jogo reiniciado. Você pode começar outra partida.",
+                    );
+                  }}
+                >
+                  Confirmar reinício
+                </button>
+              </div>
+            </dialog>
+            <GameError key={`${game.id}-${session}`}>
               <Suspense
                 fallback={
                   <p className="empty" role="status">
@@ -382,9 +488,18 @@ export default function App() {
               >
                 <div
                   className={
-                    ["2048", "snake", "memoria", "liga4", "puzzle"].includes(
-                      game.id,
-                    )
+                    [
+                      "2048",
+                      "snake",
+                      "memoria",
+                      "liga4",
+                      "puzzle",
+                      "corrida",
+                      "estacionamento",
+                      "tiro",
+                      "luzes",
+                      "estrelas",
+                    ].includes(game.id)
                       ? ""
                       : "legacy-game arcade-hub"
                   }
@@ -423,15 +538,13 @@ export default function App() {
             <h2>Seus recordes</h2>
             <div className="record-list">
               {games
-                .filter((g) =>
-                  ["2048", "snake", "memoria", "puzzle"].includes(g.id),
-                )
+                .filter((g) => !!recordUnits[g.id])
                 .map((g) => (
                   <a href={`#/jogar/${g.id}`} key={g.id}>
                     <span>{g.name}</span>
                     <strong>
                       {progress.records[g.id]
-                        ? `${progress.records[g.id]} ${["memoria", "puzzle"].includes(g.id) ? "jogadas" : "pontos"}`
+                        ? `${progress.records[g.id]} ${recordUnits[g.id]}`
                         : "Ainda sem recorde"}
                     </strong>
                     <ArrowRight size={18} />
@@ -482,14 +595,12 @@ export default function App() {
                   className="button primary"
                   onClick={(event) => {
                     event.preventDefault();
-                    document
-                      .getElementById("catalogo")
-                      ?.scrollIntoView({
-                        behavior: matchMedia("(prefers-reduced-motion: reduce)")
-                          .matches
-                          ? "instant"
-                          : "smooth",
-                      });
+                    document.getElementById("catalogo")?.scrollIntoView({
+                      behavior: matchMedia("(prefers-reduced-motion: reduce)")
+                        .matches
+                        ? "instant"
+                        : "smooth",
+                    });
                   }}
                 >
                   {page === "favoritos" ? "Ver favoritos" : "Explorar jogos"}
@@ -529,7 +640,7 @@ export default function App() {
                 </label>
               </div>
               <div className="filters" aria-label="Categorias">
-                {["Todos", "Estratégia", "Reflexos", "Memória", "Esportes"].map(
+                {["Todos", ...new Set(games.map((g) => g.category))].map(
                   (c) => (
                     <button
                       aria-pressed={category === c}
@@ -626,6 +737,6 @@ export default function App() {
         <a href="#/">PG Arcade</a>
         <span>Feito para jogar. Sem cadastro.</span>
       </footer>
-    </>
+    </div>
   );
 }

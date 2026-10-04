@@ -1,5 +1,35 @@
 export const games = [
   {
+    id: "corrida",
+    name: "Corrida Turbo",
+    description: "Troque de faixa. Supere o trânsito.",
+    category: "Corrida",
+  },
+  {
+    id: "estacionamento",
+    name: "Estacionamento",
+    description: "Uma vaga e três desafios de manobra.",
+    category: "Carros",
+  },
+  {
+    id: "tiro",
+    name: "Alvos Espaciais",
+    description: "Mire, acerte e mantenha a sequência.",
+    category: "Tiro",
+  },
+  {
+    id: "luzes",
+    name: "Luzes Out",
+    description: "Apague as luzes. Encontre o padrão.",
+    category: "Inteligência",
+  },
+  {
+    id: "estrelas",
+    name: "Caça-estrelas",
+    description: "Vinte segundos para uma pausa divertida.",
+    category: "Casuais",
+  },
+  {
     id: "liga4",
     name: "Liga 4",
     description: "Quatro peças. Uma boa estratégia.",

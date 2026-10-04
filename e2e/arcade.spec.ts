@@ -112,19 +112,9 @@ for (const width of [320, 390, 1280])
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto("/");
     await expect(page.locator(".game-card")).toHaveCount(games.length);
-    for (const id of [
-      "liga4",
-      "puzzle",
-      "2048",
-      "snake",
-      "memoria",
-      "xadrez",
-      "futebol",
-      "domino",
-      "damas",
-      "velha",
-    ]) {
+    for (const { id, name } of games) {
       await page.goto(`/#/jogar/${id}`);
+      await expect(page.locator(".player > h1")).toHaveText(name);
       await expect(page.locator("[data-arcade-arena]").first()).toBeVisible();
       await expect(page.getByText("Carregando", { exact: false })).toHaveCount(
         0,

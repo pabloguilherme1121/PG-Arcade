@@ -19,6 +19,7 @@ export default function Memory({
   record: number;
   onRecord: (n: number) => void;
 }) {
+  const [peekTime, setPeekTime] = useState(900);
   const [cards, setCards] = useState(() => shuffledPairs(8));
   const [open, setOpen] = useState<number[]>([]);
   const [matched, setMatched] = useState<number[]>([]);
@@ -29,18 +30,16 @@ export default function Memory({
     if (open.length !== 2) return;
     const [a, b] = open;
     if (cards[a] === cards[b]) {
+      if (matched.length === 7) onRecord(moves);
       setMatched((m) => [...m, cards[a]]);
       setOpen([]);
       setMessage("Par encontrado!");
     } else {
       setMessage("Não foi desta vez. Memorize as cartas.");
-      const id = setTimeout(() => setOpen([]), 900);
+      const id = setTimeout(() => setOpen([]), peekTime);
       return () => clearTimeout(id);
     }
-  }, [open, cards]);
-  useEffect(() => {
-    if (won) onRecord(moves);
-  }, [won, moves, onRecord]);
+  }, [open, cards, peekTime, matched, moves, onRecord]);
   function flip(i: number) {
     if (
       open.length === 2 ||
@@ -116,6 +115,19 @@ export default function Memory({
         </p>
         <hr />
         <h3>Observe e lembre</h3>
+        <label htmlFor="memory-peek">
+          Tempo para observar cartas diferentes
+        </label>
+        <select
+          id="memory-peek"
+          value={peekTime}
+          disabled={open.length === 2}
+          onChange={(e) => setPeekTime(Number(e.target.value))}
+        >
+          <option value={1500}>Tranquilo • 1,5 segundo</option>
+          <option value={900}>Clássico • 0,9 segundo</option>
+          <option value={500}>Rápido • 0,5 segundo</option>
+        </select>
         <p>
           Os símbolos ajudam você a reconhecer os pares sem depender apenas de
           cores.
