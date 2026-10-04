@@ -126,3 +126,39 @@ test("large controls preference persists and enlarges shared play controls on mo
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-arcade-controls", "large");
 });
+
+
+test("visual shell keeps clear premium hierarchy across catalog and player on mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("./");
+
+  const hero = page.locator(".hero");
+  const firstCard = page.locator(".game-card").first();
+  await expect(hero).toBeVisible();
+  await expect(firstCard.locator(".game-category")).toBeVisible();
+
+  const visualContract = await page.evaluate(() => {
+    const hero = getComputedStyle(document.querySelector(".hero")!);
+    const card = getComputedStyle(document.querySelector(".game-card")!);
+    const preview = getComputedStyle(document.querySelector(".preview")!);
+    return {
+      heroBackground: hero.backgroundImage,
+      heroRadius: parseFloat(hero.borderRadius),
+      cardRadius: parseFloat(card.borderRadius),
+      previewRadius: parseFloat(preview.borderRadius),
+    };
+  });
+
+  expect(visualContract.heroBackground).not.toBe("none");
+  expect(visualContract.heroRadius).toBeGreaterThanOrEqual(20);
+  expect(visualContract.cardRadius).toBeGreaterThanOrEqual(16);
+  expect(visualContract.previewRadius).toBeGreaterThanOrEqual(12);
+
+  await page.goto("./#/jogar/snake");
+  await expect(page.locator(".experience-tools")).toBeVisible();
+  const toolsBackground = await page.locator(".experience-tools").evaluate((element) =>
+    getComputedStyle(element).backgroundColor,
+  );
+  expect(toolsBackground).not.toBe("rgba(0, 0, 0, 0)");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
