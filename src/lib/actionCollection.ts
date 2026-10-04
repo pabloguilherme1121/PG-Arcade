@@ -225,7 +225,11 @@ export function stepAction(
       objects: state.objects.map((o) => ({ ...o })),
       shots: state.shots.map((o) => ({ ...o })),
     };
-  const f = s.difficulty === "easy" ? 0.75 : s.difficulty === "hard" ? 1.3 : 1;
+  // Pressure grows gradually; cap it so long sessions remain playable.
+  const ramp = Math.min(1, s.time / 120);
+  const f = s.difficulty === "easy" ? 0.7
+    : s.difficulty === "hard" ? 1.4 * (1 + ramp * 0.2)
+    : 1 + ramp * 0.12;
   s.time += dt;
   s.spawn += dt;
   s.cooldown = Math.max(0, s.cooldown - dt);

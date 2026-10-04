@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   chooseDominoBotMove,
+  getLegalDominoMoves,
   createDominoSet,
   dealDominoRound,
   getDominoPipTotal,
@@ -94,4 +95,18 @@ describe("domino", () => {
       ]),
     ).toBe(18);
   });
+  it("expert finishes its hand and evaluates only legal placements without mutation", () => {
+    expect(chooseDominoBotMove([[2, 6]], [[4, 6]], "expert")).toEqual({ index: 0, side: "right" });
+    for (let n = 0; n < 20; n++) {
+      const hand = createDominoSet().slice(n, n + 7);
+      const chain = [[4, 6]] as const;
+      const snapshot = JSON.stringify({ hand, chain });
+      const legal = getLegalDominoMoves(hand, [...chain]);
+      const move = chooseDominoBotMove(hand, [...chain], "expert");
+      if (legal.length) expect(legal).toContainEqual(move);
+      else expect(move).toBeNull();
+      expect(JSON.stringify({ hand, chain })).toBe(snapshot);
+    }
+  });
+
 });

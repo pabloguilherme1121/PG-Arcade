@@ -17,7 +17,7 @@ const descriptions: Record<ArcadeGame, Partial<Record<Level, string>>> = {
   },
   domino: {
     expert:
-      "O bot combina controle das pontas, opções futuras e pontos restantes.",
+      "O bot estima respostas com peças ainda não vistas, sem conhecer a mão adversária.",
     easy: "O bot escolhe uma peça disponível ao acaso.",
     normal: "O bot prioriza peças com mais pontos e duplas.",
     hard: "O bot também preserva opções para as próximas jogadas.",

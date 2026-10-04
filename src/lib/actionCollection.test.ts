@@ -126,4 +126,18 @@ describe("action collection physics", () => {
       stepAction(easy, idleInput, 0.02).ball.x,
     );
   });
+  it("ramps normal and hard pressure but caps long-session speed", () => {
+    const displacement = (level: "easy" | "normal" | "hard", time: number) => {
+      const state = newAction("pong", level, "endless");
+      state.time = time;
+      return stepAction(state, idleInput, 0.02).ball.x - state.ball.x;
+    };
+    expect(displacement("easy", 120)).toBe(displacement("easy", 0));
+    for (const level of ["normal", "hard"] as const) {
+      expect(displacement(level, 120)).toBeGreaterThan(displacement(level, 0));
+      expect(displacement(level, 1200)).toBe(displacement(level, 120));
+    }
+    expect(displacement("hard", 0)).toBeGreaterThan(displacement("normal", 120));
+  });
+
 });

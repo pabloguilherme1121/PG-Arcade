@@ -131,6 +131,28 @@ function scoreMasterMove(
   return pipScore * 2 + doubleBonus + futureOptions * 4 + support * 2;
 }
 
+// Unknown tiles come only from public information: never inspect the opponent hand.
+function scoreExpertReplies(hand: DominoTile[], chain: DominoTile[], move: DominoMove) {
+  const next = placeDominoTile(chain, hand[move.index], move.side);
+  const remaining = hand.filter((_, i) => i !== move.index);
+  if (!remaining.length) return 10000;
+  const key = (tile: DominoTile) => [...tile].sort((a, b) => a - b).join(":");
+  const known = new Set([...hand, ...chain].map(key));
+  const unseen = createDominoSet().filter(tile => !known.has(key(tile)));
+  let total = 0;
+  for (const tile of unseen) {
+    const sides = getPlayableDominoSides(tile, next);
+    const responses = sides.length ? sides.map(side => placeDominoTile(next, tile, side)) : [next];
+    // Protect against the opponent's strongest placement of each hypothetical tile.
+    total += Math.min(...responses.map(response => {
+      const replies = getLegalDominoMoves(remaining, response);
+      if (!replies.length) return -25 - getDominoPipTotal(remaining);
+      return Math.max(...replies.map(reply => scoreMasterMove(remaining, response, reply)));
+    }));
+  }
+  return unseen.length ? total / unseen.length : 0;
+}
+
 export function chooseDominoBotMove(
   hand: DominoTile[],
   chain: DominoTile[],
@@ -160,10 +182,11 @@ export function chooseDominoBotMove(
     return (
       scoreMasterMove(hand, chain, move) +
       (difficulty === "expert"
-        ? futureOptions * 3 - getDominoPipTotal(remaining) * 0.12
+        ? scoreExpertReplies(hand, chain, move) * 0.8 - getDominoPipTotal(remaining) * 0.2
         : 0)
     );
   };
 
-  return [...moves].sort((a, b) => scoreMove(b) - scoreMove(a))[0];
+  return moves.map(move => ({ move, score: scoreMove(move) }))
+    .sort((a, b) => b.score - a.score)[0].move;
 }

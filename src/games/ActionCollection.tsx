@@ -506,6 +506,10 @@ export default function ActionCollection({
           </button>
         ))}
       </div>
+      <p className="action-help">
+        Fácil: ritmo estável para aprender. Normal: pressão gradual. Difícil:
+        ritmo mais intenso, com progressão nos primeiros dois minutos e limite de velocidade.
+      </p>
       <div className="action-footer">
         <button disabled={status !== "running"} onClick={pause}>
           Pausar
