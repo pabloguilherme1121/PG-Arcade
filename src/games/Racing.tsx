@@ -1,4 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  type CSSProperties,
+} from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import {
   initialRace,
@@ -71,7 +77,12 @@ export default function Racing({
         <div
           ref={board}
           className={`race-board ${status === "running" ? "racing-running" : ""}`}
-          style={{ "--race-speed": currentVelocity } as React.CSSProperties}
+          style={
+            {
+              "--race-speed": currentVelocity,
+              "--road-motion-duration": `${Math.max(0.18, 0.92 / currentVelocity)}s`,
+            } as CSSProperties
+          }
           tabIndex={0}
           role="group"
           aria-label="Pista de corrida. Setas esquerda e direita, espaço para pausar."
