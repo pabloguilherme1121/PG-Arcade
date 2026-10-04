@@ -3,6 +3,7 @@ import { useReducedMotion } from "../../../useReducedMotion";
 import { RotateCcw, Target, ArrowUpRight, Check, X } from "lucide-react";
 import {
   chooseFootballKeeperPosition,
+  getFootballFlightProfile,
   resolveFootballShot,
   type FootballDifficulty,
   type FootballMode,
@@ -11,7 +12,8 @@ import "./PortfolioFootball.css";
 import ArcadeDifficultyNotice from "./ArcadeDifficultyNotice";
 const button =
   "min-h-11 rounded-lg px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 disabled:opacity-50";
-type Shot = ReturnType<typeof resolveFootballShot> & { bend: number };
+type Shot = ReturnType<typeof resolveFootballShot> &
+  ReturnType<typeof getFootballFlightProfile>;
 const feedback = {
   gol: "Gol! Boa colocação.",
   defesa: "Defesa! Tente outro canto.",
@@ -65,7 +67,7 @@ export default function PortfolioFootball() {
     const position = chooseFootballKeeperPosition(difficulty, aim);
     const shot = {
       ...resolveFootballShot(mode, aim, power, curve, position),
-      bend: mode === "free-kick" ? curve * 0.7 : 0,
+      ...getFootballFlightProfile(mode, power, curve),
     };
     setKeeper(position);
     if (reducedMotion) {
@@ -216,6 +218,11 @@ export default function PortfolioFootball() {
                 aria-hidden="true"
               >
                 <defs>
+                  <radialGradient id="football-ball" cx="35%" cy="30%">
+                    <stop offset="0" stopColor="#ffffff" />
+                    <stop offset=".72" stopColor="#eef2f4" />
+                    <stop offset="1" stopColor="#aebbc5" />
+                  </radialGradient>
                   <pattern
                     id="football-net"
                     width="16"
@@ -323,15 +330,26 @@ export default function PortfolioFootball() {
                 >
                   {flight && (
                     <animateMotion
-                      dur=".6s"
+                      dur={`${flight.durationMs / 1000}s`}
                       fill="freeze"
-                      path={`M200 250 Q${200 + flight.bend} 140 ${ballX} ${ballY}`}
+                      path={`M200 250 Q${200 + flight.bend} ${250 - flight.apexLift} ${ballX} ${ballY}`}
                       calcMode="spline"
                       keyTimes="0;1"
                       keySplines=".16 1 .3 1"
                     />
                   )}
-                  <circle r="9" fill="#f2f5f1" stroke="#c8d6df" />
+                  {flight && (
+                    <animateTransform
+                      attributeName="transform"
+                      type="scale"
+                      from="1"
+                      to={String(flight.scaleAtGoal)}
+                      dur={`${flight.durationMs / 1000}s`}
+                      fill="freeze"
+                      additive="sum"
+                    />
+                  )}
+                  <circle r="9" fill="url(#football-ball)" stroke="#c8d6df" />
                   <path d="M0 -4L4 -1L3 4H-3L-4 -1Z" fill="#142d42" />
                   <path
                     d="M-8 -3L-5 -6M5 -6L8 -3M-5 7L-3 5M3 5L5 7"
