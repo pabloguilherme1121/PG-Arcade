@@ -4,6 +4,7 @@ test("catalog search, categories, favorites and direct links persist", async ({
 }) => {
   await page.goto("/");
   await expect(page.locator(".game-card")).toHaveCount(8);
+  expect((await page.locator('.favorite svg').first().boundingBox())!.width).toBeGreaterThanOrEqual(16);
   await page
     .getByRole("button", { name: "Adicionar Snake aos favoritos" })
     .click();
@@ -31,6 +32,7 @@ test("2048 keyboard move, undo, reset and record persistence", async ({
 }) => {
   await page.goto("/#/jogar/2048");
   const board = page.locator(".board2048");
+  await expect(page.getByRole('button',{name:'Nova partida'})).toHaveCSS('background-color','rgb(201, 246, 90)');
   await expect(board.locator(".tile:not(.tile-0)")).toHaveCount(2);
   const initial = await board.textContent();
   for (const key of ["ArrowLeft", "ArrowDown", "ArrowRight", "ArrowUp"])
