@@ -52,3 +52,59 @@
     animation: arcade-arena-enter 240ms ease-out;
   }
 }
+
+
+/* Realism pass: texture, depth and ball motion without changing hit areas. */
+.football-pitch {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.035), transparent 22%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255,255,255,.018) 0 10%,
+      rgba(0,0,0,.018) 10% 20%
+    ),
+    #123f36;
+}
+.football-pitch::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 9%, rgba(255,255,255,.12), transparent 34%),
+    linear-gradient(180deg, rgba(3,18,14,.02), rgba(2,12,10,.2));
+  mix-blend-mode: screen;
+}
+.football-pitch svg,
+.football-pitch > [role="slider"] {
+  position: relative;
+  z-index: 1;
+}
+.football-pitch svg {
+  filter: saturate(1.08) contrast(1.025);
+}
+.football-ball {
+  filter: drop-shadow(0 3px 2px rgba(0,0,0,.4));
+}
+.football-ball-flight {
+  filter:
+    drop-shadow(0 5px 3px rgba(0,0,0,.28))
+    drop-shadow(0 0 7px rgba(255,255,255,.12));
+}
+.football-keeper {
+  filter: drop-shadow(0 5px 4px rgba(0,0,0,.33));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .football-pitch[data-football-result="gol"] {
+    animation: football-goal-pulse 320ms ease-out;
+  }
+}
+@keyframes football-goal-pulse {
+  50% {
+    box-shadow:
+      0 0 0 4px rgba(110, 231, 183, 0.13),
+      0 20px 42px rgba(0, 0, 0, 0.28);
+  }
+}

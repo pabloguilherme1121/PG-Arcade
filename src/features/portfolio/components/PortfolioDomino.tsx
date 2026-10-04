@@ -56,7 +56,7 @@ const tileColors = [
 ];
 function TileFace({ tile }: { tile: DominoTile }) {
   return (
-    <span className="inline-grid min-w-14 grid-cols-[1fr_auto_1fr] items-center gap-1 rounded-[9px] border border-white/15 bg-[#0a1b2b] px-2 py-2 font-display text-base text-white shadow-[0_8px_20px_rgba(0,0,0,0.16)]">
+    <span data-domino-face="true" className="inline-grid min-w-14 grid-cols-[1fr_auto_1fr] items-center gap-1 rounded-[9px] border border-white/15 bg-[#0a1b2b] px-2 py-2 font-display text-base text-white shadow-[0_8px_20px_rgba(0,0,0,0.16)]">
       <span
         className="rounded px-1.5 py-1"
         style={{

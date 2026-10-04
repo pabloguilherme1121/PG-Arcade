@@ -25,6 +25,25 @@ export function chooseFootballKeeperPosition(
   );
 }
 
+export function getFootballFlightProfile(
+  mode: FootballMode,
+  power: number,
+  curve: number,
+) {
+  const normalizedPower = Math.max(0, Math.min(100, power));
+  const durationMs = Math.round(
+    Math.max(420, Math.min(760, 760 - normalizedPower * 3.5)),
+  );
+  const bend = mode === "free-kick" ? curve * 0.85 : 0;
+  const apexLift =
+    72 + normalizedPower * 0.34 + (mode === "free-kick" ? Math.abs(curve) * 0.08 : 0);
+  const scaleAtGoal = Math.max(
+    0.54,
+    Math.min(0.68, 0.68 - normalizedPower * 0.0014),
+  );
+  return { durationMs, bend, apexLift, scaleAtGoal };
+}
+
 export function resolveFootballShot(
   mode: FootballMode,
   aim: number,

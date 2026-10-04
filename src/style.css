@@ -2871,3 +2871,79 @@ html[data-arcade-contrast="true"] .experience-tools {
     right: 14px;
   }
 }
+
+
+/* Realism pass for road-based games. */
+.race-board {
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.04),
+    inset 0 -40px 70px rgba(0,0,0,.22),
+    0 18px 42px rgba(0,0,0,.28);
+}
+.race-board::before,
+.race-board::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.race-board::before {
+  z-index: 0;
+  background:
+    linear-gradient(90deg, rgba(5,10,12,.3), transparent 17%, transparent 83%, rgba(5,10,12,.3)),
+    linear-gradient(180deg, rgba(170,205,220,.08), transparent 30%, rgba(0,0,0,.12));
+}
+.race-board::after {
+  z-index: 0;
+  background: linear-gradient(180deg, transparent 55%, rgba(255,255,255,.035));
+  opacity: .55;
+}
+.race-board > * {
+  z-index: 1;
+}
+.racing-running .road-line {
+  animation: race-road-motion var(--road-motion-duration, .3s) linear infinite;
+}
+.race-car,
+.traffic-car {
+  transition: left 120ms cubic-bezier(.2,.75,.3,1);
+}
+.race-car img {
+  filter:
+    drop-shadow(0 9px 5px rgba(0,0,0,.45))
+    saturate(1.08);
+}
+.traffic-car img {
+  filter:
+    hue-rotate(245deg)
+    drop-shadow(0 8px 5px rgba(0,0,0,.42))
+    saturate(.92);
+}
+.race-speedometer {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 3px 8px;
+  border: 1px solid rgba(201,246,90,.28);
+  border-radius: 999px;
+  background: rgba(201,246,90,.07);
+  color: #e9ffc1;
+  font-weight: 750;
+  letter-spacing: .025em;
+}
+.race-lives {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+@keyframes race-road-motion {
+  from { background-position-y: 0; }
+  to { background-position-y: 64px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .racing-running .road-line {
+    animation: none;
+  }
+}
