@@ -30,11 +30,26 @@ function paint(ctx: CanvasRenderingContext2D, s: ActionState) {
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, 480, 360);
   ctx.fillStyle = "#bbdbef";
+  const drift = s.time * (space ? 5 : 1.25);
   for (let i = 0; i < 45; i++) {
-    ctx.globalAlpha = 0.15 + (i % 4) * 0.15;
-    ctx.fillRect((i * 137) % 480, (i * 73) % 300, 2, 2);
+    const depth = 1 + (i % 3) * 0.35;
+    const size = space ? 1 + (i % 3 === 0 ? 1 : 0) : 1;
+    ctx.globalAlpha = 0.12 + (i % 4) * 0.13;
+    ctx.fillRect(
+      (i * 137) % 480,
+      (i * 73 + drift * depth) % 315,
+      size,
+      size,
+    );
   }
   ctx.globalAlpha = 1;
+  if (!space) {
+    const haze = ctx.createLinearGradient(0, 120, 0, 330);
+    haze.addColorStop(0, "rgba(216,236,242,.08)");
+    haze.addColorStop(1, "rgba(8,20,26,0)");
+    ctx.fillStyle = haze;
+    ctx.fillRect(0, 105, 480, 225);
+  }
   const circle = (x: number, y: number, r: number, color: string) => {
     const g = ctx.createRadialGradient(x - r * 0.3, y - r * 0.4, 1, x, y, r);
     g.addColorStop(0, "#eefbff");
@@ -76,6 +91,14 @@ function paint(ctx: CanvasRenderingContext2D, s: ActionState) {
     ctx.save();
     ctx.translate(s.x, s.y);
     ctx.rotate(s.angle);
+    ctx.strokeStyle = "rgba(12,20,22,.34)";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(-18, 10);
+    ctx.lineTo(-38, 13);
+    ctx.moveTo(-18, -10);
+    ctx.lineTo(-38, -13);
+    ctx.stroke();
     if (artwork.car?.complete && artwork.car.naturalWidth > 0) {
       ctx.rotate(Math.PI / 2);
       ctx.drawImage(artwork.car, -13, -22, 26, 44);
@@ -191,6 +214,12 @@ function paint(ctx: CanvasRenderingContext2D, s: ActionState) {
     ctx.restore();
     ctx.globalAlpha = 1;
   }
+  const vignette = ctx.createRadialGradient(240, 170, 90, 240, 180, 330);
+  vignette.addColorStop(0, "rgba(0,0,0,0)");
+  vignette.addColorStop(0.72, "rgba(0,0,0,.04)");
+  vignette.addColorStop(1, "rgba(0,0,0,.32)");
+  ctx.fillStyle = vignette;
+  ctx.fillRect(0, 0, 480, 360);
 }
 export default function ActionCollection({
   gameId,
