@@ -79,7 +79,7 @@ export default function PortfolioFootball() {
       setShots((previous) => [...previous, shot]);
       setFlight(null);
       timer.current = null;
-    }, 600);
+    }, shot.durationMs);
   };
   const shot = flight ?? last;
   const ballX = shot ? Math.max(15, Math.min(385, 40 + shot.x * 3.2)) : 200;
@@ -323,6 +323,7 @@ export default function PortfolioFootball() {
                   fill="none"
                 />
                 <g
+                  className={flight ? "football-ball football-ball-flight" : "football-ball"}
                   key={`${shots.length}-${Boolean(flight)}`}
                   transform={
                     flight ? undefined : `translate(${ballX},${ballY})`
