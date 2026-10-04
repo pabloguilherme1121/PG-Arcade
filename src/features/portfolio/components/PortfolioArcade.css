@@ -252,3 +252,48 @@
       border-color 150ms ease;
   }
 }
+
+
+/* Motion polish for chess, checkers and domino. */
+@media (prefers-reduced-motion: no-preference) {
+  .arcade-hub :is(
+    [data-chess-board],
+    [data-checkers-board],
+    [data-domino-hand="true"]
+  ) {
+    animation: arcade-board-enter 320ms var(--arcade-ease-out, ease-out) both;
+  }
+
+  .arcade-hub [data-chess-board] [role="gridcell"],
+  .arcade-hub [data-checkers-board] [role="gridcell"],
+  .arcade-hub [data-domino-tile] {
+    transition:
+      transform 140ms var(--arcade-ease-out, ease-out),
+      background-color 180ms ease,
+      box-shadow 180ms ease,
+      border-color 180ms ease;
+  }
+
+  .arcade-hub [data-chess-board] [role="gridcell"][aria-selected="true"] > span:first-child,
+  .arcade-hub [data-checkers-board] [role="gridcell"][aria-selected="true"] > span {
+    animation: classic-piece-lift 180ms var(--arcade-ease-spring, ease-out);
+  }
+
+  .arcade-hub [data-checkers-cell][data-legal-destination="true"]::after {
+    animation: classic-target-breathe 700ms ease-in-out infinite alternate;
+  }
+
+  .arcade-hub [data-domino-tile]:not(:disabled):active {
+    transform: translateY(1px) scale(.985);
+  }
+}
+
+@keyframes classic-piece-lift {
+  50% { transform: translateY(-3px) scale(1.04); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes classic-target-breathe {
+  from { transform: scale(.82); opacity: .55; }
+  to { transform: scale(1.08); opacity: .95; }
+}
