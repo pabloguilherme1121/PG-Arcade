@@ -396,6 +396,7 @@ export default function App() {
   useEffect(() => {
     const change = () => {
       setPage(route());
+      setFocusMode(false);
       setMessage("");
       restartDialog.current?.close();
     };
