@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { chooseFootballKeeperPosition, resolveFootballShot } from "./football";
+import {
+  chooseFootballKeeperPosition,
+  getFootballFlightProfile,
+  resolveFootballShot,
+} from "./football";
 describe("football shots", () => {
   it("makes harder keepers anticipate the selected corner", () => {
     const easy = chooseFootballKeeperPosition("easy", 80, () => 0);
@@ -20,4 +24,16 @@ describe("football shots", () => {
     );
     expect(resolveFootballShot("free-kick", 50, 65, 70, 10).result).toBe("gol");
   });
+});
+
+it("uses a plausible flight profile for power and free-kick bend", () => {
+  const placed = getFootballFlightProfile("penalty", 58, 0);
+  const driven = getFootballFlightProfile("penalty", 82, 0);
+  const curved = getFootballFlightProfile("free-kick", 72, 65);
+
+  expect(driven.durationMs).toBeLessThan(placed.durationMs);
+  expect(placed.durationMs).toBeGreaterThanOrEqual(430);
+  expect(driven.durationMs).toBeLessThanOrEqual(650);
+  expect(curved.bend).toBeGreaterThan(0);
+  expect(curved.scaleAtGoal).toBeLessThan(1);
 });
