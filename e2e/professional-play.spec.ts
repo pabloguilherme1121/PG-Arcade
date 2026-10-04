@@ -8,9 +8,12 @@ test("Liga 4 bot plays, undo restores the human turn, and pause cancels pending 
   await expect(page.locator(".disc-2")).toHaveCount(1);
   await page.getByRole("button", { name: "Desfazer jogada", exact: true }).click();
   await expect(page.locator(".disc-1,.disc-2")).toHaveCount(0);
-  await page.clock.install();
+  const frozenTime = new Date("2026-10-04T12:00:00Z");
+  await page.clock.install({ time: frozenTime });
+  await page.clock.pauseAt(frozenTime);
   await page.getByRole("button", { name: "Jogar na coluna 1", exact: true }).click();
   await page.evaluate(() => window.dispatchEvent(new Event("pg-arcade-pause")));
+  await expect(page.getByRole("status")).toHaveText("Partida pausada");
   await page.clock.runFor(1000);
   await expect(page.locator(".disc-2")).toHaveCount(0);
   await page.getByRole("button", { name: "Continuar", exact: true }).click();
