@@ -159,7 +159,17 @@ test("All games offer keyboard focus, specific help, focus mode and safe restart
   for (const { id, name } of games) {
     await page.goto(`./#/jogar/${id}`);
     await expect(page.locator(".player > h1")).toHaveText(name);
-    await expect(page.locator("[data-arcade-arena]").first()).toBeVisible();
+    const arena = page.locator("[data-arcade-arena]").first();
+    await expect(arena).toBeVisible();
+    const motion = await arena.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        animationName: style.animationName,
+        animationDuration: style.animationDuration,
+      };
+    });
+    expect(motion.animationName).toContain("arcade-board-enter");
+    expect(motion.animationDuration).not.toBe("0s");
     await page.getByText("Ajuda rápida e controles", { exact: true }).click();
     await expect(
       page.locator(".experience-tools details[open] p").first(),
