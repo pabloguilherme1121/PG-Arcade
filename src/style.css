@@ -2947,3 +2947,174 @@ html[data-arcade-contrast="true"] .experience-tools {
     animation: none;
   }
 }
+
+
+/* Shared motion language for all PG Arcade games. */
+:root {
+  --arcade-motion-fast: 140ms;
+  --arcade-motion-medium: 240ms;
+  --arcade-motion-slow: 340ms;
+  --arcade-ease-out: cubic-bezier(.18,.82,.24,1);
+  --arcade-ease-spring: cubic-bezier(.2,1.1,.3,1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :is(
+    .board2048,
+    .snake-board,
+    .memory-board,
+    .connect-board,
+    .sliding-board,
+    .lights-board,
+    .mines-board,
+    .sequence-board,
+    .reaction-board,
+    .parking-board,
+    .race-board,
+    .space-targets,
+    .orbital-board,
+    .targets-board,
+    .run-board
+  ) {
+    animation: arcade-board-enter var(--arcade-motion-slow) var(--arcade-ease-out) both;
+  }
+
+  :is(
+    .tile,
+    .memory-card,
+    .disc,
+    .sliding-board button,
+    .lights-board button,
+    .mines-board button,
+    .sequence-board button,
+    .parking-car,
+    .race-car,
+    .traffic-car,
+    .run-object,
+    .target-present,
+    .snake-board > span,
+    .reaction-board,
+    .board-overlay
+  ) {
+    transition:
+      transform var(--arcade-motion-fast) var(--arcade-ease-out),
+      opacity var(--arcade-motion-fast) ease,
+      background-color var(--arcade-motion-medium) ease,
+      border-color var(--arcade-motion-medium) ease,
+      box-shadow var(--arcade-motion-medium) ease;
+  }
+
+  .traffic-car {
+    transition:
+      top 100ms linear,
+      left var(--arcade-motion-fast) var(--arcade-ease-out),
+      transform var(--arcade-motion-fast) var(--arcade-ease-out);
+  }
+
+  .race-car,
+  .parking-car,
+  .run-object {
+    transition:
+      left var(--arcade-motion-fast) var(--arcade-ease-out),
+      top var(--arcade-motion-fast) linear,
+      transform var(--arcade-motion-fast) var(--arcade-ease-out);
+  }
+
+  .tile:not(.tile-0) {
+    animation: arcade-piece-pop 170ms var(--arcade-ease-spring);
+  }
+
+  .memory-card.revealed {
+    animation: arcade-card-flip 240ms var(--arcade-ease-out);
+  }
+
+  .memory-card.matched {
+    animation: arcade-match-settle 300ms var(--arcade-ease-spring);
+  }
+
+  :is(.disc-1, .disc-2) {
+    animation: arcade-disc-drop 260ms var(--arcade-ease-spring);
+  }
+
+  .mine-open {
+    animation: arcade-cell-reveal 180ms var(--arcade-ease-out);
+  }
+
+  .target-present {
+    animation: arcade-target-pop 190ms var(--arcade-ease-spring);
+  }
+
+  .snake-head {
+    animation: arcade-snake-head 150ms var(--arcade-ease-spring);
+  }
+
+  .sequence-board button[aria-pressed="true"],
+  .sequence-board button.active {
+    animation: arcade-sequence-hit 180ms var(--arcade-ease-spring);
+  }
+
+  .board-overlay {
+    animation: arcade-overlay-enter 200ms var(--arcade-ease-out);
+  }
+
+  [data-arcade-arena] button:active:not(:disabled) {
+    transform: translateY(1px) scale(.985);
+  }
+}
+
+@keyframes arcade-board-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(.992);
+    filter: saturate(.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: saturate(1);
+  }
+}
+
+@keyframes arcade-card-flip {
+  0% { transform: perspective(500px) rotateY(78deg) scale(.96); }
+  100% { transform: perspective(500px) rotateY(0) scale(1); }
+}
+
+@keyframes arcade-match-settle {
+  45% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+@keyframes arcade-disc-drop {
+  0% { opacity: .35; transform: translateY(-26%) scale(.88); }
+  70% { transform: translateY(4%) scale(1.03); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes arcade-cell-reveal {
+  from { opacity: .45; transform: scale(.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes arcade-target-pop {
+  0% { opacity: 0; transform: scale(.62); }
+  70% { transform: scale(1.08); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes arcade-snake-head {
+  0% { transform: scale(.82); }
+  100% { transform: scale(1); }
+}
+
+@keyframes arcade-sequence-hit {
+  50% {
+    transform: scale(1.055);
+    box-shadow: 0 0 22px rgba(201,246,90,.22);
+  }
+}
+
+@keyframes arcade-overlay-enter {
+  from { opacity: 0; transform: scale(.985); }
+  to { opacity: 1; transform: scale(1); }
+}
