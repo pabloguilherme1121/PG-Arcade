@@ -95,4 +95,16 @@ describe("checkers", () => {
       chooseCheckersBotMove(board, "red", "master", () => 0, 42),
     ).toBeNull();
   });
+  it("evaluates the entire capture chain before the opponent can reply", () => {
+    const board: CheckersBoard = Array.from({ length: 64 }, () => null);
+    board[17] = { player: "red", king: false };
+    board[21] = { player: "red", king: false };
+    for (const square of [26, 44, 30]) board[square] = { player: "blue", king: false };
+    const snapshot = structuredClone(board);
+    for (const level of ["master", "expert"] as const) {
+      expect(chooseCheckersBotMove(board, "red", level, () => 0)).toEqual({ from: 17, to: 35, capture: 26 });
+    }
+    expect(board).toEqual(snapshot);
+  });
+
 });
