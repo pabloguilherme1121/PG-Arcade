@@ -1,0 +1,184 @@
+@media (max-width: 639px) {
+  .arcade-hub [data-arcade-game-strip="true"] {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 10px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 4px;
+  }
+
+  .arcade-hub [data-arcade-game-strip="true"] > [role="tab"] {
+    flex: 0 0 clamp(144px, 44vw, 164px);
+    width: clamp(144px, 44vw, 164px);
+    min-width: clamp(144px, 44vw, 164px);
+    max-width: 164px;
+    scroll-snap-align: start;
+  }
+}
+
+.arcade-hub[data-arcade-focus="true"] [data-arcade-overview],
+.arcade-hub[data-arcade-focus="true"] [data-arcade-session-summary],
+.arcade-hub[data-arcade-focus="true"] [data-arcade-exploration],
+.arcade-hub[data-arcade-focus="true"] [role="tab"] > span:first-child,
+.arcade-hub[data-arcade-focus="true"] [role="tab"] > span:last-child {
+  display: none;
+}
+
+.arcade-hub[data-arcade-focus="true"] [role="tab"] {
+  min-height: 44px;
+  padding: 10px 12px;
+}
+
+.arcade-hub[data-arcade-focus="true"] [role="tab"] > span:nth-child(2) {
+  margin-top: 0;
+}
+
+@media (max-width: 1023px) {
+  .arcade-hub [data-arcade-arena] {
+    grid-row: 1;
+  }
+
+  .arcade-hub [data-arcade-settings] {
+    grid-row: 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .arcade-hub [data-arcade-settings] {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .arcade-hub [data-arcade-arena] {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+.arcade-hub {
+  --arcade-accent: 103, 232, 249;
+}
+.arcade-hub[data-arcade-game="domino"] {
+  --arcade-accent: 253, 211, 130;
+}
+.arcade-hub[data-arcade-game="futebol"] {
+  --arcade-accent: 110, 231, 183;
+}
+.arcade-hub[data-arcade-game="damas"] {
+  --arcade-accent: 147, 197, 253;
+}
+.arcade-hub[data-arcade-game="xadrez"] {
+  --arcade-accent: 196, 181, 253;
+}
+
+.arcade-hub [role="tab"][aria-selected="true"] {
+  border-color: rgb(var(--arcade-accent));
+  background: linear-gradient(
+    145deg,
+    rgba(var(--arcade-accent), 0.18),
+    #0a2034
+  );
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.1),
+    0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+.arcade-hub [data-arcade-arena] {
+  border: 1px solid rgba(var(--arcade-accent), 0.3);
+  border-radius: 20px;
+  background:
+    radial-gradient(
+      ellipse at top left,
+      rgba(var(--arcade-accent), 0.09),
+      transparent 65%
+    ),
+    #071827;
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.22),
+    inset 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.arcade-hub [data-chess-game] [data-arcade-arena] {
+  padding: 12px;
+}
+
+.arcade-hub [data-chess-board] [role="gridcell"] > span:first-child {
+  font-family: "Segoe UI Symbol", "DejaVu Sans", sans-serif;
+  font-size: clamp(24px, 7vw, 46px);
+  line-height: 1;
+}
+
+.arcade-difficulty-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #b9cde0;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.arcade-difficulty-notice strong {
+  color: rgb(var(--arcade-accent));
+  white-space: nowrap;
+}
+
+.arcade-hub [data-arcade-settings] button {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.arcade-hub [data-game-cell],
+.arcade-hub [data-domino-tile] {
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.arcade-hub [role="gridcell"][aria-selected="true"] {
+  box-shadow: inset 0 0 0 3px #67e8f9;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .arcade-hub [data-arcade-arena] {
+    animation: arcade-arena-enter 240ms ease-out;
+  }
+  .arcade-hub [data-game-cell] > span:not(:empty),
+  .arcade-hub [role="gridcell"][aria-selected="true"] > span:first-child {
+    animation: arcade-piece-pop 180ms ease-out;
+  }
+  .arcade-hub [data-winning-cell="true"] {
+    animation: arcade-win-glow 600ms ease-out;
+  }
+}
+
+@keyframes arcade-arena-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes arcade-piece-pop {
+  from {
+    transform: scale(0.88);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes arcade-win-glow {
+  50% {
+    box-shadow: inset 0 0 24px rgba(103, 232, 249, 0.3);
+  }
+}
