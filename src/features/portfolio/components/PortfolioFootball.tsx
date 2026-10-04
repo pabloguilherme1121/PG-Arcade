@@ -288,8 +288,42 @@ export default function PortfolioFootball() {
                     strokeWidth="6"
                     strokeLinecap="round"
                   />
-                  <circle cx="-24" cy="-15" r="4" fill="#f2f5f1" />
-                  <circle cx="24" cy="-15" r="4" fill="#f2f5f1" />
+                  <g
+                    className="football-hand football-hand-left"
+                    transform="translate(-24 -15)"
+                  >
+                    <ellipse rx="5.2" ry="4.2" fill="#f2f5f1" />
+                    <path
+                      d="M-2.5 -2.5L-5.8 -5.1M-.8 -3.2L-2.4 -6.4M1.1 -3L.7 -6.4M2.8 -2L3.6 -5"
+                      stroke="#b9c7cf"
+                      strokeWidth=".9"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M-3 1.2L-5.5 2.4"
+                      stroke="#b9c7cf"
+                      strokeWidth="1"
+                      strokeLinecap="round"
+                    />
+                  </g>
+                  <g
+                    className="football-hand football-hand-right"
+                    transform="translate(24 -15)"
+                  >
+                    <ellipse rx="5.2" ry="4.2" fill="#f2f5f1" />
+                    <path
+                      d="M2.5 -2.5L5.8 -5.1M.8 -3.2L2.4 -6.4M-1.1 -3L-.7 -6.4M-2.8 -2L-3.6 -5"
+                      stroke="#b9c7cf"
+                      strokeWidth=".9"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M3 1.2L5.5 2.4"
+                      stroke="#b9c7cf"
+                      strokeWidth="1"
+                      strokeLinecap="round"
+                    />
+                  </g>
                 </g>
                 {mode === "free-kick" && (
                   <g data-football-wall>
@@ -309,6 +343,21 @@ export default function PortfolioFootball() {
                           stroke="#102c44"
                           strokeWidth="4"
                         />
+                        <path
+                          d="M-6 -7L-2 3M6 -7L2 3"
+                          stroke="#64a5da"
+                          strokeWidth="3.2"
+                          strokeLinecap="round"
+                        />
+                        <g transform="translate(0 4)">
+                          <ellipse rx="4" ry="2.7" fill="#e7c3a4" />
+                          <path
+                            d="M-2.8 -.8L-4.7 -2.4M-1.2 -1.5L-2 -3.5M.5 -1.5L.7 -3.5M2.1 -.9L3.7 -2.7"
+                            stroke="#c99f7f"
+                            strokeWidth=".65"
+                            strokeLinecap="round"
+                          />
+                        </g>
                       </g>
                     ))}
                   </g>
