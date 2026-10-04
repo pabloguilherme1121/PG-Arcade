@@ -2135,3 +2135,54 @@ html[data-arcade-motion="reduced"] :is(button,a,.game-card,.memory-card,.disc) {
   .preference-options label { flex-wrap: wrap; }
   .connect-controls button { padding-inline: 0; min-width: 0; }
 }
+
+
+/* Shared play ergonomics: keep navigation fast and predictable on touch devices. */
+button,
+a.button,
+summary,
+select {
+  touch-action: manipulation;
+}
+
+[data-arcade-arena] {
+  scroll-margin-block: 20px;
+  overscroll-behavior: contain;
+}
+
+[data-arcade-arena][tabindex="-1"]:focus {
+  outline: 2px solid var(--lime);
+  outline-offset: 4px;
+}
+
+/* Optional larger controls. Board cells keep their own geometry. */
+html[data-arcade-controls="large"] :is(
+  .player-toolbar button,
+  .player-toolbar a.button,
+  .experience-tools > button,
+  .experience-tools summary,
+  .game-actions button,
+  .action-controls button,
+  .action-footer button,
+  .wide-controls button,
+  .dpad button,
+  .session-options button,
+  .session-options select,
+  .instructions button,
+  .instructions select
+) {
+  min-height: 52px;
+}
+
+@media (max-width: 430px) {
+  html[data-arcade-controls="large"] :is(
+    .experience-tools > button,
+    .experience-tools summary,
+    .action-controls button,
+    .action-footer button,
+    .wide-controls button,
+    .dpad button
+  ) {
+    min-height: 56px;
+  }
+}
