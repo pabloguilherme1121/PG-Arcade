@@ -165,29 +165,36 @@ function evaluateBoard(board: CheckersBoard, player: CheckersPlayer) {
   return scoreFor(player) - scoreFor(opponent) + mobility * 0.18;
 }
 
+// Depth counts complete turns; a mandatory capture chain never yields the turn.
+function searchAfterMove(
+  board: CheckersBoard, move: CheckersMove, player: CheckersPlayer,
+  root: CheckersPlayer, depth: number, alpha = -Infinity, beta = Infinity,
+): number {
+  const next = applyCheckersMove(board, move);
+  const continues = move.capture !== undefined && getCheckersMovesFrom(next, move.to, true).length > 0;
+  return minimax(next, continues ? player : opponentOf(player), root,
+    continues ? depth : depth - 1, alpha, beta, continues ? move.to : undefined);
+}
+
 function minimax(
-  board: CheckersBoard,
-  currentPlayer: CheckersPlayer,
-  rootPlayer: CheckersPlayer,
-  depth: number,
+  board: CheckersBoard, currentPlayer: CheckersPlayer, rootPlayer: CheckersPlayer,
+  depth: number, alpha: number, beta: number, forcedFrom?: number,
 ): number {
   const winner = getCheckersWinner(board, currentPlayer);
   if (winner) return winner === rootPlayer ? 1000 + depth : -1000 - depth;
-  if (depth <= 0) return evaluateBoard(board, rootPlayer);
-
-  const moves = getCheckersLegalMoves(board, currentPlayer);
-  const scores = moves.map((move) =>
-    minimax(
-      applyCheckersMove(board, move),
-      opponentOf(currentPlayer),
-      rootPlayer,
-      depth - 1,
-    ),
-  );
-
-  return currentPlayer === rootPlayer
-    ? Math.max(...scores)
-    : Math.min(...scores);
+  if (depth <= 0 && forcedFrom === undefined) return evaluateBoard(board, rootPlayer);
+  const moves = forcedFrom === undefined ? getCheckersLegalMoves(board, currentPlayer)
+    : getCheckersMovesFrom(board, forcedFrom, true);
+  const maximizing = currentPlayer === rootPlayer;
+  let best = maximizing ? -Infinity : Infinity;
+  for (const move of moves) {
+    const score = searchAfterMove(board, move, currentPlayer, rootPlayer, depth, alpha, beta);
+    best = maximizing ? Math.max(best, score) : Math.min(best, score);
+    if (maximizing) alpha = Math.max(alpha, best);
+    else beta = Math.min(beta, best);
+    if (beta <= alpha) break;
+  }
+  return best;
 }
 
 export function chooseCheckersBotMove(
@@ -223,13 +230,9 @@ export function chooseCheckersBotMove(
       return { move, score: captureBonus + promotionBonus + positional * 2 };
     }
 
-    const lookAhead = minimax(
-      next,
-      opponentOf(player),
-      player,
-      difficulty === "expert" ? 3 : 2,
-    );
-    return {
+    const lookAhead = searchAfterMove(
+      board, move, player, player, difficulty === "expert" ? 4 : 3,
+    );    return {
       move,
       score:
         captureBonus * 1.5 + promotionBonus * 1.5 + positional * 2 + lookAhead,

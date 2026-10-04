@@ -51,6 +51,7 @@ export default function PortfolioCheckers() {
   );
   const [turn, setTurn] = useState<CheckersPlayer>("blue");
   const [selected, setSelected] = useState<number | null>(null);
+  const [humanForcedFrom, setHumanForcedFrom] = useState<number | null>(null);
   const [botForcedFrom, setBotForcedFrom] = useState<number | null>(null);
   const [winner, setWinner] = useState<CheckersPlayer | null>(null);
   const [matchWinner, setMatchWinner] = useState<CheckersPlayer | null>(null);
@@ -58,8 +59,8 @@ export default function PortfolioCheckers() {
   const [score, setScore] = useState({ blue: 0, red: 0 });
 
   const legalMoves = useMemo(
-    () => getCheckersLegalMoves(board, turn),
-    [board, turn],
+    () => humanForcedFrom === null ? getCheckersLegalMoves(board, turn) : getCheckersMovesFrom(board, humanForcedFrom, true),
+    [board, turn, humanForcedFrom],
   );
   const selectedMoves = useMemo(
     () =>
@@ -73,6 +74,7 @@ export default function PortfolioCheckers() {
     setBoard(createCheckersBoard(variant));
     setTurn("blue");
     setSelected(null);
+    setHumanForcedFrom(null);
     setBotForcedFrom(null);
     setWinner(null);
     if (resetScore) {
@@ -92,6 +94,7 @@ export default function PortfolioCheckers() {
     if (winner) return;
     setWinner(nextWinner);
     setSelected(null);
+    setHumanForcedFrom(null);
     setBotForcedFrom(null);
     setScore((currentScore) => {
       const nextScore = {
@@ -114,6 +117,7 @@ export default function PortfolioCheckers() {
     if (move.capture !== undefined && allowContinuation) {
       const continuation = getCheckersMovesFrom(next, move.to, true);
       if (continuation.length) {
+        setHumanForcedFrom(move.to);
         setSelected(move.to);
         return;
       }
@@ -132,9 +136,7 @@ export default function PortfolioCheckers() {
 
     if (piece?.player === turn) {
       if (
-        selected !== null &&
-        selectedMoves.some((move) => move.capture !== undefined) &&
-        index !== selected
+        humanForcedFrom !== null && index !== humanForcedFrom
       )
         return;
       setSelected(index);
