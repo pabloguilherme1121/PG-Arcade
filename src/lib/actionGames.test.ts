@@ -3,6 +3,7 @@ import {
   initialRace,
   steerRace,
   tickRace,
+  raceVelocity,
   moveParking,
   parkingLevels,
   parkingScore,
@@ -20,6 +21,12 @@ describe("Race", () => {
     expect(steerRace(state, 10).lane).toBe(2);
     expect(state.lane).toBe(1);
   });
+  it("ramps road speed progressively without exceeding the selected pace cap", () => {
+    expect(raceVelocity(3, 0)).toBeCloseTo(2.55, 2);
+    expect(raceVelocity(3, 300)).toBeGreaterThan(raceVelocity(3, 0));
+    expect(raceVelocity(3, 5000)).toBeLessThanOrEqual(4.2);
+  });
+
   it("spawns predictable traffic and removes a collided car once", () => {
     let s = initialRace();
     for (let i = 0; i < 16; i++) s = tickRace(s, 3, () => 0);
