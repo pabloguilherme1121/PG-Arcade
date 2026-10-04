@@ -1,5 +1,9 @@
 import type { GameId } from "./catalog";
 export const gameHelp: Record<GameId, string> = {
+  sequencia:
+    "Observe a sequência e repita com as teclas 1 a 4 no tabuleiro ou toque nos botões. Cada nível adiciona uma cor. Pausar e continuar repete o padrão sem penalidade.",
+  palavra:
+    "Descubra cinco letras com até seis tentativas. Verde ou ✓ marca posição certa; amarelo ou ↔ indica outra posição; cinza ou − significa letra ausente. Use palavras sem acentos.",
   rally:
     "Colete bandeiras usando setas, A/D ou os botões e evite carros. Cada bandeira vale 25 pontos. São 30 segundos e três vidas; espaço pausa.",
   coleta:
@@ -41,6 +45,8 @@ export const gameHelp: Record<GameId, string> = {
     "Escolha pênalti ou falta, ajuste mira, força e curva e toque em Chutar. A mira aceita toque e teclado; observe a trajetória e tente melhorar sua série de cinco cobranças.",
 };
 export const recordUnits: Partial<Record<GameId, "pontos" | "jogadas">> = {
+  sequencia: "pontos",
+  palavra: "pontos",
   rally: "pontos",
   coleta: "pontos",
   orbital: "pontos",

@@ -107,6 +107,7 @@ test("Memory completes all pairs and stores the best score", async ({
 });
 for (const width of [320, 390, 1280])
   test(`all catalog games render and fit ${width}px`, async ({ page }) => {
+    test.setTimeout(90000);
     await page.setViewportSize({ width, height: 900 });
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
@@ -115,7 +116,7 @@ for (const width of [320, 390, 1280])
     for (const { id, name } of games) {
       await page.goto(`/#/jogar/${id}`);
       await expect(page.locator(".player > h1")).toHaveText(name);
-      await expect(page.locator("[data-arcade-arena]").first()).toBeVisible();
+      await expect(page.locator("[data-arcade-arena]").first()).toBeVisible({ timeout: 15000 });
       await expect(page.getByText("Carregando", { exact: false })).toHaveCount(
         0,
       );

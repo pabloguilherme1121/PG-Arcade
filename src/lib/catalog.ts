@@ -1,5 +1,17 @@
 export const games = [
   {
+    id: "sequencia",
+    name: "Sequência de Cores",
+    description: "Observe, memorize e repita. Uma cor a mais por nível.",
+    category: "Inteligência",
+  },
+  {
+    id: "palavra",
+    name: "Palavra Secreta",
+    description: "Cinco letras. Pistas para cada tentativa.",
+    category: "Inteligência",
+  },
+  {
     id: "rally",
     name: "Rally de Checkpoints",
     description: "Bandeiras, trânsito e trinta segundos.",

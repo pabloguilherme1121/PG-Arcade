@@ -45,7 +45,7 @@ export default function ArcadeRun({
     if (status === "running") setState((s) => moveRun(s, delta));
   };
   const shoot = () => {
-    if (status === "running") setState(fireRun);
+    if (kind === "orbital" && status === "running") setState(fireRun);
   };
   const start = () => {
     setStatus("running");
@@ -77,17 +77,17 @@ export default function ArcadeRun({
           tabIndex={0}
           aria-label={`${names[kind]}. Setas para mover, espaço para pausar${kind === "orbital" ? ", Enter para disparar" : ""}.`}
           onKeyDown={(e) => {
+            const key = e.key.toLowerCase();
             if (
-              ["ArrowLeft", "ArrowRight", "a", "d", " ", "Enter"].includes(
-                e.key,
-              ) &&
+              (["arrowleft", "arrowright", "a", "d", " "].includes(key) ||
+                (kind === "orbital" && key === "enter")) &&
               e.target === e.currentTarget
             ) {
               e.preventDefault();
-              if (e.key === " ")
+              if (key === " ")
                 status === "running" ? pause() : status !== "done" && start();
-              else if (e.key === "Enter") shoot();
-              else move(e.key === "ArrowLeft" || e.key === "a" ? -1 : 1);
+              else if (key === "enter") shoot();
+              else move(key === "arrowleft" || key === "a" ? -1 : 1);
             }
           }}
         >

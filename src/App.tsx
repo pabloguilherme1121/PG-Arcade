@@ -25,6 +25,8 @@ import { gameHelp, recordUnits } from "./lib/gameHelp";
 import { readProgress, saveProgress, type Progress } from "./lib/progress";
 import "./features/portfolio/components/PortfolioArcade.css";
 const players = {
+  sequencia: lazy(() => import("./games/ColorSequence")),
+  palavra: lazy(() => import("./games/SecretWord")),
   rally: lazy(() => import("./games/Rally")),
   coleta: lazy(() => import("./games/RoadCollect")),
   orbital: lazy(() => import("./games/Orbital")),
@@ -82,6 +84,22 @@ function route() {
         : "catalogo";
 }
 function Preview({ id }: { id: GameId }) {
+  if (id === "sequencia" || id === "palavra")
+    return (
+      <div
+        className={`preview puzzle-preview preview-${id}`}
+        aria-hidden="true"
+      >
+        {(id === "sequencia"
+          ? ["1", "2", "3", "4"]
+          : ["J", "O", "G", "O", "S"]
+        ).map((v, i) => (
+          <span key={i} className={`pad-${i}`}>
+            {v}
+          </span>
+        ))}
+      </div>
+    );
   if (
     [
       "corrida",
@@ -242,7 +260,7 @@ export default function App() {
     );
     const target =
       arenaElement?.querySelector<HTMLElement>(
-        '[role="gridcell"][tabindex="0"],.board2048,.snake-board,.race-board,.parking-board,.targets-board,.sliding-board,.reaction-board,.mines-board button:not(:disabled),[role="slider"][tabindex="0"],[data-game-cell]:not(:disabled),[data-domino-tile]:not(:disabled)',
+        '[role="gridcell"][tabindex="0"],.board2048,.snake-board,.race-board,.parking-board,.targets-board,.sliding-board,.sequence-board,.word-input,.reaction-board,.mines-board button:not(:disabled),[role="slider"][tabindex="0"],[data-game-cell]:not(:disabled),[data-domino-tile]:not(:disabled)',
       ) ||
       arenaElement?.querySelector<HTMLElement>(
         '[role="gridcell"],.connect-controls button,.lights-board button,.memory-card,button:not(:disabled)',

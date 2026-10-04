@@ -10,6 +10,7 @@ for (const id of ["rally", "coleta", "orbital"])
     await page.goto(`/#/jogar/${id}`);
     const board = page.locator(".run-board");
     await expect(board).toBeVisible();
+    await page.clock.pauseAt(new Date(Date.now() + 1000));
     await expect(board.locator(".race-car img")).toHaveJSProperty(
       "naturalWidth",
       256,
@@ -19,6 +20,14 @@ for (const id of ["rally", "coleta", "orbital"])
     await expect(board.locator(".race-car")).toHaveAttribute("data-lane", "0");
     await board.press("ArrowRight");
     await board.press("ArrowRight");
+    await board.press("A");
+    await expect(board.locator(".race-car")).toHaveAttribute("data-lane", "1");
+    await board.press("D");
+    await expect(board.locator(".race-car")).toHaveAttribute("data-lane", "2");
+    if (id !== "orbital") {
+      await board.press("Enter");
+      await expect(board.locator(".laser")).toHaveCount(0);
+    }
     if (id === "orbital") {
       await board.press("Enter");
       await expect(board.locator(".laser")).toHaveCount(1);
@@ -41,6 +50,7 @@ for (const id of ["rally", "coleta", "orbital"])
     if (id !== "orbital") {
       await expect(page.locator(".scores strong").first()).not.toHaveText("0");
       const score = await page.locator(".scores strong").first().textContent();
+      await page.clock.resume();
       await page.reload();
       await expect(page.locator(".instructions")).toContainText(
         `${score} pontos`,

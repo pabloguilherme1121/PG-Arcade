@@ -2,13 +2,13 @@
 
 Uma pausa. Uma nova jogada.
 
-Vinte jogos gratuitos no navegador: Rally de Checkpoints, Coleta na Estrada, Defesa Orbital, Campo Minado, Reflexo Rápido, Corrida Turbo, Estacionamento, Alvos Espaciais, Luzes Out, Caça-estrelas, Liga 4, Quebra-cabeça, 2048, Snake, Memória, Xadrez, Futebol, Dominó, Damas e Jogo da velha.
+Vinte e dois jogos gratuitos no navegador: Sequência de Cores, Palavra Secreta, Rally de Checkpoints, Coleta na Estrada, Defesa Orbital, Campo Minado, Reflexo Rápido, Corrida Turbo, Estacionamento, Alvos Espaciais, Luzes Out, Caça-estrelas, Liga 4, Quebra-cabeça, 2048, Snake, Memória, Xadrez, Futebol, Dominó, Damas e Jogo da velha.
 
 ## Recursos
 
 - Busca sem acentos, categorias, favoritos, ordenação por nome/visitas e jogo surpresa dentro dos filtros.
 - Ajuda específica, botão para ir ao tabuleiro, modo foco e reinício com confirmação em todos os jogos.
-- Visitas, último jogo aberto e recordes locais em nove jogos. Menos jogadas é melhor na Memória e no Quebra-cabeça; os outros recordes usam pontos.
+- Visitas, último jogo aberto e recordes locais em dezesseis jogos. Menos jogadas é melhor na Memória e no Quebra-cabeça; os outros recordes usam pontos.
 - Corrida: três ritmos, três vidas, setas/A/D, botões de toque, pausa e recorde ao terminar.
 - Estacionamento: três trajetos em uma grade, controles de direção e pontuação por movimentos. Luzes Out: três padrões com solução e desfazer.
 - Tiro ao alvo com bônus de sequência em 30 segundos; Caça-estrelas em 20 segundos. Toque, clique, números 1–9 e pausa.
@@ -25,7 +25,7 @@ GitHub Actions verifica regras e navegação em Chromium, Firefox e WebKit antes
 
 ## Origem
 
-Os cinco jogos originais foram adaptados de [PG-portfolio](https://github.com/pabloguilherme1121/PG-portfolio), sob licença MIT. Os dez novos jogos e o catálogo foram desenvolvidos para este projeto. A ilustração inicial foi criada com auxílio de geração de imagem.
+Os cinco jogos originais foram adaptados de [PG-portfolio](https://github.com/pabloguilherme1121/PG-portfolio), sob licença MIT. Os dezessete novos jogos e o catálogo foram desenvolvidos para este projeto. A ilustração inicial foi criada com auxílio de geração de imagem.
 
 Licença MIT.
 
