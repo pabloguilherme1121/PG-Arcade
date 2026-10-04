@@ -619,6 +619,7 @@ export default function App() {
           <div
             ref={arena}
             data-current-game={game.id}
+            data-game-category={game.category}
             className={`player ${focusMode ? "focus-game" : ""}`}
           >
             <div className="player-toolbar">
@@ -657,6 +658,10 @@ export default function App() {
                   </span>
                 </button>
               </div>
+            </div>
+            <div className="player-kicker" aria-hidden="true">
+              <span>{game.category}</span>
+              <span>PG Arcade</span>
             </div>
             <h1 ref={heading} tabIndex={-1}>
               {game.name}
@@ -872,6 +877,10 @@ export default function App() {
           <>
             <section className="hero">
               <div>
+                <div className="hero-eyebrow" aria-hidden="true">
+                  <span>PG Arcade</span>
+                  <span>50 jogos</span>
+                </div>
                 <h1 ref={heading} tabIndex={-1}>
                   {page === "favoritos" ? (
                     "Suas próximas jogadas."
