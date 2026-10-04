@@ -1480,10 +1480,235 @@ footer a {
   position: relative;
   aspect-ratio: 3/4;
   overflow: hidden;
-  background: linear-gradient(90deg, #18261e 0 2%, #242c39 2% 98%, #18261e 98%);
+  background: url("../public/art/road.webp") center/cover;
   border: 2px solid #687158;
   border-radius: 16px;
   isolation: isolate;
+}
+
+/* Material pass preserves every board's hit areas and layout. */
+.race-car,
+.traffic-car {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.race-car img,
+.traffic-car img,
+.run-object img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  filter: drop-shadow(3px 5px 2px #0009);
+}
+.traffic-car img,
+.run-enemy img {
+  filter: hue-rotate(245deg) drop-shadow(3px 5px 2px #0009);
+}
+.parking-board {
+  background: url("../public/art/road.webp") center/cover !important;
+}
+.parking-board .parking-car {
+  background: #c9f65a12 !important;
+}
+.parking-car img {
+  width: 75%;
+  height: 90%;
+  object-fit: contain;
+  filter: drop-shadow(2px 3px 2px #000a);
+}
+.parking-board .parking-wall {
+  background: linear-gradient(135deg, #63716b, #2a3431) !important;
+  box-shadow:
+    inset 0 2px 0 #ffffff30,
+    2px 3px 4px #0008;
+}
+.space-targets,
+.orbital-board,
+.casual-targets {
+  background: url("../public/art/space.webp") center/cover !important;
+}
+.target-present {
+  box-shadow:
+    0 0 22px #c9f65a40,
+    inset 0 2px 0 #ffffff30;
+}
+.board2048,
+.memory-board,
+.sliding-board,
+.lights-board,
+.connect-board {
+  box-shadow:
+    0 16px 38px #0005,
+    inset 0 1px 0 #ffffff14;
+}
+.tile,
+.memory-card,
+.sliding-board button,
+.lights-board button {
+  box-shadow:
+    inset 0 2px 0 #ffffff26,
+    0 3px 5px #0005;
+}
+.disc:not(.empty) {
+  box-shadow:
+    inset 0 3px 6px #ffffff30,
+    inset 0 -3px 5px #0004;
+}
+.legacy-game [role="gridcell"] {
+  box-shadow: inset 0 1px 0 #ffffff08;
+}
+.snake-board {
+  background-image: radial-gradient(#ffffff0b 1px, transparent 1px);
+  background-size: 16px 16px;
+  box-shadow: 0 16px 38px #0005;
+}
+.art-preview {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.art-road {
+  background: url("../public/art/road.webp") center/cover;
+}
+.art-space {
+  background: url("../public/art/space.webp") center/cover;
+}
+.art-preview img {
+  height: 78%;
+  width: 34%;
+  object-fit: contain;
+  transform: rotate(-15deg);
+  filter: drop-shadow(6px 8px 5px #000b);
+}
+.run-object {
+  position: absolute;
+  width: 19%;
+  height: 16%;
+  transform: translateX(-50%);
+  display: grid;
+  place-items: center;
+  transition: top 100ms linear;
+}
+.run-reward {
+  color: #c9f65a;
+  filter: drop-shadow(0 0 5px #0b0e14);
+}
+.run-reward svg {
+  width: 80%;
+  height: 70%;
+}
+.orbital-board .run-enemy img {
+  transform: rotate(180deg);
+}
+.laser {
+  position: absolute;
+  width: 3px;
+  height: 5%;
+  background: #c9f65a;
+  box-shadow: 0 0 9px #c9f65a;
+  transform: translateX(-50%);
+}
+.fire-button {
+  width: 100%;
+  margin: 10px 0;
+}
+.mines-board {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 3px;
+  padding: 8px;
+  background: #151a24;
+  border: 1px solid #485163;
+  border-radius: 16px;
+}
+.mines-board button {
+  min-height: 0;
+  padding: 0;
+  aspect-ratio: 1;
+  border-radius: 5px;
+  background: linear-gradient(#354154, #242c39);
+  font-weight: 700;
+  box-shadow: inset 0 1px 0 #ffffff20;
+}
+.mines-board button:disabled {
+  opacity: 1;
+}
+.mines-board .mine-open {
+  background: #111722;
+  border-color: #242c39;
+  box-shadow: none;
+}
+.mines-board svg {
+  width: 60%;
+  height: 60%;
+}
+.mine-1 {
+  color: #7bd6ff;
+}
+.mine-2 {
+  color: #c9f65a;
+}
+.mine-3,
+.mine-4,
+.mine-5 {
+  color: #ff957e;
+}
+.reaction-board {
+  aspect-ratio: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(at top, #344056, #151a24);
+  border-radius: 20px;
+  gap: 18px;
+}
+.reaction-board span {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(23px, 5vw, 35px);
+  font-weight: 700;
+}
+.reaction-board small {
+  font-size: 13px;
+}
+.reaction-go {
+  background: radial-gradient(at top, #e8ff9d, #c9f65a);
+  color: #0b0e14;
+  box-shadow: 0 0 50px #c9f65a30;
+}
+.reaction-wait {
+  background: radial-gradient(at top, #754735, #38221d);
+  color: #ffd7a8;
+}
+.logic-preview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 32px;
+  background: #151a24;
+}
+.logic-preview span {
+  display: grid;
+  place-items: center;
+  background: #354154;
+  border-radius: 5px;
+  font-weight: 700;
+  color: #7bd6ff;
+}
+.preview-reflexo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(at top, #e8ff9d, #c9f65a);
+  color: #0b0e14;
+  font-size: 25px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .run-object {
+    transition: none;
+  }
 }
 .road-line {
   position: absolute;
@@ -1808,4 +2033,67 @@ footer a {
 }
 .focus-game .race-board {
   max-height: 56dvh;
+}
+.targets-board .target-ship {
+  width: 75%;
+  height: 75%;
+  object-fit: contain;
+  transform: rotate(180deg);
+  filter: drop-shadow(0 3px 5px #0009);
+}
+.race-car img,
+.traffic-car img,
+.run-object img {
+  position: absolute;
+  inset: 0;
+  max-width: 100%;
+  max-height: 100%;
+}
+@media (min-width: 1000px) {
+  .player-toolbar {
+    position: relative;
+  }
+  .player-description {
+    margin-bottom: 12px;
+  }
+  .experience-tools {
+    margin-top: 6px;
+    margin-bottom: 12px;
+  }
+  .player .game-layout:has(.race-board) {
+    max-width: 1000px;
+    grid-template-columns: 500px minmax(0, 1fr);
+    gap: 40px;
+  }
+  .player.focus-game .game-layout:has(.race-board) {
+    grid-template-columns: minmax(0, 420px);
+  }
+  .game-layout:has(.race-board) .instructions {
+    padding: 24px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    align-self: start;
+  }
+}
+.feedback:empty {
+  display: none;
+}
+@media (min-width: 1400px) {
+  .player[data-current-game="corrida"] > h1 {
+    margin-top: -42px;
+    pointer-events: none;
+  }
+  .experience-tools details:not([open]) {
+    flex-basis: auto;
+  }
+}
+.experience-tools > button:first-child {
+  background: var(--lime);
+  color: #0b0e14;
+  font-weight: 600;
+}
+.game-layout:has(.race-board) .wide-controls button {
+  background: var(--lime);
+  color: #0b0e14;
+  font-weight: 600;
 }

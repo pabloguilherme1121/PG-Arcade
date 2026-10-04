@@ -25,6 +25,11 @@ import { gameHelp, recordUnits } from "./lib/gameHelp";
 import { readProgress, saveProgress, type Progress } from "./lib/progress";
 import "./features/portfolio/components/PortfolioArcade.css";
 const players = {
+  rally: lazy(() => import("./games/Rally")),
+  coleta: lazy(() => import("./games/RoadCollect")),
+  orbital: lazy(() => import("./games/Orbital")),
+  minas: lazy(() => import("./games/Minesweeper")),
+  reflexo: lazy(() => import("./games/Reaction")),
   corrida: lazy(() => import("./games/Racing")),
   estacionamento: lazy(() => import("./games/Parking")),
   tiro: lazy(() => import("./games/SpaceShooter")),
@@ -77,6 +82,46 @@ function route() {
         : "catalogo";
 }
 function Preview({ id }: { id: GameId }) {
+  if (
+    [
+      "corrida",
+      "estacionamento",
+      "rally",
+      "coleta",
+      "orbital",
+      "tiro",
+      "estrelas",
+    ].includes(id)
+  )
+    return (
+      <div
+        className={`preview art-preview ${["orbital", "tiro", "estrelas"].includes(id) ? "art-space" : "art-road"}`}
+        aria-hidden="true"
+      >
+        <img
+          src={`${import.meta.env.BASE_URL}art/${["orbital", "tiro", "estrelas"].includes(id) ? "ship" : "car"}.webp`}
+          alt=""
+          loading="lazy"
+        />
+      </div>
+    );
+  if (id === "minas" || id === "reflexo")
+    return (
+      <div className={`preview logic-preview preview-${id}`} aria-hidden="true">
+        {id === "minas" ? (
+          <>
+            <span>1</span>
+            <span>2</span>
+            <span>⚑</span>
+            <span>1</span>
+            <span>3</span>
+            <span>2</span>
+          </>
+        ) : (
+          <strong>AGORA!</strong>
+        )}
+      </div>
+    );
   if (["corrida", "estacionamento", "tiro", "luzes", "estrelas"].includes(id))
     return (
       <div
@@ -197,7 +242,7 @@ export default function App() {
     );
     const target =
       arenaElement?.querySelector<HTMLElement>(
-        '[role="gridcell"][tabindex="0"],.board2048,.snake-board,.race-board,.parking-board,.targets-board,.sliding-board,[role="slider"][tabindex="0"],[data-game-cell]:not(:disabled),[data-domino-tile]:not(:disabled)',
+        '[role="gridcell"][tabindex="0"],.board2048,.snake-board,.race-board,.parking-board,.targets-board,.sliding-board,.reaction-board,.mines-board button:not(:disabled),[role="slider"][tabindex="0"],[data-game-cell]:not(:disabled),[data-domino-tile]:not(:disabled)',
       ) ||
       arenaElement?.querySelector<HTMLElement>(
         '[role="gridcell"],.connect-controls button,.lights-board button,.memory-card,button:not(:disabled)',
@@ -362,7 +407,7 @@ export default function App() {
         </nav>
         <a
           className="portfolio-link"
-          href="https://pabloguilherme1121.github.io/PG-portfolio/"
+          href="https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1"
           target="_blank"
           rel="noreferrer"
         >
@@ -379,6 +424,7 @@ export default function App() {
         {game && Player ? (
           <div
             ref={arena}
+            data-current-game={game.id}
             className={`player ${focusMode ? "focus-game" : ""}`}
           >
             <div className="player-toolbar">
@@ -489,6 +535,11 @@ export default function App() {
                 <div
                   className={
                     [
+                      "rally",
+                      "coleta",
+                      "orbital",
+                      "minas",
+                      "reflexo",
                       "2048",
                       "snake",
                       "memoria",

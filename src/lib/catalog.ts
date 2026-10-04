@@ -1,5 +1,35 @@
 export const games = [
   {
+    id: "rally",
+    name: "Rally de Checkpoints",
+    description: "Bandeiras, trânsito e trinta segundos.",
+    category: "Corrida",
+  },
+  {
+    id: "coleta",
+    name: "Coleta na Estrada",
+    description: "Busque moedas. Escolha sua faixa.",
+    category: "Carros",
+  },
+  {
+    id: "orbital",
+    name: "Defesa Orbital",
+    description: "Pilote. Dispare. Proteja sua órbita.",
+    category: "Tiro",
+  },
+  {
+    id: "minas",
+    name: "Campo Minado",
+    description: "Leia os números. Encontre o caminho seguro.",
+    category: "Inteligência",
+  },
+  {
+    id: "reflexo",
+    name: "Reflexo Rápido",
+    description: "Espere o verde. Mostre seu reflexo.",
+    category: "Casuais",
+  },
+  {
     id: "corrida",
     name: "Corrida Turbo",
     description: "Troque de faixa. Supere o trânsito.",

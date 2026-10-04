@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { CarFront, ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { initialRace, steerRace, tickRace } from "../lib/actionGames";
 import { useAutoPause, type PlayStatus } from "./useAutoPause";
 export default function Racing({
@@ -80,7 +80,7 @@ export default function Racing({
               className="traffic-car"
               style={{ left: `${car.lane * 33.33 + 16.66}%`, top: `${car.y}%` }}
             >
-              <CarFront aria-hidden="true" />
+              <img src={`${import.meta.env.BASE_URL}art/car.webp`} alt="" />
             </div>
           ))}
           <div
@@ -88,7 +88,7 @@ export default function Racing({
             data-lane={state.lane}
             style={{ left: `${state.lane * 33.33 + 16.66}%` }}
           >
-            <CarFront aria-hidden="true" />
+            <img src={`${import.meta.env.BASE_URL}art/car.webp`} alt="" />
             <span className="sr-only">Seu carro: faixa {state.lane + 1}</span>
           </div>
           {status !== "running" && (

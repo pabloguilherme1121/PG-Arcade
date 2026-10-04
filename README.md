@@ -2,7 +2,7 @@
 
 Uma pausa. Uma nova jogada.
 
-Quinze jogos gratuitos no navegador: Corrida Turbo, Estacionamento, Alvos Espaciais, Luzes Out, Caça-estrelas, Liga 4, Quebra-cabeça, 2048, Snake, Memória, Xadrez, Futebol, Dominó, Damas e Jogo da velha.
+Vinte jogos gratuitos no navegador: Rally de Checkpoints, Coleta na Estrada, Defesa Orbital, Campo Minado, Reflexo Rápido, Corrida Turbo, Estacionamento, Alvos Espaciais, Luzes Out, Caça-estrelas, Liga 4, Quebra-cabeça, 2048, Snake, Memória, Xadrez, Futebol, Dominó, Damas e Jogo da velha.
 
 ## Recursos
 
@@ -28,3 +28,7 @@ GitHub Actions verifica regras e navegação em Chromium, Firefox e WebKit antes
 Os cinco jogos originais foram adaptados de [PG-portfolio](https://github.com/pabloguilherme1121/PG-portfolio), sob licença MIT. Os dez novos jogos e o catálogo foram desenvolvidos para este projeto. A ilustração inicial foi criada com auxílio de geração de imagem.
 
 Licença MIT.
+
+## Visual e integração
+
+Arte original gerada para carros, nave, asfalto e espaço; assets WebP locais, sem dependência externa. Tabuleiros recebem profundidade e contraste, preservando formas/números acessíveis. O portfólio oferece acesso ao catálogo completo e o Arcade retorna ao portfólio.

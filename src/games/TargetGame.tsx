@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Crosshair, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { hitScore } from "../lib/actionGames";
 import { useAutoPause, type PlayStatus } from "./useAutoPause";
 type Target = { id: number; cell: number };
@@ -141,7 +141,11 @@ export default function TargetGame({
                 <small>{i + 1}</small>
                 {active ? (
                   shoot ? (
-                    <Crosshair size={42} />
+                    <img
+                      className="target-ship"
+                      src={`${import.meta.env.BASE_URL}art/ship.webp`}
+                      alt=""
+                    />
                   ) : (
                     <Star size={42} fill="currentColor" />
                   )

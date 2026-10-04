@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CarFront, ParkingSquare } from "lucide-react";
+import { ParkingSquare } from "lucide-react";
 import { parkingLevels, moveParking, parkingScore } from "../lib/actionGames";
 import type { Direction } from "../lib/engines";
 import Controls from "./Controls";
@@ -92,7 +92,7 @@ export default function Parking({
               }
             >
               {i === position ? (
-                <CarFront />
+                <img src={`${import.meta.env.BASE_URL}art/car.webp`} alt="" />
               ) : i === config.goal ? (
                 <ParkingSquare />
               ) : config.walls.includes(i) ? (

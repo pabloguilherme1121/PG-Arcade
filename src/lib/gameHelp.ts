@@ -1,5 +1,15 @@
 import type { GameId } from "./catalog";
 export const gameHelp: Record<GameId, string> = {
+  rally:
+    "Colete bandeiras usando setas, A/D ou os botões e evite carros. Cada bandeira vale 25 pontos. São 30 segundos e três vidas; espaço pausa.",
+  coleta:
+    "Troque de faixa com setas, A/D ou os botões. Colete moedas de dez pontos e evite carros. A rodada dura 30 segundos e espaço pausa.",
+  orbital:
+    "Mova sua nave com setas ou os botões e dispare com Enter ou Disparar. Cada invasor vale 20 pontos. São três vidas e 30 segundos; espaço pausa.",
+  minas:
+    "Abra as 54 casas seguras. Os números contam as dez minas nas casas vizinhas. Use Modo bandeira ou o botão direito para marcar suspeitas. Primeiro toque seguro.",
+  reflexo:
+    "Comece uma rodada, espere o painel ficar verde e toque ou use Enter. Antecipar custa a rodada. Complete cinco rodadas para salvar o recorde; pausa não penaliza.",
   corrida:
     "Desvie dos carros usando as setas esquerda e direita, A/D ou os botões abaixo da pista. Espaço pausa. Escolha Passeio para começar devagar.",
   estacionamento:
@@ -31,6 +41,11 @@ export const gameHelp: Record<GameId, string> = {
     "Escolha pênalti ou falta, ajuste mira, força e curva e toque em Chutar. A mira aceita toque e teclado; observe a trajetória e tente melhorar sua série de cinco cobranças.",
 };
 export const recordUnits: Partial<Record<GameId, "pontos" | "jogadas">> = {
+  rally: "pontos",
+  coleta: "pontos",
+  orbital: "pontos",
+  minas: "pontos",
+  reflexo: "pontos",
   corrida: "pontos",
   estacionamento: "pontos",
   tiro: "pontos",
