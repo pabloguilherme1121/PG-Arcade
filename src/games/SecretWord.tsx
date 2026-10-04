@@ -21,7 +21,7 @@ export default function SecretWord({
   const won = guesses.includes(answer),
     done = won || guesses.length >= limit;
   return (
-    <div className="game-layout">
+    <div className="game-layout word-game">
       <div className="board-column">
         <div className="scores">
           <div>

@@ -2105,3 +2105,4 @@ footer a {
 .word-input{display:block;width:100%;min-height:48px;margin:8px 0 12px;padding:10px;border:2px solid #657888;border-radius:10px;background:#10151b;color:#fff;font-size:1.5rem;letter-spacing:.15em;text-transform:uppercase}
 .preview-sequencia,.preview-palavra{display:flex!important;gap:8px;align-items:center;justify-content:center}.preview-sequencia span,.preview-palavra span{padding:12px;border-radius:8px;color:#10151b;font-weight:700}.preview-palavra span{background:#a3d947}
 @media(max-width:380px){.sequence-pad{min-height:110px}.word-board li span{min-height:48px;font-size:1.2rem}}
+.word-game form button,.word-game .board-column>button{width:100%;min-height:48px;border:1px solid #42505e;border-radius:12px;padding:12px 16px;margin:8px 0;background:#151d25;color:#fff;font-weight:600}.word-game form button.primary{background:#c9f65a;color:#10151b;border-color:#c9f65a}.word-game button:disabled{opacity:.55}
