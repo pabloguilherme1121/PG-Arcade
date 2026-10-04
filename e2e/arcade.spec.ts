@@ -10,6 +10,9 @@ test("catalog search, categories, favorites and direct links persist", async ({
     .click();
   await page.getByRole("link", { name: "Favoritos", exact: true }).click();
   await expect(page.locator(".game-card")).toHaveCount(1);
+  await page.getByRole('link',{name:'Ver favoritos',exact:true}).click();
+  await expect(page.locator('.game-card')).toHaveCount(1);
+  await expect(page).toHaveURL(/#\/favoritos$/);
   await page.reload();
   await expect(
     page.getByRole("link", { name: "Jogar Snake", exact: true }),

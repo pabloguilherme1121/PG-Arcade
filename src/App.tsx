@@ -452,7 +452,7 @@ export default function App() {
                     ? "Os jogos que você quer ter sempre por perto."
                     : "Clássicos e novos desafios para jogar no seu ritmo."}
                 </p>
-                <a href="#catalogo" className="button primary">
+                <a href="#catalogo" className="button primary" onClick={event=>{event.preventDefault();document.getElementById('catalogo')?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});}}>
                   {page === "favoritos" ? "Ver favoritos" : "Explorar jogos"}
                   <ArrowRight size={19} />
                 </a>
