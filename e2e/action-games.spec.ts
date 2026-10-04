@@ -168,9 +168,11 @@ test("All games offer keyboard focus, specific help, focus mode and safe restart
       .getByRole("button", { name: "Ir para o tabuleiro", exact: true })
       .click();
     expect(
-      await page.evaluate(
-        () => !!document.activeElement?.closest("[data-arcade-arena]"),
-      ),
+      await page.evaluate(() => {
+        const active = document.activeElement as HTMLElement | null;
+        const arena = active?.closest("[data-arcade-arena]");
+        return Boolean(arena || active?.matches("[data-arcade-arena]"));
+      }),
     ).toBe(true);
     await page.getByRole("button", { name: "Modo foco", exact: true }).click();
     await expect(page.locator(".site-header")).toBeHidden();
