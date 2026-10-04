@@ -136,9 +136,10 @@ for (const [id, prefix, duration] of [
     const score = await page.locator(".scores strong").first().textContent();
     expect(Number(score)).toBeGreaterThan(0);
     await page.getByRole("button", { name: "Pausar", exact: true }).click();
+    const pausedTime = await page.locator(".scores strong").nth(1).textContent();
     await page.clock.runFor(3000);
     await expect(page.locator(".scores strong").nth(1)).toHaveText(
-      `${duration}s`,
+      pausedTime!,
     );
     await page.getByRole("button", { name: "Continuar", exact: true }).click();
     await page.clock.runFor(duration * 1000 + 100);
