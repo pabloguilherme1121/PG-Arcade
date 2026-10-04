@@ -30,7 +30,7 @@ button,
 a.button {
   cursor: pointer;
 }
-button,
+button:not(.legacy-game button),
 .button {
   min-height: 44px;
   border: 1px solid var(--border);
@@ -47,7 +47,7 @@ button,
     background 0.15s,
     border-color 0.15s;
 }
-button:hover,
+button:hover:not(.legacy-game button),
 .button:hover {
   background: #252d39;
   border-color: #727c8b;
@@ -778,6 +778,14 @@ footer a {
 }
 .legacy-game button {
   font-family: var(--font-body);
+}
+.legacy-game [data-chess-board] {
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+}
+.legacy-game [role="gridcell"] {
+  padding: 0;
+  min-width: 0;
+  min-height: 0;
 }
 .legacy-game .text-slate-950 {
   color: #020617;

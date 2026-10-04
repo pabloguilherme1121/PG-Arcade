@@ -124,6 +124,17 @@ for (const width of [320, 390, 1280])
           () => document.documentElement.scrollWidth <= innerWidth,
         ),
       ).toBe(true);
+      if (id === "xadrez") {
+        const cells = page.locator('[data-chess-board] [role="gridcell"]');
+        const first = await cells.first().boundingBox();
+        expect(Math.abs(first!.width - first!.height)).toBeLessThan(1.5);
+        const backgrounds = await cells.evaluateAll((nodes) =>
+          nodes
+            .slice(0, 2)
+            .map((node) => getComputedStyle(node).backgroundColor),
+        );
+        expect(backgrounds[0]).not.toBe(backgrounds[1]);
+      }
     }
     expect(errors).toEqual([]);
   });
