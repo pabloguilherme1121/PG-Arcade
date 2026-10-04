@@ -1,5 +1,6 @@
 import { Bot, Crown, RotateCcw, Swords, Undo2, UsersRound } from "lucide-react";
-import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type KeyboardEvent } from "react";
+import { useAutoPause } from "@/games/useAutoPause";
 import ArcadeDifficultyNotice from "./ArcadeDifficultyNotice";
 import {
   applyChessMove,
@@ -73,6 +74,11 @@ function handleBoardKey(
 
 export default function PortfolioChess() {
   const [focusedSquare, setFocusedSquare] = useState(52);
+  const [paused, setPaused] = useState(false);
+  const [botError, setBotError] = useState("");
+  const [promotion, setPromotion] = useState<NonNullable<ChessMove["promotion"]>>("queen");
+  const pause = useCallback(() => setPaused(true), []);
+  useAutoPause(pause);
   const [mode, setMode] = useState<Mode>("bot"),
     [difficulty, setDifficulty] = useState<ChessDifficulty>("normal");
   const [state, setState] = useState(createInitialChessState);
@@ -87,6 +93,7 @@ export default function PortfolioChess() {
       : null;
   const restart = () => {
     setState(createInitialChessState());
+    setPaused(false); setBotError("");
     setSelected(null);
     setHistory([]);
   };
@@ -107,31 +114,48 @@ export default function PortfolioChess() {
     setHistory(history.slice(0, index));
   };
   const click = (i: number) => {
-    if (outcome || (mode === "bot" && turn === "black")) return;
+    if (paused || outcome || (mode === "bot" && turn === "black")) return;
     const p = board[i];
     if (p?.color === turn) {
       setSelected(i);
       return;
     }
-    const m = legal.find((x) => x.from === selected && x.to === i);
+    const m = legal.find((x) => x.from === selected && x.to === i && (!x.promotion || x.promotion === promotion));
     if (m) commit(m);
   };
   useEffect(() => {
-    if (mode !== "bot" || turn !== "black" || outcome) return;
-    const t = window.setTimeout(
-      () => {
-        const m = chooseChessBotMove(state, "black", difficulty);
-        if (m) commit(m);
-      },
-      difficulty === "master" ? 520 : 360,
-    );
-    return () => clearTimeout(t);
-  }, [state, difficulty, mode, outcome, turn]);
+    if (mode !== "bot" || turn !== "black" || outcome || paused) return;
+    let worker: Worker | undefined;
+    let cancelled = false;
+    const t = window.setTimeout(() => {
+      // Keep deeper analysis off the UI thread so touch, pause and undo remain responsive.
+      if (typeof Worker === "undefined") {
+        const move = chooseChessBotMove(state, "black", "normal");
+        if (move) commit(move);
+        return;
+      }
+      try {
+        worker = new Worker(new URL("../utils/chess.worker.ts", import.meta.url), { type: "module" });
+        worker.onmessage = (event: MessageEvent<ChessMove | null>) => {
+          if (!cancelled && event.data) commit(event.data);
+          worker?.terminate();
+        };
+        worker.onerror = () => {
+          if (!cancelled) { setBotError("O bot não respondeu. Continue para tentar novamente ou escolha 1 × 1 local."); setPaused(true); }
+          worker?.terminate();
+        };
+        worker.postMessage({ state, difficulty });
+      } catch {
+        setBotError("A análise do bot está indisponível. Escolha 1 × 1 local para continuar."); setPaused(true);
+      }
+    }, 360);
+    return () => { cancelled = true; clearTimeout(t); worker?.terminate(); };
+  }, [state, difficulty, mode, outcome, turn, paused]);
   const selectedMoves =
     selected === null
       ? []
       : legal.filter((m) => m.from === selected).map((m) => m.to);
-  const status =
+  const status = paused ? "Partida pausada" :
     outcome === "checkmate"
       ? turn === "white"
         ? mode === "bot"
@@ -224,7 +248,9 @@ export default function PortfolioChess() {
               );
             })}
           </div>
+          {botError && <p role="status">{botError}</p>}
           <div className="mt-3 flex flex-wrap gap-2">
+            <button type="button" className="min-h-11 rounded-xl border border-cyan-300/30 px-3 text-sm text-cyan-100" disabled={!!outcome} onClick={() => { setPaused((p) => !p); setBotError(""); }}>{paused ? "Continuar" : "Pausar"}</button>
             <button
               type="button"
               onClick={undo}
@@ -249,6 +275,9 @@ export default function PortfolioChess() {
           </p>
         </div>
         <div data-arcade-settings>
+          <label className="session-options">Promoção do peão<select aria-label="Promoção do peão" value={promotion} onChange={(e) => setPromotion(e.target.value as NonNullable<ChessMove["promotion"]>)}>
+            <option value="queen">Rainha</option><option value="rook">Torre</option><option value="bishop">Bispo</option><option value="knight">Cavalo</option>
+          </select></label>
           <p className="font-mono text-[9px] uppercase tracking-[.15em] text-cyan-300">
             PG Arcade · xadrez
           </p>

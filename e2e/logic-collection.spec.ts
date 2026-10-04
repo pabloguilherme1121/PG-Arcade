@@ -5,7 +5,7 @@ async function open(page: Page, id: string) {
   await page.addInitScript(() => {
     Math.random = () => 0;
   });
-  await page.goto(`/#/jogar/${id}`);
+  await page.goto(`./#/jogar/${id}`);
   await page
     .locator(".logic-collection")
     .getByLabel("Dificuldade")

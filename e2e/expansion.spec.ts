@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { games } from "../src/lib/catalog";
 test("Liga 4 wins, locks columns, undoes and resets", async ({ page }) => {
-  await page.goto("/#/jogar/liga4");
+  await page.goto("./#/jogar/liga4");
   for (const n of [1, 2, 1, 2, 1, 2, 1])
     await page
       .getByRole("button", { name: `Jogar na coluna ${n}`, exact: true })
@@ -28,7 +28,7 @@ test("Liga 4 wins, locks columns, undoes and resets", async ({ page }) => {
 test("Sliding puzzle moves with touch and keyboard and resets", async ({
   page,
 }) => {
-  await page.goto("/#/jogar/puzzle");
+  await page.goto("./#/jogar/puzzle");
   const board = page.locator(".sliding-board");
   await expect(board.getByRole("button")).toHaveCount(8);
   await board
@@ -49,7 +49,7 @@ test("Sliding puzzle moves with touch and keyboard and resets", async ({
 test("Catalog sorts, clears filters and selects surprise within results", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto("./");
   await page.getByLabel("Ordenar jogos").selectOption("nome");
   const names = await page.locator(".game-card h3").allTextContents();
   expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b, "pt-BR")));
@@ -69,7 +69,7 @@ test("Catalog sorts, clears filters and selects surprise within results", async 
 test("Solved sliding puzzle saves a best record across reload", async ({
   page,
 }) => {
-  await page.goto("/#/jogar/puzzle");
+  await page.goto("./#/jogar/puzzle");
   await expect(page.locator(".sliding-board button")).toHaveCount(8);
   const start = await page.locator(".sliding-board").evaluate((el) =>
     Array.from(el.children)

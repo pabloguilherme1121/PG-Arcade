@@ -20,11 +20,16 @@ Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
 - Ação tem Missão com objetivo e até 180 segundos, ou Resistência sem limite de tempo. A física e os controles mudam entre modalidades: rebotes, giro e impulso, salto, voo, combustível, pouso e checkpoints.
 - Esportes e casuais têm sessões de 5, 10 ou 15 rodadas; cada dificuldade altera parâmetros próprios, como vento, tolerância, obstáculos, tentativas ou ritmo.
 - Rally, Coleta e Defesa Orbital têm Sprint de 30 segundos, Expedição de 90 e Sobrevivência sem limite, três dificuldades e aumento de ritmo a cada etapa. Encerrar e salvar permite concluir uma sessão longa.
+- Liga 4 oferece duelo local e bot com três níveis; Normal prioriza vitórias e bloqueios, Difícil usa busca de cinco jogadas. Desfazer contra o bot devolve o turno inteiro.
+- Campo Minado oferece 6, 10 ou 16 minas e abertura de vizinhos de números com bandeiras suficientes; marcar errado mantém o risco de perder.
+- Xadrez permite promover a rainha, torre, bispo ou cavalo; a análise do bot ocorre em um worker e pode ser cancelada por pausa, desfazer ou reinício.
 - Os clássicos conservam suas opções específicas: velocidades, desafios, bots, modos locais, dicas e desfazer conforme o jogo.
 
 ## Recursos
 
 Busca sem acentos, categorias visíveis nos cartões, favoritos, ordenação, jogo surpresa, links diretos, ajuda específica, modo foco, tela cheia quando suportada e reinício com confirmação. As partidas em tempo real pausam ao sair da janela ou trocar de aba.
+
+Conforto visual oferece alto contraste e redução de efeitos para todo o catálogo, respeitando a preferência do aparelho. As opções persistem localmente; com armazenamento bloqueado, funcionam durante a sessão. Movimento necessário à jogabilidade é preservado.
 
 Há recordes em 44 jogos. Memória e Quebra-cabeça usam menos jogadas como melhor resultado; os demais usam pontos. Os recordes são gerais por jogo e podem variar com modo e dificuldade: não são uma classificação competitiva entre jogadores.
 
@@ -40,7 +45,7 @@ Sem conta, publicidade ou envio de dados das partidas a servidores. Progresso é
 
 Node.js 24: `npm ci`, `npm run dev`, `npm test`, `npm run build`, `npm run test:e2e`.
 
-Carregamento sob demanda por jogo/coleção. GitHub Actions valida regras e partidas em Chromium, Firefox e WebKit antes de publicar no GitHub Pages. Rotas com hash funcionam em hospedagem estática.
+Carregamento sob demanda por jogo/coleção. GitHub Actions valida regras e partidas em Chromium, Firefox e WebKit contra o build de produção servido por `npm run preview`, incluindo o prefixo `/PG-Arcade/`, antes de publicar no GitHub Pages. Falhas preservam traces e capturas para diagnóstico. Rotas com hash funcionam em hospedagem estática.
 
 ## Origem e licença
 

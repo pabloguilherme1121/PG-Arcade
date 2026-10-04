@@ -5,7 +5,7 @@ import type { Direction } from "../src/lib/engines";
 test("Racing steers, pauses on blur, resets safely and saves game-over record", async ({
   page,
 }) => {
-  await page.goto("/#/jogar/corrida");
+  await page.goto("./#/jogar/corrida");
   await page.clock.install();
   await page.getByRole("button", { name: "Largar", exact: true }).click();
   await page.locator(".race-board").press("ArrowLeft");
@@ -46,7 +46,7 @@ test("Racing steers, pauses on blur, resets safely and saves game-over record", 
 test("All parking courses finish using keyboard and touch and retain a record", async ({
   page,
 }) => {
-  await page.goto("/#/jogar/estacionamento");
+  await page.goto("./#/jogar/estacionamento");
   for (let l = 0; l < parkingLevels.length; l++) {
     await page
       .getByLabel("Estacionamento", { exact: true })
@@ -99,7 +99,7 @@ test("All parking courses finish using keyboard and touch and retain a record", 
   await expect(page.locator(".scores strong").nth(1)).toHaveText(record!);
 });
 test("Lights Out solves, undoes and changes challenges", async ({ page }) => {
-  await page.goto("/#/jogar/luzes");
+  await page.goto("./#/jogar/luzes");
   await page.getByRole("button", { name: "Luz 1:", exact: false }).click();
   await page.getByRole("button", { name: "Desfazer toque" }).click();
   await expect(page.locator(".scores strong").first()).toHaveText("0");
@@ -121,7 +121,7 @@ for (const [id, prefix, duration] of [
   test(`${id} scores by touch and keyboard, freezes while paused and saves at timeout`, async ({
     page,
   }) => {
-    await page.goto(`/#/jogar/${id}`);
+    await page.goto(`./#/jogar/${id}`);
     await page.clock.install();
     await page.getByRole("button", { name: "Começar rodada" }).click();
     await page
@@ -157,7 +157,7 @@ test("All games offer keyboard focus, specific help, focus mode and safe restart
   test.setTimeout(180000);
   await page.setViewportSize({ width: 390, height: 844 });
   for (const { id, name } of games) {
-    await page.goto(`/#/jogar/${id}`);
+    await page.goto(`./#/jogar/${id}`);
     await expect(page.locator(".player > h1")).toHaveText(name);
     await expect(page.locator("[data-arcade-arena]").first()).toBeVisible();
     await page.getByText("Ajuda rápida e controles", { exact: true }).click();
@@ -211,7 +211,7 @@ test("Memory observation speed changes the mismatch delay and Puzzle shows a ref
   await page.addInitScript(() => {
     Math.random = () => 0;
   });
-  await page.goto("/#/jogar/memoria");
+  await page.goto("./#/jogar/memoria");
   await page.clock.install();
   await page
     .getByLabel("Tempo para observar cartas diferentes")
@@ -223,7 +223,7 @@ test("Memory observation speed changes the mismatch delay and Puzzle shows a ref
   await expect(page.locator(".memory-card.revealed")).toHaveCount(2);
   await page.clock.runFor(600);
   await expect(page.locator(".memory-card.revealed")).toHaveCount(0);
-  await page.goto("/#/jogar/puzzle");
+  await page.goto("./#/jogar/puzzle");
   await page
     .getByRole("button", { name: "Mostrar modelo", exact: true })
     .click();
@@ -236,7 +236,7 @@ test("Memory observation speed changes the mismatch delay and Puzzle shows a ref
 test("Damas uses one tab stop and arrow navigation without wrapping", async ({
   page,
 }) => {
-  await page.goto("/#/jogar/damas");
+  await page.goto("./#/jogar/damas");
   const cells = page.locator('[data-checkers-board] [role="gridcell"]');
   await expect(cells).toHaveCount(64);
   await page

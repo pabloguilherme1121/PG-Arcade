@@ -76,7 +76,7 @@ export const games = [
   {
     id: "liga4",
     name: "Liga 4",
-    description: "Quatro peças. Uma boa estratégia.",
+    description: "Quatro em linha. Bot com três dificuldades ou duelo local.",
     category: "Estratégia",
   },
   {

@@ -3,7 +3,7 @@ import { games } from "../src/lib/catalog";
 test("catalog search, categories, favorites and direct links persist", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto("./");
   await expect(page.locator(".game-card")).toHaveCount(games.length);
   expect(
     (await page.locator(".favorite svg").first().boundingBox())!.width,
@@ -36,7 +36,7 @@ test("catalog search, categories, favorites and direct links persist", async ({
 test("2048 keyboard move, undo, reset and record persistence", async ({
   page,
 }) => {
-  await page.goto("/#/jogar/2048");
+  await page.goto("./#/jogar/2048");
   const board = page.locator(".board2048");
   await expect(page.getByRole("button", { name: "Nova partida" })).toHaveCSS(
     "background-color",
@@ -56,7 +56,7 @@ test("2048 keyboard move, undo, reset and record persistence", async ({
 test("Snake starts, pauses, blocks reverse direction and resets", async ({
   page,
 }) => {
-  await page.goto("/#/jogar/snake");
+  await page.goto("./#/jogar/snake");
   await page.getByRole("button", { name: "Jogar", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Pausar", exact: true }),
@@ -74,7 +74,7 @@ test("Snake starts, pauses, blocks reverse direction and resets", async ({
 test("Memory completes all pairs and stores the best score", async ({
   page,
 }) => {
-  await page.goto("/#/jogar/memoria");
+  await page.goto("./#/jogar/memoria");
   const cards = page.locator(".memory-card");
   await expect(cards).toHaveCount(16);
   const known = new Map<string, number[]>();
@@ -111,10 +111,10 @@ for (const width of [320, 390, 1280])
     await page.setViewportSize({ width, height: 900 });
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
-    await page.goto("/");
+    await page.goto("./");
     await expect(page.locator(".game-card")).toHaveCount(games.length);
     for (const { id, name } of games) {
-      await page.goto(`/#/jogar/${id}`);
+      await page.goto(`./#/jogar/${id}`);
       await expect(page.locator(".player > h1")).toHaveText(name);
       await expect(page.locator("[data-arcade-arena]").first()).toBeVisible({ timeout: 15000 });
       await expect(page.getByText("Carregando", { exact: false })).toHaveCount(
@@ -148,7 +148,7 @@ test("blocked storage remains playable", async ({ page }) => {
       throw new DOMException("Blocked", "SecurityError");
     };
   });
-  await page.goto("/#/jogar/2048");
+  await page.goto("./#/jogar/2048");
   await expect(page.locator(".board2048")).toBeVisible();
   await expect(page.getByText(/O navegador bloqueou/)).toBeVisible();
   await page.locator(".board2048").press("ArrowLeft");

@@ -7,7 +7,7 @@ for (const id of ["rally", "coleta", "orbital"])
       Math.random = () => 0.9;
     });
     await page.clock.install();
-    await page.goto(`/#/jogar/${id}`);
+    await page.goto(`./#/jogar/${id}`);
     const board = page.locator(".run-board");
     await expect(board).toBeVisible();
     await page
@@ -71,7 +71,7 @@ test("mines: safe first reveal, flags on touch, loss and reset", async ({
     let n = 0;
     Math.random = () => (n++ % 5) * 0.2;
   });
-  await page.goto("/#/jogar/minas");
+  await page.goto("./#/jogar/minas");
   await page
     .getByRole("button", { name: "Casa 28: fechada", exact: true })
     .click();
@@ -107,7 +107,7 @@ test("reaction: false start, timed hit, pause and five-round record", async ({
     Math.random = () => 0;
   });
   await page.clock.install();
-  await page.goto("/#/jogar/reflexo");
+  await page.goto("./#/jogar/reflexo");
   const board = page.locator(".reaction-board");
   await board.click();
   await board.click();

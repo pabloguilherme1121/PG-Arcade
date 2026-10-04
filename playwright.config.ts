@@ -6,7 +6,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: "list",
   use: {
-    baseURL: process.env.E2E_BASE_URL || "http://127.0.0.1:5173",
+    baseURL: process.env.E2E_BASE_URL || `http://127.0.0.1:5173/${process.env.GITHUB_ACTIONS ? "PG-Arcade/" : ""}`,
     trace: "retain-on-failure",
   },
   projects: [
@@ -19,8 +19,8 @@ export default defineConfig({
   webServer: process.env.E2E_BASE_URL
     ? undefined
     : {
-        command: "npm run dev",
-        url: "http://127.0.0.1:5173",
+        command: "npm run preview",
+        url: `http://127.0.0.1:5173/${process.env.GITHUB_ACTIONS ? "PG-Arcade/" : ""}`,
         reuseExistingServer: !process.env.CI,
       },
 });

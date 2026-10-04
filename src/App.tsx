@@ -34,6 +34,7 @@ import {
   mergeProgress,
   type Progress,
 } from "./lib/progress";
+import { readPreferences, applyPreferences } from "./lib/preferences";
 import "./features/portfolio/components/PortfolioArcade.css";
 type PlayerProps = { record: number; onRecord: (n: number) => void };
 const collectionPlayers = Object.fromEntries(
@@ -347,6 +348,8 @@ function Preview({ id }: { id: GameId }) {
 export default function App() {
   const [page, setPage] = useState(route);
   const [focusMode, setFocusMode] = useState(false);
+  const [preferences, setPreferences] = useState(readPreferences);
+  useEffect(() => applyPreferences(preferences), [preferences]);
   const [session, setSession] = useState(0);
   const restartDialog = useRef<HTMLDialogElement>(null);
   function focusBoard() {
@@ -418,7 +421,7 @@ export default function App() {
   }, []);
   const setRecord = useCallback(
     (value: number) => {
-      if (!isGameId(page) || value <= 0) return;
+      if (!isGameId(page) || !Number.isFinite(value) || value <= 0) return;
       update((p) => {
         const old = p.records[page] || 0;
         const better = ["memoria", "puzzle"].includes(page)
@@ -543,6 +546,16 @@ export default function App() {
         </a>
       </header>
       <main id="main" tabIndex={-1}>
+        <details className="play-preferences">
+          <summary>Conforto visual</summary>
+          <div className="preference-options">
+            <label><input type="checkbox" checked={preferences.contrast} onChange={(e) => setPreferences((p) => ({ ...p, contrast: e.target.checked }))} /> Alto contraste</label>
+            <label>Movimento<select aria-label="Movimento da interface" value={preferences.motion} onChange={(e) => setPreferences((p) => ({ ...p, motion: e.target.value as "system" | "reduced" }))}>
+              <option value="system">Preferência do aparelho</option><option value="reduced">Reduzir efeitos</option>
+            </select></label>
+          </div>
+          <p>As opções valem para todos os jogos. Reduzir efeitos mantém os movimentos necessários para jogar.</p>
+        </details>
         {!storageOk && (
           <p className="storage-notice" role="status">
             O navegador bloqueou o armazenamento. Seu progresso fica disponível

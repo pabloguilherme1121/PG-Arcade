@@ -2108,3 +2108,30 @@ footer a {
 .word-game form button,.word-game .board-column>button{width:100%;min-height:48px;border:1px solid #42505e;border-radius:12px;padding:12px 16px;margin:8px 0;background:#151d25;color:#fff;font-weight:600}.word-game form button.primary{background:#c9f65a;color:#10151b;border-color:#c9f65a}.word-game button:disabled{opacity:.55}
 .session-options{display:grid;gap:12px;margin-bottom:24px}.session-options label{display:grid;gap:8px}.progress-backup{border:1px solid #42505e;border-radius:16px;padding:20px;margin:20px 0;display:grid;gap:14px}.progress-backup button{padding:12px 16px;min-height:48px;border:1px solid #657888;border-radius:12px}.progress-backup label{display:grid;gap:8px}.progress-backup input{max-width:100%;min-height:48px}.expanded-preview svg{width:100%;height:100%}
 .game-category{display:block;color:#b7d088;font-size:.75rem;margin:12px 18px 0;letter-spacing:.03em}
+
+.play-preferences {
+  margin: 0 0 24px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.play-preferences summary { cursor: pointer; min-height: 24px; font-weight: 600; }
+.play-preferences p { color: var(--muted); margin-bottom: 0; font-size: 14px; }
+.preference-options { display: flex; flex-wrap: wrap; gap: 16px 32px; margin-top: 16px; }
+.preference-options label { display: flex; align-items: center; gap: 12px; min-height: 44px; }
+.preference-options select { max-width: 100%; min-width: 0; }
+.preference-options input { width: 20px; height: 20px; accent-color: var(--lime); }
+.disc-last { outline: 3px solid #fff; outline-offset: -5px; }
+.disc-winning { outline: 4px double #fff; outline-offset: -6px; box-shadow: 0 0 18px #fff5; }
+html[data-arcade-contrast="true"] { --border: #8c9db2; --muted: #e3e9f1; --surface: #080c12; }
+html[data-arcade-contrast="true"] :is(.game-card,.instructions,.scores,.session-options,.player-toolbar,.play-preferences) { border: 1px solid var(--border); }
+html[data-arcade-contrast="true"] :is(.game-status,.player-description,.muted,.instructions p,.game-card p,.game-category) { color: #f1f5fa; }
+html[data-arcade-contrast="true"] :is(button,select,input) { border-color: #aebbd0; }
+html[data-arcade-motion="reduced"] { scroll-behavior: auto; }
+html[data-arcade-motion="reduced"] :is(button,a,.game-card,.memory-card,.disc) { transition: none !important; }
+@media (max-width: 430px) {
+  .preference-options { flex-direction: column; gap: 8px; }
+  .preference-options label { flex-wrap: wrap; }
+  .connect-controls button { padding-inline: 0; min-width: 0; }
+}
