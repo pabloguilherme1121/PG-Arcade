@@ -5,7 +5,7 @@ test("all ten action engines start, have real options and pause without advancin
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   for (const game of actionCollectionGames) {
-    await page.goto(`/#/jogar/${game.id}`);
+    await page.goto(`./#/jogar/${game.id}`);
     await expect(page.locator(".action-collection")).toBeVisible();
     await page
       .getByRole("combobox", { name: "Dificuldade", exact: true })
@@ -34,7 +34,7 @@ test("all ten action engines start, have real options and pause without advancin
 test("action game resumes, handles uppercase keys and clears held controls on blur", async ({
   page,
 }) => {
-  await page.goto("/#/jogar/asteroides");
+  await page.goto("./#/jogar/asteroides");
   await page.getByRole("button", { name: "Começar", exact: true }).click();
   await page.locator("canvas").press("W");
   await page.evaluate(() => window.dispatchEvent(new Event("blur")));
@@ -53,7 +53,7 @@ test("touch controls preserve play and fast taps reach the physics step", async 
   page,
 }) => {
   await page.setViewportSize({ width: 320, height: 740 });
-  await page.goto("/#/jogar/runner");
+  await page.goto("./#/jogar/runner");
   await page.getByRole("button", { name: "Começar", exact: true }).click();
   await page.getByRole("button", { name: "Saltar", exact: true }).click();
   await expect(

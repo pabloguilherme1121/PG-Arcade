@@ -6,7 +6,7 @@ test("extended expedition and endless survival remain playable and can save earl
     Math.random = () => 0.9;
   });
   await page.clock.install();
-  await page.goto("/#/jogar/rally");
+  await page.goto("./#/jogar/rally");
   await expect(page.locator(".run-board")).toBeVisible();
   await page.clock.pauseAt(new Date(Date.now() + 1000));
   await expect(page.locator(".scores strong").nth(1)).toHaveText("90s");
@@ -38,7 +38,7 @@ test("extended expedition and endless survival remain playable and can save earl
 test("progress backup restores best records and rejects malformed input", async ({
   page,
 }) => {
-  await page.goto("/#/progresso");
+  await page.goto("./#/progresso");
   const data = {
     favorites: ["snake", "drift"],
     records: { snake: 55, drift: 1000 },

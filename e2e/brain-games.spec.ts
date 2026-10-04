@@ -5,7 +5,7 @@ test("word clues, duplicate prevention, victory and saved record", async ({
   await page.addInitScript(() => {
     Math.random = () => 0;
   });
-  await page.goto("/#/jogar/palavra");
+  await page.goto("./#/jogar/palavra");
   const input = page.getByLabel("Sua palavra", { exact: true });
   await input.fill("PORTA");
   await input.press("Enter");
@@ -31,7 +31,7 @@ test("sequence pause replays pattern, keyboard and touch save record", async ({
     Math.random = () => 0;
   });
   await page.clock.install();
-  await page.goto("/#/jogar/sequencia");
+  await page.goto("./#/jogar/sequencia");
   await expect(page.locator(".sequence-board")).toBeVisible();
   await page.clock.pauseAt(new Date(Date.now() + 1000));
   await page.getByRole("button", { name: "Começar", exact: true }).click();

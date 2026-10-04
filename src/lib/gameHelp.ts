@@ -67,7 +67,7 @@ export const gameHelp: Record<GameId, string> = {
   orbital:
     "Mova sua nave com setas ou os botões e dispare com Enter ou Disparar. Cada invasor vale 20 pontos. São três vidas. Escolha sprint, expedição de 90 segundos ou sobrevivência sem limite e uma das três dificuldades. Espaço pausa.",
   minas:
-    "Abra as 54 casas seguras. Os números contam as dez minas nas casas vizinhas. Use Modo bandeira ou o botão direito para marcar suspeitas. Primeiro toque seguro.",
+    "Escolha 6, 10 ou 16 minas. Abra todas as casas seguras. Marque suspeitas com Modo bandeira ou botão direito. Toque em um número aberto para revelar vizinhos se a contagem de bandeiras coincidir. Primeiro toque seguro.",
   reflexo:
     "Comece uma rodada, espere o painel ficar verde e toque ou use Enter. Antecipar custa a rodada. Complete cinco rodadas para salvar o recorde; pausa não penaliza.",
   corrida:
@@ -80,7 +80,7 @@ export const gameHelp: Record<GameId, string> = {
   estrelas:
     "Toque na estrela antes que ela mude de lugar ou use a tecla de 1 a 9 correspondente. Cada estrela vale um ponto. Você pode pausar a rodada de 20 segundos.",
   liga4:
-    "Duas pessoas alternam as colunas. Toque no número da coluna ou use Tab e Enter. Quatro peças na horizontal, vertical ou diagonal vencem. Use desfazer para voltar uma jogada.",
+    "Jogue em dupla ou contra o bot com três dificuldades. Toque no número da coluna ou use Tab e Enter. Quatro peças na horizontal, vertical ou diagonal vencem. Contra o bot, desfazer volta o turno completo.",
   puzzle:
     "Organize as peças de 1 a 8 e deixe o espaço vazio no canto inferior direito. Toque em uma peça vizinha ao espaço ou use as setas com o tabuleiro em foco.",
   "2048":

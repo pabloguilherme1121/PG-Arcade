@@ -1,7 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import { projectile, basketHit, swapJewels } from "../src/lib/casualCollection";
 async function start(page: Page, id: string) {
-  await page.goto("/#/jogar/" + id);
+  await page.goto("./#/jogar/" + id);
   await page.locator(".casual-options select").first().selectOption("0");
   await page
     .getByLabel("Formato da sessão", { exact: true })
