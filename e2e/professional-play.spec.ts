@@ -135,6 +135,7 @@ test("visual shell keeps clear premium hierarchy across catalog and player on mo
   const hero = page.locator(".hero");
   const firstCard = page.locator(".game-card").first();
   await expect(hero).toBeVisible();
+  await expect(hero.locator(".hero-eyebrow")).toContainText("50 jogos");
   await expect(firstCard.locator(".game-category")).toBeVisible();
 
   const visualContract = await page.evaluate(() => {
@@ -155,6 +156,7 @@ test("visual shell keeps clear premium hierarchy across catalog and player on mo
   expect(visualContract.previewRadius).toBeGreaterThanOrEqual(12);
 
   await page.goto("./#/jogar/snake");
+  await expect(page.locator(".player-kicker")).toContainText("Reflexos");
   await expect(page.locator(".experience-tools")).toBeVisible();
   const toolsBackground = await page.locator(".experience-tools").evaluate((element) =>
     getComputedStyle(element).backgroundColor,
