@@ -1,0 +1,262 @@
+.logic-collection {
+  max-width: 580px;
+  margin: auto;
+  color: var(--text, #eee);
+}
+.logic-collection button,
+.logic-collection select {
+  min-height: 44px;
+  min-width: 44px;
+}
+.lc-settings,
+.lc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.lc-settings label,
+.lc-actions label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.lc-settings select,
+.lc-actions select {
+  background: #172328;
+  color: #fff;
+  border: 1px solid #66767a;
+  border-radius: 8px;
+  padding: 8px;
+}
+.lc-instructions,
+.lc-stats,
+.lc-clues {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.lc-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--lc-size), minmax(0, 1fr));
+  gap: 3px;
+  background: #182527;
+  border: 2px solid #678083;
+  border-radius: 12px;
+  padding: 5px;
+  margin: 16px auto;
+  max-width: 440px;
+}
+.logic-collection .lc-grid button {
+  min-width: 0;
+  min-height: 0;
+  aspect-ratio: 1;
+  border-radius: 5px;
+  padding: 0;
+  font-weight: 700;
+  font-size: clamp(12px, 3vw, 23px);
+  background: #293c41;
+  color: #fff;
+  border: 1px solid #547075;
+}
+.logic-collection .lc-grid button[aria-pressed="true"] {
+  outline: 3px solid #d6fa72;
+  outline-offset: -3px;
+}
+.logic-collection .lc-grid .lc-fixed {
+  background: #111d20;
+  color: #9cb4b9;
+}
+.logic-collection .lc-grid .lc-error {
+  color: #ffb6b6;
+  border-color: #ff8181;
+}
+.lc-square {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  background: #21373c;
+  min-width: 0;
+  font-size: clamp(10px, 3vw, 25px);
+  color: #d6fa72;
+}
+.lc-square.lc-wall {
+  background: linear-gradient(135deg, #68777d, #3d4a50);
+  box-shadow: inset 0 2px 1px #87959b;
+}
+.lc-square.lc-goal,
+.lc-square.lc-hint {
+  background: #877135;
+  color: #fff;
+}
+.logic-collection .lc-grid .lc-painted {
+  background: #d6fa72;
+  color: #15211b;
+}
+.logic-collection .lc-grid .lc-hit {
+  background: #8e393a;
+}
+.logic-collection .lc-grid .lc-reversi {
+  background: #204f41;
+}
+.logic-collection .lc-grid .lc-side-1 {
+  color: #fcfff3;
+  text-shadow: 0 2px 3px #000;
+}
+.logic-collection .lc-grid .lc-side-2 {
+  color: #101719;
+  text-shadow: 0 1px 1px #9daeb0;
+}
+.lc-success {
+  padding: 16px;
+  border: 1px solid #c5ee6c;
+  border-radius: 10px;
+  background: #243d22;
+  line-height: 1.6;
+}
+.lc-success button {
+  margin: 8px;
+}
+.lc-reset {
+  margin-top: 16px;
+}
+.lc-towers {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  margin: 20px 0;
+}
+.lc-towers button {
+  width: 33%;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  background: linear-gradient(
+    90deg,
+    transparent 48%,
+    #77868a 48%,
+    #77868a 52%,
+    transparent 52%
+  );
+  border: 1px solid #6d7c80;
+}
+.lc-towers button span {
+  display: block;
+  background: linear-gradient(#d6fa72, #79a340);
+  color: #101719;
+  border-radius: 6px;
+  margin: 2px 0;
+  min-height: 24px;
+  font-weight: 700;
+}
+.lc-towers strong {
+  background: #223237;
+  width: 100%;
+  padding: 8px 0;
+  font-size: 0.8rem;
+}
+.lc-nim > div {
+  padding: 8px 12px;
+  margin: 8px 0;
+  border: 1px solid #567078;
+  border-radius: 10px;
+}
+.lc-nim p {
+  color: #d6fa72;
+  font-size: 1.3rem;
+  overflow-wrap: anywhere;
+}
+.lc-nim h3 {
+  font-size: 1rem;
+}
+.lc-history {
+  padding-left: 24px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.8;
+}
+.lc-edge-grid {
+  display: grid;
+  gap: 4px;
+}
+.logic-collection .lc-edge-grid button {
+  min-width: 0;
+  padding: 3px;
+  font-size: 0.8rem;
+}
+.lc-edge-grid .lc-side-1 {
+  background: #315237;
+  color: #d6fa72;
+}
+.lc-edge-grid .lc-side-2 {
+  background: #244766;
+  color: #b7d8ff;
+}
+.logic-collection [data-expanded-board]:focus-visible {
+  outline: 3px solid #d6fa72;
+  outline-offset: 3px;
+}
+.lc-territory {
+  display: grid;
+  gap: 2px;
+  align-items: center;
+  margin: 12px 0;
+}
+.lc-dot {
+  text-align: center;
+  color: #b8c9c5;
+  font-size: 14px;
+}
+.logic-collection .lc-territory .lc-edge {
+  min-width: 0;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: #19272c;
+  color: #73888b;
+  font-size: 22px;
+}
+.logic-collection .lc-territory .lc-side-1 {
+  color: #d6fa72;
+  background: #315237;
+}
+.logic-collection .lc-territory .lc-side-2 {
+  color: #b7d8ff;
+  background: #244766;
+}
+.lc-owned {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border: 1px dashed #5c7174;
+  font-weight: bold;
+}
+.lc-owner-1 {
+  background: #315237;
+  color: #d6fa72;
+}
+.lc-owner-2 {
+  background: #244766;
+  color: #b7d8ff;
+}
+@media (max-width: 380px) {
+  .lc-settings {
+    gap: 6px;
+  }
+  .lc-towers {
+    gap: 4px;
+  }
+  .lc-towers button {
+    padding: 4px;
+  }
+  .logic-collection .lc-grid {
+    gap: 2px;
+    padding: 3px;
+  }
+  .lc-actions button {
+    padding: 7px;
+  }
+}

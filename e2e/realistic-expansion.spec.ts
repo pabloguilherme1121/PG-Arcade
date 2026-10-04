@@ -10,6 +10,9 @@ for (const id of ["rally", "coleta", "orbital"])
     await page.goto(`/#/jogar/${id}`);
     const board = page.locator(".run-board");
     await expect(board).toBeVisible();
+    await page
+      .getByLabel("Modo da expedição", { exact: true })
+      .selectOption("300");
     await page.clock.pauseAt(new Date(Date.now() + 1000));
     await expect(board.locator(".race-car img")).toHaveJSProperty(
       "naturalWidth",

@@ -25,7 +25,7 @@ test("catalog search, categories, favorites and direct links persist", async ({
   await expect(page.locator(".game-card")).toHaveCount(1);
   await page.getByLabel("Buscar jogo").fill("");
   await page.getByRole("button", { name: "Reflexos", exact: true }).click();
-  await expect(page.locator(".game-card")).toHaveCount(1);
+  await expect(page.locator(".game-card")).toHaveCount(games.filter(g => g.category === "Reflexos").length);
   await page.getByRole("link", { name: "Jogar Snake", exact: true }).click();
   await expect(page.locator(".snake-board")).toBeVisible();
   await page.reload();
@@ -107,7 +107,7 @@ test("Memory completes all pairs and stores the best score", async ({
 });
 for (const width of [320, 390, 1280])
   test(`all catalog games render and fit ${width}px`, async ({ page }) => {
-    test.setTimeout(90000);
+    test.setTimeout(180000);
     await page.setViewportSize({ width, height: 900 });
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));

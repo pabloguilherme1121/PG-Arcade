@@ -1,6 +1,24 @@
 import { it, expect } from "vitest";
 import { newRun, moveRun, stepRun, fireRun } from "./runEngine";
 import { plantMines, neighbors, revealCells } from "./mines";
+it("expeditions continue after a sprint, difficulties affect traffic, survival has no deadline", () => {
+  const s = {
+    ...newRun(),
+    ticks: 300,
+    objects: [{ id: 1, lane: 0, y: 0, reward: false }],
+  };
+  expect(stepRun(s, "rally")).toBe(s);
+  const easy = stepRun(s, "rally", () => 0, { difficulty: "easy", limit: 900 });
+  const hard = stepRun(s, "rally", () => 0, { difficulty: "hard", limit: 900 });
+  expect(easy.ticks).toBe(301);
+  expect(hard.objects[0].y).toBeGreaterThan(easy.objects[0].y);
+  expect(
+    stepRun({ ...s, ticks: 900 }, "rally", () => 0, {
+      difficulty: "normal",
+      limit: Infinity,
+    }).ticks,
+  ).toBe(901);
+});
 it("projectiles consume one enemy and cannot score twice", () => {
   const s = {
     ...newRun(),

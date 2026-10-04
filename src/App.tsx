@@ -7,6 +7,7 @@ import {
   useCallback,
   useRef,
   type ReactNode,
+  type ComponentType,
 } from "react";
 import {
   Gamepad2,
@@ -21,10 +22,40 @@ import {
   Link as LinkIcon,
 } from "lucide-react";
 import { games, isGameId, type GameId } from "./lib/catalog";
+import {
+  expandedGames,
+  isExpandedId,
+  type ExpandedId,
+} from "./lib/expandedCatalog";
 import { gameHelp, recordUnits } from "./lib/gameHelp";
-import { readProgress, saveProgress, type Progress } from "./lib/progress";
+import {
+  readProgress,
+  saveProgress,
+  mergeProgress,
+  type Progress,
+} from "./lib/progress";
 import "./features/portfolio/components/PortfolioArcade.css";
+type PlayerProps = { record: number; onRecord: (n: number) => void };
+const collectionPlayers = Object.fromEntries(
+  expandedGames.map((g) => [
+    g.id,
+    lazy(async () => {
+      const module =
+        g.family === "logic"
+          ? await import("./games/LogicCollection")
+          : g.family === "action"
+            ? await import("./games/ActionCollection")
+            : await import("./games/CasualCollection");
+      return {
+        default: (props: PlayerProps) => (
+          <module.default {...props} gameId={g.id} />
+        ),
+      };
+    }),
+  ]),
+) as unknown as Record<ExpandedId, ComponentType<PlayerProps>>;
 const players = {
+  ...collectionPlayers,
   sequencia: lazy(() => import("./games/ColorSequence")),
   palavra: lazy(() => import("./games/SecretWord")),
   rally: lazy(() => import("./games/Rally")),
@@ -84,6 +115,70 @@ function route() {
         : "catalogo";
 }
 function Preview({ id }: { id: GameId }) {
+  if (isExpandedId(id)) {
+    const family = expandedGames.find((g) => g.id === id)!.family;
+    return (
+      <div
+        className={`preview expanded-preview expanded-${family}`}
+        aria-hidden="true"
+      >
+        <svg viewBox="0 0 240 150">
+          <defs>
+            <linearGradient id={`surface-${id}`} x2="1" y2="1">
+              <stop stopColor="#1e3644" />
+              <stop offset="1" stopColor="#101922" />
+            </linearGradient>
+          </defs>
+          <rect width="240" height="150" rx="16" fill={`url(#surface-${id})`} />
+          {family === "logic" ? (
+            <>
+              {Array.from({ length: 16 }, (_, i) => (
+                <rect
+                  key={i}
+                  x={65 + (i % 4) * 28}
+                  y={22 + Math.floor(i / 4) * 28}
+                  width="24"
+                  height="24"
+                  rx="5"
+                  fill={i % 3 === 0 ? "#c9f65a" : "#466578"}
+                />
+              ))}
+            </>
+          ) : family === "action" ? (
+            <>
+              <path
+                d="M0 120Q60 40 120 80T240 30"
+                stroke="#7ea3bb"
+                strokeWidth="5"
+                fill="none"
+              />
+              <path d="m110 52 22 44-22-8-22 8Z" fill="#c9f65a" />
+              <circle cx="48" cy="39" r="9" fill="#e7a25b" />
+              <circle cx="195" cy="105" r="15" fill="#456d82" />
+            </>
+          ) : (
+            <>
+              <ellipse
+                cx="122"
+                cy="115"
+                rx="46"
+                ry="8"
+                fill="#000"
+                opacity=".4"
+              />
+              <circle cx="120" cy="74" r="38" fill="#dfad6e" />
+              <path
+                d="M82 74h76M120 36v76M93 47q54 27 0 54M147 47q-54 27 0 54"
+                fill="none"
+                stroke="#69472a"
+                strokeWidth="3"
+              />
+            </>
+          )}
+        </svg>
+      </div>
+    );
+  }
   if (id === "sequencia" || id === "palavra")
     return (
       <div
@@ -260,7 +355,7 @@ export default function App() {
     );
     const target =
       arenaElement?.querySelector<HTMLElement>(
-        '[role="gridcell"][tabindex="0"],.board2048,.snake-board,.race-board,.parking-board,.targets-board,.sliding-board,.sequence-board,.word-input,.reaction-board,.mines-board button:not(:disabled),[role="slider"][tabindex="0"],[data-game-cell]:not(:disabled),[data-domino-tile]:not(:disabled)',
+        '[data-expanded-board],[role="gridcell"][tabindex="0"],.board2048,.snake-board,.race-board,.parking-board,.targets-board,.sliding-board,.sequence-board,.word-input,.reaction-board,.mines-board button:not(:disabled),[role="slider"][tabindex="0"],[data-game-cell]:not(:disabled),[data-domino-tile]:not(:disabled)',
       ) ||
       arenaElement?.querySelector<HTMLElement>(
         '[role="gridcell"],.connect-controls button,.lights-board button,.memory-card,button:not(:disabled)',
@@ -361,6 +456,21 @@ export default function App() {
         "Copie o endereço da barra do navegador para compartilhar este jogo.",
       );
     }
+  }
+  function exportProgress() {
+    const url = URL.createObjectURL(
+      new Blob([JSON.stringify(progress, null, 2)], {
+        type: "application/json",
+      }),
+    );
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "pg-arcade-progresso.json";
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setMessage(
+      "Cópia de progresso preparada. Guarde o arquivo para restaurar em outro navegador.",
+    );
   }
   const game = games.find((g) => g.id === page);
   const Player = game ? players[game.id] : null;
@@ -552,25 +662,11 @@ export default function App() {
               >
                 <div
                   className={
-                    [
-                      "rally",
-                      "coleta",
-                      "orbital",
-                      "minas",
-                      "reflexo",
-                      "2048",
-                      "snake",
-                      "memoria",
-                      "liga4",
-                      "puzzle",
-                      "corrida",
-                      "estacionamento",
-                      "tiro",
-                      "luzes",
-                      "estrelas",
-                    ].includes(game.id)
-                      ? ""
-                      : "legacy-game arcade-hub"
+                    ["xadrez", "futebol", "domino", "damas", "velha"].includes(
+                      game.id,
+                    )
+                      ? "legacy-game arcade-hub"
+                      : ""
                   }
                   data-arcade-arena
                 >
@@ -605,6 +701,53 @@ export default function App() {
               </div>
             </div>
             <h2>Seus recordes</h2>
+            <div className="progress-backup">
+              <p className="feedback" role="status">
+                {message}
+              </p>
+              <h3>Leve seu progresso com você</h3>
+              <p>
+                Salve uma cópia dos favoritos e recordes. Restaurar combina os
+                dados e preserva os melhores resultados. Nenhum arquivo é
+                enviado a servidores.
+              </p>
+              <button onClick={exportProgress}>
+                Salvar cópia do progresso
+              </button>
+              <label>
+                Restaurar cópia
+                <input
+                  type="file"
+                  accept=".json,application/json"
+                  aria-label="Restaurar cópia do progresso"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    e.target.value = "";
+                    if (!file) return;
+                    try {
+                      if (file.size > 100000) throw Error();
+                      const data: unknown = JSON.parse(await file.text());
+                      if (
+                        !data ||
+                        typeof data !== "object" ||
+                        Array.isArray(data) ||
+                        !("favorites" in data) ||
+                        !("records" in data)
+                      )
+                        throw Error();
+                      update((p) => mergeProgress(p, data));
+                      setMessage(
+                        "Progresso restaurado. Seus melhores recordes foram preservados.",
+                      );
+                    } catch {
+                      setMessage(
+                        "Não foi possível restaurar. Escolha uma cópia JSON do PG Arcade de até 100 KB.",
+                      );
+                    }
+                  }}
+                />
+              </label>
+            </div>
             <div className="record-list">
               {games
                 .filter((g) => !!recordUnits[g.id])
@@ -657,7 +800,7 @@ export default function App() {
                 <p>
                   {page === "favoritos"
                     ? "Os jogos que você quer ter sempre por perto."
-                    : "Clássicos e novos desafios para jogar no seu ritmo."}
+                    : "50 jogos. Novos modos, dificuldades e desafios para jogar no seu ritmo."}
                 </p>
                 <a
                   href="#catalogo"
@@ -747,13 +890,14 @@ export default function App() {
               </div>
               <div className="game-grid">
                 {sorted.map((g) => (
-                  <article className="game-card" key={g.id}>
+                  <article className="game-card" key={g.id} data-game-category={g.category}>
                     <a
                       className="game-link"
                       href={`#/jogar/${g.id}`}
                       aria-label={`Jogar ${g.name}`}
                     >
                       <Preview id={g.id} />
+                      <span className="game-category">{g.category}</span>
                       <h3>{g.name}</h3>
                       <p>{g.description}</p>
                     </a>

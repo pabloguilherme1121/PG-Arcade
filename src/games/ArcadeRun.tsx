@@ -6,6 +6,7 @@ import {
   moveRun,
   fireRun,
   type RunKind,
+  type RunOptions,
 } from "../lib/runEngine";
 import { useAutoPause, type PlayStatus } from "./useAutoPause";
 const names = {
@@ -24,6 +25,9 @@ export default function ArcadeRun({
 }) {
   const [state, setState] = useState(newRun);
   const [status, setStatus] = useState<PlayStatus>("ready");
+  const [difficulty, setDifficulty] =
+    useState<RunOptions["difficulty"]>("normal");
+  const [limit, setLimit] = useState(900);
   const board = useRef<HTMLDivElement>(null);
   const pause = useCallback(
     () => setStatus((s) => (s === "running" ? "paused" : s)),
@@ -32,15 +36,19 @@ export default function ArcadeRun({
   useAutoPause(pause);
   useEffect(() => {
     if (status !== "running") return;
-    const timer = setInterval(() => setState((s) => stepRun(s, kind)), 100);
+    const timer = setInterval(
+      () =>
+        setState((s) => stepRun(s, kind, Math.random, { difficulty, limit })),
+      100,
+    );
     return () => clearInterval(timer);
-  }, [status, kind]);
+  }, [status, kind, difficulty, limit]);
   useEffect(() => {
-    if (status === "running" && (state.lives === 0 || state.ticks >= 300)) {
+    if (status === "running" && (state.lives === 0 || state.ticks >= limit)) {
       onRecord(state.score);
       setStatus("done");
     }
-  }, [state, status, onRecord]);
+  }, [state, status, onRecord, limit]);
   const move = (delta: number) => {
     if (status === "running") setState((s) => moveRun(s, delta));
   };
@@ -59,11 +67,17 @@ export default function ArcadeRun({
             Pontos<strong>{state.score}</strong>
           </div>
           <div>
-            Tempo<strong>{Math.ceil((300 - state.ticks) / 10)}s</strong>
+            {limit === Infinity ? "Tempo jogado" : "Tempo"}
+            <strong>
+              {limit === Infinity
+                ? Math.floor(state.ticks / 10)
+                : Math.ceil((limit - state.ticks) / 10)}
+              s
+            </strong>
           </div>
         </div>
         <p role="status" className="race-lives">
-          {state.lives} vidas •{" "}
+          {state.lives} vidas • Etapa {1 + Math.floor(state.ticks / 300)} •{" "}
           {status === "done"
             ? "Rodada concluída"
             : status === "paused"
@@ -177,6 +191,15 @@ export default function ArcadeRun({
         )}
         <div className="game-actions">
           <button
+            disabled={status === "ready" || status === "done"}
+            onClick={() => {
+              onRecord(state.score);
+              setStatus("done");
+            }}
+          >
+            Encerrar e salvar
+          </button>
+          <button
             className="primary"
             disabled={status === "done"}
             onClick={() => (status === "running" ? pause() : start())}
@@ -198,6 +221,36 @@ export default function ArcadeRun({
         </div>
       </div>
       <aside className="instructions">
+        <div className="session-options">
+          <label>
+            Modo
+            <select
+              aria-label="Modo da expedição"
+              value={String(limit)}
+              disabled={status !== "ready" && status !== "done"}
+              onChange={(e) => setLimit(Number(e.target.value))}
+            >
+              <option value="300">Sprint · 30 segundos</option>
+              <option value="900">Expedição · 90 segundos</option>
+              <option value="Infinity">Sobrevivência · sem limite</option>
+            </select>
+          </label>
+          <label>
+            Dificuldade
+            <select
+              aria-label="Dificuldade da expedição"
+              value={difficulty}
+              disabled={status !== "ready" && status !== "done"}
+              onChange={(e) =>
+                setDifficulty(e.target.value as RunOptions["difficulty"])
+              }
+            >
+              <option value="easy">Fácil</option>
+              <option value="normal">Normal</option>
+              <option value="hard">Difícil</option>
+            </select>
+          </label>
+        </div>
         <h2>
           {kind === "orbital"
             ? "Proteja sua órbita"
@@ -211,8 +264,10 @@ export default function ArcadeRun({
               : "Cada moeda vale 10 pontos. Escolha entre buscar moedas e fugir dos carros que se aproximam."}
         </p>
         <p>
-          São 30 segundos e três vidas. Use setas, A/D ou os botões. Espaço
-          pausa. A partida pausa ao sair da janela.
+          Escolha uma expedição de 90 segundos, um sprint ou sobreviva sem
+          limite. O ritmo aumenta a cada etapa de 30 segundos. São três vidas.
+          Use setas, A/D ou os botões. Espaço pausa. A partida pausa ao sair da
+          janela.
         </p>
         <p>Recorde: {record || "—"} pontos.</p>
       </aside>

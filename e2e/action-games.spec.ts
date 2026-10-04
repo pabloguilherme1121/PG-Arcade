@@ -154,7 +154,7 @@ for (const [id, prefix, duration] of [
 test("All games offer keyboard focus, specific help, focus mode and safe restart", async ({
   page,
 }) => {
-  test.setTimeout(90000);
+  test.setTimeout(180000);
   await page.setViewportSize({ width: 390, height: 844 });
   for (const { id, name } of games) {
     await page.goto(`/#/jogar/${id}`);

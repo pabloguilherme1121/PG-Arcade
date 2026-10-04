@@ -1,4 +1,6 @@
+import { expandedGames } from "./expandedCatalog";
 export const games = [
+  ...expandedGames,
   {
     id: "sequencia",
     name: "Sequência de Cores",

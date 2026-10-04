@@ -48,3 +48,30 @@ export function saveProgress(progress: Progress) {
     return false;
   }
 }
+export function mergeProgress(current: Progress, imported: unknown): Progress {
+  const incoming = normalizeProgress(imported);
+  const result = normalizeProgress(current);
+  result.favorites = [...new Set([...result.favorites, ...incoming.favorites])];
+  for (const game of [
+    ...new Set([
+      ...Object.keys(incoming.visits),
+      ...Object.keys(incoming.records),
+    ]),
+  ]) {
+    if (!isGameId(game)) continue;
+    result.visits[game] = Math.max(
+      result.visits[game] || 0,
+      incoming.visits[game] || 0,
+    );
+    const oldScore = result.records[game] || 0,
+      newScore = incoming.records[game] || 0;
+    result.records[game] =
+      game === "memoria" || game === "puzzle"
+        ? oldScore && newScore
+          ? Math.min(oldScore, newScore)
+          : oldScore || newScore
+        : Math.max(oldScore, newScore);
+  }
+  result.last ||= incoming.last;
+  return result;
+}

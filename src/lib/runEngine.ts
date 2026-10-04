@@ -1,4 +1,12 @@
 export type RunKind = "rally" | "coleta" | "orbital";
+export type RunOptions = {
+  difficulty: "easy" | "normal" | "hard";
+  limit: number;
+};
+export const defaultRunOptions: RunOptions = {
+  difficulty: "normal",
+  limit: 300,
+};
 export type RunObject = {
   id: number;
   lane: number;
@@ -43,16 +51,23 @@ export function stepRun(
   s: RunState,
   kind: RunKind,
   random = Math.random,
+  options: RunOptions = defaultRunOptions,
 ): RunState {
-  if (s.lives <= 0 || s.ticks >= 300) return s;
+  if (s.lives <= 0 || s.ticks >= options.limit) return s;
   let score = s.score,
     lives = s.lives;
   const ticks = s.ticks + 1;
+  const pace =
+    (options.difficulty === "easy"
+      ? 0.7
+      : options.difficulty === "hard"
+        ? 1.35
+        : 1) * Math.min(1.8, 1 + Math.floor(ticks / 300) * 0.12);
   let shots = s.shots
     .map((b) => ({ ...b, y: b.y - 8 }))
     .filter((b) => b.y > -8);
   const objects = s.objects
-    .map((o) => ({ ...o, y: o.y + (kind === "rally" ? 3 : 2) }))
+    .map((o) => ({ ...o, y: o.y + (kind === "rally" ? 3 : 2) * pace }))
     .filter((o) => {
       if (kind === "orbital") {
         const bullet = shots.find(
@@ -71,7 +86,15 @@ export function stepRun(
       }
       return o.y < 110;
     });
-  if (ticks % 12 === 0)
+  if (
+    ticks %
+      (options.difficulty === "easy"
+        ? 18
+        : options.difficulty === "hard"
+          ? 9
+          : 12) ===
+    0
+  )
     objects.push({
       id: ticks,
       lane: Math.floor(random() * 3),
