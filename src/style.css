@@ -2743,3 +2743,131 @@ html[data-arcade-contrast="true"] .experience-tools {
     padding-inline: 8px;
   }
 }
+
+
+/* Visual identity pass — category accents and clearer game context. */
+.game-card,
+.player {
+  --game-accent: var(--lime);
+}
+
+[data-game-category="Estratégia"] { --game-accent: #c9f65a; }
+[data-game-category="Inteligência"] { --game-accent: #8cc8ff; }
+[data-game-category="Reflexos"] { --game-accent: #ffb86b; }
+[data-game-category="Esportes"] { --game-accent: #7fe0b5; }
+[data-game-category="Tiro"] { --game-accent: #ff8f9b; }
+[data-game-category="Corrida"] { --game-accent: #a8a1ff; }
+[data-game-category="Carros"] { --game-accent: #7fd7ff; }
+[data-game-category="Casuais"] { --game-accent: #f1a8ff; }
+[data-game-category="Memória"] { --game-accent: #ffd479; }
+
+.hero-eyebrow,
+.player-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin-bottom: 16px;
+  color: #d8dee8;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hero-eyebrow span,
+.player-kicker span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 5px 9px;
+  border: 1px solid rgba(137, 151, 170, 0.32);
+  border-radius: 999px;
+  background: rgba(8, 12, 18, 0.46);
+}
+
+.hero-eyebrow span:first-child {
+  color: var(--lime);
+  border-color: rgba(201, 246, 90, 0.28);
+  background: rgba(201, 246, 90, 0.07);
+}
+
+.player-kicker {
+  justify-content: center;
+  margin: 24px auto 0;
+}
+
+.player-kicker span:first-child {
+  color: var(--game-accent);
+  border-color: color-mix(in srgb, var(--game-accent) 35%, transparent);
+  background: color-mix(in srgb, var(--game-accent) 9%, transparent);
+}
+
+.game-card::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 22px;
+  right: 22px;
+  height: 2px;
+  border-radius: 0 0 999px 999px;
+  background: linear-gradient(90deg, transparent, var(--game-accent), transparent);
+  opacity: 0.62;
+  pointer-events: none;
+}
+
+.game-card:hover::before,
+.game-card:focus-within::before {
+  opacity: 1;
+}
+
+.game-card .game-category {
+  color: color-mix(in srgb, var(--game-accent) 82%, white);
+  border-color: color-mix(in srgb, var(--game-accent) 26%, transparent);
+  background: color-mix(in srgb, var(--game-accent) 8%, transparent);
+}
+
+.game-card:hover .preview {
+  border-color: color-mix(in srgb, var(--game-accent) 28%, rgba(255, 255, 255, 0.055));
+}
+
+.player [data-arcade-arena] {
+  border-color: color-mix(in srgb, var(--game-accent) 18%, rgba(101, 115, 134, 0.28));
+  background:
+    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--game-accent) 6%, transparent), transparent 42%),
+    linear-gradient(180deg, rgba(16, 21, 29, 0.9), rgba(10, 14, 20, 0.9));
+}
+
+.player .experience-tools > button[aria-pressed="true"] {
+  color: color-mix(in srgb, var(--game-accent) 88%, white);
+  border-color: color-mix(in srgb, var(--game-accent) 48%, transparent);
+  background: color-mix(in srgb, var(--game-accent) 11%, transparent);
+}
+
+@media (max-width: 700px) {
+  .hero-eyebrow {
+    margin-bottom: 13px;
+  }
+
+  .hero-eyebrow,
+  .player-kicker {
+    gap: 6px;
+    font-size: 9px;
+  }
+
+  .hero-eyebrow span,
+  .player-kicker span {
+    min-height: 23px;
+    padding: 4px 7px;
+  }
+
+  .player-kicker {
+    margin-top: 20px;
+  }
+
+  .game-card::before {
+    left: 14px;
+    right: 14px;
+  }
+}
