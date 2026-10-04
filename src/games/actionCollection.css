@@ -196,3 +196,47 @@
   transform: translateY(1px);
   box-shadow: inset 0 2px 5px rgba(0,0,0,.22);
 }
+
+
+/* Motion refinement for canvas/action games. */
+@media (prefers-reduced-motion: no-preference) {
+  .action-collection {
+    animation: arcade-board-enter 320ms var(--arcade-ease-out, ease-out) both;
+  }
+
+  .action-hud span {
+    transition:
+      transform 160ms var(--arcade-ease-out, ease-out),
+      color 160ms ease;
+  }
+
+  .action-controls button,
+  .action-footer button,
+  .action-settings select {
+    transition:
+      transform 140ms var(--arcade-ease-out, ease-out),
+      background-color 180ms ease,
+      border-color 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .action-controls button:active:not(:disabled),
+  .action-footer button:active:not(:disabled) {
+    transform: translateY(1px) scale(.985);
+  }
+
+  .action-collection-overlay {
+    animation: action-overlay-enter 220ms var(--arcade-ease-out, ease-out) both;
+  }
+}
+
+@keyframes action-overlay-enter {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+}
