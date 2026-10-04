@@ -95,3 +95,30 @@ test("logic grids keep horizontal keyboard navigation within the row", async ({ 
   await cells.nth(columns - 1).press("ArrowDown");
   await expect(cells.nth(columns * 2 - 1)).toBeFocused();
 });
+
+
+test("shared game shell focuses the arena and pauses real-time play while help is open", async ({ page }) => {
+  await page.goto("./#/jogar/breakout");
+  await page.getByRole("button", { name: "Começar", exact: true }).click();
+
+  await page.getByRole("button", { name: "Modo foco", exact: true }).click();
+  await expect(page.locator(".app-focus")).toBeVisible();
+  await expect(page.locator("[data-expanded-board]")).toBeFocused();
+
+  await page.getByText("Ajuda rápida e controles", { exact: true }).click();
+  await expect(page.locator(".action-footer [role=\"status\"]")).toContainText("Pausado");
+});
+
+test("large controls preference persists and enlarges shared play controls on mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 740 });
+  await page.goto("./#/jogar/snake");
+  await page.getByText("Conforto visual", { exact: true }).click();
+  await page.getByLabel("Tamanho dos controles").selectOption("large");
+  await expect(page.locator("html")).toHaveAttribute("data-arcade-controls", "large");
+
+  const focusButton = page.getByRole("button", { name: "Ir para o tabuleiro", exact: true });
+  expect((await focusButton.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(52);
+
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-arcade-controls", "large");
+});
