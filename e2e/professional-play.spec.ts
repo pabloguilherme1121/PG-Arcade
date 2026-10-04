@@ -164,3 +164,40 @@ test("visual shell keeps clear premium hierarchy across catalog and player on mo
   expect(toolsBackground).not.toBe("rgba(0, 0, 0, 0)");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
+
+
+test("shared motion language animates boards and pieces while respecting reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("./#/jogar/2048");
+
+  const boardMotion = await page.locator(".board2048").evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      animationName: style.animationName,
+      animationDuration: style.animationDuration,
+    };
+  });
+  const tileMotion = await page.locator(".tile").nth(1).evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      transitionDuration: style.transitionDuration,
+      transitionProperty: style.transitionProperty,
+    };
+  });
+
+  expect(boardMotion.animationName).toContain("arcade-board-enter");
+  expect(boardMotion.animationDuration).not.toBe("0s");
+  expect(tileMotion.transitionDuration).not.toBe("0s");
+  expect(tileMotion.transitionProperty).toContain("transform");
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.reload();
+  const reduced = await page.locator(".board2048").evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      animationDuration: style.animationDuration,
+      transitionDuration: style.transitionDuration,
+    };
+  });
+  expect(reduced.animationDuration).toMatch(/0\.0*1ms|0s/);
+});
