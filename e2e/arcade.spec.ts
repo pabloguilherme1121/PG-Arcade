@@ -1,17 +1,20 @@
 import { test, expect } from "@playwright/test";
+import { games } from "../src/lib/catalog";
 test("catalog search, categories, favorites and direct links persist", async ({
   page,
 }) => {
   await page.goto("/");
-  await expect(page.locator(".game-card")).toHaveCount(8);
-  expect((await page.locator('.favorite svg').first().boundingBox())!.width).toBeGreaterThanOrEqual(16);
+  await expect(page.locator(".game-card")).toHaveCount(games.length);
+  expect(
+    (await page.locator(".favorite svg").first().boundingBox())!.width,
+  ).toBeGreaterThanOrEqual(16);
   await page
     .getByRole("button", { name: "Adicionar Snake aos favoritos" })
     .click();
   await page.getByRole("link", { name: "Favoritos", exact: true }).click();
   await expect(page.locator(".game-card")).toHaveCount(1);
-  await page.getByRole('link',{name:'Ver favoritos',exact:true}).click();
-  await expect(page.locator('.game-card')).toHaveCount(1);
+  await page.getByRole("link", { name: "Ver favoritos", exact: true }).click();
+  await expect(page.locator(".game-card")).toHaveCount(1);
   await expect(page).toHaveURL(/#\/favoritos$/);
   await page.reload();
   await expect(
@@ -28,14 +31,17 @@ test("catalog search, categories, favorites and direct links persist", async ({
   await page.reload();
   await expect(page.locator(".snake-board")).toBeVisible();
   await page.getByRole("link", { name: "Meu progresso" }).click();
-  await expect(page.getByText("1 de 8")).toBeVisible();
+  await expect(page.getByText(`1 de ${games.length}`)).toBeVisible();
 });
 test("2048 keyboard move, undo, reset and record persistence", async ({
   page,
 }) => {
   await page.goto("/#/jogar/2048");
   const board = page.locator(".board2048");
-  await expect(page.getByRole('button',{name:'Nova partida'})).toHaveCSS('background-color','rgb(201, 246, 90)');
+  await expect(page.getByRole("button", { name: "Nova partida" })).toHaveCSS(
+    "background-color",
+    "rgb(201, 246, 90)",
+  );
   await expect(board.locator(".tile:not(.tile-0)")).toHaveCount(2);
   const initial = await board.textContent();
   for (const key of ["ArrowLeft", "ArrowDown", "ArrowRight", "ArrowUp"])
@@ -100,13 +106,15 @@ test("Memory completes all pairs and stores the best score", async ({
   ).not.toHaveText("—");
 });
 for (const width of [320, 390, 1280])
-  test(`all eight games render and fit ${width}px`, async ({ page }) => {
+  test(`all catalog games render and fit ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto("/");
-    await expect(page.locator(".game-card")).toHaveCount(8);
+    await expect(page.locator(".game-card")).toHaveCount(games.length);
     for (const id of [
+      "liga4",
+      "puzzle",
       "2048",
       "snake",
       "memoria",

@@ -24,6 +24,8 @@ import { games, isGameId, type GameId } from "./lib/catalog";
 import { readProgress, saveProgress, type Progress } from "./lib/progress";
 import "./features/portfolio/components/PortfolioArcade.css";
 const players = {
+  liga4: lazy(() => import("./games/ConnectFour")),
+  puzzle: lazy(() => import("./games/SlidingPuzzle")),
   "2048": lazy(() => import("./games/Game2048")),
   snake: lazy(() => import("./games/Snake")),
   memoria: lazy(() => import("./games/Memory")),
@@ -69,6 +71,14 @@ function route() {
         : "catalogo";
 }
 function Preview({ id }: { id: GameId }) {
+  if (id === "liga4" || id === "puzzle")
+    return (
+      <div className={`preview new-preview ${id}`}>
+        {Array.from({ length: id === "liga4" ? 28 : 9 }, (_, i) => (
+          <span key={i}>{id === "puzzle" ? (i < 8 ? i + 1 : "") : ""}</span>
+        ))}
+      </div>
+    );
   if (id === "2048")
     return (
       <div className="preview p2048">
@@ -152,6 +162,7 @@ export default function App() {
   const [page, setPage] = useState(route);
   const [progress, setProgress] = useState(readProgress);
   const [storageOk, setStorageOk] = useState(true);
+  const [sort, setSort] = useState("destaques");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("Todos");
   const [message, setMessage] = useState("");
@@ -202,8 +213,9 @@ export default function App() {
       if (!isGameId(page) || value <= 0) return;
       update((p) => {
         const old = p.records[page] || 0;
-        const better =
-          page === "memoria" ? old === 0 || value < old : value > old;
+        const better = ["memoria", "puzzle"].includes(page)
+          ? old === 0 || value < old
+          : value > old;
         return better ? { ...p, records: { ...p.records, [page]: value } } : p;
       });
     },
@@ -253,6 +265,13 @@ export default function App() {
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, ""),
         ),
+  );
+  const sorted = [...visible].sort((a, b) =>
+    sort === "nome"
+      ? a.name.localeCompare(b.name, "pt-BR")
+      : sort === "visitados"
+        ? (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)
+        : 0,
   );
   return (
     <>
@@ -363,7 +382,9 @@ export default function App() {
               >
                 <div
                   className={
-                    ["2048", "snake", "memoria"].includes(game.id)
+                    ["2048", "snake", "memoria", "liga4", "puzzle"].includes(
+                      game.id,
+                    )
                       ? ""
                       : "legacy-game arcade-hub"
                   }
@@ -389,7 +410,9 @@ export default function App() {
               <div>
                 <Trophy />
                 <h2>Jogos explorados</h2>
-                <strong>{Object.keys(progress.visits).length} de 8</strong>
+                <strong>
+                  {Object.keys(progress.visits).length} de {games.length}
+                </strong>
               </div>
               <div>
                 <Heart />
@@ -400,13 +423,15 @@ export default function App() {
             <h2>Seus recordes</h2>
             <div className="record-list">
               {games
-                .filter((g) => ["2048", "snake", "memoria"].includes(g.id))
+                .filter((g) =>
+                  ["2048", "snake", "memoria", "puzzle"].includes(g.id),
+                )
                 .map((g) => (
                   <a href={`#/jogar/${g.id}`} key={g.id}>
                     <span>{g.name}</span>
                     <strong>
                       {progress.records[g.id]
-                        ? `${progress.records[g.id]} ${g.id === "memoria" ? "jogadas" : "pontos"}`
+                        ? `${progress.records[g.id]} ${["memoria", "puzzle"].includes(g.id) ? "jogadas" : "pontos"}`
                         : "Ainda sem recorde"}
                     </strong>
                     <ArrowRight size={18} />
@@ -452,7 +477,21 @@ export default function App() {
                     ? "Os jogos que você quer ter sempre por perto."
                     : "Clássicos e novos desafios para jogar no seu ritmo."}
                 </p>
-                <a href="#catalogo" className="button primary" onClick={event=>{event.preventDefault();document.getElementById('catalogo')?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});}}>
+                <a
+                  href="#catalogo"
+                  className="button primary"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    document
+                      .getElementById("catalogo")
+                      ?.scrollIntoView({
+                        behavior: matchMedia("(prefers-reduced-motion: reduce)")
+                          .matches
+                          ? "instant"
+                          : "smooth",
+                      });
+                  }}
+                >
                   {page === "favoritos" ? "Ver favoritos" : "Explorar jogos"}
                   <ArrowRight size={19} />
                 </a>
@@ -503,8 +542,31 @@ export default function App() {
                   ),
                 )}
               </div>
+              <div className="catalog-tools">
+                <label>
+                  Ordenar{" "}
+                  <select
+                    aria-label="Ordenar jogos"
+                    value={sort}
+                    onChange={(e) => setSort(e.target.value)}
+                  >
+                    <option value="destaques">Destaques</option>
+                    <option value="nome">Nome A–Z</option>
+                    <option value="visitados">Mais jogados por você</option>
+                  </select>
+                </label>
+                <span role="status">{visible.length} jogos encontrados</span>
+                <button
+                  disabled={!visible.length}
+                  onClick={() => {
+                    location.hash = `/jogar/${visible[Math.floor(Math.random() * visible.length)].id}`;
+                  }}
+                >
+                  Jogo surpresa
+                </button>
+              </div>
               <div className="game-grid">
-                {visible.map((g) => (
+                {sorted.map((g) => (
                   <article className="game-card" key={g.id}>
                     <a
                       className="game-link"
@@ -545,7 +607,15 @@ export default function App() {
                       ? "Toque no coração de um jogo para salvá-lo."
                       : "Tente outro nome ou categoria."}
                   </p>
-                  <a href="#/">Ver todos os jogos</a>
+                  <button
+                    onClick={() => {
+                      setQuery("");
+                      setCategory("Todos");
+                      location.hash = "/";
+                    }}
+                  >
+                    Limpar filtros e ver todos
+                  </button>
                 </div>
               )}
             </section>

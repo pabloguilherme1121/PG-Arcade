@@ -1,5 +1,17 @@
 export const games = [
   {
+    id: "liga4",
+    name: "Liga 4",
+    description: "Quatro peças. Uma boa estratégia.",
+    category: "Estratégia",
+  },
+  {
+    id: "puzzle",
+    name: "Quebra-cabeça",
+    description: "Oito peças, um desafio de lógica.",
+    category: "Estratégia",
+  },
+  {
     id: "2048",
     name: "2048",
     description: "Combine. Pense. Supere.",

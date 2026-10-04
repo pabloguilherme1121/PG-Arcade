@@ -1258,3 +1258,123 @@ footer a {
     scroll-behavior: auto !important;
   }
 }
+
+.catalog-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+  color: #b7bdc9;
+}
+.catalog-tools select {
+  background: #151a24;
+  color: #f5f3e9;
+  border: 1px solid #454c59;
+  border-radius: 8px;
+  padding: 12px;
+  max-width: 100%;
+  margin-left: 8px;
+}
+.connect-controls,
+.connect-board {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+.connect-controls button {
+  padding: 4px;
+  min-width: 0;
+  min-height: 44px;
+  font-size: 14px;
+}
+.connect-board {
+  padding: 10px;
+  background: #222c47;
+  border-radius: 16px;
+  margin: 10px 0 20px;
+}
+.disc {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #0b0e14;
+}
+.disc-1 {
+  background: #ff957e;
+}
+.disc-2 {
+  background: #c9f65a;
+}
+.sliding-board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 18px 0;
+  max-width: 420px;
+}
+.sliding-board button,
+.sliding-board span {
+  aspect-ratio: 1;
+  min-width: 0;
+  font-size: clamp(24px, 6vw, 44px);
+  background: #c9f65a;
+  color: #0b0e14;
+  border-radius: 12px;
+}
+.sliding-board button:disabled {
+  opacity: 1;
+  background: #242c39;
+  color: #f5f3e9;
+}
+.sliding-board span {
+  background: #111722;
+}
+.new-preview {
+  display: grid;
+  gap: 5px;
+  padding: 20px;
+}
+.new-preview.liga4 {
+  grid-template-columns: repeat(7, 1fr);
+  background: #222c47;
+}
+.new-preview.liga4 span {
+  border-radius: 50%;
+  background: #0b0e14;
+  aspect-ratio: 1;
+}
+.new-preview.liga4 span:nth-child(3n) {
+  background: #c9f65a;
+}
+.new-preview.liga4 span:nth-child(5n) {
+  background: #ff957e;
+}
+.new-preview.puzzle {
+  grid-template-columns: repeat(3, 1fr);
+  background: #151a24;
+}
+.new-preview.puzzle span {
+  background: #c9f65a;
+  color: #0b0e14;
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  font-weight: 700;
+}
+.new-preview.puzzle span:last-child {
+  background: transparent;
+}
+.game-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.disc {
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: #101522;
+  font-size: clamp(12px, 3vw, 24px);
+}
