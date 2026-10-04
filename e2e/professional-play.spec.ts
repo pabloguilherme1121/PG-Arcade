@@ -44,6 +44,10 @@ test("visual preferences persist across games and still work with storage blocke
 test("Campo Minado changes density and protects the first reveal at all difficulties", async ({ page }) => {
   await page.goto("./#/jogar/minas");
   for (const count of [6, 10, 16]) {
+    await page.evaluate(() => {
+      let sample = 0;
+      Math.random = () => (sample++ % 5) * 0.2;
+    });
     await page.getByRole("button", { name: "Novo campo", exact: true }).click();
     await page.getByLabel("Dificuldade do Campo Minado").selectOption(String(count));
     await page.getByRole("button", { name: "Casa 28: fechada", exact: true }).click();
