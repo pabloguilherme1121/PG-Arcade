@@ -107,6 +107,10 @@ test("shared game shell focuses the arena and pauses real-time play while help i
 
   await page.getByText("Ajuda rápida e controles", { exact: true }).click();
   await expect(page.locator(".action-footer [role=\"status\"]")).toContainText("Pausado");
+
+  await page.getByRole("link", { name: "Voltar aos jogos", exact: true }).click();
+  await page.getByRole("link", { name: "Jogar Snake", exact: true }).click();
+  await expect(page.locator(".app-focus")).toHaveCount(0);
 });
 
 test("large controls preference persists and enlarges shared play controls on mobile", async ({ page }) => {
