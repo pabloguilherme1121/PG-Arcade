@@ -128,3 +128,22 @@ test("reaction: false start, timed hit, pause and five-round record", async ({
   await page.reload();
   await expect(page.locator(".instructions")).toContainText(`${score} pontos`);
 });
+
+
+test("corrida: speed builds progressively and remains mobile-safe", async ({ page }) => {
+  await page.addInitScript(() => {
+    Math.random = () => 0;
+  });
+  await page.clock.install();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("./#/jogar/corrida");
+
+  const speed = page.locator("[data-race-speed]");
+  const initial = Number.parseInt((await speed.textContent()) || "0", 10);
+  await page.getByRole("button", { name: "Largar", exact: true }).click();
+  await page.clock.runFor(6000);
+  const accelerated = Number.parseInt((await speed.textContent()) || "0", 10);
+
+  expect(accelerated).toBeGreaterThan(initial);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
