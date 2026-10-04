@@ -48,7 +48,10 @@ function Grid({
       onMove(d);
       return;
     }
-    const next = Math.max(0, Math.min(size * size - 1, focus + d));
+    const rowStart = Math.floor(focus / size) * size;
+    const next = e.key === "ArrowLeft" ? Math.max(rowStart, focus - 1)
+      : e.key === "ArrowRight" ? Math.min(rowStart + size - 1, focus + 1)
+      : Math.max(focus % size, Math.min((size - 1) * size + focus % size, focus + d));
     setFocus(next);
     const buttons =
       e.currentTarget.querySelectorAll<HTMLButtonElement>("button");

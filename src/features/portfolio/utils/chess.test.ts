@@ -82,3 +82,22 @@ describe("chess", () => {
     expect(getChessLegalMoves(position(b), "black")).toContainEqual(m);
   });
 });
+
+describe("chess promotion choice", () => {
+  it("offers all four legal promotions on advance and capture, with queen as default", () => {
+    const board: ChessBoard = Array(64).fill(null);
+    board[60] = { color: "white", type: "king" };
+    board[7] = { color: "black", type: "king" };
+    board[8] = { color: "white", type: "pawn" };
+    board[1] = { color: "black", type: "rook" };
+    const state = position(board);
+    for (const to of [0, 1]) {
+      const moves = getChessLegalMoves(state).filter((m) => m.from === 8 && m.to === to);
+      expect(moves.map((m) => m.promotion)).toEqual(["queen", "rook", "bishop", "knight"]);
+      for (const move of moves) expect(applyChessMove(state, move)?.board[to]?.type).toBe(move.promotion);
+      expect(applyChessMove(state, { from: 8, to })?.board[to]?.type).toBe("queen");
+      expect(applyChessMove(state, { from: 8, to, promotion: "pawn" as never })).toBeNull();
+    }
+    expect(state.board[8]?.type).toBe("pawn");
+  });
+});

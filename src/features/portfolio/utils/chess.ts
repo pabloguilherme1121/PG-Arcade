@@ -201,11 +201,9 @@ function pseudoMoves(state: ChessState, from: number): ChessMove[] {
     const oneRow = row + dr;
     if (inside(oneRow, col) && !board[idx(oneRow, col)]) {
       const to = idx(oneRow, col);
-      moves.push({
-        from,
-        to,
-        ...(oneRow === promotionRow ? { promotion: "queen" as const } : {}),
-      });
+      if (oneRow === promotionRow)
+        for (const promotion of ["queen", "rook", "bishop", "knight"] as const) moves.push({ from, to, promotion });
+      else moves.push({ from, to });
       const twoRow = row + dr * 2;
       if (row === start && !board[idx(twoRow, col)])
         moves.push({ from, to: idx(twoRow, col) });
@@ -216,13 +214,11 @@ function pseudoMoves(state: ChessState, from: number): ChessMove[] {
       if (!inside(r, c)) continue;
       const to = idx(r, c);
       const target = board[to];
-      if (target && target.color !== piece.color && target.type !== "king")
-        moves.push({
-          from,
-          to,
-          ...(r === promotionRow ? { promotion: "queen" as const } : {}),
-        });
-      else if (
+      if (target && target.color !== piece.color && target.type !== "king") {
+        if (r === promotionRow)
+          for (const promotion of ["queen", "rook", "bishop", "knight"] as const) moves.push({ from, to, promotion });
+        else moves.push({ from, to });
+      } else if (
         state.turn === piece.color &&
         !target &&
         state.enPassant === to &&
@@ -393,7 +389,7 @@ export function applyChessMove(
 ): ChessState | null {
   const legal = getChessLegalMoves(state, state.turn);
   const found = legal.find(
-    (candidate) => candidate.from === move.from && candidate.to === move.to,
+    (candidate) => candidate.from === move.from && candidate.to === move.to && (!candidate.promotion || candidate.promotion === (move.promotion ?? "queen")),
   );
   if (!found) return null;
   return applyUnchecked(state, found);

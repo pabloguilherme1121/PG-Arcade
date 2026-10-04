@@ -52,3 +52,39 @@ test("Campo Minado changes density and protects the first reveal at all difficul
     await expect(page.getByLabel("Dificuldade do Campo Minado")).toBeDisabled();
   }
 });
+
+test("chess worker responds and pause cancels analysis without advancing the board", async ({ page }) => {
+  await page.goto("./#/jogar/xadrez");
+  const game = page.locator('[data-chess-game="true"]');
+  const cells = game.getByRole("gridcell");
+  await cells.nth(52).click();
+  await cells.nth(36).click();
+  await expect(game.getByRole("status").first()).toContainText("Sua vez", { timeout: 15000 });
+  await game.getByRole("button", { name: "Desfazer jogada", exact: true }).click();
+  await expect(cells.nth(52)).toHaveAttribute("aria-label", /peão branco/);
+  await game.getByLabel("Promoção do peão").selectOption("knight");
+  await expect(game.getByLabel("Promoção do peão")).toHaveValue("knight");
+  await page.clock.install();
+  await cells.nth(52).click();
+  await cells.nth(36).click();
+  await game.getByRole("button", { name: "Pausar", exact: true }).click();
+  const snapshot = await cells.allTextContents();
+  await page.clock.runFor(1000);
+  expect(await cells.allTextContents()).toEqual(snapshot);
+  await expect(game.getByRole("status").first()).toHaveText("Partida pausada");
+});
+
+test("logic grids keep horizontal keyboard navigation within the row", async ({ page }) => {
+  await page.goto("./#/jogar/nonograma");
+  const grid = page.locator(".lc-grid");
+  const cells = grid.locator("button");
+  const columns = await grid.evaluate((element) => Number(getComputedStyle(element).getPropertyValue("--lc-size")));
+  await cells.nth(0).focus();
+  await cells.nth(0).press("ArrowLeft");
+  await expect(cells.nth(0)).toBeFocused();
+  await cells.nth(columns - 1).focus();
+  await cells.nth(columns - 1).press("ArrowRight");
+  await expect(cells.nth(columns - 1)).toBeFocused();
+  await cells.nth(columns - 1).press("ArrowDown");
+  await expect(cells.nth(columns * 2 - 1)).toBeFocused();
+});

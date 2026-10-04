@@ -90,7 +90,7 @@ export const gameHelp: Record<GameId, string> = {
   memoria:
     "Vire duas cartas e encontre os pares. Use toque ou Tab e Enter. Você pode escolher o tempo para memorizar cartas diferentes; o recorde conta as tentativas.",
   xadrez:
-    "Escolha uma peça e uma casa de destino. As casas válidas são indicadas. Use as setas para navegar no tabuleiro e Enter para selecionar. Configure bot ou partida local nas opções do jogo.",
+    "Escolha uma peça e uma casa de destino. As casas válidas são indicadas. Use as setas para navegar no tabuleiro e Enter para selecionar. Configure bot ou partida local nas opções do jogo. Escolha rainha, torre, bispo ou cavalo para promover o peão. Pausar ou desfazer cancela a análise do bot.",
   damas:
     "Escolha uma peça e uma das casas indicadas. Toque ou use as setas e Enter no tabuleiro. As capturas disponíveis orientam a jogada; escolha bot ou duas pessoas nas opções do jogo.",
   domino:
