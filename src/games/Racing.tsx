@@ -70,27 +70,29 @@ export default function Racing({
             Recorde<strong>{record}</strong>
           </div>
         </div>
-        <p className="race-lives" role="status">
-          <span>{state.lives} vidas</span>
+        <p className="race-lives">
+          <span role="status">{state.lives} vidas</span>
           <span className="race-speedometer" data-race-speed>
             {speedKmh} km/h
           </span>
           <span>•</span>{" "}
-          {status === "ready"
-            ? "Pronto para largar"
-            : status === "running"
-              ? state.crashCooldown > 0
-                ? "Recuperando controle"
-                : state.steerCooldown > 0
-                  ? "Completando troca de faixa"
-                  : throttle.current > 0
-                    ? "Acelerando"
-                    : throttle.current < 0
-                      ? "Freando"
-                      : "Desvie do trânsito"
-              : status === "paused"
-                ? "Corrida pausada"
-                : "Fim da corrida"}
+          <span role="status">
+            {status === "ready"
+              ? "Pronto para largar"
+              : status === "running"
+                ? state.crashCooldown > 0
+                  ? "Recuperando controle"
+                  : state.steerCooldown > 0
+                    ? "Completando troca de faixa"
+                    : throttle.current > 0
+                      ? "Acelerando"
+                      : throttle.current < 0
+                        ? "Freando"
+                        : "Desvie do trânsito"
+                : status === "paused"
+                  ? "Corrida pausada"
+                  : "Fim da corrida"}
+          </span>
         </p>
         <div
           ref={board}
