@@ -1,5 +1,7 @@
 import { expandedGames } from "./expandedCatalog";
+import { newGames } from "./newCatalog";
 export const games = [
+  ...newGames,
   ...expandedGames,
   {
     id: "sequencia",

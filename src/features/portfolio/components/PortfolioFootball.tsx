@@ -655,6 +655,7 @@ export default function PortfolioFootball() {
                 type="button"
                 disabled={finished || Boolean(flight)}
                 onClick={shoot}
+                data-football-shoot
                 className={`${button} flex flex-1 items-center justify-center gap-2 bg-[#38bdf8] text-[#02111f] hover:bg-[#7dd3fc]`}
               >
                 <ArrowUpRight size={18} aria-hidden />

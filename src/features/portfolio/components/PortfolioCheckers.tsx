@@ -264,68 +264,81 @@ export default function PortfolioCheckers() {
             aria-label="Tabuleiro de damas"
             className="mx-auto mt-4 grid aspect-square w-full max-w-[560px] grid-cols-8 overflow-hidden rounded-[12px] border border-white/10 bg-[#09121c]"
           >
-            {board.map((piece, index) => {
-              const { row, col } = getCheckersCoordinates(index);
-              const dark = (row + col) % 2 === 1;
-              const legalDestination = selectedMoves.some(
-                (move) => move.to === index,
-              );
-              const active = selected === index;
-              return (
-                <button
-                  key={index}
-                  type="button"
-                  role="gridcell"
-                  tabIndex={focusedSquare === index ? 0 : -1}
-                  onFocus={() => setFocusedSquare(index)}
-                  onKeyDown={(event) => {
-                    const row = Math.floor(index / 8),
-                      col = index % 8;
-                    const next: Record<string, number> = {
-                      ArrowUp: Math.max(0, row - 1) * 8 + col,
-                      ArrowDown: Math.min(7, row + 1) * 8 + col,
-                      ArrowLeft: row * 8 + Math.max(0, col - 1),
-                      ArrowRight: row * 8 + Math.min(7, col + 1),
-                      Home: row * 8,
-                      End: row * 8 + 7,
-                    };
-                    if (event.key in next) {
-                      event.preventDefault();
-                      const target = next[event.key];
-                      setFocusedSquare(target);
-                      event.currentTarget.parentElement
-                        ?.querySelectorAll<HTMLButtonElement>(
-                          '[role="gridcell"]',
-                        )
-                        [target]?.focus();
-                    }
-                  }}
-                  aria-selected={active}
-                  data-checkers-cell="true"
-                  data-legal-destination={legalDestination ? "true" : "false"}
-                  aria-label={
-                    piece
-                      ? `${piece.player === "blue" ? "Peça azul" : "Peça vermelha"}${piece.king ? " dama" : ""}, linha ${row + 1}, coluna ${col + 1}`
-                      : `Casa vazia, linha ${row + 1}, coluna ${col + 1}`
-                  }
-                  onClick={() => handleCell(index)}
-                  className={`relative grid aspect-square place-items-center focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a5f3fc] ${dark ? "bg-[#10283a]" : "bg-[#d7e2e8]/90"} ${legalDestination ? "after:absolute after:h-3 after:w-3 after:rounded-full after:bg-[#67e8f9]/75" : ""} ${active ? "ring-2 ring-inset ring-[#67e8f9]" : ""}`}
-                >
-                  {piece && (
-                    <span
-                      className={`relative z-[1] grid h-[68%] w-[68%] place-items-center rounded-full border-2 shadow-[0_5px_12px_rgba(0,0,0,0.35)] ${piece.player === "blue" ? "border-[#a5f3fc] bg-[#1679a8]" : "border-[#fecaca] bg-[#b83e4b]"}`}
+            {Array.from({ length: 8 }, (_, rank) => (
+              <div
+                key={rank}
+                role="row"
+                aria-rowindex={rank + 1}
+                style={{ display: "contents" }}
+              >
+                {board.slice(rank * 8, rank * 8 + 8).map((piece, file) => {
+                  const index = rank * 8 + file;
+                  const { row, col } = getCheckersCoordinates(index);
+                  const dark = (row + col) % 2 === 1;
+                  const legalDestination = selectedMoves.some(
+                    (move) => move.to === index,
+                  );
+                  const active = selected === index;
+                  return (
+                    <button
+                      key={index}
+                      type="button"
+                      role="gridcell"
+                      tabIndex={focusedSquare === index ? 0 : -1}
+                      onFocus={() => setFocusedSquare(index)}
+                      onKeyDown={(event) => {
+                        const row = Math.floor(index / 8),
+                          col = index % 8;
+                        const next: Record<string, number> = {
+                          ArrowUp: Math.max(0, row - 1) * 8 + col,
+                          ArrowDown: Math.min(7, row + 1) * 8 + col,
+                          ArrowLeft: row * 8 + Math.max(0, col - 1),
+                          ArrowRight: row * 8 + Math.min(7, col + 1),
+                          Home: row * 8,
+                          End: row * 8 + 7,
+                        };
+                        if (event.key in next) {
+                          event.preventDefault();
+                          const target = next[event.key];
+                          setFocusedSquare(target);
+                          event.currentTarget
+                            .closest('[role="grid"]')
+                            ?.querySelectorAll<HTMLButtonElement>(
+                              '[role="gridcell"]',
+                            )
+                            [target]?.focus();
+                        }
+                      }}
+                      aria-selected={active}
+                      data-checkers-cell="true"
+                      data-legal-destination={
+                        legalDestination ? "true" : "false"
+                      }
+                      aria-label={
+                        piece
+                          ? `${piece.player === "blue" ? "Peça azul" : "Peça vermelha"}${piece.king ? " dama" : ""}, linha ${row + 1}, coluna ${col + 1}`
+                          : `Casa vazia, linha ${row + 1}, coluna ${col + 1}`
+                      }
+                      onClick={() => handleCell(index)}
+                      className={`relative grid aspect-square place-items-center focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a5f3fc] ${dark ? "bg-[#10283a]" : "bg-[#d7e2e8]/90"} ${legalDestination ? "after:absolute after:h-3 after:w-3 after:rounded-full after:bg-[#67e8f9]/75" : ""} ${active ? "ring-2 ring-inset ring-[#67e8f9]" : ""}`}
                     >
-                      {piece.king && (
-                        <Crown
-                          className="h-[45%] w-[45%] text-white"
-                          aria-hidden="true"
-                        />
+                      {piece && (
+                        <span
+                          className={`relative z-[1] grid h-[68%] w-[68%] place-items-center rounded-full border-2 shadow-[0_5px_12px_rgba(0,0,0,0.35)] ${piece.player === "blue" ? "border-[#a5f3fc] bg-[#1679a8]" : "border-[#fecaca] bg-[#b83e4b]"}`}
+                        >
+                          {piece.king && (
+                            <Crown
+                              className="h-[45%] w-[45%] text-white"
+                              aria-hidden="true"
+                            />
+                          )}
+                        </span>
                       )}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
           </div>
 
           <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">

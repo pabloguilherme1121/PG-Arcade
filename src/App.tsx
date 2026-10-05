@@ -23,6 +23,12 @@ import {
 } from "lucide-react";
 import { games, isGameId, type GameId } from "./lib/catalog";
 import {
+  newGames,
+  isNewGameId,
+  type NewGameId,
+  type BoardId,
+} from "./lib/newCatalog";
+import {
   expandedGames,
   isExpandedId,
   type ExpandedId,
@@ -56,6 +62,19 @@ const collectionPlayers = Object.fromEntries(
   ]),
 ) as unknown as Record<ExpandedId, ComponentType<PlayerProps>>;
 const players = {
+  ...(Object.fromEntries(
+    newGames.map((g) => [
+      g.id,
+      lazy(async () => {
+        if (g.family === "board") {
+          const module = await import("./games/BoardExpansion");
+          return { default: (props: PlayerProps) => <module.default {...props} gameId={g.id as BoardId} /> };
+        }
+        const module = g.family === "quiz" ? await import("./games/QuizExpansion") : await import("./games/MotionExpansion");
+        return { default: (props: PlayerProps) => <module.default {...props} gameId={g.id} /> };
+      }),
+    ]),
+  ) as unknown as Record<NewGameId, ComponentType<PlayerProps>>),
   ...collectionPlayers,
   sequencia: lazy(() => import("./games/ColorSequence")),
   palavra: lazy(() => import("./games/SecretWord")),
@@ -116,6 +135,21 @@ function route() {
         : "catalogo";
 }
 function Preview({ id }: { id: GameId }) {
+  if (isNewGameId(id)) {
+    const game = newGames.find((g) => g.id === id)!;
+    const marks = game.family === "board" ? ["♛", "▦", "◇"] : game.family === "quiz" ? ["?", "24", "A"] : ["◉", "↗", "▶"];
+    return (
+      <div className={`preview new-preview preview-${game.family}`} aria-hidden="true">
+        <svg viewBox="0 0 240 150">
+          <rect width="240" height="150" rx="16" fill="#12283c" />
+          <path d="M0 120 L240 30 M0 150 L240 60" stroke="#31516d" strokeWidth="18" />
+          {marks.map((m, i) => (
+            <text key={i} x={45 + i * 75} y={92 - i * 8} fill={i === 1 ? "#c9f65a" : "#79b8ff"} fontSize={35} fontWeight="700" textAnchor="middle">{m}</text>
+          ))}
+        </svg>
+      </div>
+    );
+  }
   if (isExpandedId(id)) {
     const family = expandedGames.find((g) => g.id === id)!.family;
     return (
@@ -914,7 +948,7 @@ export default function App() {
               <div>
                 <div className="hero-eyebrow" aria-hidden="true">
                   <span>PG Arcade</span>
-                  <span>50 jogos</span>
+                  <span>{games.length} jogos</span>
                 </div>
                 <h1 ref={heading} tabIndex={-1}>
                   {page === "favoritos" ? (
@@ -930,7 +964,7 @@ export default function App() {
                 <p>
                   {page === "favoritos"
                     ? "Os jogos que você quer ter sempre por perto."
-                    : "50 jogos. Novos modos, dificuldades e desafios para jogar no seu ritmo."}
+                    : `${games.length} jogos. Novos modos, dificuldades e desafios para jogar no seu ritmo.`}
                 </p>
                 <a
                   href="#catalogo"

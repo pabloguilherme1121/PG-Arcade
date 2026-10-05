@@ -77,6 +77,7 @@ export default function Game2048({
           {state.board.map((n, i) => (
             <div
               className={`tile tile-${n}`}
+              role="img"
               key={i}
               aria-label={`Casa ${i + 1}: ${n || "vazia"}`}
             >

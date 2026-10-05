@@ -995,6 +995,7 @@ function Boxes({ difficulty, onWin }: Settings) {
                 <span
                   key={index}
                   className={`lc-owned lc-owner-${owner}`}
+                  role="img"
                   aria-label={`Caixa: ${owner === 1 ? "você" : owner === 2 ? "adversário" : "aberta"}`}
                 >
                   {owner ? (owner === 1 ? "V" : "A") : ""}

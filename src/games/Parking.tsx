@@ -98,6 +98,7 @@ export default function Parking({
                       ? "Obstáculo"
                       : "Livre"
               }
+              role="img"
             >
               {i === position ? (
                 <img

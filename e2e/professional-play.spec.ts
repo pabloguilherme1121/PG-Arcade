@@ -243,7 +243,7 @@ test("visual shell keeps clear premium hierarchy across catalog and player on mo
   const hero = page.locator(".hero");
   const firstCard = page.locator(".game-card").first();
   await expect(hero).toBeVisible();
-  await expect(hero.locator(".hero-eyebrow")).toContainText("50 jogos");
+  await expect(hero.locator(".hero-eyebrow")).toContainText("100 jogos");
   await expect(firstCard.locator(".game-category")).toBeVisible();
 
   const visualContract = await page.evaluate(() => {
