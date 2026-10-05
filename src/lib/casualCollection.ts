@@ -25,7 +25,7 @@ export const casualGames = [
     name: "Basquete de Rua",
     category: "Casuais",
     description: "Encontre o arco perfeito para acertar a cesta.",
-    help: "Combine ângulo e força para lançar a bola. Ela precisa cruzar o aro descendo. O vento muda entre as rodadas do desafio.",
+    help: "Combine ângulo e força para lançar a bola. Ela precisa cruzar o aro descendo; uma entrada central vale cesta limpa e entradas próximas podem tocar no aro. O vento muda entre rodadas."
   },
   {
     id: "golfe",
@@ -39,7 +39,7 @@ export const casualGames = [
     name: "Arco e Flecha",
     category: "Casuais",
     description: "Compense o vento e mire no centro do alvo.",
-    help: "Ajuste a altura da mira e a força. O vento altera a flecha durante o voo; pontue chegando perto do centro do alvo.",
+    help: "Ajuste altura e força. A flecha percorre um arco visível: baixa potência aumenta queda e tempo exposto ao vento. Compense a trajetória e tente chegar ao centro."
   },
   {
     id: "pesca",
