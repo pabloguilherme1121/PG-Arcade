@@ -71,7 +71,9 @@ export default function Racing({
           {status === "ready"
             ? "Pronto para largar"
             : status === "running"
-              ? "Desvie do trânsito"
+              ? state.crashCooldown > 0
+                ? "Recuperando controle"
+                : "Desvie do trânsito"
               : status === "paused"
                 ? "Corrida pausada"
                 : "Fim da corrida"}
@@ -134,12 +136,16 @@ export default function Racing({
             </div>
           ))}
           <div
-            className="race-car"
+            className={`race-car ${state.crashCooldown > 0 ? "race-car-recovering" : ""}`}
             data-lane={state.lane}
+            data-recovering={state.crashCooldown > 0}
             style={{ left: `${state.lane * 33.33 + 16.66}%` }}
           >
             <img src={`${import.meta.env.BASE_URL}art/car.webp`} alt="" />
-            <span className="sr-only">Seu carro: faixa {state.lane + 1}</span>
+            <span className="sr-only">
+              Seu carro: faixa {state.lane + 1}
+              {state.crashCooldown > 0 ? ", recuperando após colisão" : ""}
+            </span>
           </div>
           {status !== "running" && (
             <div className="action-overlay">
@@ -202,7 +208,8 @@ export default function Racing({
         <h2>Encontre uma faixa livre</h2>
         <p>
           Desvie dos carros para acumular distância. Cada colisão custa uma
-          vida; você começa com três.
+          vida e ativa uma breve recuperação contra impactos em sequência; você
+          começa com três.
         </p>
         <label htmlFor="race-speed">Ritmo da corrida</label>
         <select
