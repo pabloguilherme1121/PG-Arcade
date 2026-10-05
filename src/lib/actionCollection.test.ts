@@ -37,6 +37,18 @@ describe("action collection physics", () => {
     expect(n.score).toBe(100);
     expect(n.ball.x).toBe(240);
   });
+  it("asteroid shots inherit ship momentum in vacuum", () => {
+    const s = newAction("asteroides");
+    s.angle = 0;
+    s.vx = 80;
+    s.vy = -20;
+    s.spawn = 1;
+    const n = stepAction(s, { ...idleInput, action: true }, 0);
+    expect(n.shots).toHaveLength(1);
+    expect(n.shots[0].vx).toBeGreaterThan(330);
+    expect(n.shots[0].vy).toBe(-20);
+  });
+
   it("asteroids split after a projectile hit and wrap the ship", () => {
     const s = newAction("asteroides");
     s.x = 481;
@@ -87,6 +99,16 @@ describe("action collection physics", () => {
     n.objects = s.objects;
     expect(stepAction(n, idleInput, 0.02).lives).toBe(2);
   });
+  it("lunar side thrusters consume less fuel than the main engine", () => {
+    const s = newAction("pouso");
+    const coast = stepAction(s, idleInput, 0.04);
+    const side = stepAction(s, { ...idleInput, right: true }, 0.04);
+    const main = stepAction(s, { ...idleInput, up: true }, 0.04);
+    expect(side.fuel).toBeLessThan(coast.fuel);
+    expect(main.fuel).toBeLessThan(side.fuel);
+    expect(side.vx).toBeGreaterThan(coast.vx);
+  });
+
   it("lunar landing rewards safe velocity and rejects a crash", () => {
     const s = newAction("pouso");
     s.x = 345;
