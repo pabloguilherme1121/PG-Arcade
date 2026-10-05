@@ -1114,3 +1114,148 @@ html[data-arcade-contrast="true"] .player::before,
 html[data-arcade-contrast="true"] .site-header::before {
   display: none;
 }
+
+
+/* Gameplay feel: shared across the full catalog */
+[data-arcade-arena] {
+  overscroll-behavior: contain;
+}
+
+[data-arcade-arena] button,
+.dpad button,
+.wide-controls button,
+.motion-controls button,
+.value-picker button,
+.quiz-choices button,
+.letter-picker button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+canvas,
+.race-board,
+.snake-board,
+.board2048,
+.parking-board,
+.targets-board {
+  touch-action: none;
+}
+
+.motion-stage canvas,
+.race-board,
+.parking-board,
+.targets-board,
+.board2048,
+.snake-board,
+.memory-board,
+.new-board-wrap {
+  border-color: rgba(255,255,255,.09);
+  box-shadow:
+    0 22px 54px rgba(0,0,0,.26),
+    0 1px 0 rgba(255,255,255,.045) inset;
+}
+
+.race-car {
+  transition:
+    left .15s cubic-bezier(.2,.75,.3,1),
+    filter .16s ease,
+    opacity .16s ease;
+  will-change: left;
+}
+
+.race-car img,
+.run-object img {
+  filter: drop-shadow(0 8px 10px rgba(0,0,0,.35));
+}
+
+.race-car[data-steering="true"] img {
+  transform: translateY(-2px) scale(1.025);
+}
+
+.race-car[data-recovering="true"] {
+  opacity: .68;
+  filter: saturate(.55) brightness(1.2);
+}
+
+.motion-controls,
+.wide-controls,
+.dpad,
+.value-picker,
+.quiz-choices,
+.letter-picker {
+  gap: max(8px, .65rem);
+}
+
+.motion-controls button,
+.wide-controls button,
+.dpad button {
+  min-height: 48px;
+  font-weight: 750;
+}
+
+html[data-arcade-controls="large"] .motion-controls button,
+html[data-arcade-controls="large"] .wide-controls button,
+html[data-arcade-controls="large"] .dpad button,
+html[data-arcade-controls="large"] .value-picker button,
+html[data-arcade-controls="large"] .quiz-choices button {
+  min-height: 56px;
+  min-width: 56px;
+}
+
+.new-status,
+.game-status,
+.race-lives,
+.feedback {
+  font-variant-numeric: tabular-nums;
+}
+
+.new-hud strong,
+.scores strong {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  [data-arcade-arena] button:active,
+  .dpad button:active,
+  .wide-controls button:active,
+  .motion-controls button:active {
+    transform: translateY(1px) scale(.985);
+  }
+}
+
+@media (max-width: 700px) {
+  .motion-controls,
+  .wide-controls {
+    position: sticky;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    z-index: 12;
+    padding: 8px;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 14px;
+    background: rgba(8,12,19,.86);
+    box-shadow: 0 14px 36px rgba(0,0,0,.32);
+    backdrop-filter: blur(14px);
+  }
+
+  .motion-stage,
+  .board-column {
+    scroll-margin-bottom: 92px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .race-car,
+  .race-car img,
+  [data-arcade-arena] button {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+html[data-arcade-motion="reduced"] .race-car,
+html[data-arcade-motion="reduced"] .race-car img,
+html[data-arcade-motion="reduced"] [data-arcade-arena] button {
+  transition: none !important;
+  transform: none !important;
+}
