@@ -6,6 +6,7 @@ export type RaceState = {
   ticks: number;
   score: number;
   lives: number;
+  recoveryTicks: number;
 };
 export const initialRace = (): RaceState => ({
   lane: 1,
@@ -13,6 +14,7 @@ export const initialRace = (): RaceState => ({
   ticks: 0,
   score: 0,
   lives: 3,
+  recoveryTicks: 0,
 });
 export function steerRace(state: RaceState, delta: number): RaceState {
   return { ...state, lane: Math.max(0, Math.min(2, state.lane + delta)) };
@@ -31,12 +33,16 @@ export function tickRace(
   if (state.lives <= 0) return state;
   const ticks = state.ticks + 1;
   let lives = state.lives;
+  let recoveryTicks = Math.max(0, state.recoveryTicks - 1);
   const velocity = raceVelocity(speed, state.ticks);
   let traffic = state.traffic
     .map((car) => ({ ...car, y: car.y + velocity }))
     .filter((car) => {
       if (car.lane === state.lane && car.y >= 59 && car.y <= 91) {
-        lives--;
+        if (state.recoveryTicks === 0 && recoveryTicks === 0) {
+          lives--;
+          recoveryTicks = 10;
+        }
         return false;
       }
       return car.y < 110;
@@ -51,6 +57,7 @@ export function tickRace(
     traffic,
     ticks,
     lives: Math.max(0, lives),
+    recoveryTicks,
     score: state.score + 1,
   };
 }
