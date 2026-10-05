@@ -438,6 +438,8 @@ export default function ActionCollection({
             <option value="easy">Fácil</option>
             <option value="normal">Normal</option>
             <option value="hard">Difícil</option>
+            <option value="master">Mestre</option>
+            <option value="expert">Especialista</option>
           </select>
         </label>
         <label>
@@ -570,8 +572,8 @@ export default function ActionCollection({
         ))}
       </div>
       <p className="action-help">
-        Fácil: ritmo estável para aprender. Normal: pressão gradual. Difícil:
-        ritmo mais intenso, com progressão nos primeiros dois minutos e limite de velocidade.
+        Fácil: ritmo estável para aprender. Normal e Difícil aumentam a pressão gradualmente.
+        Mestre reduz a margem de erro; Especialista usa a curva mais intensa, ainda com limite de velocidade para manter a partida jogável.
       </p>
       <div className="action-footer">
         <button disabled={status !== "running"} onClick={pause}>
