@@ -17,9 +17,17 @@ import type { Direction } from "./engines";
 import { games } from "./catalog";
 import { gameHelp, recordUnits } from "./gameHelp";
 describe("Race", () => {
-  it("steers within lanes without changing the input", () => {
+  it("steers one lane at a time and prevents instant double lane changes", () => {
     const state = initialRace();
-    expect(steerRace(state, -10).lane).toBe(0);
+    const left = steerRace(state, -10);
+    expect(left.lane).toBe(0);
+    expect(left.steerCooldown).toBeGreaterThan(0);
+    expect(steerRace(left, 1).lane).toBe(0);
+
+    let recovered = left;
+    for (let i = 0; i < 2; i++)
+      recovered = tickRace({ ...recovered, traffic: [] }, 3);
+    expect(steerRace(recovered, 1).lane).toBe(1);
     expect(steerRace(state, 10).lane).toBe(2);
     expect(state.lane).toBe(1);
   });
