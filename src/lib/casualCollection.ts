@@ -62,6 +62,18 @@ export function handValue(cards: number[]) {
   while (total > 21 && aces-- > 0) total -= 10;
   return total;
 }
+
+export function dealerShouldHit(cards: number[], difficulty: number) {
+  const value = handValue(cards);
+  if (value < 17) return true;
+  if (value > 17) return false;
+  const hardTotal = cards.reduce(
+    (sum, card) => sum + (card === 1 ? 1 : Math.min(card, 10)),
+    0,
+  );
+  const soft = cards.includes(1) && hardTotal + 10 === value;
+  return difficulty >= 2 && soft;
+}
 export function card(random = Math.random) {
   return 1 + Math.floor(random() * 13);
 }
