@@ -46,7 +46,7 @@ export const actionCollectionGames = [
     name: "Jetpack de Resgate",
     description: "Dose o propulsor, recupere combustível e atravesse túneis.",
     category: "Casuais",
-    help: "Mantenha Ação ou cima pressionada para usar o propulsor. Solte para descer e recuperar combustível lentamente. Cada reserva repõe parte do tanque; administre o consumo para atravessar os obstáculos.",
+    help: "Mantenha Ação ou cima pressionada para usar o propulsor. Solte para planar e economizar combustível; o tanque não se regenera sozinho. Cada reserva repõe parte do tanque, então planeje a rota entre os obstáculos.",
   },
   {
     id: "esquiva",
@@ -474,7 +474,8 @@ export function stepAction(
     s.vy += (jet ? (action && s.fuel > 0 ? -480 : 290) : 480) * dt;
     s.vy = clamp(s.vy, -220, 260);
     s.y += s.vy * dt;
-    if (jet) s.fuel = clamp(s.fuel + (action ? -22 : 14) * dt, 0, 100);
+    if (jet && action && s.fuel > 0)
+      s.fuel = clamp(s.fuel - 22 * dt, 0, 100);
     if (s.y < 12 || s.y > 348) {
       damage(s);
       s.y = 180;
