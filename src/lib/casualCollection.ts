@@ -195,6 +195,50 @@ export function projectile(
   }
   return points;
 }
+export function basketballTrajectory(
+  angle: number,
+  power: number,
+  wind: number,
+  start: FlightPoint = { x: 35, y: 245 },
+) {
+  const radians = (angle * Math.PI) / 180;
+  const speed = power * 1.5;
+  let x = start.x;
+  let y = start.y;
+  let vx = Math.cos(radians) * speed;
+  let vy = -Math.sin(radians) * speed;
+  let banked = false;
+  const points: FlightPoint[] = [{ x, y }];
+
+  for (let elapsed = 0; elapsed <= 5; elapsed += 0.03) {
+    vx += wind * 0.03;
+    vy += 50 * 0.03;
+    let nextX = x + vx * 0.03;
+    const nextY = y + vy * 0.03;
+
+    if (
+      !banked &&
+      vx > 0 &&
+      x < 297 &&
+      nextX >= 297 &&
+      nextY >= 80 &&
+      nextY <= 132
+    ) {
+      nextX = 296;
+      vx = -Math.abs(vx) * 0.55;
+      vy *= 0.82;
+      banked = true;
+    }
+
+    x = nextX;
+    y = nextY;
+    points.push({ x, y });
+    if (y > 260 || x > 380 || x < 0) break;
+  }
+
+  return { points, banked };
+}
+
 export type BasketEntryQuality = "swish" | "rim" | "miss";
 
 export function basketEntryQuality(
