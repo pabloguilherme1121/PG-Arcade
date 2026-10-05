@@ -253,6 +253,18 @@ export function bowlingHit(
 
   return pins.map((standing, i) => standing && !knocked.has(i));
 }
+export function fishingTensionTick(
+  tension: number,
+  tick: number,
+  difficulty: number,
+) {
+  const level = Math.max(0, Math.min(2, difficulty));
+  const recovery = level === 2 ? 3 : 5;
+  const pullEvery = 12 - level * 2;
+  const pull = tick > 0 && tick % pullEvery === 0 ? 4 + level * 3 : 0;
+  return Math.max(0, Math.min(100, tension - recovery + pull));
+}
+
 export function golfStroke(
   position: number,
   aim: number,
