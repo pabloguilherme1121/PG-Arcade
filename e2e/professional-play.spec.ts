@@ -62,6 +62,28 @@ test("Racing supports pointer drag steering without changing throttle", async ({
   await expect(page.locator("[data-race-speed]")).toBeVisible();
 });
 
+test("Racing clears an unfinished drag when pointer capture is lost", async ({ page }) => {
+  await page.goto("./#/jogar/corrida");
+  await page.clock.install();
+  await page.getByRole("button", { name: "Largar", exact: true }).click();
+
+  const board = page.locator(".race-board");
+  const car = page.locator(".race-car");
+  await board.evaluate((element) =>
+    element.scrollIntoView({ block: "center", inline: "nearest" }),
+  );
+  const box = await board.boundingBox();
+  expect(box).not.toBeNull();
+
+  await page.mouse.move(box!.x + box!.width * 0.3, box!.y + box!.height * 0.5);
+  await page.mouse.down();
+  await board.dispatchEvent("lostpointercapture", { pointerId: 1 });
+  await page.mouse.move(box!.x + box!.width * 0.7, box!.y + box!.height * 0.5);
+  await page.mouse.up();
+
+  await expect(car).toHaveAttribute("data-lane", "1");
+});
+
 test("Racing throttle and brake change the live speed progressively", async ({ page }) => {
   await page.goto("./#/jogar/corrida");
   await page.clock.install();
