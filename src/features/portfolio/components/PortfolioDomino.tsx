@@ -376,7 +376,7 @@ export default function PortfolioDomino() {
     >
       <div className="mx-auto grid max-w-[1180px] gap-7 px-4 py-5 sm:px-8 lg:grid-cols-[0.76fr_1.24fr] lg:px-12 lg:py-14">
         <div
-          data-arcade-arena
+         
           className="min-w-0 rounded-[18px] border border-white/10 bg-[#071827]/85 p-4 sm:p-5"
         >
           <ArcadeDifficultyNotice
