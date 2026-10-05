@@ -46,7 +46,7 @@ export const actionCollectionGames = [
     name: "Jetpack de Resgate",
     description: "Dose o propulsor, recupere combustível e atravesse túneis.",
     category: "Casuais",
-    help: "Mantenha Ação ou cima pressionada para usar o propulsor. Solte para descer e recuperar combustível. Pegue as reservas e passe entre os obstáculos.",
+    help: "Mantenha Ação ou cima pressionada para usar o propulsor. Solte para descer e recuperar combustível lentamente. Cada reserva repõe parte do tanque; administre o consumo para atravessar os obstáculos.",
   },
   {
     id: "esquiva",
@@ -475,7 +475,7 @@ export function stepAction(
           s.score += 40;
         }
       } else if (hit(s, o, 10)) {
-        s.fuel = 100;
+        s.fuel = clamp(s.fuel + 45, 0, 100);
         o.hp = 0;
         s.score += 15;
       }
