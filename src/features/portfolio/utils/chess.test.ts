@@ -5,6 +5,7 @@ import {
   createInitialChessState,
   getChessLegalMoves,
   getChessStatus,
+  getChessSearchDepth,
   isChessKingInCheck,
   type ChessBoard,
   type ChessState,
@@ -24,6 +25,15 @@ const position = (
   },
   enPassant: null,
 });
+describe("chess difficulty", () => {
+  it("increases search depth through expert difficulty", () => {
+    expect(getChessSearchDepth("normal")).toBe(1);
+    expect(getChessSearchDepth("hard")).toBe(2);
+    expect(getChessSearchDepth("master")).toBe(3);
+    expect(getChessSearchDepth("expert")).toBe(4);
+  });
+});
+
 describe("chess", () => {
   it("hard and master avoid sacrificing a queen for a defended pawn", () => {
     const b: ChessBoard = Array(64).fill(null);
