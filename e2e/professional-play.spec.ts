@@ -38,6 +38,28 @@ test("Racing prevents instant double lane changes while steering settles", async
   await expect(car).toHaveAttribute("data-lane", "1");
 });
 
+test("Racing throttle and brake change the live speed progressively", async ({ page }) => {
+  await page.goto("./#/jogar/racing");
+  await page.clock.install();
+  await page.getByRole("button", { name: "Largar", exact: true }).click();
+  const board = page.locator(".race-board");
+  const speed = page.locator("[data-race-speed]");
+  await board.focus();
+
+  const initial = Number.parseInt((await speed.textContent()) ?? "0", 10);
+  await page.keyboard.down("w");
+  await page.clock.runFor(520);
+  await page.keyboard.up("w");
+  const accelerated = Number.parseInt((await speed.textContent()) ?? "0", 10);
+  expect(accelerated).toBeGreaterThan(initial);
+
+  await page.keyboard.down("s");
+  await page.clock.runFor(720);
+  await page.keyboard.up("s");
+  const braking = Number.parseInt((await speed.textContent()) ?? "0", 10);
+  expect(braking).toBeLessThan(accelerated);
+});
+
 test("Liga 4 accepts direct 1-7 keyboard columns", async ({ page }) => {
   await page.goto("./#/jogar/liga4");
   const board = page.locator(".connect-board");
