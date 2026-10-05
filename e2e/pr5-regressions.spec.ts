@@ -61,6 +61,9 @@ test("race speed remains readable without frequent live announcements", async ({
   await page.goto("./#/jogar/corrida");
   expect(await page.locator("[data-race-speed]").evaluate((element) => Boolean(element.closest('[role="status"], [aria-live="polite"], [aria-live="assertive"]')))).toBe(false);
   await expect(page.getByRole("status").filter({ hasText: "3 vidas" })).toBeVisible();
+  expect(
+    await page.locator(".race-board").evaluate((element) => getComputedStyle(element).touchAction),
+  ).toContain("pinch-zoom");
 });
 
 for (const preference of ["system", "saved"] as const) {
