@@ -21,6 +21,23 @@ test("Snake buffers rapid WASD corners in order", async ({ page }) => {
 });
 
 
+
+test("Racing prevents instant double lane changes while steering settles", async ({ page }) => {
+  await page.goto("./#/jogar/racing");
+  await page.clock.install();
+  await page.getByRole("button", { name: "Largar", exact: true }).click();
+  const board = page.locator(".race-board");
+  const car = page.locator(".race-car");
+  await board.focus();
+  await board.press("D");
+  await expect(car).toHaveAttribute("data-lane", "2");
+  await board.press("A");
+  await expect(car).toHaveAttribute("data-lane", "2");
+  await page.clock.runFor(210);
+  await board.press("A");
+  await expect(car).toHaveAttribute("data-lane", "1");
+});
+
 test("Liga 4 accepts direct 1-7 keyboard columns", async ({ page }) => {
   await page.goto("./#/jogar/liga4");
   const board = page.locator(".connect-board");
