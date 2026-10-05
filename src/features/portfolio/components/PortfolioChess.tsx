@@ -174,7 +174,7 @@ export default function PortfolioChess() {
       className="border-y border-white/[.07] bg-[#06111e]"
     >
       <div className="mx-auto grid max-w-[1180px] gap-7 px-4 py-9 sm:px-8 lg:grid-cols-[.7fr_1.3fr] lg:px-12">
-        <div data-arcade-arena className="mx-auto w-full max-w-[620px]">
+        <div className="mx-auto w-full max-w-[620px]">
           <ArcadeDifficultyNotice
             game="xadrez"
             level={difficulty}

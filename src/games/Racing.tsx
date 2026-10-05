@@ -27,19 +27,27 @@ export default function Racing({
   const board = useRef<HTMLDivElement>(null);
   const touch = useRef<[number, number] | null>(null);
   const throttle = useRef(0);
-  const pause = useCallback(() => {
+  const engine = useRef(state);
+  const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const stopEngine = useCallback(() => {
+    if (timer.current !== null) clearInterval(timer.current);
+    timer.current = null;
     throttle.current = 0;
-    setStatus((s) => (s === "running" ? "paused" : s));
   }, []);
+  const pause = useCallback(() => {
+    stopEngine();
+    setStatus((s) => (s === "running" ? "paused" : s));
+  }, [stopEngine]);
   useAutoPause(pause);
   useEffect(() => {
     if (status !== "running") return;
-    const timer = setInterval(
-      () => setState((s) => tickRace(s, speed, Math.random, throttle.current)),
-      100,
-    );
-    return () => clearInterval(timer);
-  }, [status, speed]);
+    timer.current = setInterval(() => {
+      engine.current = tickRace(engine.current, speed, Math.random, throttle.current);
+      setState(engine.current);
+      if (!engine.current.lives) stopEngine();
+    }, 100);
+    return stopEngine;
+  }, [status, speed, stopEngine]);
   useEffect(() => {
     if (!state.lives && status === "running") {
       onRecord(state.score);
@@ -52,7 +60,10 @@ export default function Racing({
   );
   const speedKmh = Math.round(currentVelocity * 36);
   function steer(delta: number) {
-    if (status === "running") setState((s) => steerRace(s, delta));
+    if (status === "running") {
+      engine.current = steerRace(engine.current, delta);
+      setState(engine.current);
+    }
   }
   function start() {
     throttle.current = 0;
@@ -283,8 +294,8 @@ export default function Racing({
           <button
             disabled={status !== "running" && status !== "paused"}
             onClick={() => {
-              throttle.current = 0;
-              onRecord(state.score);
+              stopEngine();
+              onRecord(engine.current.score);
               setStatus("done");
             }}
           >
@@ -292,8 +303,9 @@ export default function Racing({
           </button>
           <button
             onClick={() => {
-              throttle.current = 0;
-              setState(initialRace());
+              stopEngine();
+              engine.current = initialRace();
+              setState(engine.current);
               setStatus("ready");
             }}
           >

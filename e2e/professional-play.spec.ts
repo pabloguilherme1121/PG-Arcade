@@ -61,19 +61,18 @@ test("Racing throttle and brake change the live speed progressively", async ({ p
 });
 
 
-test("Racing can end voluntarily and persist the current distance", async ({ page }) => {
+test("Racing can end while running and persist its frozen final distance", async ({ page }) => {
   await page.goto("./#/jogar/corrida");
   await page.clock.install();
   await page.getByRole("button", { name: "Largar", exact: true }).click();
   await page.clock.runFor(600);
-  await page.getByRole("button", { name: "Pausar", exact: true }).click();
-
+  await page.getByRole("button", { name: "Encerrar e salvar", exact: true }).click();
   const distance = await page.locator(".scores strong").first().textContent();
   expect(Number(distance)).toBeGreaterThan(0);
-
-  await page.getByRole("button", { name: "Encerrar e salvar", exact: true }).click();
+  await page.clock.runFor(1000);
+  await expect(page.locator(".scores strong").first()).toHaveText(distance!);
+  await expect(page.locator(".scores strong").nth(1)).toHaveText(distance!);
   await expect(page.getByRole("button", { name: "Largar", exact: true })).toBeDisabled();
-
   await page.reload();
   await expect(page.locator(".scores strong").nth(1)).toHaveText(distance!);
 });
