@@ -151,6 +151,21 @@ for (const [id, prefix, duration] of [
       `Recorde: ${score} pontos`,
     );
   });
+
+test("Target games apply difficulty to round time and active targets", async ({ page }) => {
+  await page.goto("./#/jogar/tiro");
+  await page.getByLabel("Dificuldade", { exact: true }).selectOption("hard");
+  await page.getByRole("button", { name: "Começar rodada", exact: true }).click();
+  await expect(page.locator(".scores strong").nth(1)).toHaveText("25s");
+  await expect(page.locator(".target-present")).toHaveCount(2);
+
+  await page.goto("./#/jogar/estrelas");
+  await page.getByLabel("Dificuldade", { exact: true }).selectOption("hard");
+  await page.getByRole("button", { name: "Começar rodada", exact: true }).click();
+  await expect(page.locator(".scores strong").nth(1)).toHaveText("15s");
+  await expect(page.locator(".target-present")).toHaveCount(1);
+});
+
 test("All games offer keyboard focus, specific help, focus mode and safe restart", async ({
   page,
 }) => {
