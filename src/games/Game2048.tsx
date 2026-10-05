@@ -60,8 +60,11 @@ export default function Game2048({
             }
           }}
           onTouchStart={(e) => {
-            touch.current = [e.touches[0].clientX, e.touches[0].clientY];
+            touch.current = e.touches.length === 1
+              ? [e.touches[0].clientX, e.touches[0].clientY]
+              : null;
           }}
+          onTouchCancel={() => { touch.current = null; }}
           onTouchEnd={(e) => {
             if (!touch.current) return;
             const dx = e.changedTouches[0].clientX - touch.current[0],

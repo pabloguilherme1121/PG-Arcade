@@ -26,6 +26,18 @@ const position = (
   enPassant: null,
 });
 describe("chess difficulty", () => {
+  it("returns a legal move without mutating the position when analysis runs out of time", () => {
+    const state = applyChessMove(createInitialChessState(), { from: 52, to: 36 })!;
+    const snapshot = structuredClone(state);
+    let time = 0;
+    const move = chooseChessBotMove(state, "black", "expert", () => 0, {
+      maxMs: 30,
+      now: () => time++,
+    });
+    expect(getChessLegalMoves(state, "black")).toContainEqual(move);
+    expect(time).toBeLessThanOrEqual(32);
+    expect(state).toEqual(snapshot);
+  });
   it("increases search depth through expert difficulty", () => {
     expect(getChessSearchDepth("normal")).toBe(1);
     expect(getChessSearchDepth("hard")).toBe(2);

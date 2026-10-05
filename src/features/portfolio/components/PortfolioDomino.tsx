@@ -172,6 +172,13 @@ export default function PortfolioDomino() {
   ) => {
     const playerPips = getDominoPipTotal(nextPlayerHand);
     const opponentPips = getDominoPipTotal(nextOpponentHand);
+    if (playerPips !== opponentPips) {
+      const owner = playerPips < opponentPips ? "player" : "opponent";
+      setPoints((current) => ({
+        ...current,
+        [owner]: current[owner] + getDominoWinnerPoints(owner, nextPlayerHand, nextOpponentHand),
+      }));
+    }
     finishRound(
       playerPips === opponentPips
         ? "draw"
@@ -777,6 +784,7 @@ export default function PortfolioDomino() {
               <p className="mt-1 font-display text-2xl text-[#67e8f9]">
                 {score.player}
               </p>
+              <p data-domino-points="player">{points.player} pontos</p>
             </div>
             <div className="bg-[#071827] p-3 text-center">
               <p className="font-body text-[11px] uppercase text-[#7191a8]">
@@ -785,6 +793,7 @@ export default function PortfolioDomino() {
               <p className="mt-1 font-display text-2xl text-white">
                 {score.opponent}
               </p>
+              <p data-domino-points="opponent">{points.opponent} pontos</p>
             </div>
             <div className="bg-[#071827] p-3 text-center">
               <p className="font-body text-[11px] uppercase text-[#7191a8]">

@@ -417,10 +417,6 @@ const values: Record<ChessPieceType, number> = {
   king: 100,
 };
 function evaluate(state: ChessState, color: ChessColor) {
-  const status = getChessStatus(state);
-  if (status.kind === "checkmate")
-    return status.winner === color ? 10000 : -10000;
-  if (status.kind === "stalemate") return 0;
   let score = 0;
   state.board.forEach((piece, index) => {
     if (!piece) return;
@@ -438,11 +434,16 @@ function minimax(
   depth: number,
   alpha: number,
   beta: number,
+  checkBudget: () => void,
 ): number {
-  const status = getChessStatus(state);
-  if (depth <= 0 || status.kind === "checkmate" || status.kind === "stalemate")
-    return evaluate(state, root);
-  const moves = getChessLegalMoves(state, state.turn).sort(
+  checkBudget();
+  const moves = getChessLegalMoves(state, state.turn);
+  if (!moves.length)
+    return isChessKingInCheck(state.board, state.turn)
+      ? state.turn === root ? -10000 : 10000
+      : 0;
+  if (depth <= 0) return evaluate(state, root);
+  moves.sort(
     (a, b) =>
       (state.board[b.to] ? values[state.board[b.to]!.type] : 0) -
       (state.board[a.to] ? values[state.board[a.to]!.type] : 0),
@@ -451,7 +452,7 @@ function minimax(
   let best = maximize ? -Infinity : Infinity;
   for (const move of moves) {
     const next = applyUnchecked(state, move);
-    const score = minimax(next, root, depth - 1, alpha, beta);
+    const score = minimax(next, root, depth - 1, alpha, beta, checkBudget);
     best = maximize ? Math.max(best, score) : Math.min(best, score);
     if (maximize) alpha = Math.max(alpha, best);
     else beta = Math.min(beta, best);
@@ -477,6 +478,7 @@ export function chooseChessBotMove(
   color: ChessColor,
   difficulty: ChessDifficulty,
   random: () => number = Math.random,
+  budget?: { maxMs: number; now?: () => number },
 ): ChessMove | null {
   const basis = color === state.turn ? state : { ...state, turn: color };
   const moves = getChessLegalMoves(basis, color);
@@ -484,15 +486,32 @@ export function chooseChessBotMove(
   if (difficulty === "easy")
     return moves[Math.floor(random() * moves.length)] ?? moves[0];
   const depth = getChessSearchDepth(difficulty);
-  const scored = moves.map((move) => {
-    const next = applyUnchecked(basis, move);
-    const tactical = difficulty === "expert" && move.castle ? 0.05 : 0;
-    return {
-      move,
-      score: minimax(next, color, depth - 1, -Infinity, Infinity) + tactical,
-    };
-  });
-  scored.sort((a, b) => b.score - a.score);
+  const now = budget?.now ?? (() => performance.now());
+  const deadline = budget ? now() + Math.max(0, budget.maxMs) : Infinity;
+  const exhausted = Symbol("search budget exhausted");
+  const checkBudget = () => {
+    if (budget && now() >= deadline) throw exhausted;
+  };
+  let scored = moves.map((move) => ({ move, score: 0 }));
+  // Only publish complete iterations: a timeout must not favor moves searched first.
+  for (let currentDepth = budget ? 1 : depth; currentDepth <= depth; currentDepth++) {
+    try {
+      const iteration = scored.map(({ move }) => {
+        checkBudget();
+        const next = applyUnchecked(basis, move);
+        const tactical = difficulty === "expert" && move.castle ? 0.05 : 0;
+        return {
+          move,
+          score: minimax(next, color, currentDepth - 1, -Infinity, Infinity, checkBudget) + tactical,
+        };
+      });
+      iteration.sort((a, b) => b.score - a.score);
+      scored = iteration;
+    } catch (error) {
+      if (error !== exhausted) throw error;
+      break;
+    }
+  }
   if (difficulty === "normal" && scored.length > 2 && random() > 0.72)
     return scored[1].move;
   return scored[0].move;
