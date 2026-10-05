@@ -57,11 +57,14 @@ describe("Directional input", () => {
 });
 
 describe("Snake", () => {
-  it("buffers a fast corner without allowing an immediate reverse", () => {
-    expect(queueSnakeDirection("right", "right", "left")).toBe("right");
-    expect(queueSnakeDirection("right", "right", "up")).toBe("up");
-    expect(queueSnakeDirection("right", "up", "left")).toBe("left");
-    expect(queueSnakeDirection("right", "up", "down")).toBe("up");
+  it("buffers up to two fast corners without reversing against the queued path", () => {
+    expect(queueSnakeDirection("right", [], "left")).toEqual([]);
+    const first = queueSnakeDirection("right", [], "up");
+    expect(first).toEqual(["up"]);
+    const second = queueSnakeDirection("right", first, "left");
+    expect(second).toEqual(["up", "left"]);
+    expect(queueSnakeDirection("right", second, "down")).toEqual(second);
+    expect(queueSnakeDirection("right", second, "right")).toEqual(second);
   });
   it("grows on food and collides with walls", () => {
     const b = [
