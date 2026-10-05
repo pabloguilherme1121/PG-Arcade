@@ -231,6 +231,12 @@ export default function MotionExpansion({
   }, []);
   useAutoPause(pause);
   useEffect(() => {
+    if (hud.status === "running") return;
+    const context = canvas.current?.getContext("2d");
+    if (context) paintMotion(context, hud);
+  }, [hud]);
+  useEffect(() => {
+    if (hud.status !== "running") return;
     let frame = 0,
       last = performance.now(),
       accumulator = 0,
@@ -275,7 +281,7 @@ export default function MotionExpansion({
       cancelAnimationFrame(frame);
       input.current = emptyInput();
     };
-  }, []);
+  }, [hud.status]);
   function reset(d = difficulty, next = seed) {
     setDifficulty(d);
     setSeed(next);
