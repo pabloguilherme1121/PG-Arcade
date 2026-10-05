@@ -222,7 +222,18 @@ export function golfStroke(
   power: number,
   barrier: boolean,
 ) {
-  let next = Math.min(340, Math.max(15, position + (aim - 50) * power * 0.075));
-  if (barrier && position < 180 && next > 180 && power < 72) next = 165;
-  return { position: next, hole: Math.abs(next - 320) < 12 && power < 85 };
+  const normalizedAim = Math.max(0, Math.min(100, aim));
+  const normalizedPower = Math.max(0, Math.min(100, power));
+  const angle = ((normalizedAim - 50) * 1.2 * Math.PI) / 180;
+  const alignment = Math.max(0.45, Math.cos(angle));
+  let next = Math.min(
+    340,
+    Math.max(15, position + normalizedPower * 2.8 * alignment),
+  );
+  if (barrier && position < 180 && next > 180 && normalizedPower < 72)
+    next = 165;
+  return {
+    position: next,
+    hole: Math.abs(next - 320) < 12 && normalizedPower <= 55,
+  };
 }
