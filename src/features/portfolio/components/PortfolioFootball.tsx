@@ -4,6 +4,7 @@ import { RotateCcw, Target, ArrowUpRight, Check, X } from "lucide-react";
 import {
   chooseFootballKeeperPosition,
   getFootballFlightProfile,
+  getFootballTargetX,
   resolveFootballShot,
   type FootballDifficulty,
   type FootballMode,
@@ -64,7 +65,8 @@ export default function PortfolioFootball() {
   };
   const shoot = () => {
     if (finished || timer.current) return;
-    const position = chooseFootballKeeperPosition(difficulty, aim);
+    const target = getFootballTargetX(mode, aim, curve);
+    const position = chooseFootballKeeperPosition(difficulty, target);
     const shot = {
       ...resolveFootballShot(mode, aim, power, curve, position),
       ...getFootballFlightProfile(mode, power, curve),
