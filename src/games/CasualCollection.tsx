@@ -16,6 +16,7 @@ import {
   bowlingHit,
   golfStroke,
   type FlightPoint,
+  moveGridCursor,
 } from "../lib/casualCollection";
 import "./casualCollection.css";
 type Options = { difficulty: number; mode: string };
@@ -348,15 +349,11 @@ function Jewels({ options, onRound }: PlayProps) {
         aria-label="Tabuleiro de joias. Use setas e Enter."
         onKeyDown={(e) => {
           if (e.target !== e.currentTarget) return;
-          const directions: Record<string, number> = {
-            ArrowLeft: -1,
-            ArrowRight: 1,
-            ArrowUp: -6,
-            ArrowDown: 6,
-          };
-          if (e.key in directions) {
+          if (
+            ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)
+          ) {
             e.preventDefault();
-            setCursor(Math.max(0, Math.min(35, cursor + directions[e.key])));
+            setCursor(moveGridCursor(cursor, e.key, 6, 36));
           }
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
