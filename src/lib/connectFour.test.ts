@@ -28,23 +28,54 @@ describe("Liga 4 tactical bot", () => {
     let board = Array(42).fill(0);
     for (let n = 0; n < 3; n++) board = dropDisc(board, 5, 1)!;
     expect(chooseDiscMove(board, 2, "hard")).toBe(5);
-    for (let n = 0; n < 6; n++) board = dropDisc(board, 0, n % 2 + 1)!;
-    for (const level of ["easy", "normal", "hard"] as const) expect(chooseDiscMove(board, 2, level, () => 1)).not.toBe(0);
+    for (let n = 0; n < 6; n++) board = dropDisc(board, 0, (n % 2) + 1)!;
+    for (const level of ["easy", "normal", "hard"] as const)
+      expect(chooseDiscMove(board, 2, level, () => 1)).not.toBe(0);
     board = dropDisc(board, 5, 1)!;
     expect(chooseDiscMove(board, 2, "hard")).toBeNull();
   });
   it("finishes complete bot matches with legal moves and no mutation", () => {
     for (const level of ["normal", "hard"] as const) {
-      let board = Array(42).fill(0), player = 1;
+      let board = Array(42).fill(0),
+        player = 1;
       for (let n = 0; n < 42 && !discWinner(board); n++) {
         const column = chooseDiscMove(board, player, level);
-        if (column === null) { expect(board.every(Boolean)).toBe(true); break; }
+        if (column === null) {
+          expect(board.every(Boolean)).toBe(true);
+          break;
+        }
         const next = dropDisc(board, column, player);
         expect(next).not.toBeNull();
         expect(next!.filter(Boolean)).toHaveLength(n + 1);
-        board = next!; player = 3 - player;
+        board = next!;
+        player = 3 - player;
       }
       expect(!!discWinner(board) || board.every(Boolean)).toBe(true);
     }
   });
+});
+
+it("precomputed winning lines match the independent board evaluator", () => {
+  let seed = 19;
+  const random = () => {
+    seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+    return seed / 4294967296;
+  };
+  for (let trial = 0; trial < 400; trial++) {
+    let board = Array(42).fill(0);
+    for (let ply = 0; ply < 42; ply++) {
+      const legal = Array.from({ length: 7 }, (_, i) => i).filter(
+        (i) => !board[i],
+      );
+      if (!legal.length) break;
+      board = dropDisc(
+        board,
+        legal[Math.floor(random() * legal.length)],
+        (ply % 2) + 1,
+      )!;
+      const cells = winningDiscs(board);
+      expect(cells.length ? board[cells[0]] : 0).toBe(discWinner(board));
+      if (cells.length) break;
+    }
+  }
 });
