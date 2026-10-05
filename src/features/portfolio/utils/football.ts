@@ -25,6 +25,17 @@ export function chooseFootballKeeperPosition(
   );
 }
 
+export function getFootballCurveOffset(
+  mode: FootballMode,
+  power: number,
+  curve: number,
+) {
+  if (mode !== "free-kick") return 0;
+  const normalizedPower = Math.max(0, Math.min(100, power));
+  const flightFactor = 0.21 - normalizedPower * 0.00065;
+  return curve * Math.max(0.135, flightFactor);
+}
+
 export function getFootballFlightProfile(
   mode: FootballMode,
   power: number,
@@ -34,7 +45,8 @@ export function getFootballFlightProfile(
   const durationMs = Math.round(
     Math.max(420, Math.min(760, 760 - normalizedPower * 3.5)),
   );
-  const bend = mode === "free-kick" ? curve * 0.85 : 0;
+  const curveOffset = getFootballCurveOffset(mode, normalizedPower, curve);
+  const bend = curveOffset * 4.6;
   const apexLift =
     72 + normalizedPower * 0.34 + (mode === "free-kick" ? Math.abs(curve) * 0.08 : 0);
   const scaleAtGoal = Math.max(
@@ -48,8 +60,9 @@ export function getFootballTargetX(
   mode: FootballMode,
   aim: number,
   curve: number,
+  power = 65,
 ) {
-  return aim + (mode === "free-kick" ? curve * 0.18 : 0);
+  return aim + getFootballCurveOffset(mode, power, curve);
 }
 
 export function resolveFootballShot(
@@ -59,7 +72,7 @@ export function resolveFootballShot(
   curve: number,
   keeper: number,
 ) {
-  const x = getFootballTargetX(mode, aim, curve);
+  const x = getFootballTargetX(mode, aim, curve, power);
   const y = 90 - power * 0.7;
   const result: "gol" | "defesa" | "fora" | "barreira" =
     power > 90 || power < 25 || x < 8 || x > 92
