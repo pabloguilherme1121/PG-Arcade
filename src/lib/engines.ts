@@ -55,6 +55,30 @@ export const opposite: Record<Direction, Direction> = {
   left: "right",
   right: "left",
 };
+export function directionFromKey(key: string): Direction | null {
+  const normalized = key.length === 1 ? key.toLowerCase() : key;
+  return ({
+    ArrowUp: "up",
+    ArrowDown: "down",
+    ArrowLeft: "left",
+    ArrowRight: "right",
+    w: "up",
+    s: "down",
+    a: "left",
+    d: "right",
+  } as Record<string, Direction>)[normalized] ?? null;
+}
+
+export function directionFromSwipe(
+  dx: number,
+  dy: number,
+  threshold = 20,
+): Direction | null {
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < threshold) return null;
+  if (Math.abs(dx) > Math.abs(dy)) return dx > 0 ? "right" : "left";
+  return dy > 0 ? "down" : "up";
+}
+
 export function queueSnakeDirection(
   current: Direction,
   pending: Direction,
