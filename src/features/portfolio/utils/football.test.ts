@@ -3,6 +3,7 @@ import {
   chooseFootballKeeperPosition,
   getFootballFlightProfile,
   getFootballTargetX,
+  getFootballCurveOffset,
   resolveFootballShot,
 } from "./football";
 describe("football shots", () => {
@@ -12,11 +13,18 @@ describe("football shots", () => {
     expect(Math.abs(master - 80)).toBeLessThan(Math.abs(easy - 80));
   });
   it("uses the curved final target when reading free kicks", () => {
-    const target = getFootballTargetX("free-kick", 50, 80);
+    const target = getFootballTargetX("free-kick", 50, 80, 65);
     expect(target).toBeGreaterThan(60);
     const easy = chooseFootballKeeperPosition("easy", target, () => 0);
     const expert = chooseFootballKeeperPosition("expert", target, () => 0);
     expect(Math.abs(expert - target)).toBeLessThan(Math.abs(easy - target));
+  });
+
+  it("lets slower free kicks bend more because the ball stays in flight longer", () => {
+    const slower = Math.abs(getFootballCurveOffset("free-kick", 55, 80));
+    const driven = Math.abs(getFootballCurveOffset("free-kick", 85, 80));
+    expect(slower).toBeGreaterThan(driven);
+    expect(getFootballCurveOffset("penalty", 55, 80)).toBe(0);
   });
   it("rejects excessive power and shots outside the goal", () => {
     expect(resolveFootballShot("penalty", 50, 100, 0, 0).result).toBe("fora");
