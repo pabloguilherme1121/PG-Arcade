@@ -59,9 +59,20 @@ jobs:
           path: test-results
           retention-days: 7
 
+  validate:
+    name: validate
+    if: ${{ always() }}
+    needs: [quality, e2e]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require quality and all browser jobs
+        run: |
+          test "${{ needs.quality.result }}" = "success"
+          test "${{ needs.e2e.result }}" = "success"
+
   pages-artifact:
     if: github.event_name != 'pull_request'
-    needs: [quality, e2e]
+    needs: validate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v8
