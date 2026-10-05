@@ -25,7 +25,7 @@ export const actionCollectionGames = [
     name: "Invasores da Galáxia",
     description: "Proteja a base contra formações de naves inimigas.",
     category: "Tiro",
-    help: "Mova a nave para os lados e mantenha Ação pressionada para disparar. As formações descem a cada mudança de direção; elimine a onda antes que alcance a base.",
+    help: "Mova a nave para os lados e mantenha Ação pressionada para disparar. Apenas os invasores expostos na linha de frente atiram; a formação acelera conforme perde integrantes e desce a cada mudança de direção.",
   },
   {
     id: "runner",
@@ -188,6 +188,22 @@ function rand(s: ActionState) {
 }
 function hit(a: { x: number; y: number }, b: Body, r: number) {
   return Math.hypot(a.x - b.x, a.y - b.y) < r + b.r;
+}
+
+export function isExposedInvader(invader: Body, formation: Body[]) {
+  return !formation.some(
+    (other) =>
+      other !== invader &&
+      other.hp > 0 &&
+      other.kind === "invader" &&
+      Math.abs(other.x - invader.x) < 18 &&
+      other.y > invader.y,
+  );
+}
+
+export function invasionFormationFactor(alive: number) {
+  const remaining = Math.max(0, Math.min(24, alive));
+  return Math.min(1.9, 1 + ((24 - remaining) / 24) * 0.9);
 }
 function damage(s: ActionState) {
   if (s.cooldown > 0) return;
@@ -388,7 +404,9 @@ export function stepAction(
       s.spawn = 0;
       s.shots.push(body(s.x, 310, 0, -350, 3, "laser"));
     }
-    const speed = (22 + s.level * 7) * f;
+    const aliveInvaders = s.objects.filter((o) => o.hp > 0).length;
+    const speed =
+      (22 + s.level * 7) * f * invasionFormationFactor(aliveInvaders);
     const edge = s.objects.some((o) => o.x < 20 || o.x > 460);
     if (edge) {
       s.invDirection *= -1;
@@ -403,7 +421,7 @@ export function stepAction(
         damage(s);
         o.hp = 0;
       }
-      if (rand(s) < dt * 0.08 * f)
+      if (isExposedInvader(o, s.objects) && rand(s) < dt * 0.08 * f)
         s.shots.push(body(o.x, o.y, 0, 130 * f, 4, "enemy"));
     }
     for (const shot of s.shots) {
