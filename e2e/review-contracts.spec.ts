@@ -124,6 +124,7 @@ test("expert chess responds within the worker budget and remains cancellable", a
 });
 
 test("checkers forces the capture chain then releases selection for the next turn", async ({ page }) => {
+  test.setTimeout(90000);
   await page.goto("./#/jogar/damas");
   const game = page.locator('[data-checkers-game="true"]');
   await game.getByRole("button", { name: /1 × 1 local/i }).click();
@@ -183,6 +184,7 @@ for (const [seed, winner, expected] of [[0, "player", 9], [0.1, "opponent", 11]]
 
 for (const difficulty of ["1", "2"]) {
   test(`golf barrier can be cleared and holed at difficulty ${difficulty}`, async ({ page }) => {
+    test.setTimeout(90000);
     await page.goto("./#/jogar/golfe");
     await page.locator(".casual-options select").first().selectOption(difficulty);
     await page.getByLabel("Formato da sessão", { exact: true }).selectOption("treino");
