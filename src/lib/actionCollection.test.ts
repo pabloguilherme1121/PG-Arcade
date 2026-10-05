@@ -100,6 +100,27 @@ describe("action collection physics", () => {
     expect(crash.score).toBe(0);
     expect(crash.lives).toBe(2);
   });
+  it("drift braking creates controllable lateral slip instead of rigid rotation", () => {
+    const base = newAction("drift");
+    base.vx = 140;
+    base.angle = 0;
+
+    const grip = stepAction(
+      base,
+      { ...idleInput, left: true, up: true },
+      0.04,
+    );
+    const slide = stepAction(
+      base,
+      { ...idleInput, left: true, down: true },
+      0.04,
+    );
+
+    expect(Math.abs(slide.vy)).toBeGreaterThan(Math.abs(grip.vy));
+    expect(slide.y).not.toBe(base.y);
+    expect(slide.vx).toBeLessThan(base.vx);
+  });
+
   it("drift checkpoints must be crossed in order", () => {
     const s = newAction("drift");
     s.x = 240;
