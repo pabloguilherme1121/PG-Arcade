@@ -4,7 +4,7 @@ export const actionCollectionGames = [
     name: "Quebra-blocos",
     description: "Rebata a esfera e abra caminho por paredes de blocos.",
     category: "Casuais",
-    help: "Mova a raquete com as setas ou os botões. Rebata a esfera e destrua todos os blocos para avançar. A posição do impacto define o ângulo.",
+    help: "Mova a raquete com as setas ou os botões. A posição do impacto e o movimento da raquete mudam o ângulo da esfera; a velocidade de retorno tem limite para manter o controle. Destrua todos os blocos para avançar.",
   },
   {
     id: "pong",
@@ -249,11 +249,9 @@ export function stepAction(
     b.x += b.vx * dt * f;
     b.y += b.vy * dt * f;
     if (s.id === "breakout") {
-      s.paddle = clamp(
-        s.paddle + ((input.right ? 1 : 0) - (input.left ? 1 : 0)) * 320 * dt,
-        45,
-        435,
-      );
+      const paddleVelocity =
+        ((input.right ? 1 : 0) - (input.left ? 1 : 0)) * 320;
+      s.paddle = clamp(s.paddle + paddleVelocity * dt, 45, 435);
       if (b.x < 7 || b.x > 473) {
         b.x = clamp(b.x, 7, 473);
         b.vx *= -1;
@@ -269,8 +267,12 @@ export function stepAction(
         Math.abs(b.x - s.paddle) < 49
       ) {
         b.y = 315;
-        b.vy = -Math.abs(b.vy) - 3;
-        b.vx = (b.x - s.paddle) * 5;
+        b.vy = -Math.min(340, Math.abs(b.vy) + 3);
+        b.vx = clamp(
+          (b.x - s.paddle) * 5 + paddleVelocity * 0.16,
+          -300,
+          300,
+        );
       }
       const index = s.objects.findIndex(
         (o) => Math.abs(b.x - o.x) < 39 && Math.abs(b.y - o.y) < 15,
