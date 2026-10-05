@@ -1259,3 +1259,26 @@ html[data-arcade-motion="reduced"] [data-arcade-arena] button {
   transition: none !important;
   transform: none !important;
 }
+
+
+/* Interpolate the intentionally discrete 10 Hz run engine without changing its simulation. */
+.run-object,
+.laser {
+  transition:
+    top .1s linear,
+    left .12s cubic-bezier(.2,.7,.3,1),
+    opacity .12s ease;
+  will-change: top, left;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .run-object,
+  .laser {
+    transition: none !important;
+  }
+}
+
+html[data-arcade-motion="reduced"] .run-object,
+html[data-arcade-motion="reduced"] .laser {
+  transition: none !important;
+}
