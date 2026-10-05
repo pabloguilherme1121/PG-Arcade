@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="PG Arcade">
+  <rect width="512" height="512" rx="112" fill="#080b12"/>
+  <path d="M106 205c15-62 61-93 150-93s135 31 150 93l30 124c12 49-48 73-78 34l-38-50H192l-38 50c-30 39-90 15-78-34l30-124Z" fill="#c9f65a"/>
+  <rect x="150" y="222" width="92" height="24" rx="12" fill="#080b12"/>
+  <rect x="184" y="188" width="24" height="92" rx="12" fill="#080b12"/>
+  <circle cx="337" cy="217" r="18" fill="#080b12"/>
+  <circle cx="378" cy="258" r="18" fill="#080b12"/>
+  <path d="M207 336h98" stroke="#79b8ff" stroke-width="22" stroke-linecap="round"/>
+</svg>
