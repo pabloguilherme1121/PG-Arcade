@@ -228,6 +228,19 @@ describe("board rules, solvability and terminal states", () => {
   });
   it("skyscraper clues count only successive height records", () =>
     expect(visibleTowers([2, 1, 3, 4])).toBe(3));
+  it("isolation rival removes a free square even when the player is already boxed in", () => {
+    const s = newBoard("isolation");
+    s.cells = Array(s.size * s.size).fill(-1);
+    s.cells[22] = 1;
+    s.cells[2] = 2;
+    s.cells[6] = 0;
+    s.cells[7] = 0;
+    s.phase = 1;
+    const blocked = s.cells.filter((x) => x === -1).length;
+    const next = boardClick(s, 6);
+    expect(next.cells.filter((x) => x === -1)).toHaveLength(blocked + 2);
+    expect(next.status).toBe("lost");
+  });
   for (const id of [
     "gomoku",
     "hex",
