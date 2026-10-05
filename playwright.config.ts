@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+const port = Number(process.env.E2E_PORT || (process.env.CI ? 5173 : 5189));
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
@@ -6,7 +7,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: "list",
   use: {
-    baseURL: process.env.E2E_BASE_URL || `http://127.0.0.1:5173/${process.env.GITHUB_ACTIONS ? "PG-Arcade/" : ""}`,
+    baseURL: process.env.E2E_BASE_URL || `http://127.0.0.1:${port}/${process.env.GITHUB_ACTIONS ? "PG-Arcade/" : ""}`,
     trace: "retain-on-failure",
   },
   projects: [
@@ -19,8 +20,8 @@ export default defineConfig({
   webServer: process.env.E2E_BASE_URL
     ? undefined
     : {
-        command: "npm run preview",
-        url: `http://127.0.0.1:5173/${process.env.GITHUB_ACTIONS ? "PG-Arcade/" : ""}`,
-        reuseExistingServer: !process.env.CI,
+        command: `npm run preview -- --port ${port} --strictPort`,
+        url: `http://127.0.0.1:${port}/${process.env.GITHUB_ACTIONS ? "PG-Arcade/" : ""}`,
+        reuseExistingServer: false,
       },
 });
