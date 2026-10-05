@@ -2957,6 +2957,9 @@ html[data-arcade-contrast="true"] .experience-tools {
 }
 
 
+.race-board { touch-action: pan-y pinch-zoom; }
+.race-car[data-recovering="true"] { opacity: .55; outline: 2px solid #d7f367; outline-offset: 4px; border-radius: 8px; }
+
 /* Shared motion language for all PG Arcade games. */
 :root {
   --arcade-motion-fast: 140ms;
