@@ -3,11 +3,7 @@
 :root {
   --pg-bg: #080b12;
   --pg-bg-deep: #05070c;
-  --pg-panel: rgba(18, 24, 35, 0.82);
-  --pg-panel-strong: rgba(20, 27, 40, 0.96);
-  --pg-panel-soft: rgba(255, 255, 255, 0.035);
   --pg-line: rgba(255, 255, 255, 0.09);
-  --pg-line-strong: rgba(201, 246, 90, 0.24);
   --pg-text: #f7f8f3;
   --pg-muted: #aeb7c7;
   --pg-accent: #c9f65a;
@@ -15,7 +11,6 @@
   --pg-accent-3: #b59cff;
   --pg-warm: #ffb46b;
   --pg-danger: #ff7d91;
-  --pg-radius-sm: 12px;
   --pg-radius: 18px;
   --pg-radius-lg: 26px;
   --pg-shadow: 0 20px 60px rgba(0, 0, 0, 0.32);
@@ -346,20 +341,6 @@ nav a[aria-current]::after {
   z-index: 2;
   opacity: .85;
   background: linear-gradient(90deg, transparent, var(--pg-accent-2), transparent);
-}
-
-.game-card[data-game-category="Estratégia"]::before,
-.game-card[data-game-category="Inteligência"]::before {
-  background: linear-gradient(90deg, transparent, var(--pg-accent-3), transparent);
-}
-
-.game-card[data-game-category="Esportes"]::before,
-.game-card[data-game-category="Reflexos"]::before {
-  background: linear-gradient(90deg, transparent, var(--pg-warm), transparent);
-}
-
-.game-card[data-game-category="Tiro"]::before {
-  background: linear-gradient(90deg, transparent, var(--pg-danger), transparent);
 }
 
 .game-link {
@@ -754,8 +735,6 @@ html[data-arcade-motion="reduced"] .record-list a {
 }
 
 html[data-arcade-contrast="true"] {
-  --pg-panel: #050505;
-  --pg-panel-strong: #050505;
   --pg-line: rgba(255,255,255,.42);
   --pg-muted: #f0f0f0;
 }
@@ -816,16 +795,6 @@ main {
 
 .catalog-heading {
   align-items: flex-end;
-}
-
-.catalog-heading::before {
-  content: "CATÁLOGO";
-  position: absolute;
-  margin-top: -24px;
-  color: rgba(201,246,90,.78);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: .18em;
 }
 
 .catalog-tools {
@@ -1061,12 +1030,6 @@ main {
 @media (max-width: 700px) {
   .site-header {
     top: 8px;
-  }
-
-  .catalog-heading::before {
-    position: static;
-    display: block;
-    margin: 0 0 7px;
   }
 
   .catalog-heading {
