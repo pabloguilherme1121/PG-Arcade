@@ -105,6 +105,28 @@ export function lightsChallenge(level: number) {
 export function parkingScore(moves: number) {
   return Math.max(10, 100 - moves);
 }
+export type TargetGameKind = "shoot" | "casual";
+export type TargetDifficulty = "easy" | "normal" | "hard";
+
+export function targetGameRules(
+  kind: TargetGameKind,
+  difficulty: TargetDifficulty,
+) {
+  if (kind === "shoot") {
+    if (difficulty === "easy")
+      return { duration: 35, targets: 4, relocateMs: 0 };
+    if (difficulty === "hard")
+      return { duration: 25, targets: 2, relocateMs: 0 };
+    return { duration: 30, targets: 3, relocateMs: 0 };
+  }
+
+  if (difficulty === "easy")
+    return { duration: 25, targets: 1, relocateMs: 1400 };
+  if (difficulty === "hard")
+    return { duration: 15, targets: 1, relocateMs: 800 };
+  return { duration: 20, targets: 1, relocateMs: 1100 };
+}
+
 export function hitScore(score: number, combo: number) {
   return score + 10 + Math.min(combo, 5) * 2;
 }
