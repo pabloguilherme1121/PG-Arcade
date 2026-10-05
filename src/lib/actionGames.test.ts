@@ -10,6 +10,7 @@ import {
   toggleLights,
   lightsChallenge,
   hitScore,
+  targetGameRules,
 } from "./actionGames";
 import type { Direction } from "./engines";
 import { games } from "./catalog";
@@ -112,6 +113,19 @@ describe("Lights Out", () => {
     });
   });
 });
+it("target games scale difficulty without removing reaction time", () => {
+  const easyShoot = targetGameRules("shoot", "easy");
+  const hardShoot = targetGameRules("shoot", "hard");
+  expect(easyShoot.duration).toBeGreaterThan(hardShoot.duration);
+  expect(easyShoot.targets).toBeGreaterThan(hardShoot.targets);
+
+  const easyCasual = targetGameRules("casual", "easy");
+  const hardCasual = targetGameRules("casual", "hard");
+  expect(easyCasual.duration).toBeGreaterThan(hardCasual.duration);
+  expect(easyCasual.relocateMs).toBeGreaterThan(hardCasual.relocateMs);
+  expect(hardCasual.relocateMs).toBeGreaterThanOrEqual(700);
+});
+
 it("shooting combos have a bounded bonus", () => {
   expect(hitScore(0, 0)).toBe(10);
   expect(hitScore(10, 1)).toBe(22);
