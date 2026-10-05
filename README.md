@@ -61,3 +61,4 @@ Carregamento sob demanda por jogo/coleção. GitHub Actions valida regras e part
 Os cinco jogos originais foram adaptados de [PG-portfolio](https://github.com/pabloguilherme1121/PG-portfolio), sob licença MIT. Os outros 95 jogos e o catálogo foram desenvolvidos para este projeto. Ilustrações foram criadas com auxílio de geração de imagem.
 
 Licença MIT.
+<!-- CI synchronization marker -->
