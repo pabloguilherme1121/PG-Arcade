@@ -510,6 +510,14 @@ export default function ActionCollection({
         <p className="action-telemetry">
           Combustível: {Math.round(hud.fuel)}% · Velocidade vertical:{" "}
           {Math.round(hud.vy)}
+          {id === "pouso" && hud.landingQuality
+            ? ` · Último toque: ${{
+                soft: "suave",
+                controlled: "controlado",
+                rough: "duro",
+                crash: "impacto",
+              }[hud.landingQuality]}`
+            : ""}
         </p>
       )}
       <div className="action-canvas-wrap">
