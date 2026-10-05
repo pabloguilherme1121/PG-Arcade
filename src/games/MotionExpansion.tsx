@@ -398,6 +398,11 @@ export default function MotionExpansion({
         <span>
           Vidas <strong>{hud.lives}</strong>
         </span>
+        {["rhythm", "balloons"].includes(gameId) && (
+          <span>
+            Combo <strong>{hud.combo}</strong>
+          </span>
+        )}
         <span>
           Tempo <strong>{Math.floor(hud.time)}s</strong>
         </span>
@@ -520,6 +525,13 @@ export default function MotionExpansion({
         <aside className="new-instructions">
           <h2>Como jogar</h2>
           <p>{meta.help}</p>
+          <p className="new-tip">
+            {difficulty === 0
+              ? "Iniciante: ritmo mais legível, maior tolerância e mais tempo de recuperação."
+              : difficulty === 2
+                ? "Avançado: ritmo mais rápido, janelas menores e pontuação de precisão valorizada."
+                : "Normal: velocidade, tolerância e recuperação equilibradas."}
+          </p>
           {gameId === "ricochet" && <p>Disparos restantes: {hud.shots}</p>}
           <div className="new-actions">
             <button disabled={hud.status !== "running"} onClick={pause}>
