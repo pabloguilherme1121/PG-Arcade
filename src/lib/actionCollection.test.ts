@@ -4,6 +4,7 @@ import {
   stepAction,
   idleInput,
   actionCollectionGames,
+  actionPressure,
 } from "./actionCollection";
 describe("action collection physics", () => {
   it("defines ten distinct games and bounds frame delta", () => {
@@ -117,14 +118,33 @@ describe("action collection physics", () => {
     s.mode = "endless";
     expect(stepAction(s, idleInput, 0.02).done).toBe(false);
   });
-  it("difficulty adjusts speed and lives", () => {
-    const easy = newAction("pong", "easy"),
-      hard = newAction("pong", "hard");
+  it("difficulty adjusts pressure and lives across five levels", () => {
+    const easy = newAction("pong", "easy");
+    const normal = newAction("pong", "normal");
+    const hard = newAction("pong", "hard");
+    const master = newAction("pong", "master");
+    const expert = newAction("pong", "expert");
     expect(easy.lives).toBe(5);
+    expect(normal.lives).toBe(3);
     expect(hard.lives).toBe(3);
-    expect(stepAction(hard, idleInput, 0.02).ball.x).toBeGreaterThan(
-      stepAction(easy, idleInput, 0.02).ball.x,
+    expect(master.lives).toBe(2);
+    expect(expert.lives).toBe(2);
+    const speeds = [easy, normal, hard, master, expert].map(
+      (state) => stepAction(state, idleInput, 0.02).ball.x - state.ball.x,
     );
+    expect(speeds).toEqual([...speeds].sort((a, b) => a - b));
+  });
+
+  it("keeps action pressure monotonic and capped over long sessions", () => {
+    const levels = ["easy", "normal", "hard", "master", "expert"] as const;
+    const start = levels.map((level) => actionPressure(level, 0));
+    const late = levels.map((level) => actionPressure(level, 1200));
+    for (let i = 1; i < levels.length; i++) {
+      expect(start[i]).toBeGreaterThan(start[i - 1]);
+      expect(late[i]).toBeGreaterThan(late[i - 1]);
+    }
+    expect(actionPressure("easy", 1200)).toBe(actionPressure("easy", 0));
+    expect(actionPressure("expert", 1200)).toBeLessThanOrEqual(2.15);
   });
   it("ramps normal and hard pressure but caps long-session speed", () => {
     const displacement = (level: "easy" | "normal" | "hard", time: number) => {
