@@ -79,6 +79,36 @@ export function getDominoRoundPoints(loserHand: DominoTile[]) {
   return getDominoPipTotal(loserHand);
 }
 
+export function getDominoWinnerPoints(
+  winner: "player" | "opponent",
+  playerHand: DominoTile[],
+  opponentHand: DominoTile[],
+) {
+  return getDominoRoundPoints(
+    winner === "player" ? opponentHand : playerHand,
+  );
+}
+
+export function drawDominoUntilPlayable(
+  hand: DominoTile[],
+  chain: DominoTile[],
+  boneyard: DominoTile[],
+) {
+  const nextHand = [...hand];
+  const nextBoneyard = [...boneyard];
+  let drawn = 0;
+
+  while (
+    nextBoneyard.length &&
+    !hasPlayableDominoTile(nextHand, chain)
+  ) {
+    nextHand.push(nextBoneyard.shift()!);
+    drawn += 1;
+  }
+
+  return { hand: nextHand, boneyard: nextBoneyard, drawn };
+}
+
 export function sortDominoHand(hand: DominoTile[], chain: DominoTile[]) {
   return [...hand].sort((a, b) => {
     const playableDelta =
