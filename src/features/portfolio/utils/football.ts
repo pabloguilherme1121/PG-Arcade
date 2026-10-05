@@ -44,6 +44,14 @@ export function getFootballFlightProfile(
   return { durationMs, bend, apexLift, scaleAtGoal };
 }
 
+export function getFootballTargetX(
+  mode: FootballMode,
+  aim: number,
+  curve: number,
+) {
+  return aim + (mode === "free-kick" ? curve * 0.18 : 0);
+}
+
 export function resolveFootballShot(
   mode: FootballMode,
   aim: number,
@@ -51,7 +59,7 @@ export function resolveFootballShot(
   curve: number,
   keeper: number,
 ) {
-  const x = aim + (mode === "free-kick" ? curve * 0.18 : 0);
+  const x = getFootballTargetX(mode, aim, curve);
   const y = 90 - power * 0.7;
   const result: "gol" | "defesa" | "fora" | "barreira" =
     power > 90 || power < 25 || x < 8 || x > 92
