@@ -7,6 +7,7 @@ import {
   moveParking,
   parkingLevels,
   parkingScore,
+  parkingSteeringCost,
   toggleLights,
   lightsChallenge,
   hitScore,
@@ -126,9 +127,14 @@ describe("Parking", () => {
       expect(reached.has(level.goal)).toBe(true);
     }
   });
-  it("rewards fewer moves and keeps a positive score", () => {
+  it("rewards fewer moves and smoother parking maneuvers", () => {
+    expect(parkingSteeringCost(null, "up")).toBe(0);
+    expect(parkingSteeringCost("up", "up")).toBe(0);
+    expect(parkingSteeringCost("up", "right")).toBe(1);
+    expect(parkingSteeringCost("up", "down")).toBe(2);
     expect(parkingScore(10)).toBe(90);
-    expect(parkingScore(110)).toBe(10);
+    expect(parkingScore(10, 3)).toBeLessThan(parkingScore(10, 0));
+    expect(parkingScore(110, 20)).toBe(10);
   });
 });
 describe("Lights Out", () => {
