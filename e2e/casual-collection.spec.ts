@@ -106,7 +106,7 @@ for (const id of ["vinteum", "dados", "boliche", "basquete", "arco"])
     await page.reload();
     await expect(page.locator(".casual-hud strong").nth(2)).toHaveText(record);
   });
-test("golf rewards straight alignment and controlled successive strokes", async ({
+test("golf uses fairway approach, green friction and a controlled putt", async ({
   page,
 }) => {
   await start(page, "golfe");
@@ -114,9 +114,16 @@ test("golf rewards straight alignment and controlled successive strokes", async 
   await range(page, "Força", 70);
   await page.getByRole("button", { name: "Dar tacada", exact: true }).click();
   await expect(page.locator(".sport-scene [role=status]")).toContainText(
-    "Planeje",
+    "fairway",
   );
-  await range(page, "Força", 32);
+
+  await range(page, "Força", 41);
+  await page.getByRole("button", { name: "Dar tacada", exact: true }).click();
+  await expect(page.locator(".sport-scene [role=status]")).toContainText(
+    "green",
+  );
+
+  await range(page, "Força", 10);
   await page.getByRole("button", { name: "Dar tacada", exact: true }).click();
   await expect(page.locator(".sport-scene [role=status]")).toContainText(
     "Bola no buraco",
