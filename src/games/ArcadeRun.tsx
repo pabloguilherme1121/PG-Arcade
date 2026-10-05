@@ -84,7 +84,9 @@ export default function ArcadeRun({
             ? "Rodada concluída"
             : status === "paused"
               ? "Partida pausada"
-              : "Prepare sua próxima manobra"}
+              : state.steerCooldown > 0
+                ? "Completando troca de faixa"
+                : "Prepare sua próxima manobra"}
         </p>
         <div
           ref={board}
@@ -157,6 +159,7 @@ export default function ArcadeRun({
           <div
             className="race-car"
             data-lane={state.lane}
+            data-steering={state.steerCooldown > 0}
             style={{ left: `${state.lane * 33.33 + 16.66}%` }}
           >
             <img
@@ -280,8 +283,9 @@ export default function ArcadeRun({
         <p>
           Escolha uma expedição de 90 segundos, um sprint ou sobreviva sem
           limite. O ritmo aumenta a cada etapa de 30 segundos. São três vidas.
-          Use setas, A/D, deslize horizontalmente ou use os botões. Espaço pausa. A partida pausa ao sair da
-          janela.
+          Use setas, A/D, deslize horizontalmente ou use os botões. Cada comando
+          muda uma faixa e o esterço precisa de um instante para estabilizar antes
+          da próxima troca. Espaço pausa. A partida pausa ao sair da janela.
         </p>
         <p>Recorde: {record || "—"} pontos.</p>
       </aside>
