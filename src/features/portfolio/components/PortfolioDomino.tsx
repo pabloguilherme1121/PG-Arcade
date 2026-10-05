@@ -172,6 +172,13 @@ export default function PortfolioDomino() {
   ) => {
     const playerPips = getDominoPipTotal(nextPlayerHand);
     const opponentPips = getDominoPipTotal(nextOpponentHand);
+    if (playerPips !== opponentPips) {
+      const owner = playerPips < opponentPips ? "player" : "opponent";
+      setPoints((current) => ({
+        ...current,
+        [owner]: current[owner] + getDominoWinnerPoints(owner, nextPlayerHand, nextOpponentHand),
+      }));
+    }
     finishRound(
       playerPips === opponentPips
         ? "draw"
@@ -369,7 +376,7 @@ export default function PortfolioDomino() {
     >
       <div className="mx-auto grid max-w-[1180px] gap-7 px-4 py-5 sm:px-8 lg:grid-cols-[0.76fr_1.24fr] lg:px-12 lg:py-14">
         <div
-          data-arcade-arena
+         
           className="min-w-0 rounded-[18px] border border-white/10 bg-[#071827]/85 p-4 sm:p-5"
         >
           <ArcadeDifficultyNotice
@@ -778,6 +785,7 @@ export default function PortfolioDomino() {
               <p className="mt-1 font-display text-2xl text-[#67e8f9]">
                 {score.player}
               </p>
+              <p data-domino-points="player">{points.player} pontos</p>
             </div>
             <div className="bg-[#071827] p-3 text-center">
               <p className="font-body text-[11px] uppercase text-[#7191a8]">
@@ -786,6 +794,7 @@ export default function PortfolioDomino() {
               <p className="mt-1 font-display text-2xl text-white">
                 {score.opponent}
               </p>
+              <p data-domino-points="opponent">{points.opponent} pontos</p>
             </div>
             <div className="bg-[#071827] p-3 text-center">
               <p className="font-body text-[11px] uppercase text-[#7191a8]">

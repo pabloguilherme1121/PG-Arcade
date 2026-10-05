@@ -163,7 +163,13 @@
 }
 .casual-sliders label {
   display: grid;
+  min-width: 0;
   gap: 6px;
+}
+@media (max-width: 480px) {
+  .casual-sliders {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 .casual-sliders input {
   width: 100%;

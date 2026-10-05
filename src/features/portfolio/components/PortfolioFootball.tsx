@@ -18,7 +18,7 @@ type Shot = ReturnType<typeof resolveFootballShot> &
 const feedback = {
   gol: "Gol! Boa colocação.",
   defesa: "Defesa! Tente outro canto.",
-  fora: "Fora! Reduza a força ou ajuste a mira.",
+  fora: "Fora! Reduza a força ou a elevação e ajuste a mira.",
   barreira: "Na barreira! Aumente a elevação ou use mais curva.",
 };
 export default function PortfolioFootball() {
@@ -39,6 +39,13 @@ export default function PortfolioFootball() {
     },
     [],
   );
+  useEffect(() => {
+    if (!reducedMotion || !flight) return;
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = null;
+    setShots((previous) => [...previous, flight]);
+    setFlight(null);
+  }, [reducedMotion, flight]);
   const last = shots.at(-1);
   const goals = shots.filter((shot) => shot.result === "gol").length;
   const finished = shots.length === 5;
@@ -109,7 +116,7 @@ export default function PortfolioFootball() {
               Decida no chute.
             </h2>
             <p className="mt-2 text-sm leading-5 text-[#b8cce0]">
-              Mire no gol, ajuste força e curva e enfrente cinco níveis de
+              Mire no gol, ajuste força, elevação e curva e enfrente cinco níveis de
               leitura do goleiro.
             </p>
           </div>
@@ -551,7 +558,7 @@ export default function PortfolioFootball() {
               />
             </label>
             <div
-              className={`grid gap-x-4 ${mode === "free-kick" ? "grid-cols-3" : "grid-cols-2"}`}
+              className={`football-shot-controls grid gap-x-4 ${mode === "free-kick" ? "grid-cols-3" : "grid-cols-2"}`}
             >
               <label className="block text-sm font-medium">
                 Força{" "}
@@ -672,7 +679,8 @@ export default function PortfolioFootball() {
                 pouca elevação pode parar na barreira e elevação excessiva passa
                 por cima do travessão. Nas faltas, curva negativa desvia à
                 esquerda e positiva à direita; chutes mais colocados permanecem
-                mais tempo no ar e fazem mais curva.
+                mais tempo no ar e fazem mais curva. Força abaixo de 25 ou acima
+                de 90 manda o chute para fora, mesmo com elevação baixa.
               </p>
             </details>
           </div>

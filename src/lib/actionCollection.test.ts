@@ -206,6 +206,45 @@ describe("action collection physics", () => {
     expect(n.fuel).toBeLessThan(100);
     expect(n.objects).toHaveLength(0);
   });
+
+  it("jetpack puts reachable fuel on the gate route at every difficulty", () => {
+    for (const difficulty of ["easy", "normal", "hard", "master", "expert"] as const) {
+      const s = newAction("jetpack", difficulty, "endless");
+      s.spawn = 4;
+      const spawned = stepAction(s, idleInput, 0);
+      const gate = spawned.objects.find((o) => o.kind === "gate")!;
+      const fuel = spawned.objects.find((o) => o.kind === "fuel")!;
+      expect(fuel.y).toBe(gate.y);
+      expect(fuel.x - gate.x).toBe(60);
+      expect(45).toBeGreaterThan((290 / 770) * 22 * (2.5 / actionPressure(difficulty, 0)));
+    }
+  });
+
+  it("empty jetpack coasts without thrust, can refill, and restart restores the tank", () => {
+    const s = newAction("jetpack");
+    s.fuel = 0;
+    expect(stepAction(s, { ...idleInput, up: true }, 0.04).fuel).toBe(0);
+    expect(stepAction(s, { ...idleInput, up: true }, 0.04).vy).toBeGreaterThan(0);
+    s.objects = [{ x: 95, y: s.y, vx: 0, vy: 0, r: 13, kind: "fuel", hp: 1 }];
+    expect(stepAction(s, idleInput, 0).fuel).toBe(45);
+    expect(newAction("jetpack").fuel).toBe(100);
+  });
+
+  it("jetpack sustains a full minute along the visible route at all five difficulties", () => {
+    for (const difficulty of ["easy", "normal", "hard", "master", "expert"] as const) {
+      let s = newAction("jetpack", difficulty, "endless");
+      for (let frame = 0; frame < 3600 && !s.done; frame++) {
+        const target = s.objects.filter((o) => o.x > 90).sort((a, b) => a.x - b.x)[0];
+        const reach = target ? (target.x - 95) / (120 * actionPressure(difficulty, s.time)) : 1;
+        const vertical = Math.max(-150, Math.min(150, ((target?.y ?? 180) - s.y) / (reach + 0.3)));
+        s = stepAction(s, { ...idleInput, up: s.vy > vertical }, 1 / 60);
+      }
+      expect(s.time, difficulty).toBeCloseTo(60, 3);
+      expect(s.lives, difficulty).toBeGreaterThan(0);
+      expect(s.fuel, difficulty).toBeGreaterThan(0);
+      expect(s.score, difficulty).toBeGreaterThan(600);
+    }
+  });
   it("arena movement accelerates and coasts briefly instead of stopping instantly", () => {
     const s = newAction("esquiva");
     const moving = stepAction(
@@ -251,6 +290,18 @@ describe("action collection physics", () => {
     expect(soft.score).toBeGreaterThan(controlled.score);
     expect(controlled.score).toBeGreaterThan(rough.score);
     expect(crash.score).toBe(0);
+  });
+
+  it("lunar survival boundaries are strict and landing grades handle either velocity sign", () => {
+    expect(lunarLandingOutcome(345, 8, 16, 100).quality).toBe("soft");
+    expect(lunarLandingOutcome(345, -8, -16, 100).quality).toBe("soft");
+    expect(lunarLandingOutcome(373, 16, 25, 100).quality).toBe("controlled");
+    expect(lunarLandingOutcome(384.9, 24.9, 34.9, 100).quality).toBe("rough");
+    for (const [x, vx, vy] of [[385, 0, 0], [305, 0, 0], [345, 25, 0], [345, 0, 35]]) {
+      expect(lunarLandingOutcome(x, vx, vy, 100)).toEqual({ safe: false, quality: "crash", score: 0 });
+    }
+    expect(lunarLandingOutcome(345, 0, 0, 200).score).toBe(460);
+    expect(lunarLandingOutcome(345, 0, 0, -1).score).toBe(260);
   });
 
   it("lunar landing rewards safe velocity and rejects a crash", () => {

@@ -236,7 +236,7 @@ function paint(
       box(3, 14, 6, 8, "#d7f367");
     } else if (s.id === "esquiva") {
       const speed = Math.hypot(s.vx, s.vy);
-      if (speed > 8) {
+      if (speed > 8 && !reducedMotion) {
         ctx.strokeStyle = "rgba(215,243,103,.42)";
         ctx.lineWidth = 3;
         ctx.lineCap = "round";
@@ -316,6 +316,7 @@ export default function ActionCollection({
     input.current = { ...idleInput };
   }, [id, difficulty, mode]);
   useEffect(() => {
+    if (status === "running") return;
     const ctx = canvas.current?.getContext("2d");
     if (ctx) paint(ctx, state.current, reducedMotion);
   }, [hud, status, reducedMotion]);
@@ -510,19 +511,23 @@ export default function ActionCollection({
         <p className="action-telemetry">
           Combustível: {Math.round(hud.fuel)}% · Velocidade vertical:{" "}
           {Math.round(hud.vy)}
-          {id === "pouso" && hud.landingQuality
-            ? ` · Último toque: ${{
+          {id === "pouso" && hud.landingQuality && (
+            <span role="status">
+              {` · Último toque: ${{
                 soft: "suave",
                 controlled: "controlado",
                 rough: "duro",
                 crash: "impacto",
-              }[hud.landingQuality]}`
-            : ""}
+              }[hud.landingQuality]}`}
+            </span>
+          )}
         </p>
       )}
       <div className="action-canvas-wrap">
         <canvas
           data-expanded-board
+          data-player-x={hud.x}
+          data-player-y={hud.y}
           tabIndex={0}
           ref={canvas}
           width={480}
@@ -599,6 +604,7 @@ export default function ActionCollection({
               if (e.key === " " || e.key === "Enter") {
                 e.preventDefault();
                 input.current[key] = true;
+                if (!e.repeat) pending.current.add(key);
               }
             }}
             onKeyUp={() => {

@@ -25,14 +25,14 @@ export const casualGames = [
     name: "Basquete de Rua",
     category: "Casuais",
     description: "Encontre o arco perfeito para acertar a cesta.",
-    help: "Combine ângulo e força para lançar a bola. Ela precisa cruzar o aro descendo; uma entrada central vale cesta limpa e entradas próximas podem tocar no aro. O vento muda entre rodadas."
+    help: "Combine ângulo e força para lançar a bola. Ela precisa cruzar o aro descendo; uma entrada central vale cesta limpa e entradas próximas podem tocar no aro. A tabela devolve a bola com menos energia e pode ajudar ou causar um erro. O vento muda entre rodadas.",
   },
   {
     id: "golfe",
     name: "Mini Golfe",
     category: "Casuais",
     description: "Superfícies, barreiras e tacadas planejadas.",
-    help: "Ajuste força e direção para levar a bola ao buraco. O fairway rola mais livre; no green a bola perde velocidade mais rápido. Obstáculos podem absorver energia e devolver uma tacada fraca.",
+    help: "Ajuste força e direção para levar a bola ao buraco. A mira acompanha o buraco: 50 é reto, inclusive após ultrapassá-lo. O fairway rola mais livre; no green a bola perde velocidade mais rápido. Obstáculos absorvem energia e devolvem tacadas fracas; força a partir de 72 permite passar.",
   },
   {
     id: "arco",
@@ -211,7 +211,9 @@ export function basketballTrajectory(
   const points: FlightPoint[] = [{ x, y }];
 
   for (let elapsed = 0; elapsed <= 5; elapsed += 0.03) {
-    vx += wind * 0.03;
+    // Challenge wind is a strength indicator, not acceleration in court units.
+    // Keep the strongest headwind within the range that allows a legal shot.
+    vx += (Math.max(-18, Math.min(18, wind)) / 3) * 0.03;
     vy += 50 * 0.03;
     let nextX = x + vx * 0.03;
     const nextY = y + vy * 0.03;
@@ -395,11 +397,17 @@ export function golfStroke(
   const alignment = Math.max(0.45, Math.cos(angle));
   const greenStart = 250;
   const rawDistance = normalizedPower * 2.8 * alignment;
+  const direction = position > 320 ? -1 : 1;
 
   let next =
     position >= greenStart
-      ? position + rawDistance * 0.56
+      ? position + direction * rawDistance * 0.56
       : position + rawDistance;
+
+  if (position >= greenStart && next < greenStart) {
+    const greenDistance = position - greenStart;
+    next = greenStart - Math.max(0, rawDistance - greenDistance / 0.56);
+  }
 
   if (position < greenStart && next > greenStart) {
     const fairwayDistance = greenStart - position;
@@ -418,11 +426,16 @@ export function golfStroke(
   const surface = next >= greenStart ? "green" : "fairway";
   const effectiveArrivalPower =
     surface === "green" ? normalizedPower * 0.56 : normalizedPower;
+  const trajectory: FlightPoint[] = [{ x: position, y: 210 }];
+  // The ball radius is 7 and the obstacle's near face is x=176.
+  if (rebounded) trajectory.push({ x: 169, y: 210 });
+  trajectory.push({ x: next, y: 210 });
 
   return {
     position: next,
     hole: Math.abs(next - 320) < 10 && effectiveArrivalPower <= 35,
     surface,
     rebounded,
+    trajectory,
   };
 }

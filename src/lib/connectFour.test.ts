@@ -13,6 +13,29 @@ describe("Liga 4 keyboard input", () => {
 });
 
 describe("Liga 4 tactical bot", () => {
+  it("cached winning lines match the independent rules engine on legal games", () => {
+    let seed = 14831;
+    for (let game = 0; game < 30; game++) {
+      let board = Array(42).fill(0), player = 1;
+      for (let turn = 0; turn < 42; turn++) {
+        const legal = Array.from({ length: 7 }, (_, c) => c).filter((c) => !board[c]);
+        if (!legal.length) break;
+        seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+        board = dropDisc(board, legal[seed % legal.length], player)!;
+        const winner = discWinner(board);
+        const cells = winningDiscs(board);
+        expect(cells.length).toBe(winner ? 4 : 0);
+        if (winner) {
+          expect(cells.every((i) => board[i] === winner)).toBe(true);
+          cells[0] = -1;
+          expect(winningDiscs(board)).not.toContain(-1);
+          break;
+        }
+        player = 3 - player;
+      }
+    }
+  });
+
   it("wins instead of blocking an opponent and never mutates the board", () => {
     let board = Array(42).fill(0);
     for (const c of [0, 1, 2]) board = dropDisc(board, c, 2)!;

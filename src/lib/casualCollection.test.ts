@@ -144,7 +144,7 @@ describe("casual collection engines", () => {
     let reachable = false;
     for (let a = 0; a <= 100; a++)
       for (let p = 10; p <= 100; p++)
-        if (basketHit(projectile(a, p, 0), 8)) reachable = true;
+        if (basketHit(basketballTrajectory(a, p, 0).points, 8)) reachable = true;
     expect(reachable).toBe(true);
   });
   it("archery responds to wind and centers yield the highest score", () => {
@@ -191,6 +191,58 @@ describe("casual collection engines", () => {
     const angled = golfStroke(35, 0, 60, false);
     expect(straight.position).toBeGreaterThan(35);
     expect(straight.position).toBeGreaterThan(angled.position);
+  });
+
+  it("golf recovers an overshoot and draws the obstacle contact before rebound", () => {
+    const overshoot = golfStroke(285, 50, 100, false);
+    expect(overshoot.position).toBe(340);
+    expect(overshoot.hole).toBe(false);
+    const recovery = golfStroke(340, 50, 10, false);
+    expect(recovery.position).toBeLessThan(340);
+    expect(recovery.hole).toBe(true);
+    expect(golfStroke(340, 0, 10, false).position).toBeLessThan(340);
+    expect(golfStroke(340, 100, 10, false).position).toBeLessThan(340);
+    const rebound = golfStroke(150, 50, 20, true);
+    expect(rebound.trajectory).toEqual([
+      { x: 150, y: 210 },
+      { x: 169, y: 210 },
+      { x: rebound.position, y: 210 },
+    ]);
+    expect(rebound.trajectory.at(-1)?.x).toBeLessThan(169);
+  });
+
+  it("bowling hook changes actual pin contact symmetrically and preserves fallen pins", () => {
+    const pins = Array(10).fill(true);
+    const left = bowlingHit(pins, 50, 10, 2, -100);
+    const straight = bowlingHit(pins, 50, 10, 2, 0);
+    const right = bowlingHit(pins, 50, 10, 2, 100);
+    expect(left).not.toEqual(straight);
+    expect(right).not.toEqual(straight);
+    expect(left[1]).toBe(false);
+    expect(left[2]).toBe(true);
+    expect(right[1]).toBe(true);
+    expect(right[2]).toBe(false);
+    const second = bowlingHit(left, 50, 100, 2, 100);
+    left.forEach((standing, i) => {
+      if (!standing) expect(second[i]).toBe(false);
+    });
+  });
+
+  it("basketball can miss after a bank and every challenge wind still allows a basket", () => {
+    const miss = basketballTrajectory(47, 100, 0);
+    expect(miss.banked).toBe(true);
+    expect(basketEntryQuality(miss.points, 8)).toBe("miss");
+    for (const wind of [-18, -12, -6, 0, 6, 12, 18]) {
+      let reachable = false;
+      for (let angle = 35; angle <= 80 && !reachable; angle++) {
+        for (let power = 60; power <= 100; power++) {
+          const shot = basketballTrajectory(angle, power, wind);
+          expect(shot.points.length).toBeLessThanOrEqual(169);
+          if (basketHit(shot.points, 8)) { reachable = true; break; }
+        }
+      }
+      expect(reachable, `wind ${wind}`).toBe(true);
+    }
   });
 
   it("golf green friction shortens roll and rewards a controlled putt", () => {

@@ -33,12 +33,22 @@ export default function Snake({
   const current = useRef<Direction>("right");
   const queued = useRef<Direction[]>([]);
   const touch = useRef<[number, number] | null>(null);
+  const bodyRef = useRef(body);
+  const foodRef = useRef(food);
+  const scoreRef = useRef(score);
+  const onRecordRef = useRef(onRecord);
+  onRecordRef.current = onRecord;
   function direction(d: Direction) {
     queued.current = queueSnakeDirection(current.current, queued.current, d);
   }
   function reset() {
-    setBody(initialBody());
-    setFood({ x: 11, y: 8 });
+    const nextBody = initialBody();
+    const nextFood = { x: 11, y: 8 };
+    bodyRef.current = nextBody;
+    foodRef.current = nextFood;
+    scoreRef.current = 0;
+    setBody(nextBody);
+    setFood(nextFood);
     setScore(0);
     current.current = "right";
     queued.current = [];
@@ -47,26 +57,30 @@ export default function Snake({
   useEffect(() => {
     if (status !== "running") return;
     const id = window.setInterval(() => {
-      if (!food) return;
+      const activeFood = foodRef.current;
+      if (!activeFood) return;
       const nextDirection = queued.current.shift();
       if (nextDirection) current.current = nextDirection;
-      const result = stepSnake(body, current.current, food);
+      const result = stepSnake(bodyRef.current, current.current, activeFood);
       if (result.collision) {
         setStatus("over");
         return;
       }
+      bodyRef.current = result.body;
       setBody(result.body);
       if (result.ate) {
-        const n = score + 10;
+        const n = scoreRef.current + 10;
+        scoreRef.current = n;
         setScore(n);
-        onRecord(n);
+        onRecordRef.current(n);
         const next = snakeFood(result.body);
+        foodRef.current = next;
         setFood(next);
         if (!next) setStatus("won");
       }
     }, speed);
     return () => clearInterval(id);
-  }, [body, food, status, score, speed, onRecord]);
+  }, [status, speed]);
   useEffect(() => {
     const pause = () => {
       if (document.hidden) setStatus((s) => (s === "running" ? "paused" : s));
@@ -115,8 +129,11 @@ export default function Snake({
             }
           }}
           onTouchStart={(e) => {
-            touch.current = [e.touches[0].clientX, e.touches[0].clientY];
+            touch.current = e.touches.length === 1
+              ? [e.touches[0].clientX, e.touches[0].clientY]
+              : null;
           }}
+          onTouchCancel={() => { touch.current = null; }}
           onTouchEnd={(e) => {
             if (!touch.current) return;
             const dx = e.changedTouches[0].clientX - touch.current[0],
