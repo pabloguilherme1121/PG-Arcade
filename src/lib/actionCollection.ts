@@ -225,7 +225,7 @@ export function lunarLandingOutcome(
   const safe = offset < 40 && vertical < 35 && horizontal < 25;
   if (!safe) return { safe: false, quality: "crash" as const, score: 0 };
 
-  const quality =
+  const quality: "soft" | "controlled" | "rough" =
     offset <= 18 && vertical <= 16 && horizontal <= 8
       ? "soft"
       : offset <= 28 && vertical <= 25 && horizontal <= 16
