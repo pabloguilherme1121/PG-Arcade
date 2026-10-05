@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { Pause, Play, RotateCcw } from "lucide-react";
 import {
   queueSnakeDirection,
+  directionFromKey,
+  directionFromSwipe,
   samePoint,
   stepSnake,
   snakeFood,
@@ -92,17 +94,12 @@ export default function Snake({
           className="snake-board"
           tabIndex={0}
           role="group"
-          aria-label="Tabuleiro Snake. Use as setas para mover e espaço para pausar."
+          aria-label="Tabuleiro Snake. Use as setas ou WASD para mover e espaço para pausar."
           onKeyDown={(e) => {
-            const d = {
-              ArrowUp: "up",
-              ArrowDown: "down",
-              ArrowLeft: "left",
-              ArrowRight: "right",
-            }[e.key];
+            const d = directionFromKey(e.key);
             if (d) {
               e.preventDefault();
-              direction(d as Direction);
+              direction(d);
             }
             if (e.code === "Space") {
               e.preventDefault();
@@ -123,16 +120,8 @@ export default function Snake({
             const dx = e.changedTouches[0].clientX - touch.current[0],
               dy = e.changedTouches[0].clientY - touch.current[1];
             touch.current = null;
-            if (Math.max(Math.abs(dx), Math.abs(dy)) < 15) return;
-            direction(
-              Math.abs(dx) > Math.abs(dy)
-                ? dx > 0
-                  ? "right"
-                  : "left"
-                : dy > 0
-                  ? "down"
-                  : "up",
-            );
+            const d = directionFromSwipe(dx, dy, 15);
+            if (d) direction(d);
           }}
         >
           {Array.from({ length: 256 }, (_, i) => {
@@ -210,7 +199,7 @@ export default function Snake({
         <h2>Como jogar</h2>
         <p>Coma as frutas para crescer. Evite as paredes e o próprio corpo.</p>
         <p>
-          Use as setas, deslize no tabuleiro ou toque nos controles. A barra de
+          Use as setas ou WASD, deslize no tabuleiro ou toque nos controles. A barra de
           espaço pausa a partida.
         </p>
         <hr />
