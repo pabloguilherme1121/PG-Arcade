@@ -16,6 +16,7 @@ import {
   arrowTrajectory,
   arrowPoints,
   bowlingHit,
+  bowlingTrajectory,
   golfStroke,
   fishingTensionTick,
   fishingReelStep,
@@ -151,6 +152,18 @@ describe("casual collection engines", () => {
     const midpoint = flight[Math.floor(flight.length / 2)];
     expect(midpoint.y).not.toBe(150);
   });
+  it("bowling hook bends late and high power reduces the lateral curve", () => {
+    const straight = bowlingTrajectory(50, 65, 0);
+    const hook = bowlingTrajectory(50, 65, 80);
+    const fastHook = bowlingTrajectory(50, 95, 80);
+    expect(straight.at(-1)?.x).toBeCloseTo(150, 5);
+    expect(hook.at(-1)!.x).toBeGreaterThan(straight.at(-1)!.x);
+    expect(hook.at(-1)!.x - straight.at(-1)!.x).toBeGreaterThan(
+      fastHook.at(-1)!.x - straight.at(-1)!.x,
+    );
+    expect(hook[Math.floor(hook.length / 2)].x).toBeLessThan(hook.at(-1)!.x);
+  });
+
   it("bowling keeps previous pins down and adds realistic pin carry", () => {
     const pins = Array(10).fill(true);
     pins[0] = false;
