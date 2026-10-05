@@ -1,6 +1,17 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  type CSSProperties,
+} from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { initialRace, steerRace, tickRace } from "../lib/actionGames";
+import {
+  initialRace,
+  raceVelocity,
+  steerRace,
+  tickRace,
+} from "../lib/actionGames";
 import { useAutoPause, type PlayStatus } from "./useAutoPause";
 export default function Racing({
   record,
@@ -29,6 +40,8 @@ export default function Racing({
       setStatus("done");
     }
   }, [state.lives, state.score, status, onRecord]);
+  const currentVelocity = raceVelocity(speed, state.ticks);
+  const speedKmh = Math.round(currentVelocity * 36);
   function steer(delta: number) {
     if (status === "running") setState((s) => steerRace(s, delta));
   }
@@ -48,7 +61,11 @@ export default function Racing({
           </div>
         </div>
         <p className="race-lives" role="status">
-          {state.lives} vidas •{" "}
+          <span>{state.lives} vidas</span>
+          <span className="race-speedometer" data-race-speed>
+            {speedKmh} km/h
+          </span>
+          <span>•</span>{" "}
           {status === "ready"
             ? "Pronto para largar"
             : status === "running"
@@ -60,6 +77,12 @@ export default function Racing({
         <div
           ref={board}
           className={`race-board ${status === "running" ? "racing-running" : ""}`}
+          style={
+            {
+              "--race-speed": currentVelocity,
+              "--road-motion-duration": `${Math.max(0.18, 0.92 / currentVelocity)}s`,
+            } as CSSProperties
+          }
           tabIndex={0}
           role="group"
           aria-label="Pista de corrida. Setas esquerda e direita, espaço para pausar."

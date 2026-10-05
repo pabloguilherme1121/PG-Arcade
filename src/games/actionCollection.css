@@ -148,3 +148,95 @@
 .action-settings label {
   overflow-wrap: anywhere;
 }
+
+
+/* Cinematic framing for action games without obscuring gameplay. */
+.action-hud {
+  border: 1px solid rgba(132, 160, 171, .28);
+  background:
+    linear-gradient(180deg, rgba(29, 54, 68, .96), rgba(18, 38, 50, .96));
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.06),
+    0 10px 24px rgba(0,0,0,.16);
+}
+.action-hud strong {
+  text-shadow: 0 0 16px rgba(215,243,103,.18);
+}
+.action-canvas-wrap {
+  border-color: rgba(142, 169, 181, .62);
+  background: #07111b;
+  box-shadow:
+    0 24px 56px rgba(0,0,0,.35),
+    inset 0 1px rgba(255,255,255,.08);
+}
+.action-canvas-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.025), transparent 18%),
+    radial-gradient(circle at 50% 105%, rgba(255,255,255,.035), transparent 46%);
+}
+.action-collection-overlay {
+  backdrop-filter: blur(4px);
+  background:
+    radial-gradient(circle at 50% 38%, rgba(51,82,101,.22), transparent 42%),
+    rgba(6,19,32,.91);
+}
+.action-controls button {
+  border-color: rgba(118,154,164,.62);
+  background: linear-gradient(180deg, #294d58, #1a353e);
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.07),
+    0 4px 10px rgba(0,0,0,.16);
+}
+.action-controls button:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 5px rgba(0,0,0,.22);
+}
+
+
+/* Motion refinement for canvas/action games. */
+@media (prefers-reduced-motion: no-preference) {
+  .action-collection {
+    animation: arcade-board-enter 320ms var(--arcade-ease-out, ease-out) both;
+  }
+
+  .action-hud span {
+    transition:
+      transform 160ms var(--arcade-ease-out, ease-out),
+      color 160ms ease;
+  }
+
+  .action-controls button,
+  .action-footer button,
+  .action-settings select {
+    transition:
+      transform 140ms var(--arcade-ease-out, ease-out),
+      background-color 180ms ease,
+      border-color 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .action-controls button:active:not(:disabled),
+  .action-footer button:active:not(:disabled) {
+    transform: translateY(1px) scale(.985);
+  }
+
+  .action-collection-overlay {
+    animation: action-overlay-enter 220ms var(--arcade-ease-out, ease-out) both;
+  }
+}
+
+@keyframes action-overlay-enter {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+}

@@ -198,3 +198,52 @@
     gap: 8px;
   }
 }
+
+
+/* Physical motion for casual games: cards, dice, jewels and scenes. */
+@media (prefers-reduced-motion: no-preference) {
+  :is(.card-table, .dice-table, .jewel-board, .fishing-scene, .sport-scene) {
+    animation: arcade-board-enter 320ms var(--arcade-ease-out, ease-out) both;
+  }
+
+  :is(.playing-cards > *, .dice-row > *, .jewel-board button, .casual-controls button) {
+    transition:
+      transform 150ms var(--arcade-ease-out, ease-out),
+      opacity 150ms ease,
+      background-color 190ms ease,
+      border-color 190ms ease,
+      box-shadow 190ms ease;
+  }
+
+  .playing-cards > * {
+    transform-origin: 50% 92%;
+  }
+
+  .playing-cards > *:hover,
+  .playing-cards > *:focus-visible,
+  .jewel-board button.selected {
+    transform: translateY(-4px) scale(1.025);
+  }
+
+  .dice-row > * {
+    animation: casual-die-settle 260ms var(--arcade-ease-spring, ease-out);
+  }
+
+  .jewel-board button.cursor {
+    animation: casual-cursor-pulse 240ms var(--arcade-ease-spring, ease-out);
+  }
+
+  .casual-controls button:active:not(:disabled) {
+    transform: translateY(1px) scale(.985);
+  }
+}
+
+@keyframes casual-die-settle {
+  0% { transform: rotate(-9deg) scale(.86); opacity: .55; }
+  70% { transform: rotate(2deg) scale(1.04); opacity: 1; }
+  100% { transform: rotate(0) scale(1); }
+}
+
+@keyframes casual-cursor-pulse {
+  50% { transform: scale(1.07); }
+}

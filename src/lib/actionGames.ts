@@ -17,6 +17,12 @@ export const initialRace = (): RaceState => ({
 export function steerRace(state: RaceState, delta: number): RaceState {
   return { ...state, lane: Math.max(0, Math.min(2, state.lane + delta)) };
 }
+export function raceVelocity(speed: number, ticks: number) {
+  const base = Math.max(1, speed);
+  const multiplier = 0.85 + Math.min(0.55, Math.max(0, ticks) / 600);
+  return Math.min(base * 1.4, base * multiplier);
+}
+
 export function tickRace(
   state: RaceState,
   speed: number,
@@ -25,8 +31,9 @@ export function tickRace(
   if (state.lives <= 0) return state;
   const ticks = state.ticks + 1;
   let lives = state.lives;
+  const velocity = raceVelocity(speed, state.ticks);
   let traffic = state.traffic
-    .map((car) => ({ ...car, y: car.y + speed }))
+    .map((car) => ({ ...car, y: car.y + velocity }))
     .filter((car) => {
       if (car.lane === state.lane && car.y >= 59 && car.y <= 91) {
         lives--;

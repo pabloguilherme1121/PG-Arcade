@@ -260,3 +260,54 @@
     padding: 7px;
   }
 }
+
+
+/* Clear, restrained motion for logic and strategy collections. */
+@media (prefers-reduced-motion: no-preference) {
+  :is(.lc-grid, .lc-edge-grid, .lc-reversi, .lc-towers, .lc-nim) {
+    animation: arcade-board-enter 300ms var(--arcade-ease-out, ease-out) both;
+  }
+
+  :is(.lc-grid button, .lc-edge-grid button, .lc-square, .lc-dot, .lc-edge, .lc-actions button) {
+    transition:
+      transform 140ms var(--arcade-ease-out, ease-out),
+      opacity 150ms ease,
+      background-color 190ms ease,
+      border-color 190ms ease,
+      box-shadow 190ms ease;
+  }
+
+  :is(.lc-hit, .lc-painted, .lc-owned, .lc-side-1, .lc-side-2) {
+    animation: logic-state-settle 210ms var(--arcade-ease-spring, ease-out);
+  }
+
+  .lc-error {
+    animation: logic-error-nudge 220ms ease-out;
+  }
+
+  .lc-success {
+    animation: logic-success 320ms var(--arcade-ease-spring, ease-out);
+  }
+
+  .lc-actions button:active:not(:disabled) {
+    transform: translateY(1px) scale(.985);
+  }
+}
+
+@keyframes logic-state-settle {
+  0% { transform: scale(.88); opacity: .55; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes logic-error-nudge {
+  0%, 100% { transform: translateX(0); }
+  35% { transform: translateX(-3px); }
+  70% { transform: translateX(3px); }
+}
+
+@keyframes logic-success {
+  45% {
+    transform: scale(1.025);
+    box-shadow: 0 0 0 3px rgba(201,246,90,.08);
+  }
+}
