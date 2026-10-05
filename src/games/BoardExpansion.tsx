@@ -157,13 +157,6 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
     }
     if (numeric && /^[0-9]$/.test(e.key)) {
       e.preventDefault();
-      if (state.fixed[index]) {
-        setState({
-          ...state,
-          message: "Esta é uma pista fixa e não pode ser alterada.",
-        });
-        return;
-      }
       const value = Number(e.key) + (gameId === "takuzu" ? 1 : 0);
       if (value <= (gameId === "magic" ? 9 : gameId === "takuzu" ? 2 : 4))
         update(boardClick({ ...state, value }, index));
@@ -249,19 +242,7 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
                   key={i}
                   aria-label={`Segmento ${a + 1} a ${b + 1}`}
                   aria-pressed={!!state.cells[i]}
-                  onClick={() => {
-                    if (
-                      state.fixed[i] &&
-                      (numeric || gameId === "laser" || gameId === "queens")
-                    ) {
-                      setState({
-                        ...state,
-                        message: "Esta é uma pista fixa e não pode ser alterada.",
-                      });
-                      return;
-                    }
-                    update(boardClick(state, i));
-                  }}
+                  onClick={() => update(boardClick(state, i))}
                   disabled={state.status !== "playing"}
                   style={{
                     left: `${(40 + ((a % 4) + (b % 4)) * 52.5) / 4}%`,
