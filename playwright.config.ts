@@ -7,9 +7,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: "list",
   use: {
-    baseURL:
-      process.env.E2E_BASE_URL ||
-      `http://127.0.0.1:${port}/${process.env.GITHUB_ACTIONS ? "PG-Arcade/" : ""}`,
+    baseURL: process.env.E2E_BASE_URL || `http://127.0.0.1:${port}/${process.env.GITHUB_ACTIONS ? "PG-Arcade/" : ""}`,
     trace: "retain-on-failure",
   },
   projects: [
