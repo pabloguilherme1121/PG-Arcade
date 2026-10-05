@@ -236,23 +236,10 @@ function Preview({ id }: { id: GameId }) {
         )}
       </div>
     );
-  if (["corrida", "estacionamento", "tiro", "luzes", "estrelas"].includes(id))
+  if (id === "luzes")
     return (
-      <div
-        className={`preview action-preview preview-${id}`}
-        aria-hidden="true"
-      >
-        <span>
-          {id === "corrida"
-            ? "🏎"
-            : id === "estacionamento"
-              ? "P"
-              : id === "tiro"
-                ? "◎"
-                : id === "luzes"
-                  ? "☀"
-                  : "★"}
-        </span>
+      <div className="preview action-preview preview-luzes" aria-hidden="true">
+        <span>☀</span>
         <i />
         <i />
         <i />
