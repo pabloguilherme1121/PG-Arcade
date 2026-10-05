@@ -26,14 +26,18 @@ export default function Racing({
   const [speed, setSpeed] = useState(3);
   const board = useRef<HTMLDivElement>(null);
   const touch = useRef<[number, number] | null>(null);
-  const pause = useCallback(
-    () => setStatus((s) => (s === "running" ? "paused" : s)),
-    [],
-  );
+  const throttle = useRef(0);
+  const pause = useCallback(() => {
+    throttle.current = 0;
+    setStatus((s) => (s === "running" ? "paused" : s));
+  }, []);
   useAutoPause(pause);
   useEffect(() => {
     if (status !== "running") return;
-    const timer = setInterval(() => setState((s) => tickRace(s, speed)), 100);
+    const timer = setInterval(
+      () => setState((s) => tickRace(s, speed, Math.random, throttle.current)),
+      100,
+    );
     return () => clearInterval(timer);
   }, [status, speed]);
   useEffect(() => {
@@ -42,12 +46,16 @@ export default function Racing({
       setStatus("done");
     }
   }, [state.lives, state.score, status, onRecord]);
-  const currentVelocity = raceVelocity(speed, state.ticks);
+  const currentVelocity = raceVelocity(
+    Math.max(1, speed + state.paceOffset),
+    state.ticks,
+  );
   const speedKmh = Math.round(currentVelocity * 36);
   function steer(delta: number) {
     if (status === "running") setState((s) => steerRace(s, delta));
   }
   function start() {
+    throttle.current = 0;
     setStatus("running");
     board.current?.focus();
   }
@@ -75,7 +83,11 @@ export default function Racing({
                 ? "Recuperando controle"
                 : state.steerCooldown > 0
                   ? "Completando troca de faixa"
-                  : "Desvie do trânsito"
+                  : throttle.current > 0
+                    ? "Acelerando"
+                    : throttle.current < 0
+                      ? "Freando"
+                      : "Desvie do trânsito"
               : status === "paused"
                 ? "Corrida pausada"
                 : "Fim da corrida"}
@@ -91,7 +103,7 @@ export default function Racing({
           }
           tabIndex={0}
           role="group"
-          aria-label="Pista de corrida. Setas, A/D ou deslize para dirigir; espaço para pausar."
+          aria-label="Pista de corrida. A/D ou esquerda/direita dirigem; W/cima acelera; S/baixo freia; espaço pausa."
           onTouchStart={(e) => {
             touch.current = [e.touches[0].clientX, e.touches[0].clientY];
           }}
@@ -115,6 +127,17 @@ export default function Racing({
               e.preventDefault();
               steer(d === "left" ? -1 : 1);
             }
+            if (d === "up" || d === "down") {
+              e.preventDefault();
+              throttle.current = d === "up" ? 1 : -1;
+            }
+          }}
+          onKeyUp={(e) => {
+            const d = directionFromKey(e.key);
+            if (d === "up" || d === "down") throttle.current = 0;
+          }}
+          onBlur={() => {
+            throttle.current = 0;
           }}
         >
           <div className="road-line line-one" />
@@ -185,6 +208,40 @@ export default function Racing({
             <ArrowRight />
           </button>
         </div>
+        <div className="wide-controls race-pedals">
+          <button
+            aria-label="Frear"
+            disabled={status !== "running"}
+            onPointerDown={(e) => {
+              e.currentTarget.setPointerCapture(e.pointerId);
+              throttle.current = -1;
+            }}
+            onPointerUp={() => {
+              throttle.current = 0;
+            }}
+            onPointerCancel={() => {
+              throttle.current = 0;
+            }}
+          >
+            Frear
+          </button>
+          <button
+            aria-label="Acelerar"
+            disabled={status !== "running"}
+            onPointerDown={(e) => {
+              e.currentTarget.setPointerCapture(e.pointerId);
+              throttle.current = 1;
+            }}
+            onPointerUp={() => {
+              throttle.current = 0;
+            }}
+            onPointerCancel={() => {
+              throttle.current = 0;
+            }}
+          >
+            Acelerar
+          </button>
+        </div>
         <div className="game-actions">
           <button
             className="primary"
@@ -199,6 +256,7 @@ export default function Racing({
           </button>
           <button
             onClick={() => {
+              throttle.current = 0;
               setState(initialRace());
               setStatus("ready");
             }}
@@ -226,9 +284,10 @@ export default function Racing({
           <option value={4}>Turbo</option>
         </select>
         <p>
-          Setas ou A/D dirigem, espaço pausa. Cada comando muda uma faixa e o
-          esterço precisa de um instante para estabilizar antes da próxima troca.
-          No celular, deslize na pista ou use os dois botões grandes abaixo da pista.
+          A/D ou esquerda/direita dirigem; W/cima acelera e S/baixo freia.
+          Soltar o pedal faz a velocidade retornar gradualmente ao ritmo-base.
+          Cada comando muda uma faixa e o esterço precisa de um instante para
+          estabilizar. No celular, use os botões de direção e os pedais.
         </p>
         <p>
           A corrida pausa ao trocar de aba ou sair da janela. O recorde é salvo
