@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Pause, Play, RotateCcw } from "lucide-react";
 import {
-  opposite,
   samePoint,
   stepSnake,
   snakeFood,
@@ -9,6 +8,7 @@ import {
   type Point,
 } from "../lib/engines";
 import Controls from "./Controls";
+import { queueSnakeTurn } from "../lib/snakeControls";
 const initialBody = () => [
   { x: 7, y: 8 },
   { x: 6, y: 8 },
@@ -29,23 +29,25 @@ export default function Snake({
   const [score, setScore] = useState(0);
   const [speed, setSpeed] = useState(160);
   const current = useRef<Direction>("right"),
-    pending = useRef<Direction>("right");
+    pending = useRef<Direction[]>([]);
   const touch = useRef<[number, number] | null>(null);
   function direction(d: Direction) {
-    if (d !== opposite[current.current]) pending.current = d;
+    if (status !== "running") return;
+    pending.current = queueSnakeTurn(current.current, pending.current, d);
   }
   function reset() {
     setBody(initialBody());
     setFood({ x: 11, y: 8 });
     setScore(0);
-    current.current = pending.current = "right";
+    current.current = "right";
+    pending.current = [];
     setStatus("ready");
   }
   useEffect(() => {
     if (status !== "running") return;
     const id = window.setInterval(() => {
       if (!food) return;
-      current.current = pending.current;
+      current.current = pending.current.shift() ?? current.current;
       const result = stepSnake(body, current.current, food);
       if (result.collision) {
         setStatus("over");
@@ -99,12 +101,13 @@ export default function Snake({
               ArrowDown: "down",
               ArrowLeft: "left",
               ArrowRight: "right",
-            }[e.key];
+              w: "up", s: "down", a: "left", d: "right",
+            }[e.key.length === 1 ? e.key.toLowerCase() : e.key];
             if (d) {
               e.preventDefault();
-              direction(d as Direction);
+              if (!e.repeat) direction(d as Direction);
             }
-            if (e.code === "Space") {
+            if (e.code === "Space" && !e.repeat) {
               e.preventDefault();
               setStatus((s) =>
                 s === "running"
@@ -118,6 +121,7 @@ export default function Snake({
           onTouchStart={(e) => {
             touch.current = [e.touches[0].clientX, e.touches[0].clientY];
           }}
+          onTouchCancel={() => { touch.current = null; }}
           onTouchEnd={(e) => {
             if (!touch.current) return;
             const dx = e.changedTouches[0].clientX - touch.current[0],
@@ -210,7 +214,8 @@ export default function Snake({
         <h2>Como jogar</h2>
         <p>Coma as frutas para crescer. Evite as paredes e o próprio corpo.</p>
         <p>
-          Use as setas, deslize no tabuleiro ou toque nos controles. A barra de
+          Use as setas ou WASD, deslize no tabuleiro ou toque nos controles. Duas
+          curvas rápidas ficam na fila e são executadas em ordem. A barra de
           espaço pausa a partida.
         </p>
         <hr />
