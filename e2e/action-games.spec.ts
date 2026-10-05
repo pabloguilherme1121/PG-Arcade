@@ -181,7 +181,9 @@ test("Target games apply difficulty to round time and active targets", async ({
 
 test("All games offer keyboard focus, specific help, focus mode and safe restart", async ({
   page,
+  browserName,
 }) => {
+  test.skip(browserName !== "chromium", "Full 100-game shell/focus sweep runs once in Chromium; browser-specific gameplay stays covered elsewhere.");
   test.setTimeout(games.length * 4000);
   await page.setViewportSize({ width: 390, height: 844 });
   for (const { id, name } of games) {
