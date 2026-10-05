@@ -199,9 +199,9 @@ export function actionPressure(difficulty: Difficulty, time: number) {
   const ramp = Math.min(1, Math.max(0, time) / 120);
   if (difficulty === "easy") return 0.7;
   if (difficulty === "normal") return 1 + ramp * 0.12;
-  if (difficulty === "hard") return 1.28 * (1 + ramp * 0.16);
-  if (difficulty === "master") return 1.48 * (1 + ramp * 0.2);
-  return Math.min(2.15, 1.62 * (1 + ramp * 0.28));
+  if (difficulty === "hard") return 1.4 * (1 + ramp * 0.2);
+  if (difficulty === "master") return 1.58 * (1 + ramp * 0.22);
+  return Math.min(2.15, 1.72 * (1 + ramp * 0.25));
 }
 
 function nextWave(s: ActionState) {
