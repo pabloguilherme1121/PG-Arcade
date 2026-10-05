@@ -18,7 +18,7 @@ test("Liga 4 wins, locks columns, undoes and resets", async ({ page }) => {
   ).toBeVisible();
   await page.getByRole("button", { name: "Nova partida" }).click();
   await expect(
-    page.getByRole("img", { name: "Tabuleiro vazio", exact: true }),
+    page.getByRole("group", { name: /Tabuleiro Liga 4.*Tabuleiro vazio/ }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Jogar na coluna 1" }).press("Enter");
   await expect(
