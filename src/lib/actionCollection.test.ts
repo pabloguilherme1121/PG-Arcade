@@ -30,6 +30,23 @@ describe("action collection physics", () => {
     expect(n.objects.length).toBe(29);
     expect(n.score).toBe(10);
   });
+  it("pong paddle motion adds controlled spin without unbounded ball speed", () => {
+    const base = newAction("pong");
+    base.paddle = 180;
+    base.ball = { x: 35, y: 186, vx: -300, vy: 0, r: 7, kind: "ball", hp: 1 };
+
+    const still = stepAction(base, idleInput, 0.02);
+    const moving = stepAction(
+      base,
+      { ...idleInput, down: true },
+      0.02,
+    );
+
+    expect(moving.ball.vx).toBeGreaterThan(0);
+    expect(Math.abs(moving.ball.vx)).toBeLessThanOrEqual(320);
+    expect(moving.ball.vy).toBeGreaterThan(still.ball.vy);
+  });
+
   it("awards pong goals and resets ball rather than firing a score button", () => {
     const s = newAction("pong");
     s.ball.x = 495;
