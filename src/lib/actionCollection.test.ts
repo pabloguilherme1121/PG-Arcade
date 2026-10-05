@@ -177,7 +177,7 @@ describe("action collection physics", () => {
     expect(boosted.vy).toBeGreaterThanOrEqual(-220);
   });
 
-  it("flapping is an impulse while jetpack consumes held thrust fuel", () => {
+  it("flapping is an impulse while jetpack fuel only decreases under thrust", () => {
     const flight = stepAction(
       newAction("voo"),
       { ...idleInput, action: true },
@@ -191,7 +191,7 @@ describe("action collection physics", () => {
     );
     expect(jet.fuel).toBeLessThan(100);
     expect(jet.vy).toBeLessThan(0);
-    expect(stepAction(jet, idleInput, 0.02).fuel).toBeGreaterThan(jet.fuel);
+    expect(stepAction(jet, idleInput, 0.02).fuel).toBe(jet.fuel);
   });
 
   it("jetpack fuel canisters refill part of the tank instead of teleporting to full", () => {
