@@ -55,6 +55,14 @@ export const opposite: Record<Direction, Direction> = {
   left: "right",
   right: "left",
 };
+export function queueSnakeDirection(
+  current: Direction,
+  pending: Direction,
+  next: Direction,
+): Direction {
+  const reference = pending === opposite[current] ? current : pending;
+  return next === opposite[reference] ? pending : next;
+}
 export function samePoint(a: Point, b: Point) {
   return a.x === b.x && a.y === b.y;
 }
