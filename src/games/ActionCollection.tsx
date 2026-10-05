@@ -236,7 +236,7 @@ function paint(
       box(3, 14, 6, 8, "#d7f367");
     } else if (s.id === "esquiva") {
       const speed = Math.hypot(s.vx, s.vy);
-      if (speed > 8) {
+      if (speed > 8 && !reducedMotion) {
         ctx.strokeStyle = "rgba(215,243,103,.42)";
         ctx.lineWidth = 3;
         ctx.lineCap = "round";
@@ -526,6 +526,8 @@ export default function ActionCollection({
       <div className="action-canvas-wrap">
         <canvas
           data-expanded-board
+          data-player-x={hud.x}
+          data-player-y={hud.y}
           tabIndex={0}
           ref={canvas}
           width={480}
@@ -602,6 +604,7 @@ export default function ActionCollection({
               if (e.key === " " || e.key === "Enter") {
                 e.preventDefault();
                 input.current[key] = true;
+                if (!e.repeat) pending.current.add(key);
               }
             }}
             onKeyUp={() => {
