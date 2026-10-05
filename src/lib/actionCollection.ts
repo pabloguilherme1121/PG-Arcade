@@ -549,18 +549,23 @@ export function stepAction(
       }
     }
   } else {
-    s.angle +=
-      ((input.right ? 1 : 0) - (input.left ? 1 : 0)) *
-      2.2 *
-      dt *
-      clamp(Math.abs(s.vx) / 40, 0.15, 1);
+    const turn = (input.right ? 1 : 0) - (input.left ? 1 : 0);
+    const speedRatio = clamp(Math.abs(s.vx) / 40, 0.15, 1);
+    const steeringGain = input.down ? 1.35 : 1;
+    s.angle += turn * 2.2 * steeringGain * dt * speedRatio;
     s.vx = clamp(
       s.vx + ((action ? 95 : 0) - (input.down ? 180 : 0) - s.vx * 0.42) * dt,
       0,
       220 * f,
     );
-    s.x += Math.cos(s.angle) * s.vx * dt;
-    s.y += Math.sin(s.angle) * s.vx * dt;
+    const slipTarget = -turn * s.vx * (input.down ? 0.38 : 0.1);
+    const gripResponse = input.down ? 3.2 : 6;
+    s.vy += (slipTarget - s.vy) * Math.min(1, gripResponse * dt);
+    s.x +=
+      (Math.cos(s.angle) * s.vx - Math.sin(s.angle) * s.vy) * dt;
+    s.y +=
+      (Math.sin(s.angle) * s.vx + Math.cos(s.angle) * s.vy) * dt;
+    s.vy *= Math.exp(-(input.down ? 1.6 : 5) * dt);
     const radius = Math.sqrt(
       ((s.x - 240) / 190) ** 2 + ((s.y - 180) / 130) ** 2,
     );
