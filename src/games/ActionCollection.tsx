@@ -11,6 +11,7 @@ import {
   type ActionInput,
 } from "../lib/actionCollection";
 import { useAutoPause, type PlayStatus } from "./useAutoPause";
+import { useReducedMotion } from "../useReducedMotion";
 import "./actionCollection.css";
 const artwork = (() => {
   const images: Partial<Record<"car" | "ship", HTMLImageElement>> = {};
@@ -22,7 +23,7 @@ const artwork = (() => {
     }
   return images;
 })();
-function paint(ctx: CanvasRenderingContext2D, s: ActionState) {
+function paint(ctx: CanvasRenderingContext2D, s: ActionState, reducedMotion: boolean) {
   const space = ["asteroides", "invasores", "pouso"].includes(s.id);
   const sky = ctx.createLinearGradient(0, 0, 0, 360);
   sky.addColorStop(0, space ? "#071026" : "#162c40");
@@ -30,7 +31,7 @@ function paint(ctx: CanvasRenderingContext2D, s: ActionState) {
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, 480, 360);
   ctx.fillStyle = "#bbdbef";
-  const drift = s.time * (space ? 5 : 1.25);
+  const drift = reducedMotion ? 0 : s.time * (space ? 5 : 1.25);
   for (let i = 0; i < 45; i++) {
     const depth = 1 + (i % 3) * 0.35;
     const size = space ? 1 + (i % 3 === 0 ? 1 : 0) : 1;
@@ -188,7 +189,7 @@ function paint(ctx: CanvasRenderingContext2D, s: ActionState) {
     ctx.translate(s.x, s.y);
     if (s.id === "asteroides") ctx.rotate(s.angle + Math.PI / 2);
     if (s.id === "runner") {
-      const swing = Math.sin(s.time * 10) * 5;
+      const swing = reducedMotion ? 0 : Math.sin(s.time * 10) * 5;
       circle(0, -18, 8, "#d7f367");
       box(-7, -9, 14, 23, "#8ae0d3");
 
@@ -266,6 +267,7 @@ export default function ActionCollection({
 }) {
   const id = (actionCollectionGames.find((g) => g.id === gameId)?.id ??
     "breakout") as ActionId;
+  const reducedMotion = useReducedMotion();
   const [difficulty, setDifficulty] = useState<Difficulty>("normal"),
     [mode, setMode] = useState<ActionMode>("mission");
   const [status, setStatus] = useState<PlayStatus>("ready"),
@@ -293,8 +295,8 @@ export default function ActionCollection({
   }, [id, difficulty, mode]);
   useEffect(() => {
     const ctx = canvas.current?.getContext("2d");
-    if (ctx) paint(ctx, state.current);
-  }, [hud, status]);
+    if (ctx) paint(ctx, state.current, reducedMotion);
+  }, [hud, status, reducedMotion]);
   useEffect(() => {
     if (status !== "running") return;
     let frame = 0,
@@ -315,7 +317,7 @@ export default function ActionCollection({
         accumulator -= 1 / 60;
       }
       const ctx = canvas.current?.getContext("2d");
-      if (ctx) paint(ctx, state.current);
+      if (ctx) paint(ctx, state.current, reducedMotion);
       if (now - lastHud > 100) {
         setHud(state.current);
         lastHud = now;
@@ -333,7 +335,7 @@ export default function ActionCollection({
     };
     frame = requestAnimationFrame(run);
     return () => cancelAnimationFrame(frame);
-  }, [status]);
+  }, [status, reducedMotion]);
   function start() {
     if (status === "paused") {
       setStatus("running");

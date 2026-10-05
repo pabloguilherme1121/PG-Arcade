@@ -375,7 +375,7 @@ export default function PortfolioFootball() {
                   className={flight ? "football-ball football-ball-flight" : "football-ball"}
                   key={`${shots.length}-${Boolean(flight)}`}
                   transform={
-                    flight ? undefined : `translate(${ballX},${ballY})`
+                    flight ? undefined : `translate(${ballX},${ballY}) scale(${shot?.scaleAtGoal ?? 1})`
                   }
                 >
                   {flight && (
