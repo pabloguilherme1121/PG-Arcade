@@ -157,7 +157,7 @@ describe("action collection physics", () => {
     const s = newAction("jetpack");
     s.fuel = 20;
     s.objects = [
-      { x: s.x, y: s.y, vx: 0, vy: 0, r: 13, kind: "fuel", hp: 1 },
+      { x: 95, y: s.y, vx: 0, vy: 0, r: 13, kind: "fuel", hp: 1 },
     ];
     const n = stepAction(s, idleInput, 0);
     expect(n.fuel).toBeGreaterThan(20);
