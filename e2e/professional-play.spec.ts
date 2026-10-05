@@ -209,4 +209,20 @@ test("shared motion language animates boards and pieces while respecting reduced
       expect(milliseconds).toBeLessThanOrEqual(0.01);
     }
   }
+  // A player's saved preference must also work without OS-level reduction.
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.evaluate(() => localStorage.setItem("pg-arcade-preferences-v1", JSON.stringify({ motion: "reduced" })));
+  await page.reload();
+  const manualDurations = await page.locator(".board2048").evaluate((element) => {
+    const style = getComputedStyle(element);
+    return [style.animationDuration, style.transitionDuration];
+  });
+  for (const duration of manualDurations) {
+    for (const value of duration.split(",")) {
+      const milliseconds = Number.parseFloat(value) * (value.trim().endsWith("ms") ? 1 : 1000);
+      expect(Number.isFinite(milliseconds)).toBe(true);
+      expect(milliseconds).toBeGreaterThanOrEqual(0);
+      expect(milliseconds).toBeLessThanOrEqual(0.01);
+    }
+  }
 });
