@@ -204,7 +204,7 @@ export default function TargetGame({
                 ? "Continuar"
                 : "Começar rodada"}
           </button>
-          <button onClick={reset}>Nova rodada</button>
+          <button onClick={() => reset()}>Nova rodada</button>
         </div>
       </div>
       <aside className="instructions">
