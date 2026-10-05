@@ -65,7 +65,7 @@ export default function PortfolioFootball() {
   };
   const shoot = () => {
     if (finished || timer.current) return;
-    const target = getFootballTargetX(mode, aim, curve);
+    const target = getFootballTargetX(mode, aim, curve, power);
     const position = chooseFootballKeeperPosition(difficulty, target);
     const shot = {
       ...resolveFootballShot(mode, aim, power, curve, position),
@@ -651,8 +651,9 @@ export default function PortfolioFootball() {
               <p className="pb-3 leading-6">
                 Use as setas na mira ou toque no gol. Força entre 58 e 90 passa
                 por cima da barreira. Nas faltas, curva negativa desvia à
-                esquerda; positiva à direita. Força máxima pode mandar a bola
-                para fora.
+                esquerda e positiva à direita; chutes mais colocados permanecem
+                mais tempo no ar e fazem mais curva. Força máxima pode mandar a
+                bola para fora.
               </p>
             </details>
           </div>
