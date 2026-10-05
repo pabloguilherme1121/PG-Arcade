@@ -18,6 +18,7 @@ import {
   bowlingHit,
   golfStroke,
   fishingTensionTick,
+  fishingReelStep,
   casualGames,
   moveGridCursor,
 } from "./casualCollection";
@@ -181,6 +182,16 @@ describe("casual collection engines", () => {
     expect(hardPull).toBeGreaterThan(easyPull);
     expect(hardPull).toBeGreaterThan(50);
     expect(fishingTensionTick(2, 1, 0)).toBe(0);
+  });
+
+  it("fishing reel progress falls as line tension rises", () => {
+    const relaxed = fishingReelStep(100, 20, 1);
+    const strained = fishingReelStep(100, 80, 1);
+    const hard = fishingReelStep(100, 20, 2);
+    expect(relaxed.distance).toBeLessThan(strained.distance);
+    expect(strained.distance).toBeLessThan(100);
+    expect(hard.tension).toBeGreaterThan(relaxed.tension);
+    expect(relaxed.tension).toBeGreaterThan(20);
   });
 
   it("provides eight unique game IDs and useful instructions", () => {
