@@ -18,7 +18,7 @@ export const casualGames = [
     name: "Boliche de Precisão",
     category: "Casuais",
     description: "Leia a pista e derrube os dez pinos.",
-    help: "Ajuste a direção e a força da bola. Cada rodada permite dois lançamentos; os pinos derrubados continuam fora na segunda tentativa.",
+    help: "Ajuste direção, força e hook. A curva aparece mais no fim da pista; potência alta reduz o tempo de fechamento. Cada rodada permite dois lançamentos e os pinos derrubados permanecem fora."
   },
   {
     id: "basquete",
