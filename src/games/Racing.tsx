@@ -119,7 +119,16 @@ export default function Racing({
             <div
               key={car.id}
               className="traffic-car"
-              style={{ left: `${car.lane * 33.33 + 16.66}%`, top: `${car.y}%` }}
+              data-speed-factor={(car.speedFactor ?? 1).toFixed(2)}
+              style={{
+                left: `${car.lane * 33.33 + 16.66}%`,
+                top: `${car.y}%`,
+                transform: `translateX(-50%) scale(${Math.max(
+                  0.7,
+                  Math.min(1.08, 0.74 + ((car.y + 16) / 126) * 0.34),
+                )})`,
+                transformOrigin: "center bottom",
+              }}
             >
               <img src={`${import.meta.env.BASE_URL}art/car.webp`} alt="" />
             </div>
