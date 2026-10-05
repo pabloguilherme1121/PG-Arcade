@@ -4,6 +4,7 @@ import {
   newAction,
   stepAction,
   idleInput,
+  clamp,
   type ActionId,
   type ActionState,
   type Difficulty,
