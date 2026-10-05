@@ -6,6 +6,8 @@ import {
   useState,
   useCallback,
   useRef,
+  useMemo,
+  memo,
   type ReactNode,
   type ComponentType,
 } from "react";
@@ -366,6 +368,8 @@ function Preview({ id }: { id: GameId }) {
     </div>
   );
 }
+const MemoPreview = memo(Preview);
+
 export default function App() {
   const [page, setPage] = useState(route);
   const [focusMode, setFocusMode] = useState(false);
@@ -536,27 +540,38 @@ export default function App() {
   }
   const game = games.find((g) => g.id === page);
   const Player = game ? players[game.id] : null;
-  const visible = games.filter(
-    (g) =>
-      (page !== "favoritos" || progress.favorites.includes(g.id)) &&
-      (category === "Todos" || g.category === category) &&
-      g.name
+  const normalizedQuery = useMemo(
+    () =>
+      query
         .toLocaleLowerCase("pt-BR")
         .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .includes(
-          query
+        .replace(/[\u0300-\u036f]/g, ""),
+    [query],
+  );
+  const visible = useMemo(
+    () =>
+      games.filter(
+        (g) =>
+          (page !== "favoritos" || progress.favorites.includes(g.id)) &&
+          (category === "Todos" || g.category === category) &&
+          g.name
             .toLocaleLowerCase("pt-BR")
             .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, ""),
-        ),
+            .replace(/[\u0300-\u036f]/g, "")
+            .includes(normalizedQuery),
+      ),
+    [page, progress.favorites, category, normalizedQuery],
   );
-  const sorted = [...visible].sort((a, b) =>
-    sort === "nome"
-      ? a.name.localeCompare(b.name, "pt-BR")
-      : sort === "visitados"
-        ? (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)
-        : 0,
+  const sorted = useMemo(
+    () =>
+      [...visible].sort((a, b) =>
+        sort === "nome"
+          ? a.name.localeCompare(b.name, "pt-BR")
+          : sort === "visitados"
+            ? (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)
+            : 0,
+      ),
+    [visible, sort, progress.visits],
   );
   return (
     <div className={focusMode && game ? "app-focus" : ""}>
@@ -1060,7 +1075,7 @@ export default function App() {
                       href={`#/jogar/${g.id}`}
                       aria-label={`Jogar ${g.name}`}
                     >
-                      <Preview id={g.id} />
+                      <MemoPreview id={g.id} />
                       <span className="game-category">{g.category}</span>
                       <h3>{g.name}</h3>
                       <p>{g.description}</p>
