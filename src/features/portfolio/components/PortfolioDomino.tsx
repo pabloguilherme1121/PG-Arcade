@@ -13,7 +13,8 @@ import {
   chooseDominoBotMove,
   dealDominoRound,
   getDominoPipTotal,
-  getDominoRoundPoints,
+  getDominoWinnerPoints,
+  drawDominoUntilPlayable,
   sortDominoHand,
   getPlayableDominoSides,
   hasPlayableDominoTile,
@@ -198,6 +199,17 @@ export default function PortfolioDomino() {
     else setOpponentHand(nextHand);
 
     if (!nextHand.length) {
+      const nextPlayerHand = owner === "player" ? nextHand : playerHand;
+      const nextOpponentHand = owner === "opponent" ? nextHand : opponentHand;
+      const wonPoints = getDominoWinnerPoints(
+        owner,
+        nextPlayerHand,
+        nextOpponentHand,
+      );
+      setPoints((current) => ({
+        ...current,
+        [owner]: current[owner] + wonPoints,
+      }));
       finishRound(owner);
       return;
     }
@@ -225,10 +237,13 @@ export default function PortfolioDomino() {
 
   const drawTile = () => {
     if (!canDraw || !boneyard.length) return;
-    const [tile, ...rest] = boneyard;
-    setBoneyard(rest);
-    if (turn === "player") setPlayerHand((hand) => [...hand, tile]);
-    else setOpponentHand((hand) => [...hand, tile]);
+    const result = drawDominoUntilPlayable(currentHand, chain, boneyard);
+    setBoneyard(result.boneyard);
+    if (turn === "player") setPlayerHand(result.hand);
+    else setOpponentHand(result.hand);
+    setLastMove(
+      `${turn === "player" ? (mode === "bot" ? "Você" : "Jogador 1") : "Jogador 2"} comprou ${result.drawn} pedra${result.drawn === 1 ? "" : "s"}.`,
+    );
   };
 
   const passTurn = () => {
@@ -286,7 +301,9 @@ export default function PortfolioDomino() {
         if (!nextHand.length) {
           setPoints((current) => ({
             ...current,
-            opponent: current.opponent + getDominoRoundPoints(playerHand),
+            opponent:
+              current.opponent +
+              getDominoWinnerPoints("opponent", playerHand, nextHand),
           }));
           finishRound("opponent");
         } else setTurn("player");

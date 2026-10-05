@@ -6,6 +6,9 @@ import {
   stepSnake,
   snakeFood,
   shuffledPairs,
+  queueSnakeDirection,
+  directionFromKey,
+  directionFromSwipe,
 } from "./engines";
 describe("2048", () => {
   it("merges each tile once and scores every merge", () => {
@@ -33,7 +36,36 @@ describe("2048", () => {
     ]);
   });
 });
+describe("Directional input", () => {
+  it("maps arrows and WASD consistently, including uppercase keys", () => {
+    expect(directionFromKey("ArrowUp")).toBe("up");
+    expect(directionFromKey("w")).toBe("up");
+    expect(directionFromKey("W")).toBe("up");
+    expect(directionFromKey("A")).toBe("left");
+    expect(directionFromKey("s")).toBe("down");
+    expect(directionFromKey("D")).toBe("right");
+    expect(directionFromKey("Enter")).toBeNull();
+  });
+
+  it("ignores short swipes and favors the dominant axis", () => {
+    expect(directionFromSwipe(19, 0, 20)).toBeNull();
+    expect(directionFromSwipe(30, 25, 20)).toBe("right");
+    expect(directionFromSwipe(-30, 25, 20)).toBe("left");
+    expect(directionFromSwipe(10, -40, 20)).toBe("up");
+    expect(directionFromSwipe(10, 40, 20)).toBe("down");
+  });
+});
+
 describe("Snake", () => {
+  it("buffers up to two fast corners without reversing against the queued path", () => {
+    expect(queueSnakeDirection("right", [], "left")).toEqual([]);
+    const first = queueSnakeDirection("right", [], "up");
+    expect(first).toEqual(["up"]);
+    const second = queueSnakeDirection("right", first, "left");
+    expect(second).toEqual(["up", "left"]);
+    expect(queueSnakeDirection("right", second, "down")).toEqual(second);
+    expect(queueSnakeDirection("right", second, "right")).toEqual(second);
+  });
   it("grows on food and collides with walls", () => {
     const b = [
       { x: 1, y: 0 },

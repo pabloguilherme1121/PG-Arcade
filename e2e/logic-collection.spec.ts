@@ -51,7 +51,7 @@ test("Nonogram solves a figure with clues and advances the series", async ({
     .click();
   await expect(page.locator(".lc-stats")).toContainText("Desafio 2 / 5");
 });
-test("Maze keyboard path reaches the actual exit", async ({ page }) => {
+test("Maze WASD path reaches the actual exit", async ({ page }) => {
   await open(page, "labirinto");
   const route = path(maze(9, 13), 9, 10, 70);
   const board = page.locator(".lc-grid");
@@ -59,13 +59,7 @@ test("Maze keyboard path reaches the actual exit", async ({ page }) => {
   for (let i = 1; i < route.length; i++) {
     const delta = route[i] - route[i - 1];
     await board.press(
-      delta === 1
-        ? "ArrowRight"
-        : delta === -1
-          ? "ArrowLeft"
-          : delta === 9
-            ? "ArrowDown"
-            : "ArrowUp",
+      delta === 1 ? "d" : delta === -1 ? "a" : delta === 9 ? "s" : "w",
     );
   }
   await won(page);

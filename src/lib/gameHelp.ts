@@ -1,4 +1,5 @@
 import type { GameId } from "./catalog";
+import { newGames } from "./newCatalog";
 import { expandedGames, type ExpandedId } from "./expandedCatalog";
 const expandedHelp: Record<ExpandedId, string> = {
   sudoku:
@@ -55,6 +56,7 @@ const expandedHelp: Record<ExpandedId, string> = {
     "Troque duas peças vizinhas para formar linhas de três ou mais. Combinações desaparecem e novas peças caem, criando cascatas e pontos.",
 };
 export const gameHelp: Record<GameId, string> = {
+  ...Object.fromEntries(newGames.map(g => [g.id, g.help])) as Record<typeof newGames[number]["id"],string>,
   ...expandedHelp,
   sequencia:
     "Observe a sequência e repita com as teclas 1 a 4 no tabuleiro ou toque nos botões. Cada nível adiciona uma cor. Pausar e continuar repete o padrão sem penalidade.",
@@ -80,13 +82,13 @@ export const gameHelp: Record<GameId, string> = {
   estrelas:
     "Toque na estrela antes que ela mude de lugar ou use a tecla de 1 a 9 correspondente. Cada estrela vale um ponto. Você pode pausar a rodada de 20 segundos.",
   liga4:
-    "Jogue em dupla ou contra o bot com três dificuldades. Toque no número da coluna ou use Tab e Enter. Quatro peças na horizontal, vertical ou diagonal vencem. Contra o bot, desfazer volta o turno completo.",
+    "Jogue em dupla ou contra o bot com três dificuldades. Toque no número da coluna, pressione 1 a 7 diretamente ou use Tab e Enter. Quatro peças na horizontal, vertical ou diagonal vencem. Contra o bot, desfazer volta o turno completo.",
   puzzle:
     "Organize as peças de 1 a 8 e deixe o espaço vazio no canto inferior direito. Toque em uma peça vizinha ao espaço ou use as setas com o tabuleiro em foco.",
   "2048":
     "Junte números iguais usando setas, os botões de direção ou deslizando no tabuleiro. Você pode desfazer a última jogada; o recorde fica salvo neste navegador.",
   snake:
-    "Coma frutas e evite paredes e o próprio corpo. Use setas, gestos ou controles de direção. Espaço pausa. Escolha a velocidade antes de jogar.",
+    "Coma frutas e evite paredes e o próprio corpo. Use setas, WASD, gestos ou controles de direção. Duas curvas rápidas entram na fila em ordem e reversões imediatas são bloqueadas. Espaço pausa. Escolha a velocidade antes de jogar.",
   memoria:
     "Vire duas cartas e encontre os pares. Use toque ou Tab e Enter. Você pode escolher o tempo para memorizar cartas diferentes; o recorde conta as tentativas.",
   xadrez:
@@ -101,6 +103,7 @@ export const gameHelp: Record<GameId, string> = {
     "Escolha pênalti ou falta, ajuste mira, força e curva e toque em Chutar. A mira aceita toque e teclado; observe a trajetória e tente melhorar sua série de cinco cobranças.",
 };
 export const recordUnits: Partial<Record<GameId, "pontos" | "jogadas">> = {
+  ...Object.fromEntries(newGames.map(g => [g.id, "pontos" as const])),
   ...Object.fromEntries(expandedGames.map((g) => [g.id, "pontos" as const])),
   sequencia: "pontos",
   palavra: "pontos",

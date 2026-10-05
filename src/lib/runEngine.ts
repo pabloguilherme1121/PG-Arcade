@@ -20,6 +20,8 @@ export type RunState = {
   lives: number;
   objects: RunObject[];
   shots: RunObject[];
+  steerCooldown: number;
+  crashCooldown: number;
 };
 export const newRun = (): RunState => ({
   lane: 1,
@@ -28,9 +30,15 @@ export const newRun = (): RunState => ({
   lives: 3,
   objects: [],
   shots: [],
+  steerCooldown: 0,
+  crashCooldown: 0,
 });
 export function moveRun(s: RunState, delta: number): RunState {
-  return { ...s, lane: Math.max(0, Math.min(2, s.lane + delta)) };
+  if (s.steerCooldown > 0 || delta === 0) return s;
+  const step = delta < 0 ? -1 : 1;
+  const lane = Math.max(0, Math.min(2, s.lane + step));
+  if (lane === s.lane) return s;
+  return { ...s, lane, steerCooldown: 2 };
 }
 export function fireRun(s: RunState): RunState {
   if (s.shots.some((b) => b.y > 55 && b.lane === s.lane)) return s;
@@ -55,8 +63,11 @@ export function stepRun(
 ): RunState {
   if (s.lives <= 0 || s.ticks >= options.limit) return s;
   let score = s.score,
-    lives = s.lives;
+    lives = s.lives,
+    damaged = false;
   const ticks = s.ticks + 1;
+  const steerCooldown = Math.max(0, s.steerCooldown - 1);
+  let crashCooldown = Math.max(0, s.crashCooldown - 1);
   const pace =
     (options.difficulty === "easy"
       ? 0.7
@@ -81,7 +92,11 @@ export function stepRun(
       }
       if (o.lane === s.lane && o.y >= 60 && o.y <= 90) {
         if (o.reward) score += kind === "rally" ? 25 : 10;
-        else lives--;
+        else if (!damaged && crashCooldown === 0) {
+          lives--;
+          damaged = true;
+          crashCooldown = 8;
+        }
         return false;
       }
       return o.y < 110;
@@ -101,5 +116,14 @@ export function stepRun(
       y: -16,
       reward: kind !== "orbital" && random() > 0.45,
     });
-  return { ...s, ticks, objects, shots, score, lives: Math.max(0, lives) };
+  return {
+    ...s,
+    ticks,
+    objects,
+    shots,
+    score,
+    lives: Math.max(0, lives),
+    steerCooldown,
+    crashCooldown,
+  };
 }

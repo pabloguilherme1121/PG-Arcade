@@ -44,9 +44,53 @@ it("collectibles and collisions remove only overlapping objects", () => {
   expect(hit.lives).toBe(2);
   expect(hit.objects).toHaveLength(1);
 });
-it("rounds stop at deadline or death, steering stays in bounds and fire is limited", () => {
+it("applies one collision hit then grants a short recovery window", () => {
+  const s = {
+    ...newRun(),
+    objects: [
+      { id: 1, lane: 1, y: 60, reward: false },
+      { id: 2, lane: 1, y: 62, reward: false },
+    ],
+  };
+  const next = stepRun(s, "coleta");
+  expect(next.lives).toBe(2);
+  expect(next.objects).toHaveLength(0);
+  expect(next.crashCooldown).toBeGreaterThan(0);
+
+  const protectedHit = stepRun(
+    {
+      ...next,
+      objects: [{ id: 3, lane: 1, y: 60, reward: false }],
+    },
+    "coleta",
+  );
+  expect(protectedHit.lives).toBe(2);
+
+  let recovered = protectedHit;
+  for (let i = 0; i < 8; i++)
+    recovered = stepRun({ ...recovered, objects: [] }, "coleta");
+  const nextCrash = stepRun(
+    {
+      ...recovered,
+      objects: [{ id: 4, lane: 1, y: 60, reward: false }],
+    },
+    "coleta",
+  );
+  expect(nextCrash.lives).toBe(1);
+});
+
+it("rounds stop at deadline or death, steering settles between lane changes and fire is limited", () => {
   expect(moveRun(newRun(), -10).lane).toBe(0);
   expect(moveRun(newRun(), 10).lane).toBe(2);
+  const right = moveRun(newRun(), 1);
+  expect(right.lane).toBe(2);
+  expect(right.steerCooldown).toBeGreaterThan(0);
+  expect(moveRun(right, -1).lane).toBe(2);
+  const recovered = stepRun(
+    stepRun({ ...right, objects: [] }, "rally"),
+    "rally",
+  );
+  expect(moveRun(recovered, -1).lane).toBe(1);
   for (const s of [
     { ...newRun(), lives: 0 },
     { ...newRun(), ticks: 300 },

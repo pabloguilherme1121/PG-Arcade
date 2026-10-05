@@ -1,5 +1,11 @@
 import { Bot, Crown, RotateCcw, Swords, Undo2, UsersRound } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState, type KeyboardEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type KeyboardEvent,
+} from "react";
 import { useAutoPause } from "@/games/useAutoPause";
 import ArcadeDifficultyNotice from "./ArcadeDifficultyNotice";
 import {
@@ -67,7 +73,8 @@ function handleBoardKey(
   const next = destinations[event.key];
   if (next === undefined) return;
   event.preventDefault();
-  event.currentTarget.parentElement
+  event.currentTarget
+    .closest('[role="grid"]')
     ?.querySelectorAll<HTMLButtonElement>('[role="gridcell"]')
     [next]?.focus();
 }
@@ -76,7 +83,8 @@ export default function PortfolioChess() {
   const [focusedSquare, setFocusedSquare] = useState(52);
   const [paused, setPaused] = useState(false);
   const [botError, setBotError] = useState("");
-  const [promotion, setPromotion] = useState<NonNullable<ChessMove["promotion"]>>("queen");
+  const [promotion, setPromotion] =
+    useState<NonNullable<ChessMove["promotion"]>>("queen");
   const pause = useCallback(() => setPaused(true), []);
   useAutoPause(pause);
   const [mode, setMode] = useState<Mode>("bot"),
@@ -93,7 +101,8 @@ export default function PortfolioChess() {
       : null;
   const restart = () => {
     setState(createInitialChessState());
-    setPaused(false); setBotError("");
+    setPaused(false);
+    setBotError("");
     setSelected(null);
     setHistory([]);
   };
@@ -120,7 +129,12 @@ export default function PortfolioChess() {
       setSelected(i);
       return;
     }
-    const m = legal.find((x) => x.from === selected && x.to === i && (!x.promotion || x.promotion === promotion));
+    const m = legal.find(
+      (x) =>
+        x.from === selected &&
+        x.to === i &&
+        (!x.promotion || x.promotion === promotion),
+    );
     if (m) commit(m);
   };
   useEffect(() => {
@@ -135,28 +149,44 @@ export default function PortfolioChess() {
         return;
       }
       try {
-        worker = new Worker(new URL("../utils/chess.worker.ts", import.meta.url), { type: "module" });
+        worker = new Worker(
+          new URL("../utils/chess.worker.ts", import.meta.url),
+          { type: "module" },
+        );
         worker.onmessage = (event: MessageEvent<ChessMove | null>) => {
           if (!cancelled && event.data) commit(event.data);
           worker?.terminate();
         };
         worker.onerror = () => {
-          if (!cancelled) { setBotError("O bot não respondeu. Continue para tentar novamente ou escolha 1 × 1 local."); setPaused(true); }
+          if (!cancelled) {
+            setBotError(
+              "O bot não respondeu. Continue para tentar novamente ou escolha 1 × 1 local.",
+            );
+            setPaused(true);
+          }
           worker?.terminate();
         };
         worker.postMessage({ state, difficulty });
       } catch {
-        setBotError("A análise do bot está indisponível. Escolha 1 × 1 local para continuar."); setPaused(true);
+        setBotError(
+          "A análise do bot está indisponível. Escolha 1 × 1 local para continuar.",
+        );
+        setPaused(true);
       }
     }, 360);
-    return () => { cancelled = true; clearTimeout(t); worker?.terminate(); };
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+      worker?.terminate();
+    };
   }, [state, difficulty, mode, outcome, turn, paused]);
   const selectedMoves =
     selected === null
       ? []
       : legal.filter((m) => m.from === selected).map((m) => m.to);
-  const status = paused ? "Partida pausada" :
-    outcome === "checkmate"
+  const status = paused
+    ? "Partida pausada"
+    : outcome === "checkmate"
       ? turn === "white"
         ? mode === "bot"
           ? "PG Bot venceu por xeque-mate."
@@ -193,64 +223,84 @@ export default function PortfolioChess() {
             aria-label="Tabuleiro de xadrez"
             className="grid aspect-square grid-cols-8 overflow-hidden rounded-[18px] border border-white/15 shadow-2xl"
           >
-            {board.map((piece, i) => {
-              const { row, col } = { row: Math.floor(i / 8), col: i % 8 };
-              const active = selected === i,
-                target = selectedMoves.includes(i);
-              return (
-                <button
-                  key={i}
-                  role="gridcell"
-                  tabIndex={focusedSquare === i ? 0 : -1}
-                  onFocus={() => setFocusedSquare(i)}
-                  onKeyDown={(event) => handleBoardKey(event, i)}
-                  aria-label={
-                    piece
-                      ? `${squareName(i)} · ${pieceLabels[piece.type]} ${piece.color === "white" ? "branco" : "preto"}`
-                      : `${squareName(i)} · vazia${target ? " · destino disponível" : ""}`
-                  }
-                  aria-selected={active}
-                  onClick={() => click(i)}
-                  className={`relative grid min-h-0 place-items-center text-[clamp(1.35rem,7vw,3rem)] focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 ${(row + col) % 2 ? "bg-[#31506a]" : "bg-[#d7e3e8]"} ${active ? "ring-4 ring-inset ring-cyan-300" : ""}`}
-                >
-                  <span
-                    className={
-                      piece?.color === "white"
-                        ? "text-white drop-shadow-[0_2px_2px_#10263a]"
-                        : "text-[#07111d]"
-                    }
-                  >
-                    {piece ? glyph[piece.color][piece.type] : ""}
-                  </span>
-                  {target && (
-                    <span
-                      aria-hidden
-                      className="absolute h-3 w-3 rounded-full bg-cyan-300/80"
-                    />
-                  )}
-                  {row === 7 && (
-                    <span
-                      aria-hidden="true"
-                      className="absolute bottom-0.5 right-1 text-[9px] font-semibold text-[#07111d]"
+            {Array.from({ length: 8 }, (_, rank) => (
+              <div
+                key={rank}
+                role="row"
+                aria-rowindex={rank + 1}
+                style={{ display: "contents" }}
+              >
+                {board.slice(rank * 8, rank * 8 + 8).map((piece, file) => {
+                  const i = rank * 8 + file;
+                  const { row, col } = { row: Math.floor(i / 8), col: i % 8 };
+                  const active = selected === i,
+                    target = selectedMoves.includes(i);
+                  return (
+                    <button
+                      key={i}
+                      role="gridcell"
+                      tabIndex={focusedSquare === i ? 0 : -1}
+                      onFocus={() => setFocusedSquare(i)}
+                      onKeyDown={(event) => handleBoardKey(event, i)}
+                      aria-label={
+                        piece
+                          ? `${squareName(i)} · ${pieceLabels[piece.type]} ${piece.color === "white" ? "branco" : "preto"}`
+                          : `${squareName(i)} · vazia${target ? " · destino disponível" : ""}`
+                      }
+                      aria-selected={active}
+                      onClick={() => click(i)}
+                      className={`relative grid min-h-0 place-items-center text-[clamp(1.35rem,7vw,3rem)] focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 ${(row + col) % 2 ? "bg-[#31506a]" : "bg-[#d7e3e8]"} ${active ? "ring-4 ring-inset ring-cyan-300" : ""}`}
                     >
-                      {"abcdefgh"[col]}
-                    </span>
-                  )}
-                  {col === 0 && (
-                    <span
-                      aria-hidden="true"
-                      className="absolute left-1 top-0.5 text-[9px] font-semibold text-[#07111d]"
-                    >
-                      {8 - row}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
+                      <span
+                        className={
+                          piece?.color === "white"
+                            ? "text-white drop-shadow-[0_2px_2px_#10263a]"
+                            : "text-[#07111d]"
+                        }
+                      >
+                        {piece ? glyph[piece.color][piece.type] : ""}
+                      </span>
+                      {target && (
+                        <span
+                          aria-hidden
+                          className="absolute h-3 w-3 rounded-full bg-cyan-300/80"
+                        />
+                      )}
+                      {row === 7 && (
+                        <span
+                          aria-hidden="true"
+                          className="absolute bottom-0.5 right-1 text-[9px] font-semibold text-[#07111d]"
+                        >
+                          {"abcdefgh"[col]}
+                        </span>
+                      )}
+                      {col === 0 && (
+                        <span
+                          aria-hidden="true"
+                          className="absolute left-1 top-0.5 text-[9px] font-semibold text-[#07111d]"
+                        >
+                          {8 - row}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
           </div>
           {botError && <p role="status">{botError}</p>}
           <div className="mt-3 flex flex-wrap gap-2">
-            <button type="button" className="min-h-11 rounded-xl border border-cyan-300/30 px-3 text-sm text-cyan-100" disabled={!!outcome} onClick={() => { setPaused((p) => !p); setBotError(""); }}>{paused ? "Continuar" : "Pausar"}</button>
+            <button
+              type="button"
+              className="min-h-11 rounded-xl border border-cyan-300/30 px-3 text-sm text-cyan-100"
+              disabled={!!outcome}
+              onClick={() => {
+                setPaused((p) => !p);
+                setBotError("");
+              }}
+            >
+              {paused ? "Continuar" : "Pausar"}
+            </button>
             <button
               type="button"
               onClick={undo}
@@ -275,9 +325,23 @@ export default function PortfolioChess() {
           </p>
         </div>
         <div data-arcade-settings>
-          <label className="session-options">Promoção do peão<select aria-label="Promoção do peão" value={promotion} onChange={(e) => setPromotion(e.target.value as NonNullable<ChessMove["promotion"]>)}>
-            <option value="queen">Rainha</option><option value="rook">Torre</option><option value="bishop">Bispo</option><option value="knight">Cavalo</option>
-          </select></label>
+          <label className="session-options">
+            Promoção do peão
+            <select
+              aria-label="Promoção do peão"
+              value={promotion}
+              onChange={(e) =>
+                setPromotion(
+                  e.target.value as NonNullable<ChessMove["promotion"]>,
+                )
+              }
+            >
+              <option value="queen">Rainha</option>
+              <option value="rook">Torre</option>
+              <option value="bishop">Bispo</option>
+              <option value="knight">Cavalo</option>
+            </select>
+          </label>
           <p className="font-mono text-[9px] uppercase tracking-[.15em] text-cyan-300">
             PG Arcade · xadrez
           </p>

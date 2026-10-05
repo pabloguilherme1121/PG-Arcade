@@ -2,6 +2,10 @@ import { discWinner, dropDisc } from "./puzzles";
 
 export type DiscDifficulty = "easy" | "normal" | "hard";
 const columns = [3, 2, 4, 1, 5, 0, 6];
+export function discColumnFromKey(key: string): number | null {
+  if (!/^[1-7]$/.test(key)) return null;
+  return Number(key) - 1;
+}
 export function winningDiscs(board: number[]): number[] {
   for (let row = 0; row < 6; row++)
     for (let col = 0; col < 7; col++)

@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { ParkingSquare } from "lucide-react";
-import { parkingLevels, moveParking, parkingScore } from "../lib/actionGames";
-import type { Direction } from "../lib/engines";
+import {
+  parkingLevels,
+  moveParking,
+  parkingScore,
+  parkingSteeringCost,
+} from "../lib/actionGames";
+import { directionFromKey, type Direction } from "../lib/engines";
 import Controls from "./Controls";
 export default function Parking({
   record,
@@ -13,6 +18,8 @@ export default function Parking({
   const [level, setLevel] = useState(0);
   const [position, setPosition] = useState(parkingLevels[0].start);
   const [moves, setMoves] = useState(0);
+  const [heading, setHeading] = useState<Direction | null>(null);
+  const [steeringCost, setSteeringCost] = useState(0);
   const [message, setMessage] = useState("Leve o carro até a vaga P.");
   const config = parkingLevels[level];
   const won = position === config.goal;
@@ -20,6 +27,8 @@ export default function Parking({
     setLevel(next);
     setPosition(parkingLevels[next].start);
     setMoves(0);
+    setHeading(null);
+    setSteeringCost(0);
     setMessage("Leve o carro até a vaga P.");
   }
   function move(d: Direction) {
@@ -29,9 +38,14 @@ export default function Parking({
       setMessage("Caminho bloqueado. Procure outra direção.");
       return;
     }
-    if (next === config.goal) onRecord(parkingScore(moves + 1));
+    const maneuverCost = parkingSteeringCost(heading, d);
+    const nextSteeringCost = steeringCost + maneuverCost;
+    if (next === config.goal)
+      onRecord(parkingScore(moves + 1, nextSteeringCost));
     setPosition(next);
     setMoves((m) => m + 1);
+    setHeading(d);
+    setSteeringCost(nextSteeringCost);
     setMessage(
       `Carro na linha ${Math.floor(next / 6) + 1}, coluna ${(next % 6) + 1}.`,
     );
@@ -44,6 +58,9 @@ export default function Parking({
             Movimentos<strong>{moves}</strong>
           </div>
           <div>
+            Correções<strong>{steeringCost}</strong>
+          </div>
+          <div>
             Recorde<strong>{record || "—"}</strong>
           </div>
         </div>
@@ -51,21 +68,12 @@ export default function Parking({
           className="parking-board"
           role="group"
           tabIndex={0}
-          aria-label="Estacionamento. Use as setas para dirigir até a vaga P."
+          aria-label="Estacionamento. Use as setas ou WASD para dirigir até a vaga P."
           onKeyDown={(e) => {
-            const d: Record<string, Direction> = {
-              ArrowUp: "up",
-              ArrowDown: "down",
-              ArrowLeft: "left",
-              ArrowRight: "right",
-              w: "up",
-              s: "down",
-              a: "left",
-              d: "right",
-            };
-            if (d[e.key]) {
+            const d = directionFromKey(e.key);
+            if (d) {
               e.preventDefault();
-              move(d[e.key]);
+              move(d);
             }
           }}
         >
@@ -90,9 +98,23 @@ export default function Parking({
                       ? "Obstáculo"
                       : "Livre"
               }
+              role="img"
             >
               {i === position ? (
-                <img src={`${import.meta.env.BASE_URL}art/car.webp`} alt="" />
+                <img
+                  src={`${import.meta.env.BASE_URL}art/car.webp`}
+                  alt=""
+                  style={{
+                    transform:
+                      heading === "left"
+                        ? "rotate(-90deg)"
+                        : heading === "right"
+                          ? "rotate(90deg)"
+                          : heading === "down"
+                            ? "rotate(180deg)"
+                            : "rotate(0deg)",
+                  }}
+                />
               ) : i === config.goal ? (
                 <ParkingSquare />
               ) : config.walls.includes(i) ? (
@@ -105,7 +127,7 @@ export default function Parking({
         </div>
         <p className="game-status" role="status">
           {won
-            ? `Estacionou! ${parkingScore(moves)} pontos em ${moves} movimentos.`
+            ? `Estacionou! ${parkingScore(moves, steeringCost)} pontos em ${moves} movimentos e ${steeringCost} correções de direção.`
             : message}
         </p>
         <Controls onMove={move} disabled={won} />
@@ -136,7 +158,9 @@ export default function Parking({
         </select>
         <p>
           Use as setas, WASD ou os controles de direção. Os três estacionamentos
-          têm um caminho até a vaga.
+          têm um caminho até a vaga. Manter a mesma direção não custa correção;
+          virar custa 1 e inverter para ré custa 2, então manobras mais suaves
+          rendem mais pontos.
         </p>
       </aside>
     </div>

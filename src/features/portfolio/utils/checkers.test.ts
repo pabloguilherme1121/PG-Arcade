@@ -5,6 +5,7 @@ import {
   createCheckersBoard,
   getCheckersLegalMoves,
   getCheckersMovesFrom,
+  getCheckersContinuationFrom,
   getCheckersWinner,
   type CheckersBoard,
 } from "./checkers";
@@ -63,6 +64,21 @@ describe("checkers", () => {
         (candidate) => candidate.capture === 26,
       ),
     ).toBe(true);
+  });
+
+  it("keeps a forced continuation only while another capture exists", () => {
+    const board: CheckersBoard = Array.from({ length: 64 }, () => null);
+    board[17] = { player: "red", king: false };
+    board[26] = { player: "blue", king: false };
+    board[44] = { player: "blue", king: false };
+
+    const first = { from: 17, to: 35, capture: 26 };
+    const afterFirst = applyCheckersMove(board, first);
+    expect(getCheckersContinuationFrom(afterFirst, first)).toBe(35);
+
+    const second = { from: 35, to: 53, capture: 44 };
+    const afterSecond = applyCheckersMove(afterFirst, second);
+    expect(getCheckersContinuationFrom(afterSecond, second)).toBeNull();
   });
 
   it("keeps a bot multi-capture on the same piece", () => {

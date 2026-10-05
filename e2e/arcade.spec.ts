@@ -21,8 +21,8 @@ test("catalog search, categories, favorites and direct links persist", async ({
     page.getByRole("link", { name: "Jogar Snake", exact: true }),
   ).toBeVisible();
   await page.getByRole("link", { name: "Jogos", exact: true }).click();
-  await page.getByLabel("Buscar jogo").fill("memoria");
-  await expect(page.locator(".game-card")).toHaveCount(1);
+  await page.getByLabel("Buscar jogo").fill("memória");
+  await expect(page.locator(".game-card")).toHaveCount(2);
   await page.getByLabel("Buscar jogo").fill("");
   await page.getByRole("button", { name: "Reflexos", exact: true }).click();
   await expect(page.locator(".game-card")).toHaveCount(games.filter(g => g.category === "Reflexos").length);

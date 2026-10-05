@@ -4,6 +4,7 @@ import { RotateCcw, Target, ArrowUpRight, Check, X } from "lucide-react";
 import {
   chooseFootballKeeperPosition,
   getFootballFlightProfile,
+  getFootballTargetX,
   resolveFootballShot,
   type FootballDifficulty,
   type FootballMode,
@@ -18,13 +19,14 @@ const feedback = {
   gol: "Gol! Boa colocação.",
   defesa: "Defesa! Tente outro canto.",
   fora: "Fora! Reduza a força ou ajuste a mira.",
-  barreira: "Na barreira! Aumente a força ou a curva.",
+  barreira: "Na barreira! Aumente a elevação ou use mais curva.",
 };
 export default function PortfolioFootball() {
   const [mode, setMode] = useState<FootballMode>("penalty");
   const [difficulty, setDifficulty] = useState<FootballDifficulty>("normal");
   const [aim, setAim] = useState(30);
   const [power, setPower] = useState(65);
+  const [lift, setLift] = useState(45);
   const [curve, setCurve] = useState(0);
   const [shots, setShots] = useState<Shot[]>([]);
   const [flight, setFlight] = useState<Shot | null>(null);
@@ -48,7 +50,7 @@ export default function PortfolioFootball() {
     "expert",
   ];
   const nextLevel = levels[levels.indexOf(difficulty) + 1];
-  const preview = resolveFootballShot(mode, aim, power, curve, 50);
+  const preview = resolveFootballShot(mode, aim, power, curve, 50, lift);
   const previewY =
     preview.result === "barreira"
       ? 185
@@ -64,10 +66,11 @@ export default function PortfolioFootball() {
   };
   const shoot = () => {
     if (finished || timer.current) return;
-    const position = chooseFootballKeeperPosition(difficulty, aim);
+    const target = getFootballTargetX(mode, aim, curve, power);
+    const position = chooseFootballKeeperPosition(difficulty, target);
     const shot = {
-      ...resolveFootballShot(mode, aim, power, curve, position),
-      ...getFootballFlightProfile(mode, power, curve),
+      ...resolveFootballShot(mode, aim, power, curve, position, lift),
+      ...getFootballFlightProfile(mode, power, curve, lift),
     };
     setKeeper(position);
     if (reducedMotion) {
@@ -375,7 +378,9 @@ export default function PortfolioFootball() {
                   className={flight ? "football-ball football-ball-flight" : "football-ball"}
                   key={`${shots.length}-${Boolean(flight)}`}
                   transform={
-                    flight ? undefined : `translate(${ballX},${ballY})`
+                    flight
+                      ? undefined
+                      : `translate(${ballX},${ballY}) scale(${shot?.scaleAtGoal ?? 1})`
                   }
                 >
                   {flight && (
@@ -546,7 +551,7 @@ export default function PortfolioFootball() {
               />
             </label>
             <div
-              className={`grid gap-x-4 ${mode === "free-kick" ? "grid-cols-2" : "grid-cols-1"}`}
+              className={`grid gap-x-4 ${mode === "free-kick" ? "grid-cols-3" : "grid-cols-2"}`}
             >
               <label className="block text-sm font-medium">
                 Força{" "}
@@ -562,6 +567,22 @@ export default function PortfolioFootball() {
                   value={power}
                   disabled={Boolean(flight)}
                   onChange={(event) => setPower(Number(event.target.value))}
+                />
+              </label>
+              <label className="block text-sm font-medium">
+                Elevação{" "}
+                <span className="float-right tabular-nums text-[#b8cce0]">
+                  {lift}%
+                </span>
+                <input
+                  aria-label="Elevação"
+                  className="football-range"
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={lift}
+                  disabled={Boolean(flight)}
+                  onChange={(event) => setLift(Number(event.target.value))}
                 />
               </label>
               {mode === "free-kick" && (
@@ -627,6 +648,7 @@ export default function PortfolioFootball() {
                 type="button"
                 disabled={finished || Boolean(flight)}
                 onClick={shoot}
+                data-football-shoot
                 className={`${button} flex flex-1 items-center justify-center gap-2 bg-[#38bdf8] text-[#02111f] hover:bg-[#7dd3fc]`}
               >
                 <ArrowUpRight size={18} aria-hidden />
@@ -647,10 +669,11 @@ export default function PortfolioFootball() {
                 Como acertar o chute
               </summary>
               <p className="pb-3 leading-6">
-                Use as setas na mira ou toque no gol. Força entre 58 e 90 passa
-                por cima da barreira. Nas faltas, curva negativa desvia à
-                esquerda; positiva à direita. Força máxima pode mandar a bola
-                para fora.
+                Use as setas na mira ou toque no gol. Ajuste força e elevação:
+                pouca elevação pode parar na barreira e elevação excessiva passa
+                por cima do travessão. Nas faltas, curva negativa desvia à
+                esquerda e positiva à direita; chutes mais colocados permanecem
+                mais tempo no ar e fazem mais curva.
               </p>
             </details>
           </div>

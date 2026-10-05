@@ -6,10 +6,15 @@ test("Racing steers, pauses on blur, resets safely and saves game-over record", 
   page,
 }) => {
   await page.goto("./#/jogar/corrida");
-  await page.clock.install();
+  const racingTime = new Date("2026-10-05T12:00:00Z");
+  await page.clock.install({ time: racingTime });
+  await page.clock.pauseAt(new Date(racingTime.getTime() + 1000));
   await page.getByRole("button", { name: "Largar", exact: true }).click();
   await page.locator(".race-board").press("ArrowLeft");
   await expect(page.locator(".race-car")).toHaveAttribute("data-lane", "0");
+  await page.getByRole("button", { name: "Dirigir para direita" }).click();
+  await expect(page.locator(".race-car")).toHaveAttribute("data-lane", "0");
+  await page.clock.runFor(210);
   await page.getByRole("button", { name: "Dirigir para direita" }).click();
   await expect(page.locator(".race-car")).toHaveAttribute("data-lane", "1");
   await page.clock.runFor(2000);
@@ -40,6 +45,7 @@ test("Racing steers, pauses on blur, resets safely and saves game-over record", 
   ).toBeVisible();
   const record = await page.locator(".scores strong").nth(1).textContent();
   expect(Number(record)).toBeGreaterThan(0);
+  await page.clock.resume();
   await page.reload();
   await expect(page.locator(".scores strong").nth(1)).toHaveText(record!);
 });
@@ -64,7 +70,7 @@ test("All parking courses finish using keyboard and touch and retain a record", 
         }
       }
     const path: Direction[] = [];
-    for (let at = config.goal; at !== config.start; ) {
+    for (let at = config.goal; at !== config.start;) {
       const n = parents.get(at)!;
       path.push(n.d);
       at = n.prev;
@@ -94,9 +100,9 @@ test("All parking courses finish using keyboard and touch and retain a record", 
     }
     await expect(page.getByText("Estacionou!", { exact: false })).toBeVisible();
   }
-  const record = await page.locator(".scores strong").nth(1).textContent();
+  const record = await page.locator(".scores strong").nth(2).textContent();
   await page.reload();
-  await expect(page.locator(".scores strong").nth(1)).toHaveText(record!);
+  await expect(page.locator(".scores strong").nth(2)).toHaveText(record!);
 });
 test("Lights Out solves, undoes and changes challenges", async ({ page }) => {
   await page.goto("./#/jogar/luzes");
@@ -136,11 +142,12 @@ for (const [id, prefix, duration] of [
     const score = await page.locator(".scores strong").first().textContent();
     expect(Number(score)).toBeGreaterThan(0);
     await page.getByRole("button", { name: "Pausar", exact: true }).click();
-    const pausedTime = await page.locator(".scores strong").nth(1).textContent();
+    const pausedTime = await page
+      .locator(".scores strong")
+      .nth(1)
+      .textContent();
     await page.clock.runFor(3000);
-    await expect(page.locator(".scores strong").nth(1)).toHaveText(
-      pausedTime!,
-    );
+    await expect(page.locator(".scores strong").nth(1)).toHaveText(pausedTime!);
     await page.getByRole("button", { name: "Continuar", exact: true }).click();
     await page.clock.runFor(duration * 1000 + 100);
     await expect(
@@ -151,10 +158,31 @@ for (const [id, prefix, duration] of [
       `Recorde: ${score} pontos`,
     );
   });
+
+test("Target games apply difficulty to round time and active targets", async ({
+  page,
+}) => {
+  await page.goto("./#/jogar/tiro");
+  await page.getByLabel("Dificuldade", { exact: true }).selectOption("hard");
+  await page
+    .getByRole("button", { name: "Começar rodada", exact: true })
+    .click();
+  await expect(page.locator(".scores strong").nth(1)).toHaveText("25s");
+  await expect(page.locator(".target-present")).toHaveCount(2);
+
+  await page.goto("./#/jogar/estrelas");
+  await page.getByLabel("Dificuldade", { exact: true }).selectOption("hard");
+  await page
+    .getByRole("button", { name: "Começar rodada", exact: true })
+    .click();
+  await expect(page.locator(".scores strong").nth(1)).toHaveText("15s");
+  await expect(page.locator(".target-present")).toHaveCount(1);
+});
+
 test("All games offer keyboard focus, specific help, focus mode and safe restart", async ({
   page,
 }) => {
-  test.setTimeout(180000);
+  test.setTimeout(games.length * 4000);
   await page.setViewportSize({ width: 390, height: 844 });
   for (const { id, name } of games) {
     await page.goto(`./#/jogar/${id}`);
@@ -264,4 +292,25 @@ test("Damas uses one tab stop and arrow navigation without wrapping", async ({
   await expect(cells.nth(40)).toBeFocused();
   await cells.nth(40).press("ArrowLeft");
   await expect(cells.nth(40)).toBeFocused();
+});
+
+test("Chess navigates across grid rows and keeps one keyboard entry", async ({
+  page,
+}) => {
+  await page.goto("./#/jogar/xadrez");
+  const cells = page.locator('[data-chess-board] [role="gridcell"]');
+  await expect(cells).toHaveCount(64);
+  await page
+    .getByRole("button", { name: "Ir para o tabuleiro", exact: true })
+    .click();
+  await expect(cells.nth(52)).toBeFocused();
+  await cells.nth(52).press("ArrowUp");
+  await expect(cells.nth(44)).toBeFocused();
+  await cells.nth(44).press("Home");
+  await expect(cells.nth(40)).toBeFocused();
+  await cells.nth(40).press("ArrowLeft");
+  await expect(cells.nth(40)).toBeFocused();
+  await expect(page.locator('[data-chess-board] [tabindex="0"]')).toHaveCount(
+    1,
+  );
 });

@@ -4,74 +4,74 @@ export const actionCollectionGames = [
     name: "Quebra-blocos",
     description: "Rebata a esfera e abra caminho por paredes de blocos.",
     category: "Casuais",
-    help: "Mova a raquete com as setas ou os botões. Rebata a esfera e destrua todos os blocos para avançar. A posição do impacto define o ângulo.",
+    help: "Mova a raquete com as setas ou os botões. A posição do impacto e o movimento da raquete mudam o ângulo da esfera; a velocidade de retorno tem limite para manter o controle. Destrua todos os blocos para avançar.",
   },
   {
     id: "pong",
     name: "Pong de Arena",
     description: "Dispute uma partida de reflexos contra a máquina.",
     category: "Casuais",
-    help: "Use cima e baixo para mover sua raquete. Marque pontos fazendo a bola passar pela raquete rival. O adversário fica mais rápido na dificuldade alta.",
+    help: "Use cima e baixo para mover sua raquete. O ponto de contato e o movimento da raquete aplicam efeito à bola. Marque fazendo a bola passar pelo rival; a velocidade cresce nas trocas, mas tem limite para manter o rally controlável.",
   },
   {
     id: "asteroides",
     name: "Cinturão de Asteroides",
     description: "Gire, acelere e abra uma rota entre rochas espaciais.",
     category: "Tiro",
-    help: "Use esquerda e direita para girar, cima para acelerar e Ação para atirar. Rochas grandes se dividem. A nave atravessa as bordas do espaço.",
+    help: "Use esquerda e direita para girar, cima para acelerar e Ação para atirar. No vácuo, a nave conserva inércia até novo impulso; os disparos herdam esse movimento. A velocidade tem limite de segurança e as rochas grandes se dividem."
   },
   {
     id: "invasores",
     name: "Invasores da Galáxia",
     description: "Proteja a base contra formações de naves inimigas.",
     category: "Tiro",
-    help: "Mova a nave para os lados e mantenha Ação pressionada para disparar. As formações descem a cada mudança de direção; elimine a onda antes que alcance a base.",
+    help: "Mova a nave para os lados e mantenha Ação pressionada para disparar. Apenas os invasores expostos na linha de frente atiram; a formação acelera conforme perde integrantes e desce a cada mudança de direção.",
   },
   {
     id: "runner",
     name: "Corrida de Obstáculos",
     description: "Salte barreiras numa pista que acelera a cada etapa.",
     category: "Corrida",
-    help: "Pressione cima ou Ação para saltar as barreiras. Solte antes do próximo salto. A velocidade aumenta aos poucos; cada obstáculo ultrapassado vale pontos.",
+    help: "Pressione cima ou Ação para saltar. Segure para um salto completo ou solte cedo para encurtar a subida e ajustar a aterrissagem. A velocidade aumenta aos poucos; cada obstáculo ultrapassado vale pontos.",
   },
   {
     id: "voo",
     name: "Voo entre Torres",
     description: "Controle a altitude e atravesse corredores estreitos.",
     category: "Casuais",
-    help: "Pressione Ação ou cima para bater as asas e ganhar altura. Cada toque é um impulso; atravesse o espaço entre as torres sem tocar nelas ou nas bordas.",
+    help: "Pressione Ação ou cima para bater as asas. Cada toque soma sustentação à velocidade atual: cair rápido exige recuperação gradual, e tocar cedo demais pode gerar excesso de subida. Atravesse as torres sem tocar nas bordas.",
   },
   {
     id: "jetpack",
     name: "Jetpack de Resgate",
     description: "Dose o propulsor, recupere combustível e atravesse túneis.",
     category: "Casuais",
-    help: "Mantenha Ação ou cima pressionada para usar o propulsor. Solte para descer e recuperar combustível. Pegue as reservas e passe entre os obstáculos.",
+    help: "Mantenha Ação ou cima pressionada para usar o propulsor. Solte para planar e economizar combustível; o tanque não se regenera sozinho. Cada reserva repõe parte do tanque, então planeje a rota entre os obstáculos.",
   },
   {
     id: "esquiva",
     name: "Arena de Esquiva",
     description: "Movimente-se numa arena e sobreviva às ondas cruzadas.",
     category: "Casuais",
-    help: "Use as quatro direções para evitar as esferas que cruzam a arena. O tempo sobrevivido vale pontos e cada onda acrescenta ameaças; observe as trajetórias.",
+    help: "Use as quatro direções para acelerar na arena. Ao soltar, há uma curta inércia antes de parar; antecipe a trajetória das ameaças e corrija o movimento com antecedência.",
   },
   {
     id: "pouso",
     name: "Pouso Lunar",
     description: "Controle a gravidade e pouse com velocidade segura.",
     category: "Inteligência",
-    help: "Use os lados para corrigir a trajetória e cima ou Ação para ligar o motor. Pouse na plataforma com velocidade vertical abaixo de 35 e horizontal abaixo de 25.",
+    help: "Use os lados para os propulsores de correção e cima ou Ação para o motor principal. Ambos consomem combustível. Sobreviva abaixo de 35 vertical e 25 horizontal, mas pousos suaves e centralizados valem mais pontos."
   },
   {
     id: "drift",
     name: "Circuito de Drift",
     description: "Acelere, freie e complete voltas num circuito oval.",
     category: "Carros",
-    help: "Use os lados para virar, cima ou Ação para acelerar e baixo para frear. Passe pelos quatro checkpoints na ordem, mantenha o carro na pista e complete voltas.",
+    help: "Use os lados para virar, cima ou Ação para acelerar e baixo para frear. Frear durante a curva aumenta a rotação e mantém inércia lateral, permitindo derrapagens controladas. Passe pelos quatro checkpoints na ordem e mantenha o carro na pista.",
   },
 ] as const;
 export type ActionId = (typeof actionCollectionGames)[number]["id"];
-export type Difficulty = "easy" | "normal" | "hard";
+export type Difficulty = "easy" | "normal" | "hard" | "master" | "expert";
 export type ActionMode = "mission" | "endless";
 export interface Body {
   x: number;
@@ -109,6 +109,7 @@ export interface ActionState {
   pressed: boolean;
   checkpoint: number;
   invDirection: number;
+  landingQuality: "soft" | "controlled" | "rough" | "crash" | null;
 }
 export interface ActionInput {
   left: boolean;
@@ -155,7 +156,7 @@ export function newAction(
     objects: [],
     shots: [],
     score: 0,
-    lives: difficulty === "easy" ? 5 : 3,
+    lives: difficulty === "easy" ? 5 : difficulty === "master" || difficulty === "expert" ? 2 : 3,
     level: 1,
     time: 0,
     spawn: 0,
@@ -167,6 +168,7 @@ export function newAction(
     pressed: false,
     checkpoint: 0,
     invDirection: 1,
+    landingQuality: null,
   };
   if (id === "breakout")
     s.objects = Array.from({ length: 30 }, (_, i) =>
@@ -189,12 +191,63 @@ function rand(s: ActionState) {
 function hit(a: { x: number; y: number }, b: Body, r: number) {
   return Math.hypot(a.x - b.x, a.y - b.y) < r + b.r;
 }
+
+export function isExposedInvader(invader: Body, formation: Body[]) {
+  return !formation.some(
+    (other) =>
+      other !== invader &&
+      other.hp > 0 &&
+      other.kind === "invader" &&
+      Math.abs(other.x - invader.x) < 18 &&
+      other.y > invader.y,
+  );
+}
+
+export function invasionFormationFactor(alive: number) {
+  const remaining = Math.max(0, Math.min(24, alive));
+  return Math.min(1.9, 1 + ((24 - remaining) / 24) * 0.9);
+}
 function damage(s: ActionState) {
   if (s.cooldown > 0) return;
   s.lives--;
   s.cooldown = 1.1;
   if (s.lives <= 0) s.done = true;
 }
+export function lunarLandingOutcome(
+  x: number,
+  vx: number,
+  vy: number,
+  fuel: number,
+) {
+  const offset = Math.abs(x - 345);
+  const horizontal = Math.abs(vx);
+  const vertical = Math.abs(vy);
+  const safe = offset < 40 && vertical < 35 && horizontal < 25;
+  if (!safe) return { safe: false, quality: "crash" as const, score: 0 };
+
+  const quality: "soft" | "controlled" | "rough" =
+    offset <= 18 && vertical <= 16 && horizontal <= 8
+      ? "soft"
+      : offset <= 28 && vertical <= 25 && horizontal <= 16
+        ? "controlled"
+        : "rough";
+  const bonus = quality === "soft" ? 60 : quality === "controlled" ? 30 : 0;
+  return {
+    safe: true,
+    quality,
+    score: Math.round(200 + Math.max(0, Math.min(100, fuel)) * 2 + bonus),
+  };
+}
+
+export function actionPressure(difficulty: Difficulty, time: number) {
+  const ramp = Math.min(1, Math.max(0, time) / 120);
+  if (difficulty === "easy") return 0.7;
+  if (difficulty === "normal") return 1 + ramp * 0.12;
+  if (difficulty === "hard") return 1.4 * (1 + ramp * 0.2);
+  if (difficulty === "master") return 1.58 * (1 + ramp * 0.22);
+  return Math.min(2.15, 1.72 * (1 + ramp * 0.25));
+}
+
 function nextWave(s: ActionState) {
   s.level++;
   const fresh = newAction(s.id, s.difficulty, s.mode);
@@ -225,27 +278,24 @@ export function stepAction(
       objects: state.objects.map((o) => ({ ...o })),
       shots: state.shots.map((o) => ({ ...o })),
     };
-  // Pressure grows gradually; cap it so long sessions remain playable.
-  const ramp = Math.min(1, s.time / 120);
-  const f = s.difficulty === "easy" ? 0.7
-    : s.difficulty === "hard" ? 1.4 * (1 + ramp * 0.2)
-    : 1 + ramp * 0.12;
+  // Pressure grows gradually by level and stays capped so long sessions remain playable.
+  const f = actionPressure(s.difficulty, s.time);
   s.time += dt;
   s.spawn += dt;
   s.cooldown = Math.max(0, s.cooldown - dt);
   const action = input.action || input.up,
-    tap = action && !s.pressed;
+    wasPressed = s.pressed,
+    tap = action && !wasPressed,
+    released = !action && wasPressed;
   s.pressed = action;
   if (s.id === "breakout" || s.id === "pong") {
     const b = s.ball;
     b.x += b.vx * dt * f;
     b.y += b.vy * dt * f;
     if (s.id === "breakout") {
-      s.paddle = clamp(
-        s.paddle + ((input.right ? 1 : 0) - (input.left ? 1 : 0)) * 320 * dt,
-        45,
-        435,
-      );
+      const paddleVelocity =
+        ((input.right ? 1 : 0) - (input.left ? 1 : 0)) * 320;
+      s.paddle = clamp(s.paddle + paddleVelocity * dt, 45, 435);
       if (b.x < 7 || b.x > 473) {
         b.x = clamp(b.x, 7, 473);
         b.vx *= -1;
@@ -261,8 +311,12 @@ export function stepAction(
         Math.abs(b.x - s.paddle) < 49
       ) {
         b.y = 315;
-        b.vy = -Math.abs(b.vy) - 3;
-        b.vx = (b.x - s.paddle) * 5;
+        b.vy = -Math.min(340, Math.abs(b.vy) + 3);
+        b.vx = clamp(
+          (b.x - s.paddle) * 5 + paddleVelocity * 0.16,
+          -300,
+          300,
+        );
       }
       const index = s.objects.findIndex(
         (o) => Math.abs(b.x - o.x) < 39 && Math.abs(b.y - o.y) < 15,
@@ -281,20 +335,20 @@ export function stepAction(
         s.ball = body(240, 180, 120, -160 - s.level * 8, 7, "ball");
       }
     } else {
-      s.paddle = clamp(
-        s.paddle + ((input.down ? 1 : 0) - (input.up ? 1 : 0)) * 300 * dt,
-        40,
-        320,
-      );
-      s.enemy += clamp(b.y - s.enemy, -160 * f * dt, 160 * f * dt);
+      const paddleVelocity =
+        ((input.down ? 1 : 0) - (input.up ? 1 : 0)) * 300;
+      s.paddle = clamp(s.paddle + paddleVelocity * dt, 40, 320);
+      const enemyStep = clamp(b.y - s.enemy, -160 * f * dt, 160 * f * dt);
+      const enemyVelocity = dt > 0 ? enemyStep / dt : 0;
+      s.enemy += enemyStep;
       if (b.y < 7 || b.y > 353) {
         b.y = clamp(b.y, 7, 353);
         b.vy *= -1;
       }
       if (b.vx < 0 && b.x <= 29 && b.x >= 15 && Math.abs(b.y - s.paddle) < 43) {
         b.x = 30;
-        b.vx = Math.abs(b.vx) + 8;
-        b.vy = (b.y - s.paddle) * 4;
+        b.vx = Math.min(320, Math.abs(b.vx) + 8);
+        b.vy = clamp((b.y - s.paddle) * 4 + paddleVelocity * 0.22, -260, 260);
       }
       if (
         b.vx > 0 &&
@@ -303,8 +357,8 @@ export function stepAction(
         Math.abs(b.y - s.enemy) < 43
       ) {
         b.x = 450;
-        b.vx = -Math.abs(b.vx) - 5;
-        b.vy = (b.y - s.enemy) * 4;
+        b.vx = -Math.min(320, Math.abs(b.vx) + 5);
+        b.vy = clamp((b.y - s.enemy) * 4 + enemyVelocity * 0.18, -260, 260);
       }
       if (b.x > 490) {
         s.score += 100;
@@ -322,8 +376,12 @@ export function stepAction(
       s.vx += Math.cos(s.angle) * 150 * dt;
       s.vy += Math.sin(s.angle) * 150 * dt;
     }
-    s.vx *= Math.exp(-0.2 * dt);
-    s.vy *= Math.exp(-0.2 * dt);
+    const shipSpeed = Math.hypot(s.vx, s.vy);
+    if (shipSpeed > 260) {
+      const scale = 260 / shipSpeed;
+      s.vx *= scale;
+      s.vy *= scale;
+    }
     s.x = (s.x + s.vx * dt + 480) % 480;
     s.y = (s.y + s.vy * dt + 360) % 360;
     if (input.action && s.spawn > 0.2) {
@@ -332,8 +390,8 @@ export function stepAction(
         body(
           s.x,
           s.y,
-          Math.cos(s.angle) * 330,
-          Math.sin(s.angle) * 330,
+          Math.cos(s.angle) * 330 + s.vx,
+          Math.sin(s.angle) * 330 + s.vy,
           3,
           "laser",
           1.6,
@@ -378,7 +436,9 @@ export function stepAction(
       s.spawn = 0;
       s.shots.push(body(s.x, 310, 0, -350, 3, "laser"));
     }
-    const speed = (22 + s.level * 7) * f;
+    const aliveInvaders = s.objects.filter((o) => o.hp > 0).length;
+    const speed =
+      (22 + s.level * 7) * f * invasionFormationFactor(aliveInvaders);
     const edge = s.objects.some((o) => o.x < 20 || o.x > 460);
     if (edge) {
       s.invDirection *= -1;
@@ -393,7 +453,7 @@ export function stepAction(
         damage(s);
         o.hp = 0;
       }
-      if (rand(s) < dt * 0.08 * f)
+      if (isExposedInvader(o, s.objects) && rand(s) < dt * 0.08 * f)
         s.shots.push(body(o.x, o.y, 0, 130 * f, 4, "enemy"));
     }
     for (const shot of s.shots) {
@@ -416,6 +476,7 @@ export function stepAction(
   } else if (s.id === "runner") {
     s.x = 88;
     if (tap && s.y >= 285) s.vy = -370;
+    if (released && s.vy < -90) s.vy *= 0.55;
     s.vy += 950 * dt;
     s.y = Math.min(286, s.y + s.vy * dt);
     if (s.y === 286) s.vy = 0;
@@ -437,11 +498,12 @@ export function stepAction(
   } else if (s.id === "voo" || s.id === "jetpack") {
     s.x = 95;
     const jet = s.id === "jetpack";
-    if (!jet && tap) s.vy = -200;
+    if (!jet && tap) s.vy = clamp(s.vy - 170, -220, 260);
     s.vy += (jet ? (action && s.fuel > 0 ? -480 : 290) : 480) * dt;
     s.vy = clamp(s.vy, -220, 260);
     s.y += s.vy * dt;
-    if (jet) s.fuel = clamp(s.fuel + (action ? -22 : 14) * dt, 0, 100);
+    if (jet && action && s.fuel > 0)
+      s.fuel = clamp(s.fuel - 22 * dt, 0, 100);
     if (s.y < 12 || s.y > 348) {
       damage(s);
       s.y = 180;
@@ -464,7 +526,7 @@ export function stepAction(
           s.score += 40;
         }
       } else if (hit(s, o, 10)) {
-        s.fuel = 100;
+        s.fuel = clamp(s.fuel + 45, 0, 100);
         o.hp = 0;
         s.score += 15;
       }
@@ -472,16 +534,19 @@ export function stepAction(
     s.objects = s.objects.filter((o) => o.x > -40 && o.hp > 0);
     s.level = 1 + Math.floor(s.time / 25);
   } else if (s.id === "esquiva") {
-    s.x = clamp(
-      s.x + ((input.right ? 1 : 0) - (input.left ? 1 : 0)) * 200 * dt,
-      14,
-      466,
-    );
-    s.y = clamp(
-      s.y + ((input.down ? 1 : 0) - (input.up ? 1 : 0)) * 200 * dt,
-      14,
-      346,
-    );
+    const ax = (input.right ? 1 : 0) - (input.left ? 1 : 0);
+    const ay = (input.down ? 1 : 0) - (input.up ? 1 : 0);
+    s.vx = clamp(s.vx + ax * 900 * dt, -210, 210);
+    s.vy = clamp(s.vy + ay * 900 * dt, -210, 210);
+    const drag = Math.exp(-6 * dt);
+    s.vx *= drag;
+    s.vy *= drag;
+    const nextX = clamp(s.x + s.vx * dt, 14, 466);
+    const nextY = clamp(s.y + s.vy * dt, 14, 346);
+    if ((nextX === 14 && s.vx < 0) || (nextX === 466 && s.vx > 0)) s.vx = 0;
+    if ((nextY === 14 && s.vy < 0) || (nextY === 346 && s.vy > 0)) s.vy = 0;
+    s.x = nextX;
+    s.y = nextY;
     if (s.spawn > 0.7 / f) {
       s.spawn = 0;
       const side = Math.floor(rand(s) * 4),
@@ -513,7 +578,11 @@ export function stepAction(
     s.score = Math.floor(s.time * 10);
     s.level = 1 + Math.floor(s.time / 15);
   } else if (s.id === "pouso") {
-    s.vx += ((input.right ? 1 : 0) - (input.left ? 1 : 0)) * 45 * dt;
+    const lateral = (input.right ? 1 : 0) - (input.left ? 1 : 0);
+    if (lateral && s.fuel > 0) {
+      s.vx += lateral * 45 * dt;
+      s.fuel = Math.max(0, s.fuel - 3.5 * dt);
+    }
     s.vy += 35 * f * dt;
     if (action && s.fuel > 0) {
       s.vy -= 85 * dt;
@@ -522,10 +591,10 @@ export function stepAction(
     s.x = clamp(s.x + s.vx * dt, 10, 470);
     s.y = Math.max(10, s.y + s.vy * dt);
     if (s.y >= 320) {
-      const safe =
-        Math.abs(s.x - 345) < 40 && Math.abs(s.vy) < 35 && Math.abs(s.vx) < 25;
-      if (safe) {
-        s.score += Math.round(200 + s.fuel * 2);
+      const landing = lunarLandingOutcome(s.x, s.vx, s.vy, s.fuel);
+      s.landingQuality = landing.quality;
+      if (landing.safe) {
+        s.score += landing.score;
         s.level++;
         s.x = 80 + rand(s) * 180;
         s.y = 35;
@@ -543,18 +612,23 @@ export function stepAction(
       }
     }
   } else {
-    s.angle +=
-      ((input.right ? 1 : 0) - (input.left ? 1 : 0)) *
-      2.2 *
-      dt *
-      clamp(Math.abs(s.vx) / 40, 0.15, 1);
+    const turn = (input.right ? 1 : 0) - (input.left ? 1 : 0);
+    const speedRatio = clamp(Math.abs(s.vx) / 40, 0.15, 1);
+    const steeringGain = input.down ? 1.35 : 1;
+    s.angle += turn * 2.2 * steeringGain * dt * speedRatio;
     s.vx = clamp(
       s.vx + ((action ? 95 : 0) - (input.down ? 180 : 0) - s.vx * 0.42) * dt,
       0,
       220 * f,
     );
-    s.x += Math.cos(s.angle) * s.vx * dt;
-    s.y += Math.sin(s.angle) * s.vx * dt;
+    const slipTarget = -turn * s.vx * (input.down ? 0.38 : 0.1);
+    const gripResponse = input.down ? 3.2 : 6;
+    s.vy += (slipTarget - s.vy) * Math.min(1, gripResponse * dt);
+    s.x +=
+      (Math.cos(s.angle) * s.vx - Math.sin(s.angle) * s.vy) * dt;
+    s.y +=
+      (Math.sin(s.angle) * s.vx + Math.cos(s.angle) * s.vy) * dt;
+    s.vy *= Math.exp(-(input.down ? 1.6 : 5) * dt);
     const radius = Math.sqrt(
       ((s.x - 240) / 190) ** 2 + ((s.y - 180) / 130) ** 2,
     );

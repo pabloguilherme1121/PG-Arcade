@@ -23,6 +23,12 @@ import {
 } from "lucide-react";
 import { games, isGameId, type GameId } from "./lib/catalog";
 import {
+  newGames,
+  isNewGameId,
+  type NewGameId,
+  type BoardId,
+} from "./lib/newCatalog";
+import {
   expandedGames,
   isExpandedId,
   type ExpandedId,
@@ -56,6 +62,30 @@ const collectionPlayers = Object.fromEntries(
   ]),
 ) as unknown as Record<ExpandedId, ComponentType<PlayerProps>>;
 const players = {
+  ...(Object.fromEntries(
+    newGames.map((g) => [
+      g.id,
+      lazy(async () => {
+        if (g.family === "board") {
+          const module = await import("./games/BoardExpansion");
+          return {
+            default: (props: PlayerProps) => (
+              <module.default {...props} gameId={g.id as BoardId} />
+            ),
+          };
+        }
+        const module =
+          g.family === "quiz"
+            ? await import("./games/QuizExpansion")
+            : await import("./games/MotionExpansion");
+        return {
+          default: (props: PlayerProps) => (
+            <module.default {...props} gameId={g.id} />
+          ),
+        };
+      }),
+    ]),
+  ) as unknown as Record<NewGameId, ComponentType<PlayerProps>>),
   ...collectionPlayers,
   sequencia: lazy(() => import("./games/ColorSequence")),
   palavra: lazy(() => import("./games/SecretWord")),
@@ -116,6 +146,43 @@ function route() {
         : "catalogo";
 }
 function Preview({ id }: { id: GameId }) {
+  if (isNewGameId(id)) {
+    const game = newGames.find((g) => g.id === id)!;
+    const marks =
+      game.family === "board"
+        ? ["♛", "▦", "◇"]
+        : game.family === "quiz"
+          ? ["?", "24", "A"]
+          : ["◉", "↗", "▶"];
+    return (
+      <div
+        className={`preview new-preview preview-${game.family}`}
+        aria-hidden="true"
+      >
+        <svg viewBox="0 0 240 150">
+          <rect width="240" height="150" rx="16" fill="#12283c" />
+          <path
+            d="M0 120 L240 30 M0 150 L240 60"
+            stroke="#31516d"
+            strokeWidth="18"
+          />
+          {marks.map((m, i) => (
+            <text
+              key={i}
+              x={45 + i * 75}
+              y={92 - i * 8}
+              fill={i === 1 ? "#c9f65a" : "#79b8ff"}
+              fontSize={35}
+              fontWeight="700"
+              textAnchor="middle"
+            >
+              {m}
+            </text>
+          ))}
+        </svg>
+      </div>
+    );
+  }
   if (isExpandedId(id)) {
     const family = expandedGames.find((g) => g.id === id)!.family;
     return (
@@ -352,13 +419,14 @@ export default function App() {
   useEffect(() => applyPreferences(preferences), [preferences]);
   const [session, setSession] = useState(0);
   const restartDialog = useRef<HTMLDialogElement>(null);
+  const quickHelp = useRef<HTMLDetailsElement>(null);
   function focusBoard() {
     const arenaElement = arena.current?.querySelector<HTMLElement>(
       "[data-arcade-arena]",
     );
     const target =
       arenaElement?.querySelector<HTMLElement>(
-        '[data-expanded-board],[role="gridcell"][tabindex="0"],.board2048,.snake-board,.race-board,.parking-board,.targets-board,.sliding-board,.sequence-board,.word-input,.reaction-board,.mines-board button:not(:disabled),[role="slider"][tabindex="0"],[data-game-cell]:not(:disabled),[data-domino-tile]:not(:disabled)',
+        '[data-expanded-board],[role="gridcell"][tabindex="0"],.connect-board,.board2048,.snake-board,.race-board,.parking-board,.targets-board,.sliding-board,.sequence-board,.word-input,.reaction-board,.mines-board button:not(:disabled),[role="slider"][tabindex="0"],[data-game-cell]:not(:disabled),[data-domino-tile]:not(:disabled)',
       ) ||
       arenaElement?.querySelector<HTMLElement>(
         '[role="gridcell"]:not([aria-disabled="true"]):not(:disabled),.connect-controls button:not(:disabled),.lights-board button:not(:disabled),.memory-card:not(:disabled),button:not(:disabled)',
@@ -381,6 +449,41 @@ export default function App() {
   const arena = useRef<HTMLDivElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const lastRoute = useRef(page);
+  useEffect(() => {
+    if (!isGameId(page)) return;
+    const shortcuts = (event: KeyboardEvent) => {
+      if (
+        !event.altKey ||
+        !event.shiftKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.repeat ||
+        event.isComposing
+      )
+        return;
+      const target = event.target;
+      if (
+        target instanceof HTMLElement &&
+        target.closest('input,textarea,select,[contenteditable="true"]')
+      )
+        return;
+      if (restartDialog.current?.open) return;
+      if (!["KeyH", "KeyB", "KeyR"].includes(event.code)) return;
+      event.preventDefault();
+      if (event.code === "KeyB") focusBoard();
+      if (event.code === "KeyR") askRestart();
+      if (event.code === "KeyH" && quickHelp.current) {
+        quickHelp.current.open = !quickHelp.current.open;
+        if (quickHelp.current.open) {
+          window.dispatchEvent(new Event("pg-arcade-pause"));
+          quickHelp.current.querySelector("summary")?.focus();
+          quickHelp.current.scrollIntoView({ block: "nearest" });
+        }
+      }
+    };
+    window.addEventListener("keydown", shortcuts);
+    return () => window.removeEventListener("keydown", shortcuts);
+  }, [page]);
   const update = useCallback(
     (fn: (p: Progress) => Progress) =>
       setProgress((p) => {
@@ -671,7 +774,9 @@ export default function App() {
               {message}
             </p>
             <div className="experience-tools">
-              <button onClick={focusBoard}>Ir para o tabuleiro</button>
+              <button onClick={focusBoard} aria-keyshortcuts="Alt+Shift+B">
+                Ir para o tabuleiro
+              </button>
               <button
                 aria-pressed={focusMode}
                 onClick={() => {
@@ -689,16 +794,26 @@ export default function App() {
               >
                 {focusMode ? "Sair do modo foco" : "Modo foco"}
               </button>
-              <button onClick={askRestart}>Reiniciar jogo</button>
+              <button onClick={askRestart} aria-keyshortcuts="Alt+Shift+R">
+                Reiniciar jogo
+              </button>
               <details
+                ref={quickHelp}
                 key={game.id}
                 onToggle={(event) => {
                   if (event.currentTarget.open)
                     window.dispatchEvent(new Event("pg-arcade-pause"));
                 }}
               >
-                <summary>Ajuda rápida e controles</summary>
+                <summary aria-keyshortcuts="Alt+Shift+H">
+                  Ajuda rápida e controles
+                </summary>
                 <p>{gameHelp[game.id]}</p>
+                <p>
+                  Atalhos globais: Alt + Shift + B leva ao tabuleiro; Alt +
+                  Shift + H abre a ajuda; Alt + Shift + R pede confirmação para
+                  reiniciar. Eles ficam inativos enquanto você edita um campo.
+                </p>
                 <p>
                   Favoritos e recordes ficam neste navegador. Trocar de jogo
                   inicia outra partida.
@@ -879,7 +994,7 @@ export default function App() {
               <div>
                 <div className="hero-eyebrow" aria-hidden="true">
                   <span>PG Arcade</span>
-                  <span>50 jogos</span>
+                  <span>{games.length} jogos</span>
                 </div>
                 <h1 ref={heading} tabIndex={-1}>
                   {page === "favoritos" ? (
@@ -895,7 +1010,7 @@ export default function App() {
                 <p>
                   {page === "favoritos"
                     ? "Os jogos que você quer ter sempre por perto."
-                    : "50 jogos. Novos modos, dificuldades e desafios para jogar no seu ritmo."}
+                    : `${games.length} jogos. Novos modos, dificuldades e desafios para jogar no seu ritmo.`}
                 </p>
                 <a
                   href="#catalogo"
@@ -985,7 +1100,11 @@ export default function App() {
               </div>
               <div className="game-grid">
                 {sorted.map((g) => (
-                  <article className="game-card" key={g.id} data-game-category={g.category}>
+                  <article
+                    className="game-card"
+                    key={g.id}
+                    data-game-category={g.category}
+                  >
                     <a
                       className="game-link"
                       href={`#/jogar/${g.id}`}

@@ -53,15 +53,14 @@
   }
 }
 
-
 /* Realism pass: texture, depth and ball motion without changing hit areas. */
 .football-pitch {
   background:
-    linear-gradient(180deg, rgba(255,255,255,.035), transparent 22%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 22%),
     repeating-linear-gradient(
       90deg,
-      rgba(255,255,255,.018) 0 10%,
-      rgba(0,0,0,.018) 10% 20%
+      rgba(255, 255, 255, 0.018) 0 10%,
+      rgba(0, 0, 0, 0.018) 10% 20%
     ),
     #123f36;
 }
@@ -72,8 +71,12 @@
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at 50% 9%, rgba(255,255,255,.12), transparent 34%),
-    linear-gradient(180deg, rgba(3,18,14,.02), rgba(2,12,10,.2));
+    radial-gradient(
+      circle at 50% 9%,
+      rgba(255, 255, 255, 0.12),
+      transparent 34%
+    ),
+    linear-gradient(180deg, rgba(3, 18, 14, 0.02), rgba(2, 12, 10, 0.2));
   mix-blend-mode: screen;
 }
 .football-pitch svg,
@@ -85,15 +88,14 @@
   filter: saturate(1.08) contrast(1.025);
 }
 .football-ball {
-  filter: drop-shadow(0 3px 2px rgba(0,0,0,.4));
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.4));
 }
 .football-ball-flight {
-  filter:
-    drop-shadow(0 5px 3px rgba(0,0,0,.28))
-    drop-shadow(0 0 7px rgba(255,255,255,.12));
+  filter: drop-shadow(0 5px 3px rgba(0, 0, 0, 0.28))
+    drop-shadow(0 0 7px rgba(255, 255, 255, 0.12));
 }
 .football-keeper {
-  filter: drop-shadow(0 5px 4px rgba(0,0,0,.33));
+  filter: drop-shadow(0 5px 4px rgba(0, 0, 0, 0.33));
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -107,4 +109,10 @@
       0 0 0 4px rgba(110, 231, 183, 0.13),
       0 20px 42px rgba(0, 0, 0, 0.28);
   }
+}
+.legacy-game button[data-football-shoot] {
+  color: #02111f;
+}
+.legacy-game [aria-label="Modalidade"] button[aria-pressed="true"] {
+  color: #02111f;
 }

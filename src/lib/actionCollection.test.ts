@@ -4,6 +4,10 @@ import {
   stepAction,
   idleInput,
   actionCollectionGames,
+  actionPressure,
+  isExposedInvader,
+  invasionFormationFactor,
+  lunarLandingOutcome,
 } from "./actionCollection";
 describe("action collection physics", () => {
   it("defines ten distinct games and bounds frame delta", () => {
@@ -14,13 +18,19 @@ describe("action collection physics", () => {
       expect(Number.isFinite(s.x + s.y + s.score)).toBe(true);
     }
   });
-  it("rebounds breakout on the paddle with impact-dependent angle", () => {
+  it("rebounds breakout with impact angle, paddle motion and bounded speed", () => {
     const s = newAction("breakout");
-    s.ball = { x: 265, y: 317, vx: 0, vy: 100, r: 7, kind: "ball", hp: 1 };
-    const next = stepAction(s, idleInput, 0.02);
-    expect(next.ball.vy).toBeLessThan(0);
-    expect(next.ball.vx).toBeGreaterThan(0);
-    expect(s.ball.vy).toBe(100);
+    s.ball = { x: 265, y: 317, vx: 0, vy: 420, r: 7, kind: "ball", hp: 1 };
+    const still = stepAction(s, idleInput, 0.02);
+    const moving = stepAction(
+      s,
+      { ...idleInput, right: true },
+      0.02,
+    );
+    expect(still.ball.vy).toBeLessThan(0);
+    expect(Math.abs(still.ball.vy)).toBeLessThanOrEqual(340);
+    expect(moving.ball.vx).toBeGreaterThan(still.ball.vx);
+    expect(s.ball.vy).toBe(420);
   });
   it("destroys actual bricks and awards points only on collision", () => {
     const s = newAction("breakout");
@@ -29,6 +39,23 @@ describe("action collection physics", () => {
     expect(n.objects.length).toBe(29);
     expect(n.score).toBe(10);
   });
+  it("pong paddle motion adds controlled spin without unbounded ball speed", () => {
+    const base = newAction("pong");
+    base.paddle = 180;
+    base.ball = { x: 35, y: 186, vx: -300, vy: 0, r: 7, kind: "ball", hp: 1 };
+
+    const still = stepAction(base, idleInput, 0.02);
+    const moving = stepAction(
+      base,
+      { ...idleInput, down: true },
+      0.02,
+    );
+
+    expect(moving.ball.vx).toBeGreaterThan(0);
+    expect(Math.abs(moving.ball.vx)).toBeLessThanOrEqual(320);
+    expect(moving.ball.vy).toBeGreaterThan(still.ball.vy);
+  });
+
   it("awards pong goals and resets ball rather than firing a score button", () => {
     const s = newAction("pong");
     s.ball.x = 495;
@@ -36,6 +63,37 @@ describe("action collection physics", () => {
     expect(n.score).toBe(100);
     expect(n.ball.x).toBe(240);
   });
+  it("asteroid ship conserves momentum in vacuum while speed remains capped", () => {
+    const coasting = newAction("asteroides");
+    coasting.vx = 100;
+    coasting.vy = -40;
+    const next = stepAction(coasting, idleInput, 0.04);
+    expect(next.vx).toBeCloseTo(100, 6);
+    expect(next.vy).toBeCloseTo(-40, 6);
+
+    const fast = newAction("asteroides");
+    fast.angle = 0;
+    fast.vx = 255;
+    const accelerated = stepAction(
+      fast,
+      { ...idleInput, up: true },
+      0.04,
+    );
+    expect(Math.hypot(accelerated.vx, accelerated.vy)).toBeLessThanOrEqual(260);
+  });
+
+  it("asteroid shots inherit ship momentum in vacuum", () => {
+    const s = newAction("asteroides");
+    s.angle = 0;
+    s.vx = 80;
+    s.vy = -20;
+    s.spawn = 1;
+    const n = stepAction(s, { ...idleInput, action: true }, 0);
+    expect(n.shots).toHaveLength(1);
+    expect(n.shots[0].vx).toBeGreaterThan(330);
+    expect(n.shots[0].vy).toBe(-20);
+  });
+
   it("asteroids split after a projectile hit and wrap the ship", () => {
     const s = newAction("asteroides");
     s.x = 481;
@@ -46,6 +104,25 @@ describe("action collection physics", () => {
     expect(n.objects).toHaveLength(2);
     expect(n.score).toBe(20);
   });
+  it("only exposed invaders can fire through their column", () => {
+    const front = { x: 100, y: 120, vx: 0, vy: 0, r: 13, kind: "invader", hp: 1 };
+    const back = { x: 100, y: 80, vx: 0, vy: 0, r: 13, kind: "invader", hp: 1 };
+    const side = { x: 150, y: 80, vx: 0, vy: 0, r: 13, kind: "invader", hp: 1 };
+    const formation = [back, front, side];
+    expect(isExposedInvader(front, formation)).toBe(true);
+    expect(isExposedInvader(back, formation)).toBe(false);
+    expect(isExposedInvader(side, formation)).toBe(true);
+  });
+
+  it("speeds the invader formation up as enemies are eliminated", () => {
+    expect(invasionFormationFactor(24)).toBe(1);
+    expect(invasionFormationFactor(12)).toBeGreaterThan(1);
+    expect(invasionFormationFactor(1)).toBeGreaterThan(
+      invasionFormationFactor(12),
+    );
+    expect(invasionFormationFactor(0)).toBeLessThanOrEqual(1.9);
+  });
+
   it("invasion projectile removes one enemy and leaves the formation", () => {
     const s = newAction("invasores");
     s.shots = [{ x: 76, y: 45, vx: 0, vy: 0, r: 3, kind: "laser", hp: 1 }];
@@ -53,6 +130,23 @@ describe("action collection physics", () => {
     expect(n.objects).toHaveLength(23);
     expect(n.score).toBe(25);
   });
+  it("runner supports a shorter jump when the player releases early", () => {
+    const s = newAction("runner");
+    const launched = stepAction(
+      s,
+      { ...idleInput, action: true },
+      0.02,
+    );
+    const held = stepAction(
+      launched,
+      { ...idleInput, action: true },
+      0.02,
+    );
+    const released = stepAction(launched, idleInput, 0.02);
+    expect(released.vy).toBeGreaterThan(held.vy);
+    expect(released.vy).toBeLessThan(0);
+  });
+
   it("runner jump requires a fresh press after landing", () => {
     const s = newAction("runner");
     const n = stepAction(s, { ...idleInput, action: true }, 0.02);
@@ -62,7 +156,29 @@ describe("action collection physics", () => {
     n.vy = 0;
     expect(stepAction(n, { ...idleInput, action: true }, 0.02).vy).toBe(0);
   });
-  it("flapping is an impulse while jetpack consumes held thrust fuel", () => {
+  it("flight flap adds lift to current momentum instead of resetting velocity", () => {
+    const falling = newAction("voo");
+    falling.vy = 160;
+    const corrected = stepAction(
+      falling,
+      { ...idleInput, action: true },
+      0.02,
+    );
+    expect(corrected.vy).toBeLessThan(160);
+    expect(corrected.vy).toBeGreaterThan(-200);
+
+    const rising = newAction("voo");
+    rising.vy = -80;
+    const boosted = stepAction(
+      rising,
+      { ...idleInput, action: true },
+      0.02,
+    );
+    expect(boosted.vy).toBeLessThan(corrected.vy);
+    expect(boosted.vy).toBeGreaterThanOrEqual(-220);
+  });
+
+  it("flapping is an impulse while jetpack fuel only decreases under thrust", () => {
     const flight = stepAction(
       newAction("voo"),
       { ...idleInput, action: true },
@@ -76,8 +192,34 @@ describe("action collection physics", () => {
     );
     expect(jet.fuel).toBeLessThan(100);
     expect(jet.vy).toBeLessThan(0);
-    expect(stepAction(jet, idleInput, 0.02).fuel).toBeGreaterThan(jet.fuel);
+    expect(stepAction(jet, idleInput, 0.02).fuel).toBe(jet.fuel);
   });
+
+  it("jetpack fuel canisters refill part of the tank instead of teleporting to full", () => {
+    const s = newAction("jetpack");
+    s.fuel = 20;
+    s.objects = [
+      { x: 95, y: s.y, vx: 0, vy: 0, r: 13, kind: "fuel", hp: 1 },
+    ];
+    const n = stepAction(s, idleInput, 0);
+    expect(n.fuel).toBeGreaterThan(20);
+    expect(n.fuel).toBeLessThan(100);
+    expect(n.objects).toHaveLength(0);
+  });
+  it("arena movement accelerates and coasts briefly instead of stopping instantly", () => {
+    const s = newAction("esquiva");
+    const moving = stepAction(
+      s,
+      { ...idleInput, right: true },
+      0.04,
+    );
+    const coasting = stepAction(moving, idleInput, 0.04);
+    expect(moving.vx).toBeGreaterThan(0);
+    expect(coasting.x).toBeGreaterThan(moving.x);
+    expect(coasting.vx).toBeGreaterThan(0);
+    expect(coasting.vx).toBeLessThan(moving.vx);
+  });
+
   it("arena collisions consume one life and invulnerability prevents repeat hits", () => {
     const s = newAction("esquiva");
     s.objects = [{ x: s.x, y: s.y, vx: 0, vy: 0, r: 8, kind: "danger", hp: 1 }];
@@ -86,19 +228,67 @@ describe("action collection physics", () => {
     n.objects = s.objects;
     expect(stepAction(n, idleInput, 0.02).lives).toBe(2);
   });
+  it("lunar side thrusters consume less fuel than the main engine", () => {
+    const s = newAction("pouso");
+    const coast = stepAction(s, idleInput, 0.04);
+    const side = stepAction(s, { ...idleInput, right: true }, 0.04);
+    const main = stepAction(s, { ...idleInput, up: true }, 0.04);
+    expect(side.fuel).toBeLessThan(coast.fuel);
+    expect(main.fuel).toBeLessThan(side.fuel);
+    expect(side.vx).toBeGreaterThan(coast.vx);
+  });
+
+  it("grades lunar touchdowns by velocity and pad alignment", () => {
+    const soft = lunarLandingOutcome(345, 2, 10, 100);
+    const controlled = lunarLandingOutcome(360, 12, 22, 100);
+    const rough = lunarLandingOutcome(375, 20, 32, 100);
+    const crash = lunarLandingOutcome(345, 0, 50, 100);
+
+    expect(soft.quality).toBe("soft");
+    expect(controlled.quality).toBe("controlled");
+    expect(rough.quality).toBe("rough");
+    expect(crash.quality).toBe("crash");
+    expect(soft.score).toBeGreaterThan(controlled.score);
+    expect(controlled.score).toBeGreaterThan(rough.score);
+    expect(crash.score).toBe(0);
+  });
+
   it("lunar landing rewards safe velocity and rejects a crash", () => {
     const s = newAction("pouso");
     s.x = 345;
     s.y = 321;
     s.vy = 12;
     const landed = stepAction(s, idleInput, 0);
-    expect(landed.score).toBe(400);
+    expect(landed.score).toBeGreaterThan(400);
+    expect(landed.landingQuality).toBe("soft");
     expect(landed.level).toBe(2);
     s.vy = 70;
     const crash = stepAction(s, idleInput, 0);
     expect(crash.score).toBe(0);
+    expect(crash.landingQuality).toBe("crash");
     expect(crash.lives).toBe(2);
   });
+  it("drift braking creates controllable lateral slip instead of rigid rotation", () => {
+    const base = newAction("drift");
+    base.vx = 140;
+    base.angle = 0;
+
+    const grip = stepAction(
+      base,
+      { ...idleInput, left: true, up: true },
+      0.04,
+    );
+    const slide = stepAction(
+      base,
+      { ...idleInput, left: true, down: true },
+      0.04,
+    );
+
+    expect(Math.abs(slide.vy)).toBeGreaterThan(Math.abs(grip.vy));
+    expect(slide.y).not.toBe(base.y);
+    expect(slide.vx).toBeLessThan(base.vx);
+  });
+
   it("drift checkpoints must be crossed in order", () => {
     const s = newAction("drift");
     s.x = 240;
@@ -117,14 +307,33 @@ describe("action collection physics", () => {
     s.mode = "endless";
     expect(stepAction(s, idleInput, 0.02).done).toBe(false);
   });
-  it("difficulty adjusts speed and lives", () => {
-    const easy = newAction("pong", "easy"),
-      hard = newAction("pong", "hard");
+  it("difficulty adjusts pressure and lives across five levels", () => {
+    const easy = newAction("pong", "easy");
+    const normal = newAction("pong", "normal");
+    const hard = newAction("pong", "hard");
+    const master = newAction("pong", "master");
+    const expert = newAction("pong", "expert");
     expect(easy.lives).toBe(5);
+    expect(normal.lives).toBe(3);
     expect(hard.lives).toBe(3);
-    expect(stepAction(hard, idleInput, 0.02).ball.x).toBeGreaterThan(
-      stepAction(easy, idleInput, 0.02).ball.x,
+    expect(master.lives).toBe(2);
+    expect(expert.lives).toBe(2);
+    const speeds = [easy, normal, hard, master, expert].map(
+      (state) => stepAction(state, idleInput, 0.02).ball.x - state.ball.x,
     );
+    expect(speeds).toEqual([...speeds].sort((a, b) => a - b));
+  });
+
+  it("keeps action pressure monotonic and capped over long sessions", () => {
+    const levels = ["easy", "normal", "hard", "master", "expert"] as const;
+    const start = levels.map((level) => actionPressure(level, 0));
+    const late = levels.map((level) => actionPressure(level, 1200));
+    for (let i = 1; i < levels.length; i++) {
+      expect(start[i]).toBeGreaterThan(start[i - 1]);
+      expect(late[i]).toBeGreaterThan(late[i - 1]);
+    }
+    expect(actionPressure("easy", 1200)).toBe(actionPressure("easy", 0));
+    expect(actionPressure("expert", 1200)).toBeLessThanOrEqual(2.15);
   });
   it("ramps normal and hard pressure but caps long-session speed", () => {
     const displacement = (level: "easy" | "normal" | "hard", time: number) => {

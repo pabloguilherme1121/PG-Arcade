@@ -3,19 +3,25 @@ import { useAutoPause } from "./useAutoPause";
 import {
   casualGames,
   handValue,
+  dealerShouldHit,
   card,
   diceScore,
   makeJewels,
   swapJewels,
   settleJewels,
   hasJewelMove,
-  projectile,
-  basketHit,
+  basketEntryQuality,
+  basketballTrajectory,
   arrowImpact,
+  arrowTrajectory,
   arrowPoints,
   bowlingHit,
+  bowlingTrajectory,
   golfStroke,
+  fishingTensionTick,
+  fishingReelStep,
   type FlightPoint,
+  moveGridCursor,
 } from "../lib/casualCollection";
 import "./casualCollection.css";
 type Options = { difficulty: number; mode: string };
@@ -144,7 +150,7 @@ function Blackjack({ options, onRound }: PlayProps) {
     [points, setPoints] = useState(0);
   function settle(player: number[]) {
     let bank = [...dealer];
-    while (handValue(bank) < 16 + options.difficulty && bank.length < 12)
+    while (dealerShouldHit(bank, options.difficulty) && bank.length < 12)
       bank.push(card());
     const a = handValue(player),
       b = handValue(bank);
@@ -203,11 +209,19 @@ function Blackjack({ options, onRound }: PlayProps) {
         }
       }}
     >
-      <h3>Banca · {settled ? handValue(dealer) : "uma carta oculta"}</h3>
+      <h3>
+        Banca ·{" "}
+        {settled || options.difficulty === 0
+          ? handValue(dealer)
+          : "uma carta oculta"}
+      </h3>
       <div className="playing-cards">
         {dealer.map((v, i) => (
-          <span className={!settled && i > 0 ? "card-back" : ""} key={i}>
-            {!settled && i > 0 ? "?" : label(v)}
+          <span
+            className={!settled && options.difficulty > 0 && i > 0 ? "card-back" : ""}
+            key={i}
+          >
+            {!settled && options.difficulty > 0 && i > 0 ? "?" : label(v)}
           </span>
         ))}
       </div>
@@ -348,15 +362,11 @@ function Jewels({ options, onRound }: PlayProps) {
         aria-label="Tabuleiro de joias. Use setas e Enter."
         onKeyDown={(e) => {
           if (e.target !== e.currentTarget) return;
-          const directions: Record<string, number> = {
-            ArrowLeft: -1,
-            ArrowRight: 1,
-            ArrowUp: -6,
-            ArrowDown: 6,
-          };
-          if (e.key in directions) {
+          if (
+            ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)
+          ) {
             e.preventDefault();
-            setCursor(Math.max(0, Math.min(35, cursor + directions[e.key])));
+            setCursor(moveGridCursor(cursor, e.key, 6, 36));
           }
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
@@ -433,13 +443,16 @@ function Fishing({ options, onRound }: PlayProps) {
   useAutoPause(pause);
   useEffect(() => {
     if (!["waiting", "bite", "reel"].includes(phase)) return;
-    const timer = setInterval(() => {
-      setTick((t) => t + 1);
-      if (phase === "reel")
-        setTension((t) => Math.max(0, t - (options.difficulty === 2 ? 3 : 5)));
-    }, 150);
+    const timer = setInterval(() => setTick((t) => t + 1), 150);
     return () => clearInterval(timer);
-  }, [phase, options.difficulty]);
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase !== "reel" || tick <= 0) return;
+    setTension((current) =>
+      fishingTensionTick(current, tick, options.difficulty),
+    );
+  }, [tick, phase, options.difficulty]);
   useEffect(() => {
     if (phase === "waiting" && tick >= 18 + options.difficulty * 6) {
       setPhase("bite");
@@ -464,18 +477,27 @@ function Fishing({ options, onRound }: PlayProps) {
       setTick(0);
       setMessage("Recolha devagar. Faça pausas para reduzir a tensão.");
     } else if (phase === "reel") {
-      const nextT = tension + 22 + options.difficulty * 3;
-      const nextD = distance - 13;
-      if (nextT >= 100) {
+      const next = fishingReelStep(
+        distance,
+        tension,
+        options.difficulty,
+      );
+      if (next.tension >= 100) {
         setPhase("result");
         setMessage("A linha rompeu por excesso de tensão.");
-      } else if (nextD <= 0) {
+      } else if (next.distance <= 0) {
         setPoints(150 + options.difficulty * 30);
         setPhase("result");
         setMessage("Peixe capturado!");
+      } else {
+        setMessage(
+          next.tension > 75
+            ? "Linha muito carregada: espere a tensão cair antes de recolher mais."
+            : "Recolha em pulsos e use as pausas para controlar a tensão.",
+        );
       }
-      setTension(Math.min(100, nextT));
-      setDistance(Math.max(0, nextD));
+      setTension(next.tension);
+      setDistance(next.distance);
     }
   }
   return (
@@ -552,6 +574,7 @@ function Sport({
       kind === "arco" ? 150 : kind === "basquete" ? 60 : 50,
     ),
     [power, setPower] = useState(kind === "basquete" ? 90 : 65),
+    [hook, setHook] = useState(0),
     [trajectory, setTrajectory] = useState<FlightPoint[]>([]),
     [result, setResult] = useState(""),
     [finished, setFinished] = useState(false),
@@ -573,20 +596,38 @@ function Sport({
     const nextAttempt = attempt + 1;
     setAttempt(nextAttempt);
     if (kind === "basquete") {
-      const flight = projectile(aim, power, wind);
-      setTrajectory(flight);
-      earned = basketHit(flight, 16 - options.difficulty * 4) ? 100 : 0;
-      message = earned ? "Cesta!" : "A bola passou fora do aro.";
+      const shot = basketballTrajectory(aim, power, wind);
+      setTrajectory(shot.points);
+      const quality = basketEntryQuality(
+        shot.points,
+        16 - options.difficulty * 4,
+      );
+      earned = quality === "swish" ? 120 : quality === "rim" ? 100 : 0;
+      message =
+        quality === "swish"
+          ? shot.banked
+            ? "Cesta de tabela! Rebote limpo no vidro."
+            : "Cesta! Limpa, sem tocar no aro."
+          : quality === "rim"
+            ? shot.banked
+              ? "Cesta de tabela! Tocou no aro e caiu."
+              : "Cesta! Tocou no aro e caiu."
+            : shot.banked
+              ? "A bola bateu na tabela, mas não caiu."
+              : "A bola passou fora do aro.";
     } else if (kind === "arco") {
       const y = arrowImpact(aim, power, wind);
-      setTrajectory([
-        { x: 30, y: 150 },
-        { x: 305, y },
-      ]);
+      setTrajectory(arrowTrajectory(aim, power, wind));
       earned = arrowPoints(y, 1 + options.difficulty * 0.4);
       message = `Flecha a ${Math.round(Math.abs(y - 150))} cm do centro.`;
     } else if (kind === "boliche") {
-      const remaining = bowlingHit(pins, aim, power, options.difficulty);
+      const remaining = bowlingHit(
+        pins,
+        aim,
+        power,
+        options.difficulty,
+        hook,
+      );
       const count =
         pins.filter(Boolean).length - remaining.filter(Boolean).length;
       earned = points + count * 10;
@@ -594,10 +635,7 @@ function Sport({
       ended = nextAttempt >= 2 || remaining.every((p) => !p);
       if (ended && remaining.every((p) => !p))
         earned += nextAttempt === 1 ? 50 : 20;
-      setTrajectory([
-        { x: 150, y: 240 },
-        { x: 150 + (aim - 50) * 1.8, y: 70 },
-      ]);
+      setTrajectory(bowlingTrajectory(aim, power, hook));
       message = remaining.every((p) => !p)
         ? nextAttempt === 1
           ? "Strike!"
@@ -616,7 +654,11 @@ function Sport({
         ? "Bola no buraco!"
         : nextAttempt >= allowed
           ? "Limite de tacadas atingido."
-          : "Planeje a próxima tacada.";
+          : stroke.rebounded
+            ? "A bola bateu no obstáculo e voltou com menos energia."
+            : stroke.surface === "green"
+              ? "A bola desacelerou no green. Planeje o putt."
+              : "A bola segue no fairway. Planeje a próxima tacada.";
     }
     setPoints(earned);
     setResult(message);
@@ -744,6 +786,7 @@ function Sport({
             </>
           ) : (
             <>
+              <rect x="250" y="185" width="90" height="42" rx="20" fill="#4b8f56" opacity=".75" />
               <path d="M15 225H340" stroke="#97c66a" strokeWidth="2" />
               {options.difficulty > 0 && (
                 <rect x="176" y="170" width="14" height="50" fill="#8e7864" />
@@ -766,7 +809,11 @@ function Sport({
       </div>
       <div className="casual-sliders">
         <label>
-          {kind === "arco" ? "Altura da mira" : "Ângulo / direção"}: {aim}
+          {kind === "arco"
+            ? "Altura da mira"
+            : kind === "golfe"
+              ? "Direção (50 = reto)"
+              : "Ângulo / direção"}: {aim}
           <input
             aria-label="Mira"
             type="range"
@@ -789,6 +836,20 @@ function Sport({
             onChange={(e) => setPower(Number(e.target.value))}
           />
         </label>
+        {kind === "boliche" && (
+          <label>
+            Hook: {hook > 0 ? "+" : ""}{hook}
+            <input
+              aria-label="Hook"
+              type="range"
+              min="-100"
+              max="100"
+              value={hook}
+              disabled={finished}
+              onChange={(e) => setHook(Number(e.target.value))}
+            />
+          </label>
+        )}
       </div>
       {(kind === "basquete" || kind === "arco") && (
         <p>
