@@ -1,4 +1,5 @@
 import { seeded } from "./boardExpansion";
+import { motionTuning, rhythmHitQuality } from "./gameplayTuning";
 export type MotionObject = {
   x: number;
   y: number;
@@ -121,7 +122,7 @@ function damage(s: MotionState, text: string) {
   if (s.invulnerability > 0) return;
   s.lives--;
   s.combo = 0;
-  s.invulnerability = 0.55;
+  s.invulnerability = motionTuning(s.difficulty).invulnerability;
   s.message = text;
   if (s.lives <= 0) {
     s.status = "lost";
@@ -165,7 +166,8 @@ export function motionStep(
     direction = Number(input.right) - Number(input.left),
     tap = input.action && !s.lastAction,
     laneTap = input.lane >= 0 && input.lane !== s.lastLane,
-    f = 1 + s.difficulty * 0.25;
+    tuning = motionTuning(s.difficulty),
+    f = tuning.speed;
   s.time += step;
   s.spawn -= step;
   s.cooldown = Math.max(0, s.cooldown - step);
@@ -191,15 +193,23 @@ export function motionStep(
     if (laneTap) {
       const note = s.objects
         .filter(
-          (o) => o.active && o.lane === input.lane && Math.abs(o.y - 300) < 42,
+          (o) =>
+            o.active &&
+            o.lane === input.lane &&
+            Math.abs(o.y - 300) <= tuning.goodWindow,
         )
         .sort((a, b) => Math.abs(a.y - 300) - Math.abs(b.y - 300))[0];
       if (note) {
+        const offset = Math.abs(note.y - 300);
+        const quality = rhythmHitQuality(offset, s.difficulty);
         note.active = false;
         s.combo++;
-        const perfect = Math.abs(note.y - 300) < 15;
-        s.score += (perfect ? 100 : 50) + s.combo * 5;
-        s.message = perfect ? "Perfeito!" : "Boa batida.";
+        const base = quality === "perfect" ? 100 : 60;
+        s.score += Math.round(base * tuning.scoreMultiplier) + s.combo * 5;
+        s.message =
+          quality === "perfect"
+            ? `Perfeito! Combo ${s.combo}.`
+            : `Boa batida. Combo ${s.combo}.`;
       } else damage(s, "Fora do tempo.");
     }
     s.objects.forEach((o) => {
