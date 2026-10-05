@@ -189,7 +189,10 @@ function rand(s: ActionState) {
   return s.seed / 4294967296;
 }
 function hit(a: { x: number; y: number }, b: Body, r: number) {
-  return Math.hypot(a.x - b.x, a.y - b.y) < r + b.r;
+  const dx = a.x - b.x;
+  const dy = a.y - b.y;
+  const radius = r + b.r;
+  return dx * dx + dy * dy < radius * radius;
 }
 
 export function isExposedInvader(invader: Body, formation: Body[]) {
@@ -210,7 +213,16 @@ export function invasionFormationFactor(alive: number) {
 function damage(s: ActionState) {
   if (s.cooldown > 0) return;
   s.lives--;
-  s.cooldown = 1.1;
+  s.cooldown =
+    s.difficulty === "easy"
+      ? 1.35
+      : s.difficulty === "normal"
+        ? 1.1
+        : s.difficulty === "hard"
+          ? 0.9
+          : s.difficulty === "master"
+            ? 0.75
+            : 0.65;
   if (s.lives <= 0) s.done = true;
 }
 
