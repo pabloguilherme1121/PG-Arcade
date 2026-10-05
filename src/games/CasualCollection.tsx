@@ -10,12 +10,13 @@ import {
   swapJewels,
   settleJewels,
   hasJewelMove,
-  projectile,
   basketEntryQuality,
+  basketballTrajectory,
   arrowImpact,
   arrowTrajectory,
   arrowPoints,
   bowlingHit,
+  bowlingTrajectory,
   golfStroke,
   fishingTensionTick,
   fishingReelStep,
@@ -573,6 +574,7 @@ function Sport({
       kind === "arco" ? 150 : kind === "basquete" ? 60 : 50,
     ),
     [power, setPower] = useState(kind === "basquete" ? 90 : 65),
+    [hook, setHook] = useState(0),
     [trajectory, setTrajectory] = useState<FlightPoint[]>([]),
     [result, setResult] = useState(""),
     [finished, setFinished] = useState(false),
@@ -594,26 +596,38 @@ function Sport({
     const nextAttempt = attempt + 1;
     setAttempt(nextAttempt);
     if (kind === "basquete") {
-      const flight = projectile(aim, power, wind);
-      setTrajectory(flight);
+      const shot = basketballTrajectory(aim, power, wind);
+      setTrajectory(shot.points);
       const quality = basketEntryQuality(
-        flight,
+        shot.points,
         16 - options.difficulty * 4,
       );
       earned = quality === "swish" ? 120 : quality === "rim" ? 100 : 0;
       message =
         quality === "swish"
-          ? "Cesta! Limpa, sem tocar no aro."
+          ? shot.banked
+            ? "Cesta de tabela! Rebote limpo no vidro."
+            : "Cesta! Limpa, sem tocar no aro."
           : quality === "rim"
-            ? "Cesta! Tocou no aro e caiu."
-            : "A bola passou fora do aro.";
+            ? shot.banked
+              ? "Cesta de tabela! Tocou no aro e caiu."
+              : "Cesta! Tocou no aro e caiu."
+            : shot.banked
+              ? "A bola bateu na tabela, mas não caiu."
+              : "A bola passou fora do aro.";
     } else if (kind === "arco") {
       const y = arrowImpact(aim, power, wind);
       setTrajectory(arrowTrajectory(aim, power, wind));
       earned = arrowPoints(y, 1 + options.difficulty * 0.4);
       message = `Flecha a ${Math.round(Math.abs(y - 150))} cm do centro.`;
     } else if (kind === "boliche") {
-      const remaining = bowlingHit(pins, aim, power, options.difficulty);
+      const remaining = bowlingHit(
+        pins,
+        aim,
+        power,
+        options.difficulty,
+        hook,
+      );
       const count =
         pins.filter(Boolean).length - remaining.filter(Boolean).length;
       earned = points + count * 10;
@@ -621,10 +635,7 @@ function Sport({
       ended = nextAttempt >= 2 || remaining.every((p) => !p);
       if (ended && remaining.every((p) => !p))
         earned += nextAttempt === 1 ? 50 : 20;
-      setTrajectory([
-        { x: 150, y: 240 },
-        { x: 150 + (aim - 50) * 1.8, y: 70 },
-      ]);
+      setTrajectory(bowlingTrajectory(aim, power, hook));
       message = remaining.every((p) => !p)
         ? nextAttempt === 1
           ? "Strike!"
@@ -643,7 +654,11 @@ function Sport({
         ? "Bola no buraco!"
         : nextAttempt >= allowed
           ? "Limite de tacadas atingido."
-          : "Planeje a próxima tacada.";
+          : stroke.rebounded
+            ? "A bola bateu no obstáculo e voltou com menos energia."
+            : stroke.surface === "green"
+              ? "A bola desacelerou no green. Planeje o putt."
+              : "A bola segue no fairway. Planeje a próxima tacada.";
     }
     setPoints(earned);
     setResult(message);
@@ -771,6 +786,15 @@ function Sport({
             </>
           ) : (
             <>
+              <rect
+                x="250"
+                y="185"
+                width="90"
+                height="42"
+                rx="20"
+                fill="#4b8f56"
+                opacity=".75"
+              />
               <path d="M15 225H340" stroke="#97c66a" strokeWidth="2" />
               {options.difficulty > 0 && (
                 <rect x="176" y="170" width="14" height="50" fill="#8e7864" />
@@ -820,6 +844,20 @@ function Sport({
             onChange={(e) => setPower(Number(e.target.value))}
           />
         </label>
+        {kind === "boliche" && (
+          <label>
+            Hook: {hook > 0 ? "+" : ""}{hook}
+            <input
+              aria-label="Hook"
+              type="range"
+              min="-100"
+              max="100"
+              value={hook}
+              disabled={finished}
+              onChange={(e) => setHook(Number(e.target.value))}
+            />
+          </label>
+        )}
       </div>
       {(kind === "basquete" || kind === "arco") && (
         <p>
