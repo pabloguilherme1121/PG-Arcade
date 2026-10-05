@@ -170,10 +170,23 @@ describe("casual collection engines", () => {
     expect(straight.position).toBeGreaterThan(angled.position);
   });
 
-  it("golf obstacle stops underpowered crossings and hole rewards controlled pace", () => {
-    expect(golfStroke(150, 50, 20, true).position).toBe(165);
-    expect(golfStroke(250, 50, 25, false).hole).toBe(true);
-    expect(golfStroke(250, 50, 100, false).hole).toBe(false);
+  it("golf green friction shortens roll and rewards a controlled putt", () => {
+    const fairway = golfStroke(100, 50, 30, false);
+    const green = golfStroke(260, 50, 30, false);
+    expect(fairway.position - 100).toBeGreaterThan(green.position - 260);
+    expect(fairway.surface).toBe("fairway");
+    expect(green.surface).toBe("green");
+
+    const putt = golfStroke(285, 50, 22, false);
+    expect(putt.hole).toBe(true);
+    expect(putt.surface).toBe("green");
+  });
+
+  it("golf obstacle absorbs and rebounds an underpowered crossing", () => {
+    const blocked = golfStroke(150, 50, 20, true);
+    expect(blocked.rebounded).toBe(true);
+    expect(blocked.position).toBeLessThan(165);
+    expect(golfStroke(150, 50, 80, true).rebounded).toBe(false);
   });
   it("fishing tension relaxes between deterministic fish pulls", () => {
     expect(fishingTensionTick(50, 1, 1)).toBeLessThan(50);
