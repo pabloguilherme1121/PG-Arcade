@@ -7,6 +7,7 @@ import {
   selectedWord,
 } from "../lib/quizExpansion";
 import { newGames, type NewGameId } from "../lib/newCatalog";
+import { quizAward } from "../lib/quizScoring";
 import { useAutoPause } from "./useAutoPause";
 import "./newGames.css";
 export default function QuizExpansion({
@@ -22,6 +23,7 @@ export default function QuizExpansion({
     [seed, setSeed] = useState(1),
     [round, setRound] = useState(0),
     [score, setScore] = useState(0),
+    [streak, setStreak] = useState(0),
     [input, setInput] = useState(""),
     [message, setMessage] = useState("Escolha sua resposta."),
     [answered, setAnswered] = useState(false),
@@ -50,6 +52,7 @@ export default function QuizExpansion({
     setSeed(next);
     setRound(0);
     setScore(0);
+    setStreak(0);
     setInput("");
     setMessage("Escolha sua resposta.");
     setAnswered(false);
@@ -85,17 +88,16 @@ export default function QuizExpansion({
     const points =
       gameId === "estimate"
         ? Math.max(0, 100 - Math.abs(Number(value) - Number(q.answer)) * 12)
-        : correct
-          ? 100 * (difficulty + 1)
-          : 0;
+        : quizAward(difficulty, streak, correct);
     setScore((s) => s + (Number.isFinite(points) ? points : 0));
+    setStreak((current) => (correct ? current + 1 : 0));
     setAnswered(true);
     setMessage(
       correct
-        ? "Resposta certa!"
+        ? `Resposta certa! Sequência ${streak + 1}.`
         : gameId === "estimate"
           ? `Eram ${q.answer} pontos. Precisão: ${Math.max(0, points)} pontos.`
-          : `A resposta era ${q.answer}. Tente a próxima.`,
+          : `A resposta era ${q.answer}. Sequência reiniciada.`,
     );
   }
   function letter(ch: string) {
@@ -174,6 +176,11 @@ export default function QuizExpansion({
         <span>
           Recorde <strong>{record}</strong>
         </span>
+        {!special && (
+          <span>
+            Sequência <strong>{streak}</strong>
+          </span>
+        )}
         <span>
           Rodada{" "}
           <strong>
