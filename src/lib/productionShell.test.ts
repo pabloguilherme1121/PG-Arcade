@@ -23,5 +23,8 @@ describe("production shell", () => {
     expect(worker).toContain("pg-arcade-");
     expect(worker).toContain("caches.delete");
     expect(worker).toContain("request.mode === \"navigate\"");
+    expect(worker).toContain("MAX_RUNTIME_ENTRIES");
+    expect(worker).toContain("trimRuntimeCache");
+    expect(worker).toContain("request.url !== ROOT");
   });
 });
