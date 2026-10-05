@@ -21,6 +21,7 @@ export type RunState = {
   objects: RunObject[];
   shots: RunObject[];
   steerCooldown: number;
+  crashCooldown: number;
 };
 export const newRun = (): RunState => ({
   lane: 1,
@@ -30,6 +31,7 @@ export const newRun = (): RunState => ({
   objects: [],
   shots: [],
   steerCooldown: 0,
+  crashCooldown: 0,
 });
 export function moveRun(s: RunState, delta: number): RunState {
   if (s.steerCooldown > 0 || delta === 0) return s;
@@ -65,6 +67,7 @@ export function stepRun(
     damaged = false;
   const ticks = s.ticks + 1;
   const steerCooldown = Math.max(0, s.steerCooldown - 1);
+  let crashCooldown = Math.max(0, s.crashCooldown - 1);
   const pace =
     (options.difficulty === "easy"
       ? 0.7
@@ -89,9 +92,10 @@ export function stepRun(
       }
       if (o.lane === s.lane && o.y >= 60 && o.y <= 90) {
         if (o.reward) score += kind === "rally" ? 25 : 10;
-        else if (!damaged) {
+        else if (!damaged && crashCooldown === 0) {
           lives--;
           damaged = true;
+          crashCooldown = 8;
         }
         return false;
       }
@@ -120,5 +124,6 @@ export function stepRun(
     score,
     lives: Math.max(0, lives),
     steerCooldown,
+    crashCooldown,
   };
 }
