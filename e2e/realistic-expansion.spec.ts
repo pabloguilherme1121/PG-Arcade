@@ -116,10 +116,13 @@ test("reaction: false start, timed hit, pause and five-round record", async ({
   await page.addInitScript(() => {
     Math.random = () => 0;
   });
-  await page.clock.install();
+  const epoch = Date.now();
+  await page.clock.install({ time: epoch });
+  await page.clock.pauseAt(epoch);
   await page.goto("./#/jogar/reflexo");
   const board = page.locator(".reaction-board");
   await board.click();
+  await expect(board).toHaveAttribute("aria-label", "Espere o verde");
   await board.click();
   await expect(page.locator(".game-status")).toContainText("Cedo demais");
   await board.click();
