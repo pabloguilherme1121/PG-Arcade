@@ -643,7 +643,11 @@ function Sport({
         ? "Bola no buraco!"
         : nextAttempt >= allowed
           ? "Limite de tacadas atingido."
-          : "Planeje a próxima tacada.";
+          : stroke.rebounded
+            ? "A bola bateu no obstáculo e voltou com menos energia."
+            : stroke.surface === "green"
+              ? "A bola desacelerou no green. Planeje o putt."
+              : "A bola segue no fairway. Planeje a próxima tacada.";
     }
     setPoints(earned);
     setResult(message);
@@ -771,6 +775,7 @@ function Sport({
             </>
           ) : (
             <>
+              <rect x="250" y="185" width="90" height="42" rx="20" fill="#4b8f56" opacity=".75" />
               <path d="M15 225H340" stroke="#97c66a" strokeWidth="2" />
               {options.difficulty > 0 && (
                 <rect x="176" y="170" width="14" height="50" fill="#8e7864" />
