@@ -3,6 +3,7 @@ import { actionCollectionGames } from "../src/lib/actionCollection";
 test("all ten action engines start, have real options and pause without advancing", async ({
   page,
 }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 390, height: 844 });
   for (const game of actionCollectionGames) {
     await page.goto(`./#/jogar/${game.id}`);
