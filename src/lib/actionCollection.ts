@@ -32,7 +32,7 @@ export const actionCollectionGames = [
     name: "Corrida de Obstáculos",
     description: "Salte barreiras numa pista que acelera a cada etapa.",
     category: "Corrida",
-    help: "Pressione cima ou Ação para saltar as barreiras. Solte antes do próximo salto. A velocidade aumenta aos poucos; cada obstáculo ultrapassado vale pontos.",
+    help: "Pressione cima ou Ação para saltar. Segure para um salto completo ou solte cedo para encurtar a subida e ajustar a aterrissagem. A velocidade aumenta aos poucos; cada obstáculo ultrapassado vale pontos.",
   },
   {
     id: "voo",
@@ -240,7 +240,9 @@ export function stepAction(
   s.spawn += dt;
   s.cooldown = Math.max(0, s.cooldown - dt);
   const action = input.action || input.up,
-    tap = action && !s.pressed;
+    wasPressed = s.pressed,
+    tap = action && !wasPressed,
+    released = !action && wasPressed;
   s.pressed = action;
   if (s.id === "breakout" || s.id === "pong") {
     const b = s.ball;
@@ -422,6 +424,7 @@ export function stepAction(
   } else if (s.id === "runner") {
     s.x = 88;
     if (tap && s.y >= 285) s.vy = -370;
+    if (released && s.vy < -90) s.vy *= 0.55;
     s.vy += 950 * dt;
     s.y = Math.min(286, s.y + s.vy * dt);
     if (s.y === 286) s.vy = 0;
