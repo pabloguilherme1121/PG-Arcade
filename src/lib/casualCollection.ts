@@ -325,14 +325,36 @@ export function golfStroke(
   const normalizedPower = Math.max(0, Math.min(100, power));
   const angle = ((normalizedAim - 50) * 1.2 * Math.PI) / 180;
   const alignment = Math.max(0.45, Math.cos(angle));
-  let next = Math.min(
-    340,
-    Math.max(15, position + normalizedPower * 2.8 * alignment),
-  );
-  if (barrier && position < 180 && next > 180 && normalizedPower < 72)
-    next = 165;
+  const greenStart = 250;
+  const rawDistance = normalizedPower * 2.8 * alignment;
+
+  let next =
+    position >= greenStart
+      ? position + rawDistance * 0.56
+      : position + rawDistance;
+
+  if (position < greenStart && next > greenStart) {
+    const fairwayDistance = greenStart - position;
+    const remaining = Math.max(0, rawDistance - fairwayDistance);
+    next = greenStart + remaining * 0.56;
+  }
+
+  let rebounded = false;
+  if (barrier && position < 180 && next > 180 && normalizedPower < 72) {
+    const rebound = Math.max(0, 72 - normalizedPower) * 0.35;
+    next = Math.max(15, 165 - rebound);
+    rebounded = true;
+  }
+
+  next = Math.min(340, Math.max(15, next));
+  const surface = next >= greenStart ? "green" : "fairway";
+  const effectiveArrivalPower =
+    surface === "green" ? normalizedPower * 0.56 : normalizedPower;
+
   return {
     position: next,
-    hole: Math.abs(next - 320) < 12 && normalizedPower <= 55,
+    hole: Math.abs(next - 320) < 10 && effectiveArrivalPower <= 35,
+    surface,
+    rebounded,
   };
 }
