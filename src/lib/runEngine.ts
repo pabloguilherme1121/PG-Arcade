@@ -20,6 +20,7 @@ export type RunState = {
   lives: number;
   objects: RunObject[];
   shots: RunObject[];
+  steerCooldown: number;
 };
 export const newRun = (): RunState => ({
   lane: 1,
@@ -28,9 +29,14 @@ export const newRun = (): RunState => ({
   lives: 3,
   objects: [],
   shots: [],
+  steerCooldown: 0,
 });
 export function moveRun(s: RunState, delta: number): RunState {
-  return { ...s, lane: Math.max(0, Math.min(2, s.lane + delta)) };
+  if (s.steerCooldown > 0 || delta === 0) return s;
+  const step = delta < 0 ? -1 : 1;
+  const lane = Math.max(0, Math.min(2, s.lane + step));
+  if (lane === s.lane) return s;
+  return { ...s, lane, steerCooldown: 2 };
 }
 export function fireRun(s: RunState): RunState {
   if (s.shots.some((b) => b.y > 55 && b.lane === s.lane)) return s;
@@ -58,6 +64,7 @@ export function stepRun(
     lives = s.lives,
     damaged = false;
   const ticks = s.ticks + 1;
+  const steerCooldown = Math.max(0, s.steerCooldown - 1);
   const pace =
     (options.difficulty === "easy"
       ? 0.7
@@ -105,5 +112,13 @@ export function stepRun(
       y: -16,
       reward: kind !== "orbital" && random() > 0.45,
     });
-  return { ...s, ticks, objects, shots, score, lives: Math.max(0, lives) };
+  return {
+    ...s,
+    ticks,
+    objects,
+    shots,
+    score,
+    lives: Math.max(0, lives),
+    steerCooldown,
+  };
 }
