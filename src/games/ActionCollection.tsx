@@ -187,6 +187,8 @@ function paint(ctx: CanvasRenderingContext2D, s: ActionState) {
     ctx.save();
     ctx.translate(s.x, s.y);
     if (s.id === "asteroides") ctx.rotate(s.angle + Math.PI / 2);
+    if (s.id === "voo" || s.id === "jetpack")
+      ctx.rotate(clamp(s.vy / 520, -0.38, 0.38));
     if (s.id === "runner") {
       const swing = Math.sin(s.time * 10) * 5;
       circle(0, -18, 8, "#d7f367");
@@ -226,7 +228,22 @@ function paint(ctx: CanvasRenderingContext2D, s: ActionState) {
 
       box(-8, 14, 6, 8, "#d7f367");
       box(3, 14, 6, 8, "#d7f367");
-    } else if (s.id === "esquiva") circle(0, 0, 11, "#d7f367");
+    } else if (s.id === "esquiva") {
+      const speed = Math.hypot(s.vx, s.vy);
+      if (speed > 8) {
+        ctx.strokeStyle = "rgba(215,243,103,.42)";
+        ctx.lineWidth = 3;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(
+          -clamp(s.vx * 0.08, -18, 18),
+          -clamp(s.vy * 0.08, -18, 18),
+        );
+        ctx.stroke();
+      }
+      circle(0, 0, 11, "#d7f367");
+    }
     else if (
       artwork.ship?.complete &&
       artwork.ship.naturalWidth > 0 &&
