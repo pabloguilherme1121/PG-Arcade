@@ -16,6 +16,7 @@ import {
   arrowPoints,
   bowlingHit,
   golfStroke,
+  fishingTensionTick,
   type FlightPoint,
   moveGridCursor,
 } from "../lib/casualCollection";
@@ -439,13 +440,16 @@ function Fishing({ options, onRound }: PlayProps) {
   useAutoPause(pause);
   useEffect(() => {
     if (!["waiting", "bite", "reel"].includes(phase)) return;
-    const timer = setInterval(() => {
-      setTick((t) => t + 1);
-      if (phase === "reel")
-        setTension((t) => Math.max(0, t - (options.difficulty === 2 ? 3 : 5)));
-    }, 150);
+    const timer = setInterval(() => setTick((t) => t + 1), 150);
     return () => clearInterval(timer);
-  }, [phase, options.difficulty]);
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase !== "reel" || tick <= 0) return;
+    setTension((current) =>
+      fishingTensionTick(current, tick, options.difficulty),
+    );
+  }, [tick, phase, options.difficulty]);
   useEffect(() => {
     if (phase === "waiting" && tick >= 18 + options.difficulty * 6) {
       setPhase("bite");
