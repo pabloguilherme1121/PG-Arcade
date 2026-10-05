@@ -60,6 +60,23 @@ test("Racing throttle and brake change the live speed progressively", async ({ p
   expect(braking).toBeLessThan(accelerated);
 });
 
+
+test("Racing can end voluntarily and persist the current distance", async ({ page }) => {
+  await page.goto("./#/jogar/corrida");
+  await page.clock.install();
+  await page.getByRole("button", { name: "Largar", exact: true }).click();
+  await page.clock.runFor(600);
+
+  const distance = await page.locator(".scores strong").first().textContent();
+  expect(Number(distance)).toBeGreaterThan(0);
+
+  await page.getByRole("button", { name: "Encerrar e salvar", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Largar", exact: true })).toBeDisabled();
+
+  await page.reload();
+  await expect(page.locator(".scores strong").nth(1)).toHaveText(distance!);
+});
+
 test("Liga 4 accepts direct 1-7 keyboard columns", async ({ page }) => {
   await page.goto("./#/jogar/liga4");
   const board = page.locator(".connect-board");
