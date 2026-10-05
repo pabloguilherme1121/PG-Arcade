@@ -248,14 +248,38 @@ export function arrowTrajectory(
 export function arrowPoints(y: number, tolerance = 1) {
   return Math.max(0, 100 - Math.round(Math.abs(y - 150) * tolerance));
 }
+export function bowlingTrajectory(
+  aim: number,
+  power: number,
+  hook = 0,
+): FlightPoint[] {
+  const normalizedAim = Math.max(0, Math.min(100, aim));
+  const normalizedPower = Math.max(10, Math.min(100, power));
+  const normalizedHook = Math.max(-100, Math.min(100, hook));
+  const line = 150 + (normalizedAim - 50) * 1.8;
+  const hookScale = Math.max(0.11, 0.24 - normalizedPower * 0.0011);
+  const hookOffset = normalizedHook * hookScale;
+
+  return Array.from({ length: 13 }, (_, index) => {
+    const t = index / 12;
+    const lateHook = hookOffset * Math.pow(t, 2.35);
+    return {
+      x: 150 + (line - 150) * t + lateHook,
+      y: 240 - 170 * t,
+    };
+  });
+}
+
 export function bowlingHit(
   pins: boolean[],
   aim: number,
   power: number,
   difficulty = 1,
+  hook = 0,
 ) {
   const normalizedPower = Math.max(0, Math.min(100, power));
-  const line = 150 + (Math.max(0, Math.min(100, aim)) - 50) * 1.8;
+  const trajectory = bowlingTrajectory(aim, normalizedPower, hook);
+  const line = trajectory.at(-1)?.x ?? 150;
   const positions = pins.map((_, i) => {
     const row = Math.floor((Math.sqrt(8 * i + 1) - 1) / 2);
     const first = (row * (row + 1)) / 2;
