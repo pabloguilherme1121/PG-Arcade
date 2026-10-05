@@ -352,13 +352,14 @@ export default function App() {
   useEffect(() => applyPreferences(preferences), [preferences]);
   const [session, setSession] = useState(0);
   const restartDialog = useRef<HTMLDialogElement>(null);
+  const quickHelp = useRef<HTMLDetailsElement>(null);
   function focusBoard() {
     const arenaElement = arena.current?.querySelector<HTMLElement>(
       "[data-arcade-arena]",
     );
     const target =
       arenaElement?.querySelector<HTMLElement>(
-        '[data-expanded-board],[role="gridcell"][tabindex="0"],.board2048,.snake-board,.race-board,.parking-board,.targets-board,.sliding-board,.sequence-board,.word-input,.reaction-board,.mines-board button:not(:disabled),[role="slider"][tabindex="0"],[data-game-cell]:not(:disabled),[data-domino-tile]:not(:disabled)',
+        '[data-expanded-board],[role="gridcell"][tabindex="0"],.connect-controls,.board2048,.snake-board,.race-board,.parking-board,.targets-board,.sliding-board,.sequence-board,.word-input,.reaction-board,.mines-board button:not(:disabled),[role="slider"][tabindex="0"],[data-game-cell]:not(:disabled),[data-domino-tile]:not(:disabled)',
       ) ||
       arenaElement?.querySelector<HTMLElement>(
         '[role="gridcell"]:not([aria-disabled="true"]):not(:disabled),.connect-controls button:not(:disabled),.lights-board button:not(:disabled),.memory-card:not(:disabled),button:not(:disabled)',
@@ -381,6 +382,30 @@ export default function App() {
   const arena = useRef<HTMLDivElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const lastRoute = useRef(page);
+  useEffect(() => {
+    if (!isGameId(page)) return;
+    const shortcuts = (event: KeyboardEvent) => {
+      if (!event.altKey || !event.shiftKey || event.ctrlKey || event.metaKey || event.repeat || event.isComposing) return;
+      const target = event.target;
+      if (target instanceof HTMLElement && target.closest('input,textarea,select,[contenteditable="true"]')) return;
+      if (restartDialog.current?.open) return;
+      const key = event.code;
+      if (!["KeyH", "KeyB", "KeyR"].includes(key)) return;
+      event.preventDefault();
+      if (key === "KeyB") focusBoard();
+      if (key === "KeyR") askRestart();
+      if (key === "KeyH" && quickHelp.current) {
+        quickHelp.current.open = !quickHelp.current.open;
+        if (quickHelp.current.open) {
+          window.dispatchEvent(new Event("pg-arcade-pause"));
+          quickHelp.current.querySelector("summary")?.focus();
+          quickHelp.current.scrollIntoView({ block: "nearest" });
+        }
+      }
+    };
+    window.addEventListener("keydown", shortcuts);
+    return () => window.removeEventListener("keydown", shortcuts);
+  }, [page]);
   const update = useCallback(
     (fn: (p: Progress) => Progress) =>
       setProgress((p) => {
@@ -671,7 +696,7 @@ export default function App() {
               {message}
             </p>
             <div className="experience-tools">
-              <button onClick={focusBoard}>Ir para o tabuleiro</button>
+              <button onClick={focusBoard} aria-keyshortcuts="Alt+Shift+B">Ir para o tabuleiro</button>
               <button
                 aria-pressed={focusMode}
                 onClick={() => {
@@ -689,16 +714,21 @@ export default function App() {
               >
                 {focusMode ? "Sair do modo foco" : "Modo foco"}
               </button>
-              <button onClick={askRestart}>Reiniciar jogo</button>
+              <button onClick={askRestart} aria-keyshortcuts="Alt+Shift+R">Reiniciar jogo</button>
               <details
+                ref={quickHelp}
                 key={game.id}
                 onToggle={(event) => {
                   if (event.currentTarget.open)
                     window.dispatchEvent(new Event("pg-arcade-pause"));
                 }}
               >
-                <summary>Ajuda rápida e controles</summary>
+                <summary aria-keyshortcuts="Alt+Shift+H">Ajuda rápida e controles</summary>
                 <p>{gameHelp[game.id]}</p>
+                <p>Atalhos em todos os jogos: Alt + Shift + B leva ao tabuleiro;
+                  Alt + Shift + H abre a ajuda; Alt + Shift + R pede confirmação
+                  para reiniciar. Os atalhos não atuam enquanto você edita um campo.
+                </p>
                 <p>
                   Favoritos e recordes ficam neste navegador. Trocar de jogo
                   inicia outra partida.
