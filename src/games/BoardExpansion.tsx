@@ -249,19 +249,7 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
                   key={i}
                   aria-label={`Segmento ${a + 1} a ${b + 1}`}
                   aria-pressed={!!state.cells[i]}
-                  onClick={() => {
-                    if (
-                      state.fixed[i] &&
-                      (numeric || gameId === "laser" || gameId === "queens")
-                    ) {
-                      setState({
-                        ...state,
-                        message: "Esta é uma pista fixa e não pode ser alterada.",
-                      });
-                      return;
-                    }
-                    update(boardClick(state, i));
-                  }}
+                  onClick={() => update(boardClick(state, i))}
                   disabled={state.status !== "playing"}
                   style={{
                     left: `${(40 + ((a % 4) + (b % 4)) * 52.5) / 4}%`,
@@ -323,7 +311,19 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
                     !!state.fixed[i]
                   }
                   aria-label={`Linha ${Math.floor(i / n) + 1}, coluna ${(i % n) + 1}: ${cellText(i, v) || "vazia"}${state.fixed[i] ? ", pista" : ""}`}
-                  onClick={() => update(boardClick(state, i))}
+                  onClick={() => {
+                    if (
+                      state.fixed[i] &&
+                      (numeric || gameId === "laser" || gameId === "queens")
+                    ) {
+                      setState({
+                        ...state,
+                        message: "Esta é uma pista fixa e não pode ser alterada.",
+                      });
+                      return;
+                    }
+                    update(boardClick(state, i));
+                  }}
                 >
                   {cellText(i, v)}
                 </button>
