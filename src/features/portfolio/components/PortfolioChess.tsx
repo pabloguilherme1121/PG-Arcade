@@ -67,7 +67,8 @@ function handleBoardKey(
   const next = destinations[event.key];
   if (next === undefined) return;
   event.preventDefault();
-  event.currentTarget.parentElement
+  event.currentTarget
+    .closest('[role="grid"]')
     ?.querySelectorAll<HTMLButtonElement>('[role="gridcell"]')
     [next]?.focus();
 }
@@ -193,60 +194,70 @@ export default function PortfolioChess() {
             aria-label="Tabuleiro de xadrez"
             className="grid aspect-square grid-cols-8 overflow-hidden rounded-[18px] border border-white/15 shadow-2xl"
           >
-            {board.map((piece, i) => {
-              const { row, col } = { row: Math.floor(i / 8), col: i % 8 };
-              const active = selected === i,
-                target = selectedMoves.includes(i);
-              return (
-                <button
-                  key={i}
-                  role="gridcell"
-                  tabIndex={focusedSquare === i ? 0 : -1}
-                  onFocus={() => setFocusedSquare(i)}
-                  onKeyDown={(event) => handleBoardKey(event, i)}
-                  aria-label={
-                    piece
-                      ? `${squareName(i)} · ${pieceLabels[piece.type]} ${piece.color === "white" ? "branco" : "preto"}`
-                      : `${squareName(i)} · vazia${target ? " · destino disponível" : ""}`
-                  }
-                  aria-selected={active}
-                  onClick={() => click(i)}
-                  className={`relative grid min-h-0 place-items-center text-[clamp(1.35rem,7vw,3rem)] focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 ${(row + col) % 2 ? "bg-[#31506a]" : "bg-[#d7e3e8]"} ${active ? "ring-4 ring-inset ring-cyan-300" : ""}`}
-                >
-                  <span
-                    className={
-                      piece?.color === "white"
-                        ? "text-white drop-shadow-[0_2px_2px_#10263a]"
-                        : "text-[#07111d]"
-                    }
-                  >
-                    {piece ? glyph[piece.color][piece.type] : ""}
-                  </span>
-                  {target && (
-                    <span
-                      aria-hidden
-                      className="absolute h-3 w-3 rounded-full bg-cyan-300/80"
-                    />
-                  )}
-                  {row === 7 && (
-                    <span
-                      aria-hidden="true"
-                      className="absolute bottom-0.5 right-1 text-[9px] font-semibold text-[#07111d]"
+            {Array.from({ length: 8 }, (_, rank) => (
+              <div
+                key={rank}
+                role="row"
+                aria-rowindex={rank + 1}
+                style={{ display: "contents" }}
+              >
+                {board.slice(rank * 8, rank * 8 + 8).map((piece, file) => {
+                  const i = rank * 8 + file;
+                  const { row, col } = { row: Math.floor(i / 8), col: i % 8 };
+                  const active = selected === i,
+                    target = selectedMoves.includes(i);
+                  return (
+                    <button
+                      key={i}
+                      role="gridcell"
+                      tabIndex={focusedSquare === i ? 0 : -1}
+                      onFocus={() => setFocusedSquare(i)}
+                      onKeyDown={(event) => handleBoardKey(event, i)}
+                      aria-label={
+                        piece
+                          ? `${squareName(i)} · ${pieceLabels[piece.type]} ${piece.color === "white" ? "branco" : "preto"}`
+                          : `${squareName(i)} · vazia${target ? " · destino disponível" : ""}`
+                      }
+                      aria-selected={active}
+                      onClick={() => click(i)}
+                      className={`relative grid min-h-0 place-items-center text-[clamp(1.35rem,7vw,3rem)] focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 ${(row + col) % 2 ? "bg-[#31506a]" : "bg-[#d7e3e8]"} ${active ? "ring-4 ring-inset ring-cyan-300" : ""}`}
                     >
-                      {"abcdefgh"[col]}
-                    </span>
-                  )}
-                  {col === 0 && (
-                    <span
-                      aria-hidden="true"
-                      className="absolute left-1 top-0.5 text-[9px] font-semibold text-[#07111d]"
-                    >
-                      {8 - row}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
+                      <span
+                        className={
+                          piece?.color === "white"
+                            ? "text-white drop-shadow-[0_2px_2px_#10263a]"
+                            : "text-[#07111d]"
+                        }
+                      >
+                        {piece ? glyph[piece.color][piece.type] : ""}
+                      </span>
+                      {target && (
+                        <span
+                          aria-hidden
+                          className="absolute h-3 w-3 rounded-full bg-cyan-300/80"
+                        />
+                      )}
+                      {row === 7 && (
+                        <span
+                          aria-hidden="true"
+                          className="absolute bottom-0.5 right-1 text-[9px] font-semibold text-[#07111d]"
+                        >
+                          {"abcdefgh"[col]}
+                        </span>
+                      )}
+                      {col === 0 && (
+                        <span
+                          aria-hidden="true"
+                          className="absolute left-1 top-0.5 text-[9px] font-semibold text-[#07111d]"
+                        >
+                          {8 - row}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
           </div>
           {botError && <p role="status">{botError}</p>}
           <div className="mt-3 flex flex-wrap gap-2">

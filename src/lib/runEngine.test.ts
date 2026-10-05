@@ -116,3 +116,47 @@ it("neighbor discovery never wraps across board edges", () => {
   expect(neighbors(7)).not.toContain(8);
   expect(neighbors(63)).toHaveLength(3);
 });
+
+
+it("builds a bounded clean-run combo and difficulty-specific recovery window", () => {
+  let s = {
+    ...newRun(),
+    objects: [{ id: 1, lane: 1, y: 60, reward: true }],
+  };
+  s = stepRun(s, "rally", () => 0, { difficulty: "normal", limit: 900 });
+  expect(s.streak).toBe(1);
+  expect(s.score).toBe(25);
+
+  s = stepRun(
+    {
+      ...s,
+      objects: [{ id: 2, lane: 1, y: 60, reward: true }],
+    },
+    "rally",
+    () => 0,
+    { difficulty: "normal", limit: 900 },
+  );
+  expect(s.streak).toBe(2);
+  expect(s.score).toBeGreaterThan(50);
+
+  const easyCrash = stepRun(
+    {
+      ...newRun(),
+      objects: [{ id: 3, lane: 1, y: 60, reward: false }],
+    },
+    "coleta",
+    () => 0,
+    { difficulty: "easy", limit: 900 },
+  );
+  const hardCrash = stepRun(
+    {
+      ...newRun(),
+      objects: [{ id: 4, lane: 1, y: 60, reward: false }],
+    },
+    "coleta",
+    () => 0,
+    { difficulty: "hard", limit: 900 },
+  );
+  expect(easyCrash.streak).toBe(0);
+  expect(easyCrash.crashCooldown).toBeGreaterThan(hardCrash.crashCooldown);
+});

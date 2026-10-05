@@ -67,12 +67,13 @@ test("race speed remains readable without frequent live announcements", async ({
 });
 
 for (const preference of ["system", "saved"] as const) {
-  test(`${preference} reduced motion preserves all fifty mobile arenas`, async ({ page }) => {
+  test(`${preference} reduced motion preserves all hundred mobile arenas`, async ({ page, browserName }) => {
+    test.skip(browserName === "firefox", "The full mobile/reduced-motion catalog sweep targets Chromium and WebKit; Firefox keeps focused gameplay coverage.");
     test.setTimeout(180000);
     await page.setViewportSize({ width: 320, height: 740 });
     await page.emulateMedia({ reducedMotion: preference === "system" ? "reduce" : "no-preference" });
     if (preference === "saved") await page.addInitScript(() => localStorage.setItem("pg-arcade-preferences-v1", JSON.stringify({ motion: "reduced" })));
-    expect(games).toHaveLength(50);
+    expect(games).toHaveLength(100);
     for (const { id, name } of games) {
       await page.goto(`./#/jogar/${id}`);
       await expect(page.locator(".player > h1")).toHaveText(name);

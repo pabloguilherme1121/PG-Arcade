@@ -22,6 +22,7 @@ export type RunState = {
   shots: RunObject[];
   steerCooldown: number;
   crashCooldown: number;
+  streak: number;
 };
 export const newRun = (): RunState => ({
   lane: 1,
@@ -32,6 +33,7 @@ export const newRun = (): RunState => ({
   shots: [],
   steerCooldown: 0,
   crashCooldown: 0,
+  streak: 0,
 });
 export function moveRun(s: RunState, delta: number): RunState {
   if (s.steerCooldown > 0 || delta === 0) return s;
@@ -64,6 +66,7 @@ export function stepRun(
   if (s.lives <= 0 || s.ticks >= options.limit) return s;
   let score = s.score,
     lives = s.lives,
+    streak = s.streak,
     damaged = false;
   const ticks = s.ticks + 1;
   const steerCooldown = Math.max(0, s.steerCooldown - 1);
@@ -86,16 +89,22 @@ export function stepRun(
         );
         if (bullet) {
           shots = shots.filter((b) => b !== bullet);
-          score += 20;
+          streak = Math.min(9, streak + 1);
+          score += 20 + Math.min(18, Math.max(0, streak - 1) * 3);
           return false;
         }
       }
       if (o.lane === s.lane && o.y >= 60 && o.y <= 90) {
-        if (o.reward) score += kind === "rally" ? 25 : 10;
-        else if (!damaged && crashCooldown === 0) {
+        if (o.reward) {
+          streak = Math.min(9, streak + 1);
+          const base = kind === "rally" ? 25 : 10;
+          score += base + Math.min(base, Math.max(0, streak - 1) * 2);
+        } else if (!damaged && crashCooldown === 0) {
           lives--;
+          streak = 0;
           damaged = true;
-          crashCooldown = 8;
+          crashCooldown =
+            options.difficulty === "easy" ? 10 : options.difficulty === "hard" ? 6 : 8;
         }
         return false;
       }
@@ -125,5 +134,6 @@ export function stepRun(
     lives: Math.max(0, lives),
     steerCooldown,
     crashCooldown,
+    streak,
   };
 }

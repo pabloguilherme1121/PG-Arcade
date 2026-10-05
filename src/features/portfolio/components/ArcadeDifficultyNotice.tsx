@@ -1,4 +1,4 @@
-import type { ArcadeGame } from "../utils/arcadeSession";
+type ArcadeGame = "velha" | "domino" | "futebol" | "damas" | "xadrez";
 
 type Level = "easy" | "normal" | "hard" | "master" | "impossible" | "expert";
 const labels: Record<Level, string> = {

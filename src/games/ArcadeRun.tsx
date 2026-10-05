@@ -79,7 +79,8 @@ export default function ArcadeRun({
           </div>
         </div>
         <p role="status" className="race-lives">
-          {state.lives} vidas • Etapa {1 + Math.floor(state.ticks / 300)} •{" "}
+          {state.lives} vidas • Etapa {1 + Math.floor(state.ticks / 300)}
+          {state.streak > 1 ? ` • Combo x${state.streak}` : ""} •{" "}
           {status === "done"
             ? "Rodada concluída"
             : status === "paused"

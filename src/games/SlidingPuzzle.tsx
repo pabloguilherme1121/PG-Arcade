@@ -65,7 +65,7 @@ export default function SlidingPuzzle({
                 {v}
               </button>
             ) : (
-              <span key={i} aria-label="Espaço vazio" />
+              <span key={i} role="img" aria-label="Espaço vazio" />
             ),
           )}
         </div>

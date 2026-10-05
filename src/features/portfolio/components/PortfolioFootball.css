@@ -113,3 +113,10 @@
       0 20px 42px rgba(0, 0, 0, 0.28);
   }
 }
+
+.legacy-game button[data-football-shoot] {
+  color: #02111f;
+}
+.legacy-game [aria-label="Modalidade"] button[aria-pressed="true"] {
+  color: #02111f;
+}

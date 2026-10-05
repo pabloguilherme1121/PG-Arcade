@@ -197,7 +197,7 @@ it("shooting combos have a bounded bonus", () => {
   expect(hitScore(10, 100)).toBe(30);
 });
 it("all fifty games have specific help and valid record units", () => {
-  expect(games.length).toBe(50);
+  expect(games.length).toBe(100);
   for (const g of games) expect(gameHelp[g.id].length).toBeGreaterThan(50);
-  expect(Object.keys(recordUnits)).toHaveLength(44);
+  expect(Object.keys(recordUnits)).toHaveLength(94);
 });

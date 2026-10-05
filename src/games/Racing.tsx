@@ -121,20 +121,48 @@ export default function Racing({
           role="group"
           aria-label="Pista de corrida. A/D ou esquerda/direita dirigem; W/cima acelera; S/baixo freia; espaço pausa."
           onPointerDown={(e) => {
-            if (e.pointerType === "touch" || e.button !== 0 || status !== "running") return;
+            if (e.pointerType === "touch" || e.button !== 0 || status !== "running")
+              return;
             drag.current = [e.clientX, e.clientY];
             e.currentTarget.setPointerCapture(e.pointerId);
+          }}
+          onPointerMove={(e) => {
+            const origin = drag.current;
+            if (!origin || status !== "running") return;
+            const direction = directionFromSwipe(
+              e.clientX - origin[0],
+              e.clientY - origin[1],
+              24,
+            );
+            if (direction === "left" || direction === "right") {
+              steer(direction === "left" ? -1 : 1);
+              drag.current = null;
+            }
           }}
           onPointerUp={(e) => {
             const origin = drag.current;
             drag.current = null;
+            if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+              e.currentTarget.releasePointerCapture(e.pointerId);
+            }
             if (!origin || status !== "running") return;
-            const direction = directionFromSwipe(e.clientX - origin[0], e.clientY - origin[1], 24);
+            const direction = directionFromSwipe(
+              e.clientX - origin[0],
+              e.clientY - origin[1],
+              24,
+            );
             if (direction === "left") steer(-1);
             if (direction === "right") steer(1);
           }}
-          onPointerCancel={() => { drag.current = null; }}
-          onLostPointerCapture={() => { drag.current = null; }}
+          onPointerCancel={(e) => {
+            drag.current = null;
+            if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+              e.currentTarget.releasePointerCapture(e.pointerId);
+            }
+          }}
+          onLostPointerCapture={() => {
+            drag.current = null;
+          }}
           onTouchStart={(e) => {
             touch.current = e.touches.length === 1
               ? [e.touches[0].clientX, e.touches[0].clientY]

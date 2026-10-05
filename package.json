@@ -7,8 +7,10 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5173",
     "build": "tsc --noEmit && vite build",
+    "check:bundle": "node scripts/check-bundle.mjs",
     "preview": "vite preview --host 127.0.0.1 --port 5173",
     "test": "vitest run",
+    "audit": "npm audit --audit-level=high",
     "test:e2e": "playwright test",
     "pretest:e2e": "npm run build",
     "test:e2e:ci": "playwright test"
@@ -21,6 +23,7 @@
     "react-dom": "19.2.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "1.62.1",
     "@tailwindcss/vite": "4.1.14",
     "@types/node": "24.7.0",

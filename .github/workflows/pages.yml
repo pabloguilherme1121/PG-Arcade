@@ -4,13 +4,16 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+
 permissions:
   contents: read
+
 concurrency:
   group: pages-${{ github.ref }}
   cancel-in-progress: true
+
 jobs:
-  validate:
+  quality:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -19,23 +22,59 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - run: npm run audit
       - run: npm test
       - run: npm run build
-      - run: npx playwright install --with-deps chromium firefox webkit
-      - run: npm run test:e2e:ci
+      - run: npm run check:bundle
+      - uses: actions/upload-artifact@v7
+        with:
+          name: arcade-dist
+          path: dist
+          retention-days: 1
+
+  e2e:
+    needs: quality
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, webkit, firefox]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v8
+        with:
+          name: arcade-dist
+          path: dist
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - run: npx playwright test --project=${{ matrix.browser }}
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: arcade-browser-failure-diagnostics
+          name: arcade-${{ matrix.browser }}-failure-diagnostics
           path: test-results
           retention-days: 7
+
+  pages-artifact:
+    if: github.event_name != 'pull_request'
+    needs: [quality, e2e]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: arcade-dist
+          path: dist
       - uses: actions/upload-pages-artifact@v5
-        if: github.event_name != 'pull_request'
         with:
           path: dist
+
   deploy:
     if: github.event_name != 'pull_request'
-    needs: validate
+    needs: pages-artifact
     runs-on: ubuntu-latest
     permissions:
       pages: write

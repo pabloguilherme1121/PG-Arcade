@@ -6,6 +6,8 @@ import {
   useState,
   useCallback,
   useRef,
+  useMemo,
+  memo,
   type ReactNode,
   type ComponentType,
 } from "react";
@@ -22,6 +24,12 @@ import {
   Link as LinkIcon,
 } from "lucide-react";
 import { games, isGameId, type GameId } from "./lib/catalog";
+import {
+  newGames,
+  isNewGameId,
+  type NewGameId,
+  type BoardId,
+} from "./lib/newCatalog";
 import {
   expandedGames,
   isExpandedId,
@@ -56,6 +64,19 @@ const collectionPlayers = Object.fromEntries(
   ]),
 ) as unknown as Record<ExpandedId, ComponentType<PlayerProps>>;
 const players = {
+  ...(Object.fromEntries(
+    newGames.map((g) => [
+      g.id,
+      lazy(async () => {
+        if (g.family === "board") {
+          const module = await import("./games/BoardExpansion");
+          return { default: (props: PlayerProps) => <module.default {...props} gameId={g.id as BoardId} /> };
+        }
+        const module = g.family === "quiz" ? await import("./games/QuizExpansion") : await import("./games/MotionExpansion");
+        return { default: (props: PlayerProps) => <module.default {...props} gameId={g.id} /> };
+      }),
+    ]),
+  ) as unknown as Record<NewGameId, ComponentType<PlayerProps>>),
   ...collectionPlayers,
   sequencia: lazy(() => import("./games/ColorSequence")),
   palavra: lazy(() => import("./games/SecretWord")),
@@ -116,6 +137,21 @@ function route() {
         : "catalogo";
 }
 function Preview({ id }: { id: GameId }) {
+  if (isNewGameId(id)) {
+    const game = newGames.find((g) => g.id === id)!;
+    const marks = game.family === "board" ? ["♛", "▦", "◇"] : game.family === "quiz" ? ["?", "24", "A"] : ["◉", "↗", "▶"];
+    return (
+      <div className={`preview new-preview preview-${game.family}`} aria-hidden="true">
+        <svg viewBox="0 0 240 150">
+          <rect width="240" height="150" rx="16" fill="#12283c" />
+          <path d="M0 120 L240 30 M0 150 L240 60" stroke="#31516d" strokeWidth="18" />
+          {marks.map((m, i) => (
+            <text key={i} x={45 + i * 75} y={92 - i * 8} fill={i === 1 ? "#c9f65a" : "#79b8ff"} fontSize={35} fontWeight="700" textAnchor="middle">{m}</text>
+          ))}
+        </svg>
+      </div>
+    );
+  }
   if (isExpandedId(id)) {
     const family = expandedGames.find((g) => g.id === id)!.family;
     return (
@@ -332,6 +368,8 @@ function Preview({ id }: { id: GameId }) {
     </div>
   );
 }
+const MemoPreview = memo(Preview);
+
 export default function App() {
   const [page, setPage] = useState(route);
   const [focusMode, setFocusMode] = useState(false);
@@ -502,27 +540,38 @@ export default function App() {
   }
   const game = games.find((g) => g.id === page);
   const Player = game ? players[game.id] : null;
-  const visible = games.filter(
-    (g) =>
-      (page !== "favoritos" || progress.favorites.includes(g.id)) &&
-      (category === "Todos" || g.category === category) &&
-      g.name
+  const normalizedQuery = useMemo(
+    () =>
+      query
         .toLocaleLowerCase("pt-BR")
         .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .includes(
-          query
+        .replace(/[\u0300-\u036f]/g, ""),
+    [query],
+  );
+  const visible = useMemo(
+    () =>
+      games.filter(
+        (g) =>
+          (page !== "favoritos" || progress.favorites.includes(g.id)) &&
+          (category === "Todos" || g.category === category) &&
+          g.name
             .toLocaleLowerCase("pt-BR")
             .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, ""),
-        ),
+            .replace(/[\u0300-\u036f]/g, "")
+            .includes(normalizedQuery),
+      ),
+    [page, progress.favorites, category, normalizedQuery],
   );
-  const sorted = [...visible].sort((a, b) =>
-    sort === "nome"
-      ? a.name.localeCompare(b.name, "pt-BR")
-      : sort === "visitados"
-        ? (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)
-        : 0,
+  const sorted = useMemo(
+    () =>
+      [...visible].sort((a, b) =>
+        sort === "nome"
+          ? a.name.localeCompare(b.name, "pt-BR")
+          : sort === "visitados"
+            ? (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)
+            : 0,
+      ),
+    [visible, sort, progress.visits],
   );
   return (
     <div className={focusMode && game ? "app-focus" : ""}>
@@ -914,7 +963,7 @@ export default function App() {
               <div>
                 <div className="hero-eyebrow" aria-hidden="true">
                   <span>PG Arcade</span>
-                  <span>50 jogos</span>
+                  <span>{games.length} jogos</span>
                 </div>
                 <h1 ref={heading} tabIndex={-1}>
                   {page === "favoritos" ? (
@@ -930,7 +979,7 @@ export default function App() {
                 <p>
                   {page === "favoritos"
                     ? "Os jogos que você quer ter sempre por perto."
-                    : "50 jogos. Novos modos, dificuldades e desafios para jogar no seu ritmo."}
+                    : `${games.length} jogos. Novos modos, dificuldades e desafios para jogar no seu ritmo.`}
                 </p>
                 <a
                   href="#catalogo"
@@ -1026,7 +1075,7 @@ export default function App() {
                       href={`#/jogar/${g.id}`}
                       aria-label={`Jogar ${g.name}`}
                     >
-                      <Preview id={g.id} />
+                      <MemoPreview id={g.id} />
                       <span className="game-category">{g.category}</span>
                       <h3>{g.name}</h3>
                       <p>{g.description}</p>

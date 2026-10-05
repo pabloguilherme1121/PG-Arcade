@@ -34,7 +34,7 @@ export default function SecretWord({
             Recorde<strong>{record || "—"}</strong>
           </div>
         </div>
-        <div className="word-board" aria-label="Tentativas de palavra">
+        <div className="word-board" role="group" aria-label="Tentativas de palavra">
           <ol>
             {guesses.map((guess, row) => (
               <li key={row} aria-label={`Tentativa ${row + 1}: ${guess}`}>
@@ -42,6 +42,7 @@ export default function SecretWord({
                   <span
                     key={i}
                     className={`letter-${state}`}
+                    role="img"
                     aria-label={`${guess[i]}: ${names[state]}`}
                   >
                     {guess[i]}

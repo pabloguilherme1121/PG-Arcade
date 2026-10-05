@@ -21,8 +21,8 @@ test("catalog search, categories, favorites and direct links persist", async ({
     page.getByRole("link", { name: "Jogar Snake", exact: true }),
   ).toBeVisible();
   await page.getByRole("link", { name: "Jogos", exact: true }).click();
-  await page.getByLabel("Buscar jogo").fill("memoria");
-  await expect(page.locator(".game-card")).toHaveCount(1);
+  await page.getByLabel("Buscar jogo").fill("memória");
+  await expect(page.locator(".game-card")).toHaveCount(2);
   await page.getByLabel("Buscar jogo").fill("");
   await page.getByRole("button", { name: "Reflexos", exact: true }).click();
   await expect(page.locator(".game-card")).toHaveCount(games.filter(g => g.category === "Reflexos").length);
@@ -74,7 +74,11 @@ test("Snake starts, pauses, blocks reverse direction and resets", async ({
 test("Memory completes all pairs and stores the best score", async ({
   page,
 }) => {
+  test.setTimeout(45000);
   await page.goto("./#/jogar/memoria");
+  await page
+    .getByLabel("Tempo para observar cartas diferentes")
+    .selectOption("500");
   const cards = page.locator(".memory-card");
   await expect(cards).toHaveCount(16);
   const known = new Map<string, number[]>();
@@ -106,7 +110,13 @@ test("Memory completes all pairs and stores the best score", async ({
   ).not.toHaveText("—");
 });
 for (const width of [320, 390, 1280])
-  test(`all catalog games render and fit ${width}px`, async ({ page }) => {
+  test(`all catalog games render and fit ${width}px`, async ({ page, browserName }) => {
+    test.skip(
+      width === 1280 ? browserName !== "chromium" : browserName === "firefox",
+      width === 1280
+        ? "Desktop full-catalog layout sweep runs once in Chromium."
+        : "Mobile full-catalog layout sweep runs in Chromium and WebKit; Firefox keeps focused gameplay coverage.",
+    );
     test.setTimeout(180000);
     await page.setViewportSize({ width, height: 900 });
     const errors: string[] = [];
