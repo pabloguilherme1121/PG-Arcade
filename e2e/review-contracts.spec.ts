@@ -4,6 +4,54 @@ import { dealDominoRound, getLegalDominoMoves, drawDominoUntilPlayable, placeDom
 
 test.use({ reducedMotion: "reduce", viewport: { width: 320, height: 740 } });
 
+test("new number boards ignore keyboard edits while paused", async ({ page }) => {
+  await page.goto("./#/jogar/latin");
+  const board = page.locator('[data-new-game="latin"]');
+  const editable = board.locator('[data-index]:not(:disabled)').first();
+  await expect(editable).toBeVisible();
+  const before = await board.locator('[data-index]').allTextContents();
+  await editable.focus();
+  await editable.press("Escape");
+  await expect(board.getByRole("status")).toContainText("pausad");
+  await board.locator(".new-board-wrap").press("1");
+  await board.getByRole("button", { name: "Continuar", exact: true }).first().click();
+  expect(await board.locator('[data-index]').allTextContents()).toEqual(before);
+});
+
+test("new action button does not pause rope play on pointer focus", async ({ page }) => {
+  await page.goto("./#/jogar/rope");
+  const game = page.locator('[data-new-game="rope"]');
+  await game.getByRole("button", { name: "Começar", exact: true }).click();
+  await game.getByRole("button", { name: "Ação", exact: true }).click();
+  await expect(game.getByRole("status")).not.toContainText("pausad");
+});
+
+test("new motion games stop repainting when ready or paused", async ({ page }) => {
+  await page.addInitScript(() => {
+    const original = CanvasRenderingContext2D.prototype.clearRect;
+    Object.assign(window, { motionPaints: 0 });
+    CanvasRenderingContext2D.prototype.clearRect = function (...args) {
+      if (args[2] === 480 && args[3] === 380)
+        (window as unknown as { motionPaints: number }).motionPaints++;
+      return original.apply(this, args);
+    };
+  });
+  await page.goto("./#/jogar/rope");
+  await expect(page.locator("canvas")).toBeVisible();
+  await freeze(page);
+  const count = () => page.evaluate(() => (window as unknown as { motionPaints: number }).motionPaints);
+  const initial = await count();
+  await page.clock.runFor(200);
+  expect(await count()).toBe(initial);
+  await page.getByRole("button", { name: "Começar", exact: true }).click();
+  await page.clock.runFor(200);
+  expect(await count()).toBeGreaterThan(initial);
+  await page.getByRole("button", { name: "Pausar", exact: true }).click();
+  const paused = await count();
+  await page.clock.runFor(200);
+  expect(await count()).toBe(paused);
+});
+
 async function freeze(page: Page) {
   const date = new Date("2026-10-05T12:00:00Z");
   await page.clock.install({ time: date });
@@ -124,7 +172,6 @@ test("expert chess responds within the worker budget and remains cancellable", a
 });
 
 test("checkers forces the capture chain then releases selection for the next turn", async ({ page }) => {
-  test.setTimeout(90000);
   await page.goto("./#/jogar/damas");
   const game = page.locator('[data-checkers-game="true"]');
   await game.getByRole("button", { name: /1 × 1 local/i }).click();
@@ -141,27 +188,32 @@ test("checkers forces the capture chain then releases selection for the next tur
   await expect(cells.nth(28)).toHaveAttribute("aria-selected", "true");
 });
 
-for (const [seed, winner, expected] of [[0, "player", 9], [0.1, "opponent", 11]] as const) {
-  test(`domino completes a local round and displays ${winner} pip points`, async ({ page }) => {
+for (const [seed, winner, expected, rules] of [[0, "player", 9, "draw"], [0.1, "opponent", 11, "draw"], [0.1, "opponent", 8, "block"]] as const) {
+  test(`domino completes a local ${rules} round and displays ${winner} pip points`, async ({ page }) => {
     test.setTimeout(90000);
     await page.addInitScript((value) => { Math.random = () => value; }, seed);
     await page.goto("./#/jogar/domino");
     const game = page.locator('[data-domino-game="true"]');
     await game.getByRole("button", { name: /1 × 1 local/i }).click();
+    if (rules === "block") {
+      await game.locator('[data-domino-settings] summary').click();
+      await game.locator('[data-domino-rules="block"]').click();
+    }
     const dealt = dealDominoRound(5, () => seed);
     const hands = [dealt.player, dealt.opponent];
-    let yard = dealt.boneyard, chain: DominoTile[] = [], turn = 0;
+    let yard = dealt.boneyard, chain: DominoTile[] = [], turn = 0, passes = 0;
     for (let step = 0; step < 100; step++) {
       const reveal = game.locator('[data-domino-handoff] button');
       if (await reveal.isVisible()) await reveal.click();
       let moves = getLegalDominoMoves(hands[turn], chain);
-      if (!moves.length) {
+      if (!moves.length && rules === "draw") {
         const drawn = drawDominoUntilPlayable(hands[turn], chain, yard);
         if (drawn.drawn) await game.getByRole("button", { name: "comprar pedra", exact: true }).click();
         hands[turn] = drawn.hand; yard = drawn.boneyard;
         moves = getLegalDominoMoves(hands[turn], chain);
       }
       if (moves.length) {
+        passes = 0;
         const move = moves[0], tile = hands[turn][move.index];
         await game.getByRole("button", { name: `Pedra ${tile[0]} por ${tile[1]}`, exact: true }).click();
         const picker = game.locator('[data-domino-side-picker]');
@@ -175,7 +227,16 @@ for (const [seed, winner, expected] of [[0, "player", 9], [0.1, "opponent", 11]]
           await expect(game.locator('[data-domino-status]')).toContainText("venceu");
           return;
         }
-      } else await game.getByRole("button", { name: "passar vez", exact: true }).click();
+      } else {
+        await game.getByRole("button", { name: "passar vez", exact: true }).click();
+        if (++passes === 2) {
+          const pips = hands.map(getDominoPipTotal);
+          expect(pips[0]).toBeGreaterThan(pips[1]);
+          expect(pips[0]).toBe(expected);
+          await expect(game.locator(`[data-domino-points="${winner}"]`)).toHaveText(`${expected} pontos`);
+          return;
+        }
+      }
       turn = 1 - turn;
     }
     throw Error("The seeded round did not finish");
@@ -184,7 +245,6 @@ for (const [seed, winner, expected] of [[0, "player", 9], [0.1, "opponent", 11]]
 
 for (const difficulty of ["1", "2"]) {
   test(`golf barrier can be cleared and holed at difficulty ${difficulty}`, async ({ page }) => {
-    test.setTimeout(90000);
     await page.goto("./#/jogar/golfe");
     await page.locator(".casual-options select").first().selectOption(difficulty);
     await page.getByLabel("Formato da sessão", { exact: true }).selectOption("treino");
