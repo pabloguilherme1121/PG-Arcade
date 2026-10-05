@@ -63,7 +63,8 @@ async function swipe(board: Locator, dx: number, dy: number, cancelled = false) 
   await board.dispatchEvent("touchend", { changedTouches: [{ identifier: 1, clientX: 160 + dx, clientY: 220 + dy }], touches: [] });
 }
 
-test("Snake touch queue survives pause and ignores cancelled gestures", async ({ page, browserName }) => {\n  test.skip(browserName === "firefox", "Firefox desktop does not expose the Touch constructor used by synthetic touch dispatch; Chromium/WebKit cover this touch-only contract.");
+test("Snake touch queue survives pause and ignores cancelled gestures", async ({ page, browserName }) => {
+  test.skip(browserName === "firefox", "Firefox desktop does not expose the Touch constructor used by synthetic touch dispatch; Chromium/WebKit cover this touch-only contract.");
   await page.goto("./#/jogar/snake");
   const board = page.locator(".snake-board");
   await expect(board).toBeVisible();
@@ -86,7 +87,8 @@ test("Snake touch queue survives pause and ignores cancelled gestures", async ({
 });
 
 for (const id of ["corrida", "rally", "coleta", "orbital"]) {
-  test(`${id} swipe steers one lane and ignores cancellation and pinch`, async ({ page, browserName }) => {\n    test.skip(browserName === "firefox", "Firefox desktop does not expose the Touch constructor used by synthetic touch dispatch; Chromium/WebKit cover this touch-only contract.");
+  test(`${id} swipe steers one lane and ignores cancellation and pinch`, async ({ page, browserName }) => {
+    test.skip(browserName === "firefox", "Firefox desktop does not expose the Touch constructor used by synthetic touch dispatch; Chromium/WebKit cover this touch-only contract.");
     await page.goto(`./#/jogar/${id}`);
     const board = page.locator(id === "corrida" ? ".race-board" : ".run-board");
     await expect(board).toBeVisible();
