@@ -120,13 +120,11 @@ export default function Racing({
           tabIndex={0}
           role="group"
           aria-label="Pista de corrida. A/D ou esquerda/direita dirigem; W/cima acelera; S/baixo freia; espaço pausa."
-          onPointerDown={(e) => {
-            if (e.pointerType === "touch" || e.button !== 0 || status !== "running")
-              return;
+          onMouseDown={(e) => {
+            if (e.button !== 0 || status !== "running") return;
             drag.current = [e.clientX, e.clientY];
-            e.currentTarget.setPointerCapture(e.pointerId);
           }}
-          onPointerMove={(e) => {
+          onMouseMove={(e) => {
             const origin = drag.current;
             if (!origin || status !== "running") return;
             const direction = directionFromSwipe(
@@ -139,12 +137,9 @@ export default function Racing({
               drag.current = null;
             }
           }}
-          onPointerUp={(e) => {
+          onMouseUp={(e) => {
             const origin = drag.current;
             drag.current = null;
-            if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-              e.currentTarget.releasePointerCapture(e.pointerId);
-            }
             if (!origin || status !== "running") return;
             const direction = directionFromSwipe(
               e.clientX - origin[0],
@@ -154,11 +149,8 @@ export default function Racing({
             if (direction === "left") steer(-1);
             if (direction === "right") steer(1);
           }}
-          onPointerCancel={(e) => {
+          onMouseLeave={() => {
             drag.current = null;
-            if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-              e.currentTarget.releasePointerCapture(e.pointerId);
-            }
           }}
           onTouchStart={(e) => {
             touch.current = e.touches.length === 1
