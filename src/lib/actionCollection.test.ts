@@ -131,6 +131,18 @@ describe("action collection physics", () => {
     expect(jet.vy).toBeLessThan(0);
     expect(stepAction(jet, idleInput, 0.02).fuel).toBeGreaterThan(jet.fuel);
   });
+
+  it("jetpack fuel canisters refill part of the tank instead of teleporting to full", () => {
+    const s = newAction("jetpack");
+    s.fuel = 20;
+    s.objects = [
+      { x: s.x, y: s.y, vx: 0, vy: 0, r: 13, kind: "fuel", hp: 1 },
+    ];
+    const n = stepAction(s, idleInput, 0);
+    expect(n.fuel).toBeGreaterThan(20);
+    expect(n.fuel).toBeLessThan(100);
+    expect(n.objects).toHaveLength(0);
+  });
   it("arena collisions consume one life and invulnerability prevents repeat hits", () => {
     const s = newAction("esquiva");
     s.objects = [{ x: s.x, y: s.y, vx: 0, vy: 0, r: 8, kind: "danger", hp: 1 }];
