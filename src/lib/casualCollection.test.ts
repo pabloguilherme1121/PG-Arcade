@@ -15,7 +15,19 @@ import {
   bowlingHit,
   golfStroke,
   casualGames,
+  moveGridCursor,
 } from "./casualCollection";
+describe("casual grid controls", () => {
+  it("moves within grid rows and columns without wrapping across edges", () => {
+    expect(moveGridCursor(5, "ArrowRight", 6, 36)).toBe(5);
+    expect(moveGridCursor(6, "ArrowLeft", 6, 36)).toBe(6);
+    expect(moveGridCursor(0, "ArrowUp", 6, 36)).toBe(0);
+    expect(moveGridCursor(35, "ArrowDown", 6, 36)).toBe(35);
+    expect(moveGridCursor(7, "ArrowRight", 6, 36)).toBe(8);
+    expect(moveGridCursor(7, "ArrowDown", 6, 36)).toBe(13);
+  });
+});
+
 describe("casual collection engines", () => {
   it("adjusts aces only as needed and caps face cards", () => {
     expect(handValue([1, 1, 9])).toBe(21);
