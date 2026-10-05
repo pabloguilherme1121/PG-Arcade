@@ -18,7 +18,7 @@ export const actionCollectionGames = [
     name: "Cinturão de Asteroides",
     description: "Gire, acelere e abra uma rota entre rochas espaciais.",
     category: "Tiro",
-    help: "Use esquerda e direita para girar, cima para acelerar e Ação para atirar. Rochas grandes se dividem. A nave atravessa as bordas do espaço.",
+    help: "Use esquerda e direita para girar, cima para acelerar e Ação para atirar. Os disparos herdam o movimento da nave, como no espaço; rochas grandes se dividem e a nave atravessa as bordas.",
   },
   {
     id: "invasores",
@@ -60,7 +60,7 @@ export const actionCollectionGames = [
     name: "Pouso Lunar",
     description: "Controle a gravidade e pouse com velocidade segura.",
     category: "Inteligência",
-    help: "Use os lados para corrigir a trajetória e cima ou Ação para ligar o motor. Pouse na plataforma com velocidade vertical abaixo de 35 e horizontal abaixo de 25.",
+    help: "Use os lados para acionar propulsores de correção e cima ou Ação para o motor principal. Ambos consomem combustível; pouse com velocidade vertical abaixo de 35 e horizontal abaixo de 25.",
   },
   {
     id: "drift",
@@ -338,8 +338,8 @@ export function stepAction(
         body(
           s.x,
           s.y,
-          Math.cos(s.angle) * 330,
-          Math.sin(s.angle) * 330,
+          Math.cos(s.angle) * 330 + s.vx,
+          Math.sin(s.angle) * 330 + s.vy,
           3,
           "laser",
           1.6,
@@ -519,7 +519,11 @@ export function stepAction(
     s.score = Math.floor(s.time * 10);
     s.level = 1 + Math.floor(s.time / 15);
   } else if (s.id === "pouso") {
-    s.vx += ((input.right ? 1 : 0) - (input.left ? 1 : 0)) * 45 * dt;
+    const lateral = (input.right ? 1 : 0) - (input.left ? 1 : 0);
+    if (lateral && s.fuel > 0) {
+      s.vx += lateral * 45 * dt;
+      s.fuel = Math.max(0, s.fuel - 3.5 * dt);
+    }
     s.vy += 35 * f * dt;
     if (action && s.fuel > 0) {
       s.vy -= 85 * dt;
