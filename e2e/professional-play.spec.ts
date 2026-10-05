@@ -3,7 +3,9 @@ import { test, expect } from "@playwright/test";
 
 test("Snake buffers rapid WASD corners in order", async ({ page }) => {
   await page.goto("./#/jogar/snake");
-  await page.clock.install();
+  const frozen = new Date("2026-10-05T12:00:00Z");
+  await page.clock.install({ time: frozen });
+  await page.clock.pauseAt(frozen);
   const board = page.locator(".snake-board");
   const cells = page.locator(".snake-board > span");
 
