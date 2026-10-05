@@ -27,7 +27,6 @@ export default function Racing({
   const board = useRef<HTMLDivElement>(null);
   const touch = useRef<[number, number] | null>(null);
   const drag = useRef<[number, number] | null>(null);
-  const dragCleanup = useRef<(() => void) | null>(null);
   const throttle = useRef(0);
   const engine = useRef(state);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -37,8 +36,6 @@ export default function Racing({
     throttle.current = 0;
     touch.current = null;
     drag.current = null;
-    dragCleanup.current?.();
-    dragCleanup.current = null;
   }, []);
   const pause = useCallback(() => {
     stopEngine();
@@ -65,45 +62,6 @@ export default function Racing({
     state.ticks,
   );
   const speedKmh = Math.round(currentVelocity * 36);
-  function stopDesktopDrag() {
-    drag.current = null;
-    dragCleanup.current?.();
-    dragCleanup.current = null;
-  }
-
-  function beginDesktopDrag(x: number, y: number) {
-    stopDesktopDrag();
-    drag.current = [x, y];
-
-    const apply = (event: MouseEvent, finish: boolean) => {
-      const origin = drag.current;
-      if (!origin || status !== "running") {
-        if (finish) stopDesktopDrag();
-        return;
-      }
-      const direction = directionFromSwipe(
-        event.clientX - origin[0],
-        event.clientY - origin[1],
-        24,
-      );
-      if (direction === "left" || direction === "right") {
-        steer(direction === "left" ? -1 : 1);
-        stopDesktopDrag();
-        return;
-      }
-      if (finish) stopDesktopDrag();
-    };
-
-    const move = (event: MouseEvent) => apply(event, false);
-    const up = (event: MouseEvent) => apply(event, true);
-    window.addEventListener("mousemove", move);
-    window.addEventListener("mouseup", up);
-    dragCleanup.current = () => {
-      window.removeEventListener("mousemove", move);
-      window.removeEventListener("mouseup", up);
-    };
-  }
-
   function steer(delta: number) {
     if (status === "running") {
       engine.current = steerRace(engine.current, delta);
@@ -162,9 +120,45 @@ export default function Racing({
           tabIndex={0}
           role="group"
           aria-label="Pista de corrida. A/D ou esquerda/direita dirigem; W/cima acelera; S/baixo freia; espaço pausa."
-          onMouseDown={(e) => {
-            if (e.button !== 0 || status !== "running") return;
-            beginDesktopDrag(e.clientX, e.clientY);
+          onPointerDown={(e) => {
+            if (e.pointerType === "touch" || e.button !== 0 || status !== "running")
+              return;
+            drag.current = [e.clientX, e.clientY];
+            e.currentTarget.setPointerCapture(e.pointerId);
+          }}
+          onPointerMove={(e) => {
+            const origin = drag.current;
+            if (!origin || status !== "running") return;
+            const direction = directionFromSwipe(
+              e.clientX - origin[0],
+              e.clientY - origin[1],
+              24,
+            );
+            if (direction === "left" || direction === "right") {
+              steer(direction === "left" ? -1 : 1);
+              drag.current = null;
+            }
+          }}
+          onPointerUp={(e) => {
+            const origin = drag.current;
+            drag.current = null;
+            if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+              e.currentTarget.releasePointerCapture(e.pointerId);
+            }
+            if (!origin || status !== "running") return;
+            const direction = directionFromSwipe(
+              e.clientX - origin[0],
+              e.clientY - origin[1],
+              24,
+            );
+            if (direction === "left") steer(-1);
+            if (direction === "right") steer(1);
+          }}
+          onPointerCancel={(e) => {
+            drag.current = null;
+            if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+              e.currentTarget.releasePointerCapture(e.pointerId);
+            }
           }}
           onTouchStart={(e) => {
             touch.current = e.touches.length === 1
