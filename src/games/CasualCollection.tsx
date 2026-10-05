@@ -12,6 +12,7 @@ import {
   hasJewelMove,
   projectile,
   basketEntryQuality,
+  basketballTrajectory,
   arrowImpact,
   arrowTrajectory,
   arrowPoints,
@@ -594,19 +595,25 @@ function Sport({
     const nextAttempt = attempt + 1;
     setAttempt(nextAttempt);
     if (kind === "basquete") {
-      const flight = projectile(aim, power, wind);
-      setTrajectory(flight);
+      const shot = basketballTrajectory(aim, power, wind);
+      setTrajectory(shot.points);
       const quality = basketEntryQuality(
-        flight,
+        shot.points,
         16 - options.difficulty * 4,
       );
       earned = quality === "swish" ? 120 : quality === "rim" ? 100 : 0;
       message =
         quality === "swish"
-          ? "Cesta! Limpa, sem tocar no aro."
+          ? shot.banked
+            ? "Cesta de tabela! Rebote limpo no vidro."
+            : "Cesta! Limpa, sem tocar no aro."
           : quality === "rim"
-            ? "Cesta! Tocou no aro e caiu."
-            : "A bola passou fora do aro.";
+            ? shot.banked
+              ? "Cesta de tabela! Tocou no aro e caiu."
+              : "Cesta! Tocou no aro e caiu."
+            : shot.banked
+              ? "A bola bateu na tabela, mas não caiu."
+              : "A bola passou fora do aro.";
     } else if (kind === "arco") {
       const y = arrowImpact(aim, power, wind);
       setTrajectory(arrowTrajectory(aim, power, wind));
