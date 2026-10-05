@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { projectile, basketHit, swapJewels } from "../src/lib/casualCollection";
+import { basketballTrajectory, basketHit, swapJewels } from "../src/lib/casualCollection";
 async function start(page: Page, id: string) {
   await page.goto("./#/jogar/" + id);
   await page.locator(".casual-options select").first().selectOption("0");
@@ -50,7 +50,7 @@ for (const id of ["vinteum", "dados", "boliche", "basquete", "arco"])
     let basket = { angle: 60, power: 90 };
     outer: for (let power = 90; power <= 100; power++)
       for (let angle = 60; angle <= 70; angle++)
-        if (basketHit(projectile(angle, power, 0), 16)) {
+        if (basketHit(basketballTrajectory(angle, power, 0).points, 16)) {
           basket = { angle, power };
           break outer;
         }
@@ -106,6 +106,21 @@ for (const id of ["vinteum", "dados", "boliche", "basquete", "arco"])
     await page.reload();
     await expect(page.locator(".casual-hud strong").nth(2)).toHaveText(record);
   });
+
+test("basketball backboard rebound is visible and can score", async ({ page }) => {
+  await start(page, "basquete");
+  await range(page, "Mira", 50);
+  await range(page, "Força", 100);
+  await page.getByRole("button", { name: "Arremessar", exact: true }).click();
+  await expect(page.locator(".sport-scene [role=status]")).toContainText(
+    "Cesta de tabela",
+  );
+  const points = await page.locator(".sport-basquete polyline").getAttribute("points");
+  expect(points).toBeTruthy();
+  const xs = points!.trim().split(" ").map((point) => Number(point.split(",")[0]));
+  expect(Math.max(...xs)).toBeLessThanOrEqual(297);
+});
+
 test("golf rewards straight alignment and controlled successive strokes", async ({
   page,
 }) => {
