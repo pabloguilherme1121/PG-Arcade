@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   handValue,
+  dealerShouldHit,
   diceScore,
   matches,
   adjacent,
@@ -33,6 +34,14 @@ describe("casual collection engines", () => {
     expect(handValue([1, 1, 9])).toBe(21);
     expect(handValue([13, 12, 2])).toBe(22);
     expect(handValue([1, 1, 1, 8])).toBe(21);
+  });
+
+  it("uses realistic dealer stand-on-17 and hard-mode hit-on-soft-17 rules", () => {
+    expect(dealerShouldHit([10, 6], 1)).toBe(true);
+    expect(dealerShouldHit([10, 7], 1)).toBe(false);
+    expect(dealerShouldHit([1, 6], 1)).toBe(false);
+    expect(dealerShouldHit([1, 6], 2)).toBe(true);
+    expect(dealerShouldHit([10, 7], 2)).toBe(false);
   });
   it("scores distinct dice combinations and rewards five equal dice", () => {
     expect(diceScore([6, 6, 6, 6, 6])).toBe(130);
