@@ -44,6 +44,19 @@ it("collectibles and collisions remove only overlapping objects", () => {
   expect(hit.lives).toBe(2);
   expect(hit.objects).toHaveLength(1);
 });
+it("applies at most one life of collision damage per tick", () => {
+  const s = {
+    ...newRun(),
+    objects: [
+      { id: 1, lane: 1, y: 60, reward: false },
+      { id: 2, lane: 1, y: 62, reward: false },
+    ],
+  };
+  const next = stepRun(s, "coleta");
+  expect(next.lives).toBe(2);
+  expect(next.objects).toHaveLength(0);
+});
+
 it("rounds stop at deadline or death, steering stays in bounds and fire is limited", () => {
   expect(moveRun(newRun(), -10).lane).toBe(0);
   expect(moveRun(newRun(), 10).lane).toBe(2);
