@@ -96,6 +96,22 @@ export function matches(board: number[]) {
     }
   return [...found];
 }
+export function moveGridCursor(
+  index: number,
+  key: string,
+  size: number,
+  total: number,
+) {
+  const row = Math.floor(index / size);
+  const col = index % size;
+  if (key === "ArrowLeft") return col === 0 ? index : index - 1;
+  if (key === "ArrowRight") return col === size - 1 ? index : index + 1;
+  if (key === "ArrowUp") return row === 0 ? index : index - size;
+  if (key === "ArrowDown")
+    return index + size >= total ? index : index + size;
+  return index;
+}
+
 export function adjacent(a: number, b: number) {
   return (
     a !== b &&
