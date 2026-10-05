@@ -1,6 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Star } from "lucide-react";
-import { hitScore } from "../lib/actionGames";
+import {
+  hitScore,
+  targetGameRules,
+  type TargetDifficulty,
+} from "../lib/actionGames";
 import { useAutoPause, type PlayStatus } from "./useAutoPause";
 type Target = { id: number; cell: number };
 export default function TargetGame({
@@ -13,9 +17,13 @@ export default function TargetGame({
   onRecord: (n: number) => void;
 }) {
   const shoot = kind === "shoot";
-  const duration = shoot ? 30 : 20;
+  const [difficulty, setDifficulty] = useState<TargetDifficulty>("normal");
+  const rules = targetGameRules(kind, difficulty);
+  const duration = rules.duration;
   const [status, setStatus] = useState<PlayStatus>("ready");
-  const [remaining, setRemaining] = useState(duration);
+  const [remaining, setRemaining] = useState(() =>
+    targetGameRules(kind, "normal").duration,
+  );
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
   const [targets, setTargets] = useState<Target[]>([]);
@@ -30,7 +38,7 @@ export default function TargetGame({
   function freshTargets() {
     const cells = Array.from({ length: 9 }, (_, i) => i);
     const next: Target[] = [];
-    for (let n = 0; n < (shoot ? 3 : 1); n++) {
+    for (let n = 0; n < rules.targets; n++) {
       const at = Math.floor(Math.random() * cells.length);
       next.push({ id: ++id.current, cell: cells.splice(at, 1)[0] });
     }
@@ -46,9 +54,12 @@ export default function TargetGame({
   }, [status]);
   useEffect(() => {
     if (shoot || status !== "running") return;
-    const timer = setInterval(() => setTargets(freshTargets()), 1100);
+    const timer = setInterval(
+      () => setTargets(freshTargets()),
+      rules.relocateMs,
+    );
     return () => clearInterval(timer);
-  }, [shoot, status]);
+  }, [shoot, status, rules.relocateMs]);
   useEffect(() => {
     if (remaining === 0 && status === "running") {
       onRecord(score);
@@ -88,9 +99,9 @@ export default function TargetGame({
       );
     } else setTargets(freshTargets());
   }
-  function reset() {
+  function reset(nextDifficulty: TargetDifficulty = difficulty) {
     setStatus("ready");
-    setRemaining(duration);
+    setRemaining(targetGameRules(kind, nextDifficulty).duration);
     setScore(0);
     setCombo(0);
     setTargets([]);
@@ -197,11 +208,28 @@ export default function TargetGame({
         </div>
       </div>
       <aside className="instructions">
+        <label>
+          Dificuldade
+          <select
+            aria-label="Dificuldade"
+            value={difficulty}
+            disabled={status === "running" || status === "paused"}
+            onChange={(e) => {
+              const next = e.target.value as TargetDifficulty;
+              setDifficulty(next);
+              reset(next);
+            }}
+          >
+            <option value="easy">Fácil</option>
+            <option value="normal">Normal</option>
+            <option value="hard">Difícil</option>
+          </select>
+        </label>
         <h2>{shoot ? "Mire nos alvos" : "Uma pausa divertida"}</h2>
         <p>
           {shoot
-            ? "Acerte os três alvos espalhados pela arena. Cada acerto reposiciona um alvo. Sequências sem errar rendem bônus."
-            : "Toque na estrela antes que ela mude de lugar. Cada estrela vale um ponto; a rodada dura 20 segundos."}
+            ? `Acerte os ${rules.targets} alvos espalhados pela arena. Cada acerto reposiciona um alvo. Sequências sem errar rendem bônus. A rodada dura ${duration} segundos.`
+            : `Toque na estrela antes que ela mude de lugar. Cada estrela vale um ponto; a rodada dura ${duration} segundos e o intervalo muda com a dificuldade.`}
         </p>
         <p>
           Toque, clique ou use os números 1 a 9 na disposição do tabuleiro. Tab
