@@ -5,6 +5,8 @@ import {
   slide2048,
   spawn2048,
   canMove2048,
+  directionFromKey,
+  directionFromSwipe,
   type Direction,
 } from "../lib/engines";
 import Controls from "./Controls";
@@ -48,18 +50,13 @@ export default function Game2048({
         <div
           className="board2048"
           role="group"
-          aria-label="Tabuleiro 2048. Use as setas para jogar."
+          aria-label="Tabuleiro 2048. Use as setas ou WASD para jogar."
           tabIndex={0}
           onKeyDown={(e) => {
-            const d = {
-              ArrowUp: "up",
-              ArrowDown: "down",
-              ArrowLeft: "left",
-              ArrowRight: "right",
-            }[e.key];
+            const d = directionFromKey(e.key);
             if (d) {
               e.preventDefault();
-              move(d as Direction);
+              move(d);
             }
           }}
           onTouchStart={(e) => {
@@ -70,16 +67,8 @@ export default function Game2048({
             const dx = e.changedTouches[0].clientX - touch.current[0],
               dy = e.changedTouches[0].clientY - touch.current[1];
             touch.current = null;
-            if (Math.max(Math.abs(dx), Math.abs(dy)) < 20) return;
-            move(
-              Math.abs(dx) > Math.abs(dy)
-                ? dx > 0
-                  ? "right"
-                  : "left"
-                : dy > 0
-                  ? "down"
-                  : "up",
-            );
+            const d = directionFromSwipe(dx, dy);
+            if (d) move(d);
           }}
         >
           {state.board.map((n, i) => (
@@ -130,7 +119,7 @@ export default function Game2048({
       <aside className="instructions">
         <h2>Como jogar</h2>
         <p>Junte números iguais para chegar ao 2048.</p>
-        <p>Use as setas do teclado ou deslize no tabuleiro.</p>
+        <p>Use as setas ou WASD no teclado, ou deslize no tabuleiro.</p>
         <hr />
         <h3>No seu ritmo</h3>
         <p>Desfaça a última jogada e tente outra estratégia.</p>
