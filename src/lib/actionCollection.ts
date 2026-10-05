@@ -18,7 +18,7 @@ export const actionCollectionGames = [
     name: "Cinturão de Asteroides",
     description: "Gire, acelere e abra uma rota entre rochas espaciais.",
     category: "Tiro",
-    help: "Use esquerda e direita para girar, cima para acelerar e Ação para atirar. Os disparos herdam o movimento da nave, como no espaço; rochas grandes se dividem e a nave atravessa as bordas.",
+    help: "Use esquerda e direita para girar, cima para acelerar e Ação para atirar. No vácuo, a nave conserva inércia até novo impulso; os disparos herdam esse movimento. A velocidade tem limite de segurança e as rochas grandes se dividem."
   },
   {
     id: "invasores",
@@ -348,8 +348,12 @@ export function stepAction(
       s.vx += Math.cos(s.angle) * 150 * dt;
       s.vy += Math.sin(s.angle) * 150 * dt;
     }
-    s.vx *= Math.exp(-0.2 * dt);
-    s.vy *= Math.exp(-0.2 * dt);
+    const shipSpeed = Math.hypot(s.vx, s.vy);
+    if (shipSpeed > 260) {
+      const scale = 260 / shipSpeed;
+      s.vx *= scale;
+      s.vy *= scale;
+    }
     s.x = (s.x + s.vx * dt + 480) % 480;
     s.y = (s.y + s.vy * dt + 360) % 360;
     if (input.action && s.spawn > 0.2) {
