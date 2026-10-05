@@ -28,6 +28,22 @@ describe("Race", () => {
     expect(raceVelocity(3, 5000)).toBeLessThanOrEqual(4.2);
   });
 
+  it("lets traffic cars move at modestly different relative speeds", () => {
+    const s = initialRace();
+    const next = tickRace(
+      {
+        ...s,
+        traffic: [
+          { id: 1, lane: 0, y: 10, speedFactor: 0.85 },
+          { id: 2, lane: 2, y: 10, speedFactor: 1.15 },
+        ],
+      },
+      3,
+    );
+    expect(next.traffic[0].y).toBeLessThan(next.traffic[1].y);
+    expect(next.traffic[0].y).toBeGreaterThan(10);
+  });
+
   it("spawns predictable traffic and removes a collided car once", () => {
     let s = initialRace();
     for (let i = 0; i < 16; i++) s = tickRace(s, 3, () => 0);
