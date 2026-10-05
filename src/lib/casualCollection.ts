@@ -206,15 +206,40 @@ export function bowlingHit(
   power: number,
   difficulty = 1,
 ) {
-  return pins.map((standing, i) => {
+  const normalizedPower = Math.max(0, Math.min(100, power));
+  const line = 150 + (Math.max(0, Math.min(100, aim)) - 50) * 1.8;
+  const positions = pins.map((_, i) => {
     const row = Math.floor((Math.sqrt(8 * i + 1) - 1) / 2);
     const first = (row * (row + 1)) / 2;
-    const x = 150 + (i - first - row / 2) * 28;
-    const line = 150 + (aim - 50) * 1.8;
-    return (
-      standing && Math.abs(x - line) > 12 + power * (0.48 - difficulty * 0.1)
-    );
+    return {
+      x: 150 + (i - first - row / 2) * 28,
+      y: 60 + row * 18,
+    };
   });
+  const directRadius =
+    10 + normalizedPower * Math.max(0.11, 0.18 - difficulty * 0.025);
+  const directlyHit = new Set<number>();
+  pins.forEach((standing, i) => {
+    if (standing && Math.abs(positions[i].x - line) <= directRadius)
+      directlyHit.add(i);
+  });
+
+  const carryRadius =
+    20 + normalizedPower * 0.15 - Math.max(0, difficulty) * 1;
+  const knocked = new Set(directlyHit);
+  pins.forEach((standing, i) => {
+    if (!standing || knocked.has(i)) return;
+    if (
+      [...directlyHit].some((hitIndex) => {
+        const dx = positions[i].x - positions[hitIndex].x;
+        const dy = positions[i].y - positions[hitIndex].y;
+        return Math.hypot(dx, dy) <= carryRadius;
+      })
+    )
+      knocked.add(i);
+  });
+
+  return pins.map((standing, i) => standing && !knocked.has(i));
 }
 export function golfStroke(
   position: number,
