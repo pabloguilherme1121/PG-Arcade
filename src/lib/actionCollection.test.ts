@@ -400,4 +400,20 @@ describe("action collection physics", () => {
     expect(displacement("hard", 0)).toBeGreaterThan(displacement("normal", 120));
   });
 
+
+  it("scales post-hit recovery from forgiving easy play to expert pressure", () => {
+    const recovery = (difficulty: "easy" | "normal" | "hard" | "master" | "expert") => {
+      const s = newAction("esquiva", difficulty);
+      s.objects = [{ x: s.x, y: s.y, vx: 0, vy: 0, r: 8, kind: "danger", hp: 1 }];
+      return stepAction(s, idleInput, 0).cooldown;
+    };
+    const values = ["easy", "normal", "hard", "master", "expert"].map((level) =>
+      recovery(level as "easy" | "normal" | "hard" | "master" | "expert"),
+    );
+    expect(values[0]).toBeGreaterThan(values[1]);
+    expect(values[1]).toBeGreaterThan(values[2]);
+    expect(values[2]).toBeGreaterThan(values[3]);
+    expect(values[3]).toBeGreaterThan(values[4]);
+  });
+
 });
