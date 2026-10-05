@@ -2129,6 +2129,14 @@ html[data-arcade-contrast="true"] :is(.game-card,.instructions,.scores,.session-
 html[data-arcade-contrast="true"] :is(.game-status,.player-description,.muted,.instructions p,.game-card p,.game-category) { color: #f1f5fa; }
 html[data-arcade-contrast="true"] :is(button,select,input) { border-color: #aebbd0; }
 html[data-arcade-motion="reduced"] { scroll-behavior: auto; }
+html[data-arcade-motion="reduced"] *,
+html[data-arcade-motion="reduced"] *::before,
+html[data-arcade-motion="reduced"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
 html[data-arcade-motion="reduced"] :is(button,a,.game-card,.memory-card,.disc) { transition: none !important; }
 @media (max-width: 430px) {
   .preference-options { flex-direction: column; gap: 8px; }
