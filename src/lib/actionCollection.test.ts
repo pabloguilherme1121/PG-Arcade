@@ -15,13 +15,19 @@ describe("action collection physics", () => {
       expect(Number.isFinite(s.x + s.y + s.score)).toBe(true);
     }
   });
-  it("rebounds breakout on the paddle with impact-dependent angle", () => {
+  it("rebounds breakout with impact angle, paddle motion and bounded speed", () => {
     const s = newAction("breakout");
-    s.ball = { x: 265, y: 317, vx: 0, vy: 100, r: 7, kind: "ball", hp: 1 };
-    const next = stepAction(s, idleInput, 0.02);
-    expect(next.ball.vy).toBeLessThan(0);
-    expect(next.ball.vx).toBeGreaterThan(0);
-    expect(s.ball.vy).toBe(100);
+    s.ball = { x: 265, y: 317, vx: 0, vy: 420, r: 7, kind: "ball", hp: 1 };
+    const still = stepAction(s, idleInput, 0.02);
+    const moving = stepAction(
+      s,
+      { ...idleInput, right: true },
+      0.02,
+    );
+    expect(still.ball.vy).toBeLessThan(0);
+    expect(Math.abs(still.ball.vy)).toBeLessThanOrEqual(340);
+    expect(moving.ball.vx).toBeGreaterThan(still.ball.vx);
+    expect(s.ball.vy).toBe(420);
   });
   it("destroys actual bricks and awards points only on collision", () => {
     const s = newAction("breakout");
