@@ -91,7 +91,7 @@ export function resolveFootballShot(
   const height = getFootballShotHeight(power, lift);
   const y = 92 - height * 0.75;
   const result: "gol" | "defesa" | "fora" | "barreira" =
-    power > 90 || power < 25 || x < 8 || x > 92 || height > 88
+    power > 90 || power < 25 || x < 8 || x > 92 || height > 85
       ? "fora"
       : mode === "free-kick" &&
           Math.abs(aim - 50) < 18 &&
