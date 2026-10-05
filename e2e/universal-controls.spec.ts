@@ -6,7 +6,7 @@ test("all fifty games provide keyboard help and safe restart without losing reco
   await page.addInitScript(() => localStorage.setItem("pg-arcade-progress-v1", JSON.stringify({ records: { snake: 70 }, favorites: ["snake"] })));
   for (const game of games) {
     await page.goto(`./#/jogar/${game.id}`);
-    await expect(page.locator("[data-arcade-arena]")).toBeVisible();
+    await expect(page.locator("[data-arcade-arena]").first()).toBeVisible();
     await page.keyboard.press("Alt+Shift+h");
     const help = page.locator(".experience-tools details");
     await expect(help).toHaveAttribute("open", "");
