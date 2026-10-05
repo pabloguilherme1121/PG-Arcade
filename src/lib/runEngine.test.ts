@@ -44,7 +44,7 @@ it("collectibles and collisions remove only overlapping objects", () => {
   expect(hit.lives).toBe(2);
   expect(hit.objects).toHaveLength(1);
 });
-it("applies at most one life of collision damage per tick", () => {
+it("applies one collision hit then grants a short recovery window", () => {
   const s = {
     ...newRun(),
     objects: [
@@ -55,6 +55,28 @@ it("applies at most one life of collision damage per tick", () => {
   const next = stepRun(s, "coleta");
   expect(next.lives).toBe(2);
   expect(next.objects).toHaveLength(0);
+  expect(next.crashCooldown).toBeGreaterThan(0);
+
+  const protectedHit = stepRun(
+    {
+      ...next,
+      objects: [{ id: 3, lane: 1, y: 60, reward: false }],
+    },
+    "coleta",
+  );
+  expect(protectedHit.lives).toBe(2);
+
+  let recovered = protectedHit;
+  for (let i = 0; i < 8; i++)
+    recovered = stepRun({ ...recovered, objects: [] }, "coleta");
+  const nextCrash = stepRun(
+    {
+      ...recovered,
+      objects: [{ id: 4, lane: 1, y: 60, reward: false }],
+    },
+    "coleta",
+  );
+  expect(nextCrash.lives).toBe(1);
 });
 
 it("rounds stop at deadline or death, steering settles between lane changes and fire is limited", () => {
