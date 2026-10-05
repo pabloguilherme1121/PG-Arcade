@@ -9,6 +9,7 @@ import {
   type RunOptions,
 } from "../lib/runEngine";
 import { useAutoPause, type PlayStatus } from "./useAutoPause";
+import { directionFromSwipe } from "../lib/engines";
 const names = {
   rally: "Rally de Checkpoints",
   coleta: "Coleta na Estrada",
@@ -29,6 +30,7 @@ export default function ArcadeRun({
     useState<RunOptions["difficulty"]>("normal");
   const [limit, setLimit] = useState(900);
   const board = useRef<HTMLDivElement>(null);
+  const touch = useRef<[number, number] | null>(null);
   const pause = useCallback(
     () => setStatus((s) => (s === "running" ? "paused" : s)),
     [],
@@ -89,7 +91,19 @@ export default function ArcadeRun({
           className={`run-board race-board ${kind === "orbital" ? "orbital-board" : ""} ${status === "running" ? "racing-running" : ""}`}
           role="group"
           tabIndex={0}
-          aria-label={`${names[kind]}. Setas para mover, espaço para pausar${kind === "orbital" ? ", Enter para disparar" : ""}.`}
+          aria-label={`${names[kind]}. Setas, A/D ou deslize para mover, espaço para pausar${kind === "orbital" ? ", Enter para disparar" : ""}.`}
+          onTouchStart={(e) => {
+            touch.current = [e.touches[0].clientX, e.touches[0].clientY];
+          }}
+          onTouchEnd={(e) => {
+            if (!touch.current || status !== "running") return;
+            const dx = e.changedTouches[0].clientX - touch.current[0];
+            const dy = e.changedTouches[0].clientY - touch.current[1];
+            touch.current = null;
+            const direction = directionFromSwipe(dx, dy, 24);
+            if (direction === "left") move(-1);
+            if (direction === "right") move(1);
+          }}
           onKeyDown={(e) => {
             const key = e.key.toLowerCase();
             if (
@@ -266,7 +280,7 @@ export default function ArcadeRun({
         <p>
           Escolha uma expedição de 90 segundos, um sprint ou sobreviva sem
           limite. O ritmo aumenta a cada etapa de 30 segundos. São três vidas.
-          Use setas, A/D ou os botões. Espaço pausa. A partida pausa ao sair da
+          Use setas, A/D, deslize horizontalmente ou use os botões. Espaço pausa. A partida pausa ao sair da
           janela.
         </p>
         <p>Recorde: {record || "—"} pontos.</p>
