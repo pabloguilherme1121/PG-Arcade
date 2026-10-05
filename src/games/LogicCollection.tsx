@@ -35,6 +35,7 @@ function Grid({
 }) {
   const [focus, setFocus] = useState(0);
   function keys(e: KeyboardEvent<HTMLDivElement>) {
+    if (e.altKey || e.ctrlKey || e.metaKey || e.isDefaultPrevented()) return;
     const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
     const deltas: Record<string, number> = {
       ArrowLeft: -1,
@@ -47,16 +48,22 @@ function Grid({
       s: size,
     };
     const d = deltas[key];
-    if (d === undefined || (!onMove && key.length === 1)) return;
+    if (d === undefined) return;
     e.preventDefault();
     if (onMove) {
-      onMove(d);
+      if (!e.repeat) onMove(d);
       return;
     }
     const rowStart = Math.floor(focus / size) * size;
-    const next = e.key === "ArrowLeft" ? Math.max(rowStart, focus - 1)
-      : e.key === "ArrowRight" ? Math.min(rowStart + size - 1, focus + 1)
-      : Math.max(focus % size, Math.min((size - 1) * size + focus % size, focus + d));
+    const next =
+      d === -1
+        ? Math.max(rowStart, focus - 1)
+        : d === 1
+          ? Math.min(rowStart + size - 1, focus + 1)
+          : Math.max(
+              focus % size,
+              Math.min((size - 1) * size + (focus % size), focus + d),
+            );
     setFocus(next);
     const buttons =
       e.currentTarget.querySelectorAll<HTMLButtonElement>("button");
