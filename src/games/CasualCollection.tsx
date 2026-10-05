@@ -3,6 +3,7 @@ import { useAutoPause } from "./useAutoPause";
 import {
   casualGames,
   handValue,
+  dealerShouldHit,
   card,
   diceScore,
   makeJewels,
@@ -145,7 +146,7 @@ function Blackjack({ options, onRound }: PlayProps) {
     [points, setPoints] = useState(0);
   function settle(player: number[]) {
     let bank = [...dealer];
-    while (handValue(bank) < 16 + options.difficulty && bank.length < 12)
+    while (dealerShouldHit(bank, options.difficulty) && bank.length < 12)
       bank.push(card());
     const a = handValue(player),
       b = handValue(bank);
@@ -204,11 +205,19 @@ function Blackjack({ options, onRound }: PlayProps) {
         }
       }}
     >
-      <h3>Banca · {settled ? handValue(dealer) : "uma carta oculta"}</h3>
+      <h3>
+        Banca ·{" "}
+        {settled || options.difficulty === 0
+          ? handValue(dealer)
+          : "uma carta oculta"}
+      </h3>
       <div className="playing-cards">
         {dealer.map((v, i) => (
-          <span className={!settled && i > 0 ? "card-back" : ""} key={i}>
-            {!settled && i > 0 ? "?" : label(v)}
+          <span
+            className={!settled && options.difficulty > 0 && i > 0 ? "card-back" : ""}
+            key={i}
+          >
+            {!settled && options.difficulty > 0 && i > 0 ? "?" : label(v)}
           </span>
         ))}
       </div>
