@@ -4,7 +4,7 @@ export const casualGames = [
     name: "Vinte e Um",
     category: "Casuais",
     description: "Cartas, estratégia e uma mesa sem apostas.",
-    help: "Peça cartas ou pare perto de 21. O ás vale 1 ou 11; a banca compra até 17. Vença as rodadas sem ultrapassar 21.",
+    help: "Peça cartas ou pare perto de 21. O ás vale 1 ou 11. A banca segue a regra de 17; no Difícil compra em soft 17, e no Fácil a carta fechada fica visível.",
   },
   {
     id: "dados",
