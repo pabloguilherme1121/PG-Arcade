@@ -1921,35 +1921,8 @@ footer a {
   z-index: 1;
   line-height: 1;
 }
-.preview-corrida {
-  background: repeating-linear-gradient(
-    90deg,
-    #26303d 0 31%,
-    #66715b 31% 32%,
-    #26303d 32% 33%
-  );
-}
-.preview-estacionamento {
-  background: repeating-linear-gradient(0deg, #1a2530 0 31%, #3a4658 31% 33%);
-}
-.preview-estacionamento > span {
-  border: 3px solid #c9f65a;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 55px;
-}
-.preview-tiro {
-  background: radial-gradient(ellipse, #593b83, #111827);
-}
-.preview-tiro > span {
-  color: #dfc3ff;
-  font-size: 90px;
-}
 .preview-luzes {
   background: radial-gradient(ellipse, #4c5d32, #101721);
-}
-.preview-estrelas {
-  background: linear-gradient(145deg, #193b32, #142927);
 }
 .action-preview i {
   position: absolute;
