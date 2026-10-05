@@ -281,6 +281,16 @@ export default function Racing({
                 : "Largar"}
           </button>
           <button
+            disabled={status !== "running" && status !== "paused"}
+            onClick={() => {
+              throttle.current = 0;
+              onRecord(state.score);
+              setStatus("done");
+            }}
+          >
+            Encerrar e salvar
+          </button>
+          <button
             onClick={() => {
               throttle.current = 0;
               setState(initialRace());
@@ -317,7 +327,8 @@ export default function Racing({
         </p>
         <p>
           A corrida pausa ao trocar de aba ou sair da janela. O recorde é salvo
-          ao terminar.
+          ao terminar; você também pode encerrar voluntariamente para registrar
+          a distância atual.
         </p>
       </aside>
     </div>
