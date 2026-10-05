@@ -84,9 +84,11 @@ export default function ArcadeRun({
             ? "Rodada concluída"
             : status === "paused"
               ? "Partida pausada"
-              : state.steerCooldown > 0
-                ? "Completando troca de faixa"
-                : "Prepare sua próxima manobra"}
+              : state.crashCooldown > 0
+                ? "Recuperando após impacto"
+                : state.steerCooldown > 0
+                  ? "Completando troca de faixa"
+                  : "Prepare sua próxima manobra"}
         </p>
         <div
           ref={board}
@@ -157,9 +159,10 @@ export default function ArcadeRun({
             />
           ))}
           <div
-            className="race-car"
+            className={`race-car ${state.crashCooldown > 0 ? "race-car-recovering" : ""}`}
             data-lane={state.lane}
             data-steering={state.steerCooldown > 0}
+            data-recovering={state.crashCooldown > 0}
             style={{ left: `${state.lane * 33.33 + 16.66}%` }}
           >
             <img
@@ -282,7 +285,8 @@ export default function ArcadeRun({
         </p>
         <p>
           Escolha uma expedição de 90 segundos, um sprint ou sobreviva sem
-          limite. O ritmo aumenta a cada etapa de 30 segundos. São três vidas.
+          limite. O ritmo aumenta a cada etapa de 30 segundos. São três vidas,
+          com uma breve recuperação após impactos para evitar dano impossível de reagir.
           Use setas, A/D, deslize horizontalmente ou use os botões. Cada comando
           muda uma faixa e o esterço precisa de um instante para estabilizar antes
           da próxima troca. Espaço pausa. A partida pausa ao sair da janela.
