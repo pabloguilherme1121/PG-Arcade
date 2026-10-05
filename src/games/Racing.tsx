@@ -12,7 +12,7 @@ import {
   steerRace,
   tickRace,
 } from "../lib/actionGames";
-import { directionFromKey } from "../lib/engines";
+import { directionFromKey, directionFromSwipe } from "../lib/engines";
 import { useAutoPause, type PlayStatus } from "./useAutoPause";
 export default function Racing({
   record,
@@ -25,6 +25,7 @@ export default function Racing({
   const [status, setStatus] = useState<PlayStatus>("ready");
   const [speed, setSpeed] = useState(3);
   const board = useRef<HTMLDivElement>(null);
+  const touch = useRef<[number, number] | null>(null);
   const pause = useCallback(
     () => setStatus((s) => (s === "running" ? "paused" : s)),
     [],
@@ -86,7 +87,19 @@ export default function Racing({
           }
           tabIndex={0}
           role="group"
-          aria-label="Pista de corrida. Setas esquerda e direita, espaço para pausar."
+          aria-label="Pista de corrida. Setas, A/D ou deslize para dirigir; espaço para pausar."
+          onTouchStart={(e) => {
+            touch.current = [e.touches[0].clientX, e.touches[0].clientY];
+          }}
+          onTouchEnd={(e) => {
+            if (!touch.current || status !== "running") return;
+            const dx = e.changedTouches[0].clientX - touch.current[0];
+            const dy = e.changedTouches[0].clientY - touch.current[1];
+            touch.current = null;
+            const direction = directionFromSwipe(dx, dy, 24);
+            if (direction === "left") steer(-1);
+            if (direction === "right") steer(1);
+          }}
           onKeyDown={(e) => {
             if (e.key === " ") {
               e.preventDefault();
@@ -194,7 +207,7 @@ export default function Racing({
           <option value={4}>Turbo</option>
         </select>
         <p>
-          Setas ou A/D dirigem, espaço pausa. No celular, use os dois botões
+          Setas ou A/D dirigem, espaço pausa. No celular, deslize na pista ou use os dois botões
           grandes abaixo da pista.
         </p>
         <p>
