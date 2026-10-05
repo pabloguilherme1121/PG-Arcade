@@ -12,6 +12,7 @@ import {
   steerRace,
   tickRace,
 } from "../lib/actionGames";
+import { directionFromKey, directionFromSwipe } from "../lib/engines";
 import { useAutoPause, type PlayStatus } from "./useAutoPause";
 export default function Racing({
   record,
@@ -24,14 +25,19 @@ export default function Racing({
   const [status, setStatus] = useState<PlayStatus>("ready");
   const [speed, setSpeed] = useState(3);
   const board = useRef<HTMLDivElement>(null);
-  const pause = useCallback(
-    () => setStatus((s) => (s === "running" ? "paused" : s)),
-    [],
-  );
+  const touch = useRef<[number, number] | null>(null);
+  const throttle = useRef(0);
+  const pause = useCallback(() => {
+    throttle.current = 0;
+    setStatus((s) => (s === "running" ? "paused" : s));
+  }, []);
   useAutoPause(pause);
   useEffect(() => {
     if (status !== "running") return;
-    const timer = setInterval(() => setState((s) => tickRace(s, speed)), 100);
+    const timer = setInterval(
+      () => setState((s) => tickRace(s, speed, Math.random, throttle.current)),
+      100,
+    );
     return () => clearInterval(timer);
   }, [status, speed]);
   useEffect(() => {
@@ -40,12 +46,16 @@ export default function Racing({
       setStatus("done");
     }
   }, [state.lives, state.score, status, onRecord]);
-  const currentVelocity = raceVelocity(speed, state.ticks);
+  const currentVelocity = raceVelocity(
+    Math.max(1, speed + state.paceOffset),
+    state.ticks,
+  );
   const speedKmh = Math.round(currentVelocity * 36);
   function steer(delta: number) {
     if (status === "running") setState((s) => steerRace(s, delta));
   }
   function start() {
+    throttle.current = 0;
     setStatus("running");
     board.current?.focus();
   }
@@ -60,19 +70,29 @@ export default function Racing({
             Recorde<strong>{record}</strong>
           </div>
         </div>
-        <p className="race-lives" role="status">
-          <span>{state.lives} vidas</span>
+        <p className="race-lives">
+          <span role="status">{state.lives} vidas</span>
           <span className="race-speedometer" data-race-speed>
             {speedKmh} km/h
           </span>
           <span>•</span>{" "}
-          {status === "ready"
-            ? "Pronto para largar"
-            : status === "running"
-              ? "Desvie do trânsito"
-              : status === "paused"
-                ? "Corrida pausada"
-                : "Fim da corrida"}
+          <span role="status">
+            {status === "ready"
+              ? "Pronto para largar"
+              : status === "running"
+                ? state.crashCooldown > 0
+                  ? "Recuperando controle"
+                  : state.steerCooldown > 0
+                    ? "Completando troca de faixa"
+                    : throttle.current > 0
+                      ? "Acelerando"
+                      : throttle.current < 0
+                        ? "Freando"
+                        : "Desvie do trânsito"
+                : status === "paused"
+                  ? "Corrida pausada"
+                  : "Fim da corrida"}
+          </span>
         </p>
         <div
           ref={board}
@@ -85,14 +105,41 @@ export default function Racing({
           }
           tabIndex={0}
           role="group"
-          aria-label="Pista de corrida. Setas esquerda e direita, espaço para pausar."
+          aria-label="Pista de corrida. A/D ou esquerda/direita dirigem; W/cima acelera; S/baixo freia; espaço pausa."
+          onTouchStart={(e) => {
+            touch.current = [e.touches[0].clientX, e.touches[0].clientY];
+          }}
+          onTouchEnd={(e) => {
+            if (!touch.current || status !== "running") return;
+            const dx = e.changedTouches[0].clientX - touch.current[0];
+            const dy = e.changedTouches[0].clientY - touch.current[1];
+            touch.current = null;
+            const direction = directionFromSwipe(dx, dy, 24);
+            if (direction === "left") steer(-1);
+            if (direction === "right") steer(1);
+          }}
           onKeyDown={(e) => {
-            if (["ArrowLeft", "ArrowRight", "a", "d", " "].includes(e.key)) {
+            if (e.key === " ") {
               e.preventDefault();
-              if (e.key === " ")
-                status === "running" ? pause() : status !== "done" && start();
-              else steer(e.key === "ArrowLeft" || e.key === "a" ? -1 : 1);
+              status === "running" ? pause() : status !== "done" && start();
+              return;
             }
+            const d = directionFromKey(e.key);
+            if (d === "left" || d === "right") {
+              e.preventDefault();
+              steer(d === "left" ? -1 : 1);
+            }
+            if (d === "up" || d === "down") {
+              e.preventDefault();
+              throttle.current = d === "up" ? 1 : -1;
+            }
+          }}
+          onKeyUp={(e) => {
+            const d = directionFromKey(e.key);
+            if (d === "up" || d === "down") throttle.current = 0;
+          }}
+          onBlur={() => {
+            throttle.current = 0;
           }}
         >
           <div className="road-line line-one" />
@@ -101,18 +148,32 @@ export default function Racing({
             <div
               key={car.id}
               className="traffic-car"
-              style={{ left: `${car.lane * 33.33 + 16.66}%`, top: `${car.y}%` }}
+              data-speed-factor={(car.speedFactor ?? 1).toFixed(2)}
+              style={{
+                left: `${car.lane * 33.33 + 16.66}%`,
+                top: `${car.y}%`,
+                transform: `translateX(-50%) scale(${Math.max(
+                  0.7,
+                  Math.min(1.08, 0.74 + ((car.y + 16) / 126) * 0.34),
+                )})`,
+                transformOrigin: "center bottom",
+              }}
             >
               <img src={`${import.meta.env.BASE_URL}art/car.webp`} alt="" />
             </div>
           ))}
           <div
-            className="race-car"
+            className={`race-car ${state.crashCooldown > 0 ? "race-car-recovering" : ""}`}
             data-lane={state.lane}
+            data-recovering={state.crashCooldown > 0}
+            data-steering={state.steerCooldown > 0}
             style={{ left: `${state.lane * 33.33 + 16.66}%` }}
           >
             <img src={`${import.meta.env.BASE_URL}art/car.webp`} alt="" />
-            <span className="sr-only">Seu carro: faixa {state.lane + 1}</span>
+            <span className="sr-only">
+              Seu carro: faixa {state.lane + 1}
+              {state.crashCooldown > 0 ? ", recuperando após colisão" : ""}
+            </span>
           </div>
           {status !== "running" && (
             <div className="action-overlay">
@@ -149,6 +210,64 @@ export default function Racing({
             <ArrowRight />
           </button>
         </div>
+        <div className="wide-controls race-pedals">
+          <button
+            aria-label="Frear"
+            disabled={status !== "running"}
+            onPointerDown={(e) => {
+              e.currentTarget.setPointerCapture(e.pointerId);
+              throttle.current = -1;
+            }}
+            onPointerUp={() => {
+              throttle.current = 0;
+            }}
+            onPointerCancel={() => {
+              throttle.current = 0;
+            }}
+            onKeyDown={(e) => {
+              if (e.key === " " || e.key === "Enter") {
+                e.preventDefault();
+                throttle.current = -1;
+              }
+            }}
+            onKeyUp={() => {
+              throttle.current = 0;
+            }}
+            onBlur={() => {
+              throttle.current = 0;
+            }}
+          >
+            Frear
+          </button>
+          <button
+            aria-label="Acelerar"
+            disabled={status !== "running"}
+            onPointerDown={(e) => {
+              e.currentTarget.setPointerCapture(e.pointerId);
+              throttle.current = 1;
+            }}
+            onPointerUp={() => {
+              throttle.current = 0;
+            }}
+            onPointerCancel={() => {
+              throttle.current = 0;
+            }}
+            onKeyDown={(e) => {
+              if (e.key === " " || e.key === "Enter") {
+                e.preventDefault();
+                throttle.current = 1;
+              }
+            }}
+            onKeyUp={() => {
+              throttle.current = 0;
+            }}
+            onBlur={() => {
+              throttle.current = 0;
+            }}
+          >
+            Acelerar
+          </button>
+        </div>
         <div className="game-actions">
           <button
             className="primary"
@@ -162,7 +281,18 @@ export default function Racing({
                 : "Largar"}
           </button>
           <button
+            disabled={status !== "running" && status !== "paused"}
             onClick={() => {
+              throttle.current = 0;
+              onRecord(state.score);
+              setStatus("done");
+            }}
+          >
+            Encerrar e salvar
+          </button>
+          <button
+            onClick={() => {
+              throttle.current = 0;
               setState(initialRace());
               setStatus("ready");
             }}
@@ -175,7 +305,8 @@ export default function Racing({
         <h2>Encontre uma faixa livre</h2>
         <p>
           Desvie dos carros para acumular distância. Cada colisão custa uma
-          vida; você começa com três.
+          vida e ativa uma breve recuperação contra impactos em sequência; você
+          começa com três.
         </p>
         <label htmlFor="race-speed">Ritmo da corrida</label>
         <select
@@ -189,12 +320,15 @@ export default function Racing({
           <option value={4}>Turbo</option>
         </select>
         <p>
-          Setas ou A/D dirigem, espaço pausa. No celular, use os dois botões
-          grandes abaixo da pista.
+          A/D ou esquerda/direita dirigem; W/cima acelera e S/baixo freia.
+          Soltar o pedal faz a velocidade retornar gradualmente ao ritmo-base.
+          Cada comando muda uma faixa e o esterço precisa de um instante para
+          estabilizar. No celular, use os botões de direção e os pedais.
         </p>
         <p>
           A corrida pausa ao trocar de aba ou sair da janela. O recorde é salvo
-          ao terminar.
+          ao terminar; você também pode encerrar voluntariamente para registrar
+          a distância atual.
         </p>
       </aside>
     </div>

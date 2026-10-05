@@ -80,13 +80,13 @@ export const gameHelp: Record<GameId, string> = {
   estrelas:
     "Toque na estrela antes que ela mude de lugar ou use a tecla de 1 a 9 correspondente. Cada estrela vale um ponto. Você pode pausar a rodada de 20 segundos.",
   liga4:
-    "Jogue em dupla ou contra o bot com três dificuldades. Toque no número da coluna ou use Tab e Enter. Quatro peças na horizontal, vertical ou diagonal vencem. Contra o bot, desfazer volta o turno completo.",
+    "Jogue em dupla ou contra o bot com três dificuldades. Toque no número da coluna, pressione 1 a 7 diretamente ou use Tab e Enter. Quatro peças na horizontal, vertical ou diagonal vencem. Contra o bot, desfazer volta o turno completo.",
   puzzle:
     "Organize as peças de 1 a 8 e deixe o espaço vazio no canto inferior direito. Toque em uma peça vizinha ao espaço ou use as setas com o tabuleiro em foco.",
   "2048":
     "Junte números iguais usando setas, os botões de direção ou deslizando no tabuleiro. Você pode desfazer a última jogada; o recorde fica salvo neste navegador.",
   snake:
-    "Coma frutas e evite paredes e o próprio corpo. Use setas, gestos ou controles de direção. Espaço pausa. Escolha a velocidade antes de jogar.",
+    "Coma frutas e evite paredes e o próprio corpo. Use setas, WASD, gestos ou controles de direção. Duas curvas rápidas entram na fila em ordem e reversões imediatas são bloqueadas. Espaço pausa. Escolha a velocidade antes de jogar.",
   memoria:
     "Vire duas cartas e encontre os pares. Use toque ou Tab e Enter. Você pode escolher o tempo para memorizar cartas diferentes; o recorde conta as tentativas.",
   xadrez:

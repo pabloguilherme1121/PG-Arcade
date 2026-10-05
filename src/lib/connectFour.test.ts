@@ -1,6 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { chooseDiscMove, winningDiscs } from "./connectFour";
+import { chooseDiscMove, winningDiscs, discColumnFromKey } from "./connectFour";
 import { discWinner, dropDisc } from "./puzzles";
+describe("Liga 4 keyboard input", () => {
+  it("maps number keys 1 through 7 directly to columns", () => {
+    expect(discColumnFromKey("1")).toBe(0);
+    expect(discColumnFromKey("4")).toBe(3);
+    expect(discColumnFromKey("7")).toBe(6);
+    expect(discColumnFromKey("0")).toBeNull();
+    expect(discColumnFromKey("8")).toBeNull();
+    expect(discColumnFromKey("ArrowLeft")).toBeNull();
+  });
+});
+
 describe("Liga 4 tactical bot", () => {
   it("wins instead of blocking an opponent and never mutates the board", () => {
     let board = Array(42).fill(0);

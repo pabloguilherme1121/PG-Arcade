@@ -110,6 +110,16 @@ export function getCheckersLegalMoves(
   return captures.length ? captures : steps;
 }
 
+export function getCheckersContinuationFrom(
+  boardAfterMove: CheckersBoard,
+  move: CheckersMove,
+): number | null {
+  if (move.capture === undefined) return null;
+  return getCheckersMovesFrom(boardAfterMove, move.to, true).length
+    ? move.to
+    : null;
+}
+
 export function applyCheckersMove(
   board: CheckersBoard,
   move: CheckersMove,

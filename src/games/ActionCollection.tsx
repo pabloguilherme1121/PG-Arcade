@@ -4,6 +4,7 @@ import {
   newAction,
   stepAction,
   idleInput,
+  clamp,
   type ActionId,
   type ActionState,
   type Difficulty,
@@ -11,6 +12,7 @@ import {
   type ActionInput,
 } from "../lib/actionCollection";
 import { useAutoPause, type PlayStatus } from "./useAutoPause";
+import { useReducedMotion } from "../useReducedMotion";
 import "./actionCollection.css";
 const artwork = (() => {
   const images: Partial<Record<"car" | "ship", HTMLImageElement>> = {};
@@ -22,7 +24,11 @@ const artwork = (() => {
     }
   return images;
 })();
-function paint(ctx: CanvasRenderingContext2D, s: ActionState) {
+function paint(
+  ctx: CanvasRenderingContext2D,
+  s: ActionState,
+  reducedMotion: boolean,
+) {
   const space = ["asteroides", "invasores", "pouso"].includes(s.id);
   const sky = ctx.createLinearGradient(0, 0, 0, 360);
   sky.addColorStop(0, space ? "#071026" : "#162c40");
@@ -30,7 +36,7 @@ function paint(ctx: CanvasRenderingContext2D, s: ActionState) {
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, 480, 360);
   ctx.fillStyle = "#bbdbef";
-  const drift = s.time * (space ? 5 : 1.25);
+  const drift = reducedMotion ? 0 : s.time * (space ? 5 : 1.25);
   for (let i = 0; i < 45; i++) {
     const depth = 1 + (i % 3) * 0.35;
     const size = space ? 1 + (i % 3 === 0 ? 1 : 0) : 1;
@@ -187,8 +193,10 @@ function paint(ctx: CanvasRenderingContext2D, s: ActionState) {
     ctx.save();
     ctx.translate(s.x, s.y);
     if (s.id === "asteroides") ctx.rotate(s.angle + Math.PI / 2);
+    if (s.id === "voo" || s.id === "jetpack")
+      ctx.rotate(clamp(s.vy / 520, -0.38, 0.38));
     if (s.id === "runner") {
-      const swing = Math.sin(s.time * 10) * 5;
+      const swing = reducedMotion ? 0 : Math.sin(s.time * 10) * 5;
       circle(0, -18, 8, "#d7f367");
       box(-7, -9, 14, 23, "#8ae0d3");
 
@@ -226,7 +234,22 @@ function paint(ctx: CanvasRenderingContext2D, s: ActionState) {
 
       box(-8, 14, 6, 8, "#d7f367");
       box(3, 14, 6, 8, "#d7f367");
-    } else if (s.id === "esquiva") circle(0, 0, 11, "#d7f367");
+    } else if (s.id === "esquiva") {
+      const speed = Math.hypot(s.vx, s.vy);
+      if (speed > 8) {
+        ctx.strokeStyle = "rgba(215,243,103,.42)";
+        ctx.lineWidth = 3;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(
+          -clamp(s.vx * 0.08, -18, 18),
+          -clamp(s.vy * 0.08, -18, 18),
+        );
+        ctx.stroke();
+      }
+      circle(0, 0, 11, "#d7f367");
+    }
     else if (
       artwork.ship?.complete &&
       artwork.ship.naturalWidth > 0 &&
@@ -266,6 +289,7 @@ export default function ActionCollection({
 }) {
   const id = (actionCollectionGames.find((g) => g.id === gameId)?.id ??
     "breakout") as ActionId;
+  const reducedMotion = useReducedMotion();
   const [difficulty, setDifficulty] = useState<Difficulty>("normal"),
     [mode, setMode] = useState<ActionMode>("mission");
   const [status, setStatus] = useState<PlayStatus>("ready"),
@@ -293,8 +317,8 @@ export default function ActionCollection({
   }, [id, difficulty, mode]);
   useEffect(() => {
     const ctx = canvas.current?.getContext("2d");
-    if (ctx) paint(ctx, state.current);
-  }, [hud, status]);
+    if (ctx) paint(ctx, state.current, reducedMotion);
+  }, [hud, status, reducedMotion]);
   useEffect(() => {
     if (status !== "running") return;
     let frame = 0,
@@ -315,7 +339,7 @@ export default function ActionCollection({
         accumulator -= 1 / 60;
       }
       const ctx = canvas.current?.getContext("2d");
-      if (ctx) paint(ctx, state.current);
+      if (ctx) paint(ctx, state.current, reducedMotion);
       if (now - lastHud > 100) {
         setHud(state.current);
         lastHud = now;
@@ -333,7 +357,7 @@ export default function ActionCollection({
     };
     frame = requestAnimationFrame(run);
     return () => cancelAnimationFrame(frame);
-  }, [status]);
+  }, [status, reducedMotion]);
   function start() {
     if (status === "paused") {
       setStatus("running");
@@ -350,6 +374,11 @@ export default function ActionCollection({
     canvas.current?.focus();
   }
   function key(e: React.KeyboardEvent<HTMLCanvasElement>, pressed: boolean) {
+    if (
+      pressed &&
+      (status !== "running" || e.altKey || e.ctrlKey || e.metaKey)
+    )
+      return;
     const map: Record<string, keyof ActionInput> = {
       ArrowLeft: "left",
       a: "left",
@@ -438,6 +467,8 @@ export default function ActionCollection({
             <option value="easy">Fácil</option>
             <option value="normal">Normal</option>
             <option value="hard">Difícil</option>
+            <option value="master">Mestre</option>
+            <option value="expert">Especialista</option>
           </select>
         </label>
         <label>
@@ -479,6 +510,14 @@ export default function ActionCollection({
         <p className="action-telemetry">
           Combustível: {Math.round(hud.fuel)}% · Velocidade vertical:{" "}
           {Math.round(hud.vy)}
+          {id === "pouso" && hud.landingQuality
+            ? ` · Último toque: ${{
+                soft: "suave",
+                controlled: "controlado",
+                rough: "duro",
+                crash: "impacto",
+              }[hud.landingQuality]}`
+            : ""}
         </p>
       )}
       <div className="action-canvas-wrap">
@@ -493,6 +532,7 @@ export default function ActionCollection({
           onKeyUp={(e) => key(e, false)}
           onBlur={() => {
             input.current = { ...idleInput };
+            pending.current.clear();
           }}
         />
         {status !== "running" && (
@@ -552,6 +592,9 @@ export default function ActionCollection({
             onPointerCancel={() => {
               input.current[key] = false;
             }}
+            onLostPointerCapture={() => {
+              input.current[key] = false;
+            }}
             onKeyDown={(e) => {
               if (e.key === " " || e.key === "Enter") {
                 e.preventDefault();
@@ -570,8 +613,8 @@ export default function ActionCollection({
         ))}
       </div>
       <p className="action-help">
-        Fácil: ritmo estável para aprender. Normal: pressão gradual. Difícil:
-        ritmo mais intenso, com progressão nos primeiros dois minutos e limite de velocidade.
+        Fácil: ritmo estável para aprender. Normal e Difícil aumentam a pressão gradualmente.
+        Mestre reduz a margem de erro; Especialista usa a curva mais intensa, ainda com limite de velocidade para manter a partida jogável.
       </p>
       <div className="action-footer">
         <button disabled={status !== "running"} onClick={pause}>

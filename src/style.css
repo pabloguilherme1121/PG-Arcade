@@ -1478,6 +1478,7 @@ footer a {
 }
 .race-board {
   position: relative;
+  touch-action: pan-y pinch-zoom;
   aspect-ratio: 3/4;
   overflow: hidden;
   background: url("../public/art/road.webp") center/cover;
@@ -2920,6 +2921,10 @@ html[data-arcade-contrast="true"] .experience-tools {
   filter:
     drop-shadow(0 9px 5px rgba(0,0,0,.45))
     saturate(1.08);
+}
+.race-car-recovering {
+  opacity: .58;
+  filter: saturate(.72) brightness(1.08);
 }
 .traffic-car img {
   filter:

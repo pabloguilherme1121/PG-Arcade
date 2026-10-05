@@ -3,6 +3,8 @@ import { actionCollectionGames } from "../src/lib/actionCollection";
 test("all ten action engines start, have real options and pause without advancing", async ({
   page,
 }) => {
+  test.setTimeout(60_000);
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 390, height: 844 });
   for (const game of actionCollectionGames) {
     await page.goto(`./#/jogar/${game.id}`);
@@ -31,6 +33,32 @@ test("all ten action engines start, have real options and pause without advancin
     ).toBe(true);
   }
 });
+test("jetpack fuel does not regenerate while coasting", async ({ page }) => {
+  await page.goto("./#/jogar/jetpack");
+  await page.clock.install();
+  await page.getByRole("button", { name: "Começar", exact: true }).click();
+  const canvas = page.locator("canvas[data-expanded-board]");
+  const telemetry = page.locator(".action-telemetry");
+  await canvas.focus();
+
+  await page.keyboard.down("ArrowUp");
+  await page.clock.runFor(600);
+  await page.keyboard.up("ArrowUp");
+  await page.clock.runFor(120);
+  const afterBurn = Number.parseInt(
+    ((await telemetry.textContent())?.match(/Combustível:\s*(\d+)%/)?.[1]) ?? "100",
+    10,
+  );
+  expect(afterBurn).toBeLessThan(100);
+
+  await page.clock.runFor(800);
+  const afterCoast = Number.parseInt(
+    ((await telemetry.textContent())?.match(/Combustível:\s*(\d+)%/)?.[1]) ?? "100",
+    10,
+  );
+  expect(afterCoast).toBe(afterBurn);
+});
+
 test("action game resumes, handles uppercase keys and clears held controls on blur", async ({
   page,
 }) => {

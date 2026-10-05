@@ -460,6 +460,18 @@ function minimax(
   return best;
 }
 
+export function getChessSearchDepth(difficulty: ChessDifficulty) {
+  return difficulty === "normal"
+    ? 1
+    : difficulty === "hard"
+      ? 2
+      : difficulty === "master"
+        ? 3
+        : difficulty === "expert"
+          ? 4
+          : 0;
+}
+
 export function chooseChessBotMove(
   state: ChessState,
   color: ChessColor,
@@ -471,14 +483,7 @@ export function chooseChessBotMove(
   if (!moves.length) return null;
   if (difficulty === "easy")
     return moves[Math.floor(random() * moves.length)] ?? moves[0];
-  const depth =
-    difficulty === "normal"
-      ? 1
-      : difficulty === "hard"
-        ? 2
-        : difficulty === "master"
-          ? 3
-          : 3;
+  const depth = getChessSearchDepth(difficulty);
   const scored = moves.map((move) => {
     const next = applyUnchecked(basis, move);
     const tactical = difficulty === "expert" && move.castle ? 0.05 : 0;

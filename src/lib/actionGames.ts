@@ -1,11 +1,14 @@
 import type { Direction } from "./engines";
-export type Traffic = { id: number; lane: number; y: number };
+export type Traffic = { id: number; lane: number; y: number; speedFactor?: number };
 export type RaceState = {
   lane: number;
   traffic: Traffic[];
   ticks: number;
   score: number;
   lives: number;
+  crashCooldown: number;
+  steerCooldown: number;
+  paceOffset: number;
 };
 export const initialRace = (): RaceState => ({
   lane: 1,
@@ -13,10 +16,25 @@ export const initialRace = (): RaceState => ({
   ticks: 0,
   score: 0,
   lives: 3,
+  crashCooldown: 0,
+  steerCooldown: 0,
+  paceOffset: 0,
 });
 export function steerRace(state: RaceState, delta: number): RaceState {
-  return { ...state, lane: Math.max(0, Math.min(2, state.lane + delta)) };
+  if (state.steerCooldown > 0 || delta === 0) return state;
+  const step = delta < 0 ? -1 : 1;
+  const lane = Math.max(0, Math.min(2, state.lane + step));
+  if (lane === state.lane) return state;
+  return { ...state, lane, steerCooldown: 2 };
 }
+export function racePaceOffset(current: number, throttle: number) {
+  const input = Math.max(-1, Math.min(1, throttle));
+  if (input !== 0)
+    return Math.max(-0.9, Math.min(0.9, current + input * 0.12));
+  if (Math.abs(current) < 0.04) return 0;
+  return current * 0.82;
+}
+
 export function raceVelocity(speed: number, ticks: number) {
   const base = Math.max(1, speed);
   const multiplier = 0.85 + Math.min(0.55, Math.max(0, ticks) / 600);
@@ -27,16 +45,31 @@ export function tickRace(
   state: RaceState,
   speed: number,
   random = Math.random,
+  throttle = 0,
 ): RaceState {
   if (state.lives <= 0) return state;
   const ticks = state.ticks + 1;
   let lives = state.lives;
-  const velocity = raceVelocity(speed, state.ticks);
+  let damaged = false;
+  let crashCooldown = Math.max(0, state.crashCooldown - 1);
+  const steerCooldown = Math.max(0, state.steerCooldown - 1);
+  const paceOffset = racePaceOffset(state.paceOffset, throttle);
+  const velocity = raceVelocity(
+    Math.max(1, speed + paceOffset),
+    state.ticks,
+  );
   let traffic = state.traffic
-    .map((car) => ({ ...car, y: car.y + velocity }))
+    .map((car) => ({
+      ...car,
+      y: car.y + velocity * (car.speedFactor ?? 1),
+    }))
     .filter((car) => {
       if (car.lane === state.lane && car.y >= 59 && car.y <= 91) {
-        lives--;
+        if (!damaged && crashCooldown === 0) {
+          lives--;
+          damaged = true;
+          crashCooldown = 8;
+        }
         return false;
       }
       return car.y < 110;
@@ -44,13 +77,16 @@ export function tickRace(
   if (ticks % 16 === 0)
     traffic = [
       ...traffic,
-      { id: ticks, lane: Math.min(2, Math.floor(random() * 3)), y: -16 },
+      { id: ticks, lane: Math.min(2, Math.floor(random() * 3)), y: -16, speedFactor: 0.84 + random() * 0.32 },
     ];
   return {
     ...state,
     traffic,
     ticks,
     lives: Math.max(0, lives),
+    crashCooldown,
+    steerCooldown,
+    paceOffset,
     score: state.score + 1,
   };
 }
@@ -98,9 +134,44 @@ export function lightsChallenge(level: number) {
     Array(25).fill(false) as boolean[],
   );
 }
-export function parkingScore(moves: number) {
-  return Math.max(10, 100 - moves);
+export function parkingSteeringCost(
+  previous: Direction | null,
+  next: Direction,
+) {
+  if (!previous || previous === next) return 0;
+  const reverse =
+    (previous === "up" && next === "down") ||
+    (previous === "down" && next === "up") ||
+    (previous === "left" && next === "right") ||
+    (previous === "right" && next === "left");
+  return reverse ? 2 : 1;
 }
+
+export function parkingScore(moves: number, steeringCost = 0) {
+  return Math.max(10, 100 - moves - steeringCost * 2);
+}
+export type TargetGameKind = "shoot" | "casual";
+export type TargetDifficulty = "easy" | "normal" | "hard";
+
+export function targetGameRules(
+  kind: TargetGameKind,
+  difficulty: TargetDifficulty,
+) {
+  if (kind === "shoot") {
+    if (difficulty === "easy")
+      return { duration: 35, targets: 4, relocateMs: 0 };
+    if (difficulty === "hard")
+      return { duration: 25, targets: 2, relocateMs: 0 };
+    return { duration: 30, targets: 3, relocateMs: 0 };
+  }
+
+  if (difficulty === "easy")
+    return { duration: 25, targets: 1, relocateMs: 1400 };
+  if (difficulty === "hard")
+    return { duration: 15, targets: 1, relocateMs: 800 };
+  return { duration: 20, targets: 1, relocateMs: 1100 };
+}
+
 export function hitScore(score: number, combo: number) {
   return score + 10 + Math.min(combo, 5) * 2;
 }

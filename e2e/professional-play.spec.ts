@@ -1,5 +1,93 @@
 import { test, expect } from "@playwright/test";
 
+
+test("Snake buffers rapid WASD corners in order", async ({ page }) => {
+  await page.goto("./#/jogar/snake");
+  await page.clock.install();
+  const board = page.locator(".snake-board");
+  const cells = page.locator(".snake-board > span");
+
+  await page.getByRole("button", { name: "Jogar", exact: true }).click();
+  await board.focus();
+  await board.press("W");
+  await board.press("A");
+
+  await page.clock.runFor(170);
+  await expect(cells.nth(7 * 16 + 7)).toHaveClass(/snake-head/);
+
+  await page.clock.runFor(170);
+  await expect(cells.nth(7 * 16 + 6)).toHaveClass(/snake-head/);
+  await expect(page.getByRole("status")).not.toContainText("Você colidiu");
+});
+
+
+
+test("Racing prevents instant double lane changes while steering settles", async ({ page }) => {
+  await page.goto("./#/jogar/corrida");
+  await page.clock.install();
+  await page.getByRole("button", { name: "Largar", exact: true }).click();
+  const board = page.locator(".race-board");
+  const car = page.locator(".race-car");
+  await board.focus();
+  await board.press("D");
+  await expect(car).toHaveAttribute("data-lane", "2");
+  await board.press("A");
+  await expect(car).toHaveAttribute("data-lane", "2");
+  await page.clock.runFor(210);
+  await board.press("A");
+  await expect(car).toHaveAttribute("data-lane", "1");
+});
+
+test("Racing throttle and brake change the live speed progressively", async ({ page }) => {
+  await page.goto("./#/jogar/corrida");
+  await page.clock.install();
+  await page.getByRole("button", { name: "Largar", exact: true }).click();
+  const board = page.locator(".race-board");
+  const speed = page.locator("[data-race-speed]");
+  await board.focus();
+
+  const initial = Number.parseInt((await speed.textContent()) ?? "0", 10);
+  await page.keyboard.down("w");
+  await page.clock.runFor(520);
+  await page.keyboard.up("w");
+  const accelerated = Number.parseInt((await speed.textContent()) ?? "0", 10);
+  expect(accelerated).toBeGreaterThan(initial);
+
+  await page.keyboard.down("s");
+  await page.clock.runFor(720);
+  await page.keyboard.up("s");
+  const braking = Number.parseInt((await speed.textContent()) ?? "0", 10);
+  expect(braking).toBeLessThan(accelerated);
+});
+
+
+test("Racing can end voluntarily and persist the current distance", async ({ page }) => {
+  await page.goto("./#/jogar/corrida");
+  await page.clock.install();
+  await page.getByRole("button", { name: "Largar", exact: true }).click();
+  await page.clock.runFor(600);
+  await page.getByRole("button", { name: "Pausar", exact: true }).click();
+
+  const distance = await page.locator(".scores strong").first().textContent();
+  expect(Number(distance)).toBeGreaterThan(0);
+
+  await page.getByRole("button", { name: "Encerrar e salvar", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Largar", exact: true })).toBeDisabled();
+
+  await page.reload();
+  await expect(page.locator(".scores strong").nth(1)).toHaveText(distance!);
+});
+
+test("Liga 4 accepts direct 1-7 keyboard columns", async ({ page }) => {
+  await page.goto("./#/jogar/liga4");
+  const board = page.locator(".connect-board");
+  await board.focus();
+  await board.press("4");
+  await expect(page.locator(".disc-1")).toHaveCount(1);
+  await board.press("4");
+  await expect(page.locator(".disc-2")).toHaveCount(1);
+});
+
 test("Liga 4 bot plays, undo restores the human turn, and pause cancels pending moves", async ({ page }) => {
   await page.goto("./#/jogar/liga4");
   await page.getByLabel("Adversário do Liga 4").selectOption("bot");

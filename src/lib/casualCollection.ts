@@ -4,7 +4,7 @@ export const casualGames = [
     name: "Vinte e Um",
     category: "Casuais",
     description: "Cartas, estratégia e uma mesa sem apostas.",
-    help: "Peça cartas ou pare perto de 21. O ás vale 1 ou 11; a banca compra até 17. Vença as rodadas sem ultrapassar 21.",
+    help: "Peça cartas ou pare perto de 21. O ás vale 1 ou 11. A banca segue a regra de 17; no Difícil compra em soft 17, e no Fácil a carta fechada fica visível.",
   },
   {
     id: "dados",
@@ -18,28 +18,28 @@ export const casualGames = [
     name: "Boliche de Precisão",
     category: "Casuais",
     description: "Leia a pista e derrube os dez pinos.",
-    help: "Ajuste a direção e a força da bola. Cada rodada permite dois lançamentos; os pinos derrubados continuam fora na segunda tentativa.",
+    help: "Ajuste direção, força e hook. A curva aparece mais no fim da pista; potência alta reduz o tempo de fechamento. Cada rodada permite dois lançamentos e os pinos derrubados permanecem fora.",
   },
   {
     id: "basquete",
     name: "Basquete de Rua",
     category: "Casuais",
     description: "Encontre o arco perfeito para acertar a cesta.",
-    help: "Combine ângulo e força para lançar a bola. Ela precisa cruzar o aro descendo. O vento muda entre as rodadas do desafio.",
+    help: "Combine ângulo e força para lançar a bola. Ela precisa cruzar o aro descendo; uma entrada central vale cesta limpa e entradas próximas podem tocar no aro. O vento muda entre rodadas."
   },
   {
     id: "golfe",
     name: "Mini Golfe",
     category: "Casuais",
     description: "Superfícies, barreiras e tacadas planejadas.",
-    help: "Ajuste a força e a direção para levar a bola ao buraco. Evite a barreira; cada tacada parte da posição onde a bola parou.",
+    help: "Ajuste força e direção para levar a bola ao buraco. O fairway rola mais livre; no green a bola perde velocidade mais rápido. Obstáculos podem absorver energia e devolver uma tacada fraca.",
   },
   {
     id: "arco",
     name: "Arco e Flecha",
     category: "Casuais",
     description: "Compense o vento e mire no centro do alvo.",
-    help: "Ajuste a altura da mira e a força. O vento altera a flecha durante o voo; pontue chegando perto do centro do alvo.",
+    help: "Ajuste altura e força. A flecha percorre um arco visível: baixa potência aumenta queda e tempo exposto ao vento. Compense a trajetória e tente chegar ao centro."
   },
   {
     id: "pesca",
@@ -61,6 +61,18 @@ export function handValue(cards: number[]) {
   let aces = cards.filter((c) => c === 1).length;
   while (total > 21 && aces-- > 0) total -= 10;
   return total;
+}
+
+export function dealerShouldHit(cards: number[], difficulty: number) {
+  const value = handValue(cards);
+  if (value < 17) return true;
+  if (value > 17) return false;
+  const hardTotal = cards.reduce(
+    (sum, card) => sum + (card === 1 ? 1 : Math.min(card, 10)),
+    0,
+  );
+  const soft = cards.includes(1) && hardTotal + 10 === value;
+  return difficulty >= 2 && soft;
 }
 export function card(random = Math.random) {
   return 1 + Math.floor(random() * 13);
@@ -96,6 +108,22 @@ export function matches(board: number[]) {
     }
   return [...found];
 }
+export function moveGridCursor(
+  index: number,
+  key: string,
+  size: number,
+  total: number,
+) {
+  const row = Math.floor(index / size);
+  const col = index % size;
+  if (key === "ArrowLeft") return col === 0 ? index : index - 1;
+  if (key === "ArrowRight") return col === size - 1 ? index : index + 1;
+  if (key === "ArrowUp") return row === 0 ? index : index - size;
+  if (key === "ArrowDown")
+    return index + size >= total ? index : index + size;
+  return index;
+}
+
 export function adjacent(a: number, b: number) {
   return (
     a !== b &&
@@ -167,46 +195,234 @@ export function projectile(
   }
   return points;
 }
-export function basketHit(points: FlightPoint[], tolerance = 12) {
+export function basketballTrajectory(
+  angle: number,
+  power: number,
+  wind: number,
+  start: FlightPoint = { x: 35, y: 245 },
+) {
+  const radians = (angle * Math.PI) / 180;
+  const speed = power * 1.5;
+  let x = start.x;
+  let y = start.y;
+  let vx = Math.cos(radians) * speed;
+  let vy = -Math.sin(radians) * speed;
+  let banked = false;
+  const points: FlightPoint[] = [{ x, y }];
+
+  for (let elapsed = 0; elapsed <= 5; elapsed += 0.03) {
+    vx += wind * 0.03;
+    vy += 50 * 0.03;
+    let nextX = x + vx * 0.03;
+    const nextY = y + vy * 0.03;
+
+    if (
+      !banked &&
+      vx > 0 &&
+      x < 297 &&
+      nextX >= 297 &&
+      nextY >= 80 &&
+      nextY <= 132
+    ) {
+      nextX = 296;
+      vx = -Math.abs(vx) * 0.55;
+      vy *= 0.82;
+      banked = true;
+    }
+
+    x = nextX;
+    y = nextY;
+    points.push({ x, y });
+    if (y > 260 || x > 380 || x < 0) break;
+  }
+
+  return { points, banked };
+}
+
+export type BasketEntryQuality = "swish" | "rim" | "miss";
+
+export function basketEntryQuality(
+  points: FlightPoint[],
+  tolerance = 12,
+): BasketEntryQuality {
   for (let i = 1; i < points.length; i++) {
     const a = points[i - 1],
       b = points[i];
     if (a.y <= 125 && b.y >= 125 && b.y > a.y) {
       const x = a.x + ((b.x - a.x) * (125 - a.y)) / (b.y - a.y);
-      if (Math.abs(x - 285) <= tolerance) return true;
+      const offset = Math.abs(x - 285);
+      if (offset <= Math.max(4, tolerance * 0.4)) return "swish";
+      if (offset <= tolerance) return "rim";
     }
   }
-  return false;
+  return "miss";
 }
+
+export function basketHit(points: FlightPoint[], tolerance = 12) {
+  return basketEntryQuality(points, tolerance) !== "miss";
+}
+
 export function arrowImpact(aim: number, power: number, wind: number) {
-  return aim + wind * (100 / power) * 2 + (100 - power) * 0.18;
+  const normalizedPower = Math.max(10, Math.min(100, power));
+  const flightFactor = Math.pow(100 / normalizedPower, 1.25);
+  return (
+    aim +
+    wind * flightFactor * 2 +
+    (100 - normalizedPower) * 0.18
+  );
+}
+
+export function arrowTrajectory(
+  aim: number,
+  power: number,
+  wind: number,
+): FlightPoint[] {
+  const impact = arrowImpact(aim, power, wind);
+  const normalizedPower = Math.max(10, Math.min(100, power));
+  const lift = 12 + (100 - normalizedPower) * 0.08;
+  return Array.from({ length: 13 }, (_, index) => {
+    const t = index / 12;
+    const x = 30 + (305 - 30) * t;
+    const base = 150 + (aim - 150) * t;
+    const arc = -lift * 4 * t * (1 - t);
+    const driftAndDrop = (impact - aim) * t * t;
+    return { x, y: base + arc + driftAndDrop };
+  });
 }
 export function arrowPoints(y: number, tolerance = 1) {
   return Math.max(0, 100 - Math.round(Math.abs(y - 150) * tolerance));
 }
+export function bowlingTrajectory(
+  aim: number,
+  power: number,
+  hook = 0,
+): FlightPoint[] {
+  const normalizedAim = Math.max(0, Math.min(100, aim));
+  const normalizedPower = Math.max(10, Math.min(100, power));
+  const normalizedHook = Math.max(-100, Math.min(100, hook));
+  const line = 150 + (normalizedAim - 50) * 1.8;
+  const hookScale = Math.max(0.11, 0.24 - normalizedPower * 0.0011);
+  const hookOffset = normalizedHook * hookScale;
+
+  return Array.from({ length: 13 }, (_, index) => {
+    const t = index / 12;
+    const lateHook = hookOffset * Math.pow(t, 2.35);
+    return {
+      x: 150 + (line - 150) * t + lateHook,
+      y: 240 - 170 * t,
+    };
+  });
+}
+
 export function bowlingHit(
   pins: boolean[],
   aim: number,
   power: number,
   difficulty = 1,
+  hook = 0,
 ) {
-  return pins.map((standing, i) => {
+  const normalizedPower = Math.max(0, Math.min(100, power));
+  const trajectory = bowlingTrajectory(aim, normalizedPower, hook);
+  const line = trajectory.at(-1)?.x ?? 150;
+  const positions = pins.map((_, i) => {
     const row = Math.floor((Math.sqrt(8 * i + 1) - 1) / 2);
     const first = (row * (row + 1)) / 2;
-    const x = 150 + (i - first - row / 2) * 28;
-    const line = 150 + (aim - 50) * 1.8;
-    return (
-      standing && Math.abs(x - line) > 12 + power * (0.48 - difficulty * 0.1)
-    );
+    return {
+      x: 150 + (i - first - row / 2) * 28,
+      y: 60 + row * 18,
+    };
   });
+  const directRadius =
+    10 + normalizedPower * Math.max(0.11, 0.18 - difficulty * 0.025);
+  const directlyHit = new Set<number>();
+  pins.forEach((standing, i) => {
+    if (standing && Math.abs(positions[i].x - line) <= directRadius)
+      directlyHit.add(i);
+  });
+
+  const carryRadius =
+    20 + normalizedPower * 0.15 - Math.max(0, difficulty) * 1;
+  const knocked = new Set(directlyHit);
+  pins.forEach((standing, i) => {
+    if (!standing || knocked.has(i)) return;
+    if (
+      [...directlyHit].some((hitIndex) => {
+        const dx = positions[i].x - positions[hitIndex].x;
+        const dy = positions[i].y - positions[hitIndex].y;
+        return Math.hypot(dx, dy) <= carryRadius;
+      })
+    )
+      knocked.add(i);
+  });
+
+  return pins.map((standing, i) => standing && !knocked.has(i));
 }
+export function fishingReelStep(
+  distance: number,
+  tension: number,
+  difficulty: number,
+) {
+  const level = Math.max(0, Math.min(2, difficulty));
+  const progress = Math.max(6, 14 - tension * 0.065 - level);
+  const tensionGain = 18 + level * 3 + Math.max(0, 45 - tension) * 0.035;
+  return {
+    distance: Math.max(0, distance - progress),
+    tension: Math.min(100, tension + tensionGain),
+  };
+}
+
+export function fishingTensionTick(
+  tension: number,
+  tick: number,
+  difficulty: number,
+) {
+  const level = Math.max(0, Math.min(2, difficulty));
+  const recovery = level === 2 ? 3 : 5;
+  const pullEvery = 12 - level * 2;
+  const pull = tick > 0 && tick % pullEvery === 0 ? 4 + level * 3 : 0;
+  return Math.max(0, Math.min(100, tension - recovery + pull));
+}
+
 export function golfStroke(
   position: number,
   aim: number,
   power: number,
   barrier: boolean,
 ) {
-  let next = Math.min(340, Math.max(15, position + (aim - 50) * power * 0.075));
-  if (barrier && position < 180 && next > 180 && power < 72) next = 165;
-  return { position: next, hole: Math.abs(next - 320) < 12 && power < 85 };
+  const normalizedAim = Math.max(0, Math.min(100, aim));
+  const normalizedPower = Math.max(0, Math.min(100, power));
+  const angle = ((normalizedAim - 50) * 1.2 * Math.PI) / 180;
+  const alignment = Math.max(0.45, Math.cos(angle));
+  const greenStart = 250;
+  const rawDistance = normalizedPower * 2.8 * alignment;
+
+  let next =
+    position >= greenStart
+      ? position + rawDistance * 0.56
+      : position + rawDistance;
+
+  if (position < greenStart && next > greenStart) {
+    const fairwayDistance = greenStart - position;
+    const remaining = Math.max(0, rawDistance - fairwayDistance);
+    next = greenStart + remaining * 0.56;
+  }
+
+  let rebounded = false;
+  if (barrier && position < 180 && next > 180 && normalizedPower < 72) {
+    const rebound = Math.max(0, 72 - normalizedPower) * 0.35;
+    next = Math.max(15, 165 - rebound);
+    rebounded = true;
+  }
+
+  next = Math.min(340, Math.max(15, next));
+  const surface = next >= greenStart ? "green" : "fairway";
+  const effectiveArrivalPower =
+    surface === "green" ? normalizedPower * 0.56 : normalizedPower;
+
+  return {
+    position: next,
+    hole: Math.abs(next - 320) < 10 && effectiveArrivalPower <= 35,
+    surface,
+    rebounded,
+  };
 }

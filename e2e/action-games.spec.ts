@@ -10,6 +10,7 @@ test("Racing steers, pauses on blur, resets safely and saves game-over record", 
   await page.getByRole("button", { name: "Largar", exact: true }).click();
   await page.locator(".race-board").press("ArrowLeft");
   await expect(page.locator(".race-car")).toHaveAttribute("data-lane", "0");
+  await page.clock.runFor(210);
   await page.getByRole("button", { name: "Dirigir para direita" }).click();
   await expect(page.locator(".race-car")).toHaveAttribute("data-lane", "1");
   await page.clock.runFor(2000);
@@ -94,9 +95,9 @@ test("All parking courses finish using keyboard and touch and retain a record", 
     }
     await expect(page.getByText("Estacionou!", { exact: false })).toBeVisible();
   }
-  const record = await page.locator(".scores strong").nth(1).textContent();
+  const record = await page.locator(".scores strong").nth(2).textContent();
   await page.reload();
-  await expect(page.locator(".scores strong").nth(1)).toHaveText(record!);
+  await expect(page.locator(".scores strong").nth(2)).toHaveText(record!);
 });
 test("Lights Out solves, undoes and changes challenges", async ({ page }) => {
   await page.goto("./#/jogar/luzes");
@@ -151,6 +152,21 @@ for (const [id, prefix, duration] of [
       `Recorde: ${score} pontos`,
     );
   });
+
+test("Target games apply difficulty to round time and active targets", async ({ page }) => {
+  await page.goto("./#/jogar/tiro");
+  await page.getByLabel("Dificuldade", { exact: true }).selectOption("hard");
+  await page.getByRole("button", { name: "Começar rodada", exact: true }).click();
+  await expect(page.locator(".scores strong").nth(1)).toHaveText("25s");
+  await expect(page.locator(".target-present")).toHaveCount(2);
+
+  await page.goto("./#/jogar/estrelas");
+  await page.getByLabel("Dificuldade", { exact: true }).selectOption("hard");
+  await page.getByRole("button", { name: "Começar rodada", exact: true }).click();
+  await expect(page.locator(".scores strong").nth(1)).toHaveText("15s");
+  await expect(page.locator(".target-present")).toHaveCount(1);
+});
+
 test("All games offer keyboard focus, specific help, focus mode and safe restart", async ({
   page,
 }) => {
