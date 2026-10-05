@@ -28,6 +28,7 @@ describe("100-game catalog contract", () => {
     expect(games).toHaveLength(100);
     expect(newGames).toHaveLength(50);
     expect(new Set(games.map((g) => g.id)).size).toBe(100);
+    expect(new Set(games.map((g) => g.name)).size).toBe(100);
     for (const g of newGames) {
       expect(gameHelp[g.id].length).toBeGreaterThan(65);
       expect(recordUnits[g.id]).toBe("pontos");
