@@ -11,7 +11,6 @@ import {
   settleJewels,
   hasJewelMove,
   projectile,
-  basketHit,
   basketEntryQuality,
   arrowImpact,
   arrowTrajectory,
