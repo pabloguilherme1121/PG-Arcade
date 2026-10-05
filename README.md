@@ -52,7 +52,7 @@ Sem conta, publicidade ou envio de dados das partidas a servidores. Progresso é
 
 ## Desenvolvimento e validação
 
-Node.js 24: `npm ci`, `npm run dev`, `npm test`, `npm run build`, `npm run check:bundle`, `npm run test:e2e`.
+Node.js 24: `npm ci`, `npm run dev`, `npm run audit`, `npm test`, `npm run build`, `npm run check:bundle`, `npm run test:e2e`.
 
 Instalável como PWA, com fallback offline da navegação e cache local de assets já usados. Carregamento sob demanda por jogo/coleção. GitHub Actions valida regras e partidas em Chromium, Firefox e WebKit contra o build de produção servido por `npm run preview`, incluindo o prefixo `/PG-Arcade/`, antes de publicar no GitHub Pages. Falhas preservam traces e capturas para diagnóstico. `npm run test:e2e` reconstrói a aplicação antes da execução, evitando testar artefatos antigos. A suíte inclui auditoria automatizada WCAG com axe-core nos 100 jogos. Rotas com hash funcionam em hospedagem estática.
 
