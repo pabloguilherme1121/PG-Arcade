@@ -71,7 +71,7 @@ export const gameHelp: Record<GameId, string> = {
   reflexo:
     "Comece uma rodada, espere o painel ficar verde e toque ou use Enter. Antecipar custa a rodada. Complete cinco rodadas para salvar o recorde; pausa não penaliza.",
   corrida:
-    "Desvie dos carros usando as setas esquerda e direita, A/D ou os botões abaixo da pista. Espaço pausa. Escolha Passeio para começar devagar.",
+    "Desvie dos carros usando esquerda/direita, A/D, os botões ou um arraste horizontal com mouse/caneta; no toque, deslize na pista. W/cima acelera, S/baixo freia e espaço pausa.",
   estacionamento:
     "Leve o carro à vaga P com setas, WASD ou os controles. Os blocos são obstáculos. Escolha um dos três estacionamentos; menos movimentos rendem mais pontos.",
   tiro: "Toque nos alvos com mira ou use os números 1 a 9 na ordem do tabuleiro. Acertos seguidos dão bônus. A rodada dura 30 segundos e pode ser pausada.",
