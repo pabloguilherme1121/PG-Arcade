@@ -32,7 +32,7 @@ export const casualGames = [
     name: "Mini Golfe",
     category: "Casuais",
     description: "Superfícies, barreiras e tacadas planejadas.",
-    help: "Ajuste a força e a direção para levar a bola ao buraco. Evite a barreira; cada tacada parte da posição onde a bola parou.",
+    help: "Ajuste força e direção para levar a bola ao buraco. O fairway rola mais livre; no green a bola perde velocidade mais rápido. Obstáculos podem absorver energia e devolver uma tacada fraca."
   },
   {
     id: "arco",
