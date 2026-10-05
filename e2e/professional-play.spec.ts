@@ -20,6 +20,17 @@ test("Snake buffers rapid WASD corners in order", async ({ page }) => {
   await expect(page.getByRole("status")).not.toContainText("Você colidiu");
 });
 
+
+test("Liga 4 accepts direct 1-7 keyboard columns", async ({ page }) => {
+  await page.goto("./#/jogar/liga4");
+  const board = page.locator(".connect-board");
+  await board.focus();
+  await board.press("4");
+  await expect(page.locator(".disc-1")).toHaveCount(1);
+  await board.press("4");
+  await expect(page.locator(".disc-2")).toHaveCount(1);
+});
+
 test("Liga 4 bot plays, undo restores the human turn, and pause cancels pending moves", async ({ page }) => {
   await page.goto("./#/jogar/liga4");
   await page.getByLabel("Adversário do Liga 4").selectOption("bot");
