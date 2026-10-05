@@ -236,7 +236,8 @@ nav a[aria-current]::after {
 .primary:hover {
   color: #10150a;
   border-color: rgba(201,246,90,.8);
-  background: linear-gradient(180deg, #d7ff74, var(--pg-accent));
+  background-color: var(--pg-accent);
+  background-image: linear-gradient(180deg, #d7ff74, var(--pg-accent));
   box-shadow:
     0 10px 28px rgba(201,246,90,.18),
     0 1px 0 rgba(255,255,255,.38) inset;
@@ -625,7 +626,7 @@ footer {
   }
 
   .game-card {
-    border-radius: 15px;
+    border-radius: 16px;
   }
 
   .game-link {
@@ -634,7 +635,7 @@ footer {
 
   .preview {
     height: 108px;
-    border-radius: 11px;
+    border-radius: 12px;
   }
 
   .game-category {
@@ -1134,12 +1135,15 @@ html[data-arcade-contrast="true"] .site-header::before {
 }
 
 canvas,
-.race-board,
 .snake-board,
 .board2048,
 .parking-board,
 .targets-board {
   touch-action: none;
+}
+
+.race-board {
+  touch-action: pan-y pinch-zoom;
 }
 
 .motion-stage canvas,
