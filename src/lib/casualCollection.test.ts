@@ -113,10 +113,17 @@ describe("casual collection engines", () => {
     expect(bowlingHit(pins, 50, 100)[0]).toBe(false);
     expect(bowlingHit(pins, 50, 100).filter(Boolean).length).toBeLessThan(9);
   });
-  it("golf obstacle stops weak shots and hole requires controlled speed", () => {
-    expect(golfStroke(150, 100, 60, true).position).toBe(165);
-    expect(golfStroke(300, 60, 25, false).hole).toBe(true);
-    expect(golfStroke(300, 53, 100, false).hole).toBe(false);
+  it("golf treats center aim as straight and loses distance off-line", () => {
+    const straight = golfStroke(35, 50, 60, false);
+    const angled = golfStroke(35, 0, 60, false);
+    expect(straight.position).toBeGreaterThan(35);
+    expect(straight.position).toBeGreaterThan(angled.position);
+  });
+
+  it("golf obstacle stops underpowered crossings and hole rewards controlled pace", () => {
+    expect(golfStroke(150, 50, 20, true).position).toBe(165);
+    expect(golfStroke(250, 50, 25, false).hole).toBe(true);
+    expect(golfStroke(250, 50, 100, false).hole).toBe(false);
   });
   it("provides eight unique game IDs and useful instructions", () => {
     expect(new Set(casualGames.map((g) => g.id)).size).toBe(8);
