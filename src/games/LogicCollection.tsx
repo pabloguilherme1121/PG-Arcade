@@ -35,14 +35,19 @@ function Grid({
 }) {
   const [focus, setFocus] = useState(0);
   function keys(e: KeyboardEvent<HTMLDivElement>) {
+    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
     const deltas: Record<string, number> = {
       ArrowLeft: -1,
       ArrowRight: 1,
       ArrowUp: -size,
       ArrowDown: size,
+      a: -1,
+      d: 1,
+      w: -size,
+      s: size,
     };
-    const d = deltas[e.key];
-    if (d === undefined) return;
+    const d = deltas[key];
+    if (d === undefined || (!onMove && key.length === 1)) return;
     e.preventDefault();
     if (onMove) {
       onMove(d);
