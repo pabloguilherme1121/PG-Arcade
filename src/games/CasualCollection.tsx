@@ -12,7 +12,9 @@ import {
   hasJewelMove,
   projectile,
   basketHit,
+  basketEntryQuality,
   arrowImpact,
+  arrowTrajectory,
   arrowPoints,
   bowlingHit,
   golfStroke,
@@ -585,14 +587,20 @@ function Sport({
     if (kind === "basquete") {
       const flight = projectile(aim, power, wind);
       setTrajectory(flight);
-      earned = basketHit(flight, 16 - options.difficulty * 4) ? 100 : 0;
-      message = earned ? "Cesta!" : "A bola passou fora do aro.";
+      const quality = basketEntryQuality(
+        flight,
+        16 - options.difficulty * 4,
+      );
+      earned = quality === "swish" ? 120 : quality === "rim" ? 100 : 0;
+      message =
+        quality === "swish"
+          ? "Cesta! Limpa, sem tocar no aro."
+          : quality === "rim"
+            ? "Cesta! Tocou no aro e caiu."
+            : "A bola passou fora do aro.";
     } else if (kind === "arco") {
       const y = arrowImpact(aim, power, wind);
-      setTrajectory([
-        { x: 30, y: 150 },
-        { x: 305, y },
-      ]);
+      setTrajectory(arrowTrajectory(aim, power, wind));
       earned = arrowPoints(y, 1 + options.difficulty * 0.4);
       message = `Flecha a ${Math.round(Math.abs(y - 150))} cm do centro.`;
     } else if (kind === "boliche") {
