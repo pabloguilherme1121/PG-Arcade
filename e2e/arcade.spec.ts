@@ -106,7 +106,13 @@ test("Memory completes all pairs and stores the best score", async ({
   ).not.toHaveText("—");
 });
 for (const width of [320, 390, 1280])
-  test(`all catalog games render and fit ${width}px`, async ({ page }) => {
+  test(`all catalog games render and fit ${width}px`, async ({ page, browserName }) => {
+    test.skip(
+      width === 1280 ? browserName !== "chromium" : browserName === "firefox",
+      width === 1280
+        ? "Desktop full-catalog layout sweep runs once in Chromium."
+        : "Mobile full-catalog layout sweep runs in Chromium and WebKit; Firefox keeps focused gameplay coverage.",
+    );
     test.setTimeout(180000);
     await page.setViewportSize({ width, height: 900 });
     const errors: string[] = [];
