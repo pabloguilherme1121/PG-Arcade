@@ -15,10 +15,12 @@ for (const preference of ["system", "saved"] as const) {
         return original.call(this, x, y, w, h);
       };
     }, preference === "saved");
+    await page.goto("./#/jogar/asteroides");
+    await expect(page.getByRole("button", { name: "Começar", exact: true })).toBeVisible();
+    // Load lazy components before controlling React/game timers.
     const frozen = new Date("2026-10-05T02:00:00Z");
     await page.clock.install({ time: frozen });
-    await page.clock.pauseAt(frozen);
-    await page.goto("./#/jogar/asteroides");
+    await page.clock.pauseAt(new Date(frozen.getTime() + 1000));
     await page.getByRole("button", { name: "Começar", exact: true }).click();
     await page.clock.runFor(1100);
     await expect(page.locator(".action-hud")).toContainText("1 s");
@@ -30,11 +32,12 @@ for (const preference of ["system", "saved"] as const) {
 
 test("football keeps perspective after flight, cancels reset timers and supports instant reduced shots", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  const frozen = new Date("2026-10-05T02:00:00Z");
-    await page.clock.install({ time: frozen });
-    await page.clock.pauseAt(frozen);
   await page.goto("./#/jogar/futebol");
   const shoot = page.getByRole("button", { name: "Chutar", exact: true });
+  await expect(shoot).toBeVisible();
+  const frozen = new Date("2026-10-05T02:00:00Z");
+  await page.clock.install({ time: frozen });
+  await page.clock.pauseAt(new Date(frozen.getTime() + 1000));
   await shoot.click();
   const scale = await page.locator(".football-ball animateTransform").getAttribute("to");
   const duration = Number.parseFloat((await page.locator(".football-ball animateMotion").getAttribute("dur"))!) * 1000;
