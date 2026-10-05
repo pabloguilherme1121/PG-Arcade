@@ -66,6 +66,7 @@ test("Racing can end voluntarily and persist the current distance", async ({ pag
   await page.clock.install();
   await page.getByRole("button", { name: "Largar", exact: true }).click();
   await page.clock.runFor(600);
+  await page.getByRole("button", { name: "Pausar", exact: true }).click();
 
   const distance = await page.locator(".scores strong").first().textContent();
   expect(Number(distance)).toBeGreaterThan(0);
