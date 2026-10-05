@@ -7,6 +7,7 @@ import {
   actionPressure,
   isExposedInvader,
   invasionFormationFactor,
+  lunarLandingOutcome,
 } from "./actionCollection";
 describe("action collection physics", () => {
   it("defines ten distinct games and bounds frame delta", () => {
@@ -237,17 +238,34 @@ describe("action collection physics", () => {
     expect(side.vx).toBeGreaterThan(coast.vx);
   });
 
+  it("grades lunar touchdowns by velocity and pad alignment", () => {
+    const soft = lunarLandingOutcome(345, 2, 10, 100);
+    const controlled = lunarLandingOutcome(360, 12, 22, 100);
+    const rough = lunarLandingOutcome(375, 20, 32, 100);
+    const crash = lunarLandingOutcome(345, 0, 50, 100);
+
+    expect(soft.quality).toBe("soft");
+    expect(controlled.quality).toBe("controlled");
+    expect(rough.quality).toBe("rough");
+    expect(crash.quality).toBe("crash");
+    expect(soft.score).toBeGreaterThan(controlled.score);
+    expect(controlled.score).toBeGreaterThan(rough.score);
+    expect(crash.score).toBe(0);
+  });
+
   it("lunar landing rewards safe velocity and rejects a crash", () => {
     const s = newAction("pouso");
     s.x = 345;
     s.y = 321;
     s.vy = 12;
     const landed = stepAction(s, idleInput, 0);
-    expect(landed.score).toBe(400);
+    expect(landed.score).toBeGreaterThan(400);
+    expect(landed.landingQuality).toBe("soft");
     expect(landed.level).toBe(2);
     s.vy = 70;
     const crash = stepAction(s, idleInput, 0);
     expect(crash.score).toBe(0);
+    expect(crash.landingQuality).toBe("crash");
     expect(crash.lives).toBe(2);
   });
   it("drift braking creates controllable lateral slip instead of rigid rotation", () => {
