@@ -1,5 +1,17 @@
-const CACHE = "pg-arcade-2026-10-05-v1";
+const CACHE = "pg-arcade-2026-10-05-v2";
 const ROOT = new URL("./", self.registration.scope).href;
+const MAX_RUNTIME_ENTRIES = 120;
+
+async function trimRuntimeCache(cache) {
+  const requests = (await cache.keys()).filter(
+    (request) => request.url !== ROOT,
+  );
+  const overflow = requests.length - MAX_RUNTIME_ENTRIES;
+  if (overflow <= 0) return;
+  await Promise.all(
+    requests.slice(0, overflow).map((request) => cache.delete(request)),
+  );
+}
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -33,10 +45,10 @@ self.addEventListener("fetch", (event) => {
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
-        .then((response) => {
+        .then(async (response) => {
           if (response.ok) {
-            const copy = response.clone();
-            void caches.open(CACHE).then((cache) => cache.put(ROOT, copy));
+            const cache = await caches.open(CACHE);
+            await cache.put(ROOT, response.clone());
           }
           return response;
         })
@@ -46,16 +58,15 @@ self.addEventListener("fetch", (event) => {
   }
 
   event.respondWith(
-    caches.match(request).then(
-      (cached) =>
-        cached ||
-        fetch(request).then((response) => {
-          if (response.ok) {
-            const copy = response.clone();
-            void caches.open(CACHE).then((cache) => cache.put(request, copy));
-          }
-          return response;
-        }),
-    ),
+    caches.match(request).then(async (cached) => {
+      if (cached) return cached;
+      const response = await fetch(request);
+      if (response.ok) {
+        const cache = await caches.open(CACHE);
+        await cache.put(request, response.clone());
+        await trimRuntimeCache(cache);
+      }
+      return response;
+    }),
   );
 });
