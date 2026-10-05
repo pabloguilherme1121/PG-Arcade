@@ -8,6 +8,7 @@ export type RaceState = {
   lives: number;
   crashCooldown: number;
   steerCooldown: number;
+  paceOffset: number;
 };
 export const initialRace = (): RaceState => ({
   lane: 1,
@@ -17,6 +18,7 @@ export const initialRace = (): RaceState => ({
   lives: 3,
   crashCooldown: 0,
   steerCooldown: 0,
+  paceOffset: 0,
 });
 export function steerRace(state: RaceState, delta: number): RaceState {
   if (state.steerCooldown > 0 || delta === 0) return state;
@@ -25,6 +27,14 @@ export function steerRace(state: RaceState, delta: number): RaceState {
   if (lane === state.lane) return state;
   return { ...state, lane, steerCooldown: 2 };
 }
+export function racePaceOffset(current: number, throttle: number) {
+  const input = Math.max(-1, Math.min(1, throttle));
+  if (input !== 0)
+    return Math.max(-0.9, Math.min(0.9, current + input * 0.12));
+  if (Math.abs(current) < 0.04) return 0;
+  return current * 0.82;
+}
+
 export function raceVelocity(speed: number, ticks: number) {
   const base = Math.max(1, speed);
   const multiplier = 0.85 + Math.min(0.55, Math.max(0, ticks) / 600);
@@ -35,6 +45,7 @@ export function tickRace(
   state: RaceState,
   speed: number,
   random = Math.random,
+  throttle = 0,
 ): RaceState {
   if (state.lives <= 0) return state;
   const ticks = state.ticks + 1;
@@ -42,7 +53,11 @@ export function tickRace(
   let damaged = false;
   let crashCooldown = Math.max(0, state.crashCooldown - 1);
   const steerCooldown = Math.max(0, state.steerCooldown - 1);
-  const velocity = raceVelocity(speed, state.ticks);
+  const paceOffset = racePaceOffset(state.paceOffset, throttle);
+  const velocity = raceVelocity(
+    Math.max(1, speed + paceOffset),
+    state.ticks,
+  );
   let traffic = state.traffic
     .map((car) => ({
       ...car,
@@ -71,6 +86,7 @@ export function tickRace(
     lives: Math.max(0, lives),
     crashCooldown,
     steerCooldown,
+    paceOffset,
     score: state.score + 1,
   };
 }
