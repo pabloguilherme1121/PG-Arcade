@@ -299,11 +299,7 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
                   onFocus={() => setFocused(i)}
                   className={`${["same", "flood", "links", "slideblock"].includes(gameId) ? `color-${v}` : ""} ${state.selected === i ? "selected" : ""} ${state.fixed[i] ? "fixed" : ""}`}
                   disabled={state.status !== "playing" || v === -1}
-                  aria-disabled={
-                    (numeric || gameId === "laser" || gameId === "queens") &&
-                    !!state.fixed[i]
-                  }
-                  aria-label={`Linha ${Math.floor(i / n) + 1}, coluna ${(i % n) + 1}: ${cellText(i, v) || "vazia"}${state.fixed[i] ? ", pista" : ""}`}
+                  aria-label={`Linha ${Math.floor(i / n) + 1}, coluna ${(i % n) + 1}: ${cellText(i, v) || "vazia"}${state.fixed[i] ? ", pista fixa" : ""}`}
                   onClick={() => update(boardClick(state, i))}
                 >
                   {cellText(i, v)}
