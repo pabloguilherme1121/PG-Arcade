@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ParkingSquare } from "lucide-react";
 import { parkingLevels, moveParking, parkingScore } from "../lib/actionGames";
-import type { Direction } from "../lib/engines";
+import { directionFromKey, type Direction } from "../lib/engines";
 import Controls from "./Controls";
 export default function Parking({
   record,
@@ -51,21 +51,12 @@ export default function Parking({
           className="parking-board"
           role="group"
           tabIndex={0}
-          aria-label="Estacionamento. Use as setas para dirigir até a vaga P."
+          aria-label="Estacionamento. Use as setas ou WASD para dirigir até a vaga P."
           onKeyDown={(e) => {
-            const d: Record<string, Direction> = {
-              ArrowUp: "up",
-              ArrowDown: "down",
-              ArrowLeft: "left",
-              ArrowRight: "right",
-              w: "up",
-              s: "down",
-              a: "left",
-              d: "right",
-            };
-            if (d[e.key]) {
+            const d = directionFromKey(e.key);
+            if (d) {
               e.preventDefault();
-              move(d[e.key]);
+              move(d);
             }
           }}
         >
