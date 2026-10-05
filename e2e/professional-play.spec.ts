@@ -199,5 +199,14 @@ test("shared motion language animates boards and pieces while respecting reduced
       transitionDuration: style.transitionDuration,
     };
   });
-  expect(reduced.animationDuration).toMatch(/0\.0*1ms|0s/);
+  // Computed CSS times may be serialized in seconds or milliseconds.
+  // Verify the reduced-motion contract rather than browser formatting.
+  for (const duration of [reduced.animationDuration, reduced.transitionDuration]) {
+    for (const value of duration.split(",")) {
+      const milliseconds = Number.parseFloat(value) * (value.trim().endsWith("ms") ? 1 : 1000);
+      expect(Number.isFinite(milliseconds)).toBe(true);
+      expect(milliseconds).toBeGreaterThanOrEqual(0);
+      expect(milliseconds).toBeLessThanOrEqual(0.01);
+    }
+  }
 });
