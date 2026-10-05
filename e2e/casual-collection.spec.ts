@@ -16,6 +16,29 @@ async function range(page: Page, label: string, value: number) {
   const key = value > current ? "ArrowRight" : "ArrowLeft";
   for (let i = 0; i < Math.abs(value - current); i++) await input.press(key);
 }
+
+test("blackjack difficulty changes information without inventing dealer totals", async ({ page }) => {
+  await page.goto("./#/jogar/vinteum");
+  await page.locator(".casual-options select").first().selectOption("0");
+  await page
+    .getByLabel("Formato da sessão", { exact: true })
+    .selectOption("treino");
+  await page
+    .getByRole("button", { name: "Iniciar sessão", exact: true })
+    .click();
+  await expect(page.locator(".card-table .card-back")).toHaveCount(0);
+
+  await page.reload();
+  await page.locator(".casual-options select").first().selectOption("2");
+  await page
+    .getByLabel("Formato da sessão", { exact: true })
+    .selectOption("treino");
+  await page
+    .getByRole("button", { name: "Iniciar sessão", exact: true })
+    .click();
+  await expect(page.locator(".card-table .card-back")).toHaveCount(1);
+});
+
 for (const id of ["vinteum", "dados", "boliche", "basquete", "arco"])
   test(`${id}: five actual rounds complete, score and record survive reload`, async ({
     page,
