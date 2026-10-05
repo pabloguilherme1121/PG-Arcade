@@ -55,6 +55,26 @@ describe("football shots", () => {
       "gol",
     );
   });
+
+  it("keeps power limits explicit and applies lift to penalties as well as free kicks", () => {
+    expect(resolveFootballShot("penalty", 20, 80, 0, 70, 98).result).toBe("gol");
+    expect(resolveFootballShot("penalty", 20, 80, 0, 70, 99).result).toBe("fora");
+    expect(resolveFootballShot("penalty", 20, 91, 0, 70, 0).result).toBe("fora");
+    expect(resolveFootballShot("penalty", 20, 24, 0, 70, 45).result).toBe("fora");
+    expect(resolveFootballShot("penalty", 20, 65, 100, 70, 45)).toEqual(
+      resolveFootballShot("penalty", 20, 65, 0, 70, 45),
+    );
+    expect(getFootballShotHeight(-10, -10)).toBe(0);
+    expect(getFootballShotHeight(200, 200)).toBe(90);
+    for (const mode of ["penalty", "free-kick"] as const) {
+      for (const lift of [0, 45, 100]) {
+        const flight = getFootballFlightProfile(mode, 65, 0, lift);
+        expect(flight.durationMs).toBeGreaterThanOrEqual(420);
+        expect(flight.durationMs).toBeLessThanOrEqual(760);
+        expect(Number.isFinite(flight.apexLift)).toBe(true);
+      }
+    }
+  });
 });
 
 it("uses a plausible flight profile for power and free-kick bend", () => {

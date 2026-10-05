@@ -516,8 +516,9 @@ export function stepAction(
       s.difficulty === "easy" ? 150 : s.difficulty === "hard" ? 105 : 125;
     if (s.spawn > 2.5 / f) {
       s.spawn = 0;
-      s.objects.push(body(510, 85 + rand(s) * 190, 0, 0, gap / 2, "gate"));
-      if (jet) s.objects.push(body(570, 80 + rand(s) * 200, 0, 0, 13, "fuel"));
+      const gateY = 85 + rand(s) * 190;
+      s.objects.push(body(510, gateY, 0, 0, gap / 2, "gate"));
+      if (jet) s.objects.push(body(570, gateY, 0, 0, 13, "fuel"));
     }
     for (const o of s.objects) {
       o.x -= 120 * f * dt;

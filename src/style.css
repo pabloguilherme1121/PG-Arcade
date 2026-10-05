@@ -3078,12 +3078,10 @@ html[data-arcade-contrast="true"] .experience-tools {
 @keyframes arcade-board-enter {
   from {
     opacity: 0;
-    transform: translateY(8px) scale(.992);
     filter: saturate(.9);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
     filter: saturate(1);
   }
 }

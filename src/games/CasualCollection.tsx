@@ -643,10 +643,7 @@ function Sport({
         : `${count} pinos derrubados.`;
     } else {
       const stroke = golfStroke(position, aim, power, options.difficulty > 0);
-      setTrajectory([
-        { x: position, y: 210 },
-        { x: stroke.position, y: 210 },
-      ]);
+      setTrajectory(stroke.trajectory);
       setPosition(stroke.position);
       ended = stroke.hole || nextAttempt >= allowed;
       earned = stroke.hole ? Math.max(30, 160 - nextAttempt * 20) : 0;

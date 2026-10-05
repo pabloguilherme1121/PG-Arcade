@@ -316,6 +316,7 @@ export default function ActionCollection({
     input.current = { ...idleInput };
   }, [id, difficulty, mode]);
   useEffect(() => {
+    if (status === "running") return;
     const ctx = canvas.current?.getContext("2d");
     if (ctx) paint(ctx, state.current, reducedMotion);
   }, [hud, status, reducedMotion]);
@@ -510,14 +511,16 @@ export default function ActionCollection({
         <p className="action-telemetry">
           Combustível: {Math.round(hud.fuel)}% · Velocidade vertical:{" "}
           {Math.round(hud.vy)}
-          {id === "pouso" && hud.landingQuality
-            ? ` · Último toque: ${{
+          {id === "pouso" && hud.landingQuality && (
+            <span role="status">
+              {` · Último toque: ${{
                 soft: "suave",
                 controlled: "controlado",
                 rough: "duro",
                 crash: "impacto",
-              }[hud.landingQuality]}`
-            : ""}
+              }[hud.landingQuality]}`}
+            </span>
+          )}
         </p>
       )}
       <div className="action-canvas-wrap">

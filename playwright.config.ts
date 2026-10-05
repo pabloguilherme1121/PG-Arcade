@@ -21,6 +21,6 @@ export default defineConfig({
     : {
         command: "npm run preview",
         url: `http://127.0.0.1:5173/${process.env.GITHUB_ACTIONS ? "PG-Arcade/" : ""}`,
-        reuseExistingServer: !process.env.CI,
+        reuseExistingServer: false,
       },
 });
