@@ -47,6 +47,9 @@ test("Racing supports pointer drag steering without changing throttle", async ({
 
   const board = page.locator(".race-board");
   const car = page.locator(".race-car");
+  await board.evaluate((element) =>
+    element.scrollIntoView({ block: "center", inline: "nearest" }),
+  );
   const box = await board.boundingBox();
   expect(box).not.toBeNull();
 
