@@ -30,24 +30,26 @@ export default function Snake({
   >("ready");
   const [score, setScore] = useState(0);
   const [speed, setSpeed] = useState(160);
-  const current = useRef<Direction>("right"),
-    pending = useRef<Direction>("right");
+  const current = useRef<Direction>("right");
+  const queued = useRef<Direction[]>([]);
   const touch = useRef<[number, number] | null>(null);
   function direction(d: Direction) {
-    pending.current = queueSnakeDirection(current.current, pending.current, d);
+    queued.current = queueSnakeDirection(current.current, queued.current, d);
   }
   function reset() {
     setBody(initialBody());
     setFood({ x: 11, y: 8 });
     setScore(0);
-    current.current = pending.current = "right";
+    current.current = "right";
+    queued.current = [];
     setStatus("ready");
   }
   useEffect(() => {
     if (status !== "running") return;
     const id = window.setInterval(() => {
       if (!food) return;
-      current.current = pending.current;
+      const nextDirection = queued.current.shift();
+      if (nextDirection) current.current = nextDirection;
       const result = stepSnake(body, current.current, food);
       if (result.collision) {
         setStatus("over");
@@ -164,7 +166,7 @@ export default function Snake({
         </div>
         <p className="game-status" role="status">
           {status === "running"
-            ? "Use as setas ou os controles abaixo."
+            ? "Use setas, WASD, swipe ou os controles abaixo."
             : status === "paused"
               ? "Partida pausada."
               : status === "over"
