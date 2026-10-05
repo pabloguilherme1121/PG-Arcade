@@ -94,9 +94,9 @@ test("All parking courses finish using keyboard and touch and retain a record", 
     }
     await expect(page.getByText("Estacionou!", { exact: false })).toBeVisible();
   }
-  const record = await page.locator(".scores strong").nth(1).textContent();
+  const record = await page.locator(".scores strong").nth(2).textContent();
   await page.reload();
-  await expect(page.locator(".scores strong").nth(1)).toHaveText(record!);
+  await expect(page.locator(".scores strong").nth(2)).toHaveText(record!);
 });
 test("Lights Out solves, undoes and changes challenges", async ({ page }) => {
   await page.goto("./#/jogar/luzes");
