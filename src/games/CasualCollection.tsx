@@ -763,7 +763,11 @@ function Sport({
       </div>
       <div className="casual-sliders">
         <label>
-          {kind === "arco" ? "Altura da mira" : "Ângulo / direção"}: {aim}
+          {kind === "arco"
+            ? "Altura da mira"
+            : kind === "golfe"
+              ? "Direção (50 = reto)"
+              : "Ângulo / direção"}: {aim}
           <input
             aria-label="Mira"
             type="range"
