@@ -15,6 +15,7 @@ import {
   arrowPoints,
   bowlingHit,
   golfStroke,
+  fishingTensionTick,
   casualGames,
   moveGridCursor,
 } from "./casualCollection";
@@ -140,6 +141,15 @@ describe("casual collection engines", () => {
     expect(golfStroke(250, 50, 25, false).hole).toBe(true);
     expect(golfStroke(250, 50, 100, false).hole).toBe(false);
   });
+  it("fishing tension relaxes between deterministic fish pulls", () => {
+    expect(fishingTensionTick(50, 1, 1)).toBeLessThan(50);
+    const easyPull = fishingTensionTick(50, 12, 0);
+    const hardPull = fishingTensionTick(50, 8, 2);
+    expect(hardPull).toBeGreaterThan(easyPull);
+    expect(hardPull).toBeGreaterThan(50);
+    expect(fishingTensionTick(2, 1, 0)).toBe(0);
+  });
+
   it("provides eight unique game IDs and useful instructions", () => {
     expect(new Set(casualGames.map((g) => g.id)).size).toBe(8);
     expect(casualGames.every((g) => g.help.length > 50)).toBe(true);
