@@ -57,9 +57,18 @@ it("applies at most one life of collision damage per tick", () => {
   expect(next.objects).toHaveLength(0);
 });
 
-it("rounds stop at deadline or death, steering stays in bounds and fire is limited", () => {
+it("rounds stop at deadline or death, steering settles between lane changes and fire is limited", () => {
   expect(moveRun(newRun(), -10).lane).toBe(0);
   expect(moveRun(newRun(), 10).lane).toBe(2);
+  const right = moveRun(newRun(), 1);
+  expect(right.lane).toBe(2);
+  expect(right.steerCooldown).toBeGreaterThan(0);
+  expect(moveRun(right, -1).lane).toBe(2);
+  const recovered = stepRun(
+    stepRun({ ...right, objects: [] }, "rally"),
+    "rally",
+  );
+  expect(moveRun(recovered, -1).lane).toBe(1);
   for (const s of [
     { ...newRun(), lives: 0 },
     { ...newRun(), ticks: 300 },
