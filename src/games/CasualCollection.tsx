@@ -16,6 +16,7 @@ import {
   arrowTrajectory,
   arrowPoints,
   bowlingHit,
+  bowlingTrajectory,
   golfStroke,
   fishingTensionTick,
   fishingReelStep,
@@ -573,6 +574,7 @@ function Sport({
       kind === "arco" ? 150 : kind === "basquete" ? 60 : 50,
     ),
     [power, setPower] = useState(kind === "basquete" ? 90 : 65),
+    [hook, setHook] = useState(0),
     [trajectory, setTrajectory] = useState<FlightPoint[]>([]),
     [result, setResult] = useState(""),
     [finished, setFinished] = useState(false),
@@ -613,7 +615,13 @@ function Sport({
       earned = arrowPoints(y, 1 + options.difficulty * 0.4);
       message = `Flecha a ${Math.round(Math.abs(y - 150))} cm do centro.`;
     } else if (kind === "boliche") {
-      const remaining = bowlingHit(pins, aim, power, options.difficulty);
+      const remaining = bowlingHit(
+        pins,
+        aim,
+        power,
+        options.difficulty,
+        hook,
+      );
       const count =
         pins.filter(Boolean).length - remaining.filter(Boolean).length;
       earned = points + count * 10;
@@ -621,10 +629,7 @@ function Sport({
       ended = nextAttempt >= 2 || remaining.every((p) => !p);
       if (ended && remaining.every((p) => !p))
         earned += nextAttempt === 1 ? 50 : 20;
-      setTrajectory([
-        { x: 150, y: 240 },
-        { x: 150 + (aim - 50) * 1.8, y: 70 },
-      ]);
+      setTrajectory(bowlingTrajectory(aim, power, hook));
       message = remaining.every((p) => !p)
         ? nextAttempt === 1
           ? "Strike!"
@@ -820,6 +825,20 @@ function Sport({
             onChange={(e) => setPower(Number(e.target.value))}
           />
         </label>
+        {kind === "boliche" && (
+          <label>
+            Hook: {hook > 0 ? "+" : ""}{hook}
+            <input
+              aria-label="Hook"
+              type="range"
+              min="-100"
+              max="100"
+              value={hook}
+              disabled={finished}
+              onChange={(e) => setHook(Number(e.target.value))}
+            />
+          </label>
+        )}
       </div>
       {(kind === "basquete" || kind === "arco") && (
         <p>
