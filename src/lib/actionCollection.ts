@@ -60,7 +60,7 @@ export const actionCollectionGames = [
     name: "Pouso Lunar",
     description: "Controle a gravidade e pouse com velocidade segura.",
     category: "Inteligência",
-    help: "Use os lados para acionar propulsores de correção e cima ou Ação para o motor principal. Ambos consomem combustível; pouse com velocidade vertical abaixo de 35 e horizontal abaixo de 25.",
+    help: "Use os lados para os propulsores de correção e cima ou Ação para o motor principal. Ambos consomem combustível. Sobreviva abaixo de 35 vertical e 25 horizontal, mas pousos suaves e centralizados valem mais pontos."
   },
   {
     id: "drift",
