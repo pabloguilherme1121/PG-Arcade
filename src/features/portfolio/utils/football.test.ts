@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   chooseFootballKeeperPosition,
   getFootballFlightProfile,
+  getFootballTargetX,
   resolveFootballShot,
 } from "./football";
 describe("football shots", () => {
@@ -9,6 +10,13 @@ describe("football shots", () => {
     const easy = chooseFootballKeeperPosition("easy", 80, () => 0);
     const master = chooseFootballKeeperPosition("master", 80, () => 0);
     expect(Math.abs(master - 80)).toBeLessThan(Math.abs(easy - 80));
+  });
+  it("uses the curved final target when reading free kicks", () => {
+    const target = getFootballTargetX("free-kick", 50, 80);
+    expect(target).toBeGreaterThan(60);
+    const easy = chooseFootballKeeperPosition("easy", target, () => 0);
+    const expert = chooseFootballKeeperPosition("expert", target, () => 0);
+    expect(Math.abs(expert - target)).toBeLessThan(Math.abs(easy - target));
   });
   it("rejects excessive power and shots outside the goal", () => {
     expect(resolveFootballShot("penalty", 50, 100, 0, 0).result).toBe("fora");
