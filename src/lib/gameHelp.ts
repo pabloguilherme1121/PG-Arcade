@@ -1,4 +1,5 @@
 import type { GameId } from "./catalog";
+import { newGames } from "./newCatalog";
 import { expandedGames, type ExpandedId } from "./expandedCatalog";
 const expandedHelp: Record<ExpandedId, string> = {
   sudoku:
@@ -55,6 +56,7 @@ const expandedHelp: Record<ExpandedId, string> = {
     "Troque duas peças vizinhas para formar linhas de três ou mais. Combinações desaparecem e novas peças caem, criando cascatas e pontos.",
 };
 export const gameHelp: Record<GameId, string> = {
+  ...Object.fromEntries(newGames.map(g => [g.id, g.help])) as Record<typeof newGames[number]["id"],string>,
   ...expandedHelp,
   sequencia:
     "Observe a sequência e repita com as teclas 1 a 4 no tabuleiro ou toque nos botões. Cada nível adiciona uma cor. Pausar e continuar repete o padrão sem penalidade.",
@@ -101,6 +103,7 @@ export const gameHelp: Record<GameId, string> = {
     "Escolha pênalti ou falta, ajuste mira, força e curva e toque em Chutar. A mira aceita toque e teclado; observe a trajetória e tente melhorar sua série de cinco cobranças.",
 };
 export const recordUnits: Partial<Record<GameId, "pontos" | "jogadas">> = {
+  ...Object.fromEntries(newGames.map(g => [g.id, "pontos" as const])),
   ...Object.fromEntries(expandedGames.map((g) => [g.id, "pontos" as const])),
   sequencia: "pontos",
   palavra: "pontos",
