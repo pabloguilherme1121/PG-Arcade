@@ -1,5 +1,5 @@
 import type { Direction } from "./engines";
-export type Traffic = { id: number; lane: number; y: number };
+export type Traffic = { id: number; lane: number; y: number; speedFactor?: number };
 export type RaceState = {
   lane: number;
   traffic: Traffic[];
@@ -34,7 +34,10 @@ export function tickRace(
   let damaged = false;
   const velocity = raceVelocity(speed, state.ticks);
   let traffic = state.traffic
-    .map((car) => ({ ...car, y: car.y + velocity }))
+    .map((car) => ({
+      ...car,
+      y: car.y + velocity * (car.speedFactor ?? 1),
+    }))
     .filter((car) => {
       if (car.lane === state.lane && car.y >= 59 && car.y <= 91) {
         if (!damaged) {
@@ -48,7 +51,7 @@ export function tickRace(
   if (ticks % 16 === 0)
     traffic = [
       ...traffic,
-      { id: ticks, lane: Math.min(2, Math.floor(random() * 3)), y: -16 },
+      { id: ticks, lane: Math.min(2, Math.floor(random() * 3)), y: -16, speedFactor: 0.84 + random() * 0.32 },
     ];
   return {
     ...state,
