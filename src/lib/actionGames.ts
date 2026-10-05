@@ -31,12 +31,16 @@ export function tickRace(
   if (state.lives <= 0) return state;
   const ticks = state.ticks + 1;
   let lives = state.lives;
+  let damaged = false;
   const velocity = raceVelocity(speed, state.ticks);
   let traffic = state.traffic
     .map((car) => ({ ...car, y: car.y + velocity }))
     .filter((car) => {
       if (car.lane === state.lane && car.y >= 59 && car.y <= 91) {
-        lives--;
+        if (!damaged) {
+          lives--;
+          damaged = true;
+        }
         return false;
       }
       return car.y < 110;
