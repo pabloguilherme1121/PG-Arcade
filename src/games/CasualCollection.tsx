@@ -18,6 +18,7 @@ import {
   bowlingHit,
   golfStroke,
   fishingTensionTick,
+  fishingReelStep,
   type FlightPoint,
   moveGridCursor,
 } from "../lib/casualCollection";
@@ -475,18 +476,27 @@ function Fishing({ options, onRound }: PlayProps) {
       setTick(0);
       setMessage("Recolha devagar. Faça pausas para reduzir a tensão.");
     } else if (phase === "reel") {
-      const nextT = tension + 22 + options.difficulty * 3;
-      const nextD = distance - 13;
-      if (nextT >= 100) {
+      const next = fishingReelStep(
+        distance,
+        tension,
+        options.difficulty,
+      );
+      if (next.tension >= 100) {
         setPhase("result");
         setMessage("A linha rompeu por excesso de tensão.");
-      } else if (nextD <= 0) {
+      } else if (next.distance <= 0) {
         setPoints(150 + options.difficulty * 30);
         setPhase("result");
         setMessage("Peixe capturado!");
+      } else {
+        setMessage(
+          next.tension > 75
+            ? "Linha muito carregada: espere a tensão cair antes de recolher mais."
+            : "Recolha em pulsos e use as pausas para controlar a tensão.",
+        );
       }
-      setTension(Math.min(100, nextT));
-      setDistance(Math.max(0, nextD));
+      setTension(next.tension);
+      setDistance(next.distance);
     }
   }
   return (
