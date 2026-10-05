@@ -62,6 +62,25 @@ describe("action collection physics", () => {
     expect(n.score).toBe(100);
     expect(n.ball.x).toBe(240);
   });
+  it("asteroid ship conserves momentum in vacuum while speed remains capped", () => {
+    const coasting = newAction("asteroides");
+    coasting.vx = 100;
+    coasting.vy = -40;
+    const next = stepAction(coasting, idleInput, 0.04);
+    expect(next.vx).toBeCloseTo(100, 6);
+    expect(next.vy).toBeCloseTo(-40, 6);
+
+    const fast = newAction("asteroides");
+    fast.angle = 0;
+    fast.vx = 255;
+    const accelerated = stepAction(
+      fast,
+      { ...idleInput, up: true },
+      0.04,
+    );
+    expect(Math.hypot(accelerated.vx, accelerated.vy)).toBeLessThanOrEqual(260);
+  });
+
   it("asteroid shots inherit ship momentum in vacuum", () => {
     const s = newAction("asteroides");
     s.angle = 0;
