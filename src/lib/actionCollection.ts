@@ -67,7 +67,7 @@ export const actionCollectionGames = [
     name: "Circuito de Drift",
     description: "Acelere, freie e complete voltas num circuito oval.",
     category: "Carros",
-    help: "Use os lados para virar, cima ou Ação para acelerar e baixo para frear. Passe pelos quatro checkpoints na ordem, mantenha o carro na pista e complete voltas.",
+    help: "Use os lados para virar, cima ou Ação para acelerar e baixo para frear. Frear durante a curva aumenta a rotação e mantém inércia lateral, permitindo derrapagens controladas. Passe pelos quatro checkpoints na ordem e mantenha o carro na pista.",
   },
 ] as const;
 export type ActionId = (typeof actionCollectionGames)[number]["id"];
