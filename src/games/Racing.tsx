@@ -222,6 +222,18 @@ export default function Racing({
             onPointerCancel={() => {
               throttle.current = 0;
             }}
+            onKeyDown={(e) => {
+              if (e.key === " " || e.key === "Enter") {
+                e.preventDefault();
+                throttle.current = -1;
+              }
+            }}
+            onKeyUp={() => {
+              throttle.current = 0;
+            }}
+            onBlur={() => {
+              throttle.current = 0;
+            }}
           >
             Frear
           </button>
@@ -236,6 +248,18 @@ export default function Racing({
               throttle.current = 0;
             }}
             onPointerCancel={() => {
+              throttle.current = 0;
+            }}
+            onKeyDown={(e) => {
+              if (e.key === " " || e.key === "Enter") {
+                e.preventDefault();
+                throttle.current = 1;
+              }
+            }}
+            onKeyUp={() => {
+              throttle.current = 0;
+            }}
+            onBlur={() => {
               throttle.current = 0;
             }}
           >
