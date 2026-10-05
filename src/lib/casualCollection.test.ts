@@ -107,11 +107,17 @@ describe("casual collection engines", () => {
     expect(arrowPoints(150)).toBe(100);
     expect(arrowPoints(260)).toBe(0);
   });
-  it("bowling keeps previously knocked pins down", () => {
+  it("bowling keeps previous pins down and adds realistic pin carry", () => {
     const pins = Array(10).fill(true);
     pins[0] = false;
     expect(bowlingHit(pins, 50, 100)[0]).toBe(false);
-    expect(bowlingHit(pins, 50, 100).filter(Boolean).length).toBeLessThan(9);
+
+    const carried = bowlingHit(Array(10).fill(true), 50, 30, 1);
+    expect(carried[3]).toBe(false);
+    expect(carried[5]).toBe(false);
+
+    const strike = bowlingHit(Array(10).fill(true), 50, 100, 0);
+    expect(strike.every((standing) => !standing)).toBe(true);
   });
   it("golf treats center aim as straight and loses distance off-line", () => {
     const straight = golfStroke(35, 50, 60, false);
