@@ -22,9 +22,19 @@ for (const id of ["rally", "coleta", "orbital"])
     await board.press("ArrowLeft");
     await expect(board.locator(".race-car")).toHaveAttribute("data-lane", "0");
     await board.press("ArrowRight");
+    await expect(board.locator(".race-car")).toHaveAttribute("data-lane", "0");
+    await page.clock.runFor(210);
     await board.press("ArrowRight");
+    await expect(board.locator(".race-car")).toHaveAttribute("data-lane", "1");
+    await board.press("ArrowRight");
+    await expect(board.locator(".race-car")).toHaveAttribute("data-lane", "1");
+    await page.clock.runFor(210);
+    await board.press("ArrowRight");
+    await expect(board.locator(".race-car")).toHaveAttribute("data-lane", "2");
+    await page.clock.runFor(210);
     await board.press("A");
     await expect(board.locator(".race-car")).toHaveAttribute("data-lane", "1");
+    await page.clock.runFor(210);
     await board.press("D");
     await expect(board.locator(".race-car")).toHaveAttribute("data-lane", "2");
     if (id !== "orbital") {
