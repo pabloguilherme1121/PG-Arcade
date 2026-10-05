@@ -25,7 +25,7 @@ export const casualGames = [
     name: "Basquete de Rua",
     category: "Casuais",
     description: "Encontre o arco perfeito para acertar a cesta.",
-    help: "Combine ângulo e força para lançar a bola. Ela precisa cruzar o aro descendo; uma entrada central vale cesta limpa e entradas próximas podem tocar no aro. O vento muda entre rodadas."
+    help: "Combine ângulo e força para lançar a bola. A tabela agora rebate a bola de verdade: arremessos mais fortes perdem energia no vidro e podem voltar ao aro. Entradas centrais valem cesta limpa; o vento muda entre rodadas."
   },
   {
     id: "golfe",
