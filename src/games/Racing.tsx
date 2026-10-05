@@ -12,6 +12,7 @@ import {
   steerRace,
   tickRace,
 } from "../lib/actionGames";
+import { directionFromKey } from "../lib/engines";
 import { useAutoPause, type PlayStatus } from "./useAutoPause";
 export default function Racing({
   record,
@@ -87,11 +88,15 @@ export default function Racing({
           role="group"
           aria-label="Pista de corrida. Setas esquerda e direita, espaço para pausar."
           onKeyDown={(e) => {
-            if (["ArrowLeft", "ArrowRight", "a", "d", " "].includes(e.key)) {
+            if (e.key === " ") {
               e.preventDefault();
-              if (e.key === " ")
-                status === "running" ? pause() : status !== "done" && start();
-              else steer(e.key === "ArrowLeft" || e.key === "a" ? -1 : 1);
+              status === "running" ? pause() : status !== "done" && start();
+              return;
+            }
+            const d = directionFromKey(e.key);
+            if (d === "left" || d === "right") {
+              e.preventDefault();
+              steer(d === "left" ? -1 : 1);
             }
           }}
         >
