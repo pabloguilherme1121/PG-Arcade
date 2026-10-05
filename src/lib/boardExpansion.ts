@@ -634,6 +634,11 @@ export function boardClick(state: BoardState, index: number): BoardState {
     s.message = text;
     return s;
   };
+  if (
+    state.fixed[index] &&
+    ["queens", "latin", "takuzu", "sky", "futoshiki", "magic", "laser"].includes(id)
+  )
+    return invalid("Esta é uma pista fixa e não pode ser alterada.");
   if (id === "flood") return boardValue(state, b[index]);
   if (id === "same") {
     if (!b[index]) return state;
@@ -649,7 +654,6 @@ export function boardClick(state: BoardState, index: number): BoardState {
       col.forEach((x, r) => (b[(n - col.length + r) * n + c] = x)),
     );
   } else if (id === "queens") {
-    if (s.fixed[index]) return state;
     b[index] = b[index] ? 0 : 1;
   } else if (id === "knight") {
     if (!knightMoves(s.selected, b, n).includes(index))
@@ -672,7 +676,6 @@ export function boardClick(state: BoardState, index: number): BoardState {
     b[move[2]] = 1;
     s.selected = -1;
   } else if (["latin", "takuzu", "sky", "futoshiki", "magic"].includes(id)) {
-    if (s.fixed[index]) return state;
     b[index] = s.value;
   } else if (id === "fifteen") {
     const z = b.indexOf(0);
@@ -685,7 +688,6 @@ export function boardClick(state: BoardState, index: number): BoardState {
     s.cells = rotateBlock(b, index, n);
   } else if (id === "pipes") b[index] = rotateMask(b[index]);
   else if (id === "laser") {
-    if (s.fixed[index]) return state;
     b[index] = 3 - b[index];
   } else if (id === "loop") b[index] = 1 - b[index];
   else if (id === "links") {
