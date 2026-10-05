@@ -11,7 +11,9 @@ import {
   hasJewelMove,
   projectile,
   basketHit,
+  basketEntryQuality,
   arrowImpact,
+  arrowTrajectory,
   arrowPoints,
   bowlingHit,
   golfStroke,
@@ -105,6 +107,27 @@ describe("casual collection engines", () => {
       ]),
     ).toBe(false);
   });
+  it("basketball distinguishes a clean swish from a rimmed make", () => {
+    expect(
+      basketEntryQuality([
+        { x: 285, y: 118 },
+        { x: 285, y: 132 },
+      ], 12),
+    ).toBe("swish");
+    expect(
+      basketEntryQuality([
+        { x: 275, y: 118 },
+        { x: 278, y: 132 },
+      ], 12),
+    ).toBe("rim");
+    expect(
+      basketEntryQuality([
+        { x: 320, y: 118 },
+        { x: 325, y: 132 },
+      ], 12),
+    ).toBe("miss");
+  });
+
   it("basketball has a physically reachable basket with the provided controls", () => {
     let reachable = false;
     for (let a = 0; a <= 100; a++)
@@ -116,6 +139,16 @@ describe("casual collection engines", () => {
     expect(arrowImpact(150, 100, 5)).toBeGreaterThan(150);
     expect(arrowPoints(150)).toBe(100);
     expect(arrowPoints(260)).toBe(0);
+  });
+
+  it("archery renders a curved flight path ending at the computed impact", () => {
+    const flight = arrowTrajectory(150, 65, 5);
+    expect(flight.length).toBeGreaterThan(8);
+    expect(flight[0]).toEqual({ x: 30, y: 150 });
+    expect(flight.at(-1)?.x).toBe(305);
+    expect(flight.at(-1)?.y).toBeCloseTo(arrowImpact(150, 65, 5), 5);
+    const midpoint = flight[Math.floor(flight.length / 2)];
+    expect(midpoint.y).not.toBe(150);
   });
   it("bowling keeps previous pins down and adds realistic pin carry", () => {
     const pins = Array(10).fill(true);
