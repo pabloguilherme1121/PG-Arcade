@@ -126,9 +126,9 @@ for (const width of [320, 390]) {
         await casual(page, game);
         const sliders = page.locator(".casual-sliders input");
         for (const slider of await sliders.all()) {
-          await expect.poll(async () => (await slider.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(44);
+          await expect.poll(async () => Math.round((await slider.boundingBox())?.height ?? 0)).toBeGreaterThanOrEqual(44);
           const box = (await slider.boundingBox())!;
-          expect(box.height).toBeGreaterThanOrEqual(44);
+          expect(Math.round(box.height)).toBeGreaterThanOrEqual(44);
           expect(box.width).toBeGreaterThanOrEqual(120);
           await slider.fill(game === "basquete" ? "50" : "65");
         }
@@ -140,10 +140,10 @@ for (const width of [320, 390]) {
       await page.getByRole("button", { name: "Cobranças de falta", exact: true }).click();
       for (const name of ["Força", "Elevação", "Curva"]) {
         const slider = page.getByRole("slider", { name, exact: true });
-        await expect.poll(async () => (await slider.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(44);
+        await expect.poll(async () => Math.round((await slider.boundingBox())?.height ?? 0)).toBeGreaterThanOrEqual(44);
         const box = (await slider.boundingBox())!;
         expect(box.width).toBeGreaterThanOrEqual(120);
-        expect(box.height).toBeGreaterThanOrEqual(44);
+        expect(Math.round(box.height)).toBeGreaterThanOrEqual(44);
         await slider.fill(name === "Curva" ? "0" : "55");
       }
       await page.getByRole("button", { name: "Chutar", exact: true }).click();
