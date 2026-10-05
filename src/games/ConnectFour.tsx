@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { dropDisc, discWinner } from "../lib/puzzles";
-import { chooseDiscMove, winningDiscs, type DiscDifficulty } from "../lib/connectFour";
+import { chooseDiscMove, winningDiscs, discColumnFromKey, type DiscDifficulty } from "../lib/connectFour";
 import { useAutoPause } from "./useAutoPause";
 export default function ConnectFour() {
   const [board, setBoard] = useState<number[]>(Array(42).fill(0));
@@ -56,7 +56,19 @@ export default function ConnectFour() {
             <button key={i} aria-label={`Jogar na coluna ${i + 1}`} disabled={over || paused || botTurn || !!board[i]} onClick={() => play(i)}>{i + 1} ↓</button>
           ))}
         </div>
-        <div className="connect-board" role="img" aria-label={board.map((v, i) => v ? `Linha ${Math.floor(i / 7) + 1}, coluna ${(i % 7) + 1}: jogador ${v}` : "").filter(Boolean).join("; ") || "Tabuleiro vazio"}>
+        <div
+          className="connect-board"
+          role="group"
+          tabIndex={0}
+          aria-label={`Tabuleiro Liga 4. Use as teclas 1 a 7 para jogar. ${board.map((v, i) => v ? `Linha ${Math.floor(i / 7) + 1}, coluna ${(i % 7) + 1}: jogador ${v}` : "").filter(Boolean).join("; ") || "Tabuleiro vazio"}`}
+          onKeyDown={(e) => {
+            const column = discColumnFromKey(e.key);
+            if (column !== null) {
+              e.preventDefault();
+              play(column);
+            }
+          }}
+        >
           {board.map((v, i) => <span key={i} className={`disc disc-${v} ${winning.includes(i) ? "disc-winning" : ""} ${last === i ? "disc-last" : ""}`}>{v || ""}</span>)}
         </div>
         <div className="game-actions">
@@ -78,7 +90,7 @@ export default function ConnectFour() {
         <p>Forme quatro peças na horizontal, vertical ou diagonal. Coral começa. A última peça tem um contorno; a linha vencedora ganha destaque.</p>
         <p>Jogue com outra pessoa ou enfrente o bot. Fácil escolhe colunas livres; Normal procura vitórias e bloqueios; Difícil planeja cinco jogadas à frente.</p>
         <h3>Toque ou teclado</h3>
-        <p>Toque no número da coluna ou use Tab e Enter. Contra o bot, desfazer volta seu turno inteiro. Trocar adversário ou dificuldade inicia outra partida.</p>
+        <p>Toque no número da coluna, pressione 1–7 diretamente ou use Tab e Enter. Contra o bot, desfazer volta seu turno inteiro. Trocar adversário ou dificuldade inicia outra partida.</p>
       </aside>
     </div>
   );
