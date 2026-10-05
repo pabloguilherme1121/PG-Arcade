@@ -35,22 +35,25 @@ function Grid({
 }) {
   const [focus, setFocus] = useState(0);
   function keys(e: KeyboardEvent<HTMLDivElement>) {
+    if (e.altKey || e.ctrlKey || e.metaKey || e.isDefaultPrevented()) return;
     const deltas: Record<string, number> = {
       ArrowLeft: -1,
       ArrowRight: 1,
       ArrowUp: -size,
       ArrowDown: size,
+      a: -1, d: 1, w: -size, s: size,
     };
-    const d = deltas[e.key];
+    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    const d = deltas[key];
     if (d === undefined) return;
     e.preventDefault();
     if (onMove) {
-      onMove(d);
+      if (!e.repeat) onMove(d);
       return;
     }
     const rowStart = Math.floor(focus / size) * size;
-    const next = e.key === "ArrowLeft" ? Math.max(rowStart, focus - 1)
-      : e.key === "ArrowRight" ? Math.min(rowStart + size - 1, focus + 1)
+    const next = d === -1 ? Math.max(rowStart, focus - 1)
+      : d === 1 ? Math.min(rowStart + size - 1, focus + 1)
       : Math.max(focus % size, Math.min((size - 1) * size + focus % size, focus + d));
     setFocus(next);
     const buttons =
