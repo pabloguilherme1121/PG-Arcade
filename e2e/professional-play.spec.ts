@@ -1,5 +1,25 @@
 import { test, expect } from "@playwright/test";
 
+
+test("Snake buffers rapid WASD corners in order", async ({ page }) => {
+  await page.goto("./#/jogar/snake");
+  await page.clock.install();
+  const board = page.locator(".snake-board");
+  const cells = page.locator(".snake-board > span");
+
+  await page.getByRole("button", { name: "Jogar", exact: true }).click();
+  await board.focus();
+  await board.press("W");
+  await board.press("A");
+
+  await page.clock.runFor(170);
+  await expect(cells.nth(7 * 16 + 7)).toHaveClass(/snake-head/);
+
+  await page.clock.runFor(170);
+  await expect(cells.nth(7 * 16 + 6)).toHaveClass(/snake-head/);
+  await expect(page.getByRole("status")).not.toContainText("Você colidiu");
+});
+
 test("Liga 4 bot plays, undo restores the human turn, and pause cancels pending moves", async ({ page }) => {
   await page.goto("./#/jogar/liga4");
   await page.getByLabel("Adversário do Liga 4").selectOption("bot");
