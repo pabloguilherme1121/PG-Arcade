@@ -15,6 +15,7 @@ Use Node.js 24.
 
 ```bash
 npm ci
+npm run audit
 npm test
 npm run build
 npm run check:bundle
