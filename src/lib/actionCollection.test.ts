@@ -136,6 +136,28 @@ describe("action collection physics", () => {
     n.vy = 0;
     expect(stepAction(n, { ...idleInput, action: true }, 0.02).vy).toBe(0);
   });
+  it("flight flap adds lift to current momentum instead of resetting velocity", () => {
+    const falling = newAction("voo");
+    falling.vy = 160;
+    const corrected = stepAction(
+      falling,
+      { ...idleInput, action: true },
+      0.02,
+    );
+    expect(corrected.vy).toBeLessThan(160);
+    expect(corrected.vy).toBeGreaterThan(-200);
+
+    const rising = newAction("voo");
+    rising.vy = -80;
+    const boosted = stepAction(
+      rising,
+      { ...idleInput, action: true },
+      0.02,
+    );
+    expect(boosted.vy).toBeLessThan(corrected.vy);
+    expect(boosted.vy).toBeGreaterThanOrEqual(-220);
+  });
+
   it("flapping is an impulse while jetpack consumes held thrust fuel", () => {
     const flight = stepAction(
       newAction("voo"),
@@ -164,6 +186,20 @@ describe("action collection physics", () => {
     expect(n.fuel).toBeLessThan(100);
     expect(n.objects).toHaveLength(0);
   });
+  it("arena movement accelerates and coasts briefly instead of stopping instantly", () => {
+    const s = newAction("esquiva");
+    const moving = stepAction(
+      s,
+      { ...idleInput, right: true },
+      0.04,
+    );
+    const coasting = stepAction(moving, idleInput, 0.04);
+    expect(moving.vx).toBeGreaterThan(0);
+    expect(coasting.x).toBeGreaterThan(moving.x);
+    expect(coasting.vx).toBeGreaterThan(0);
+    expect(coasting.vx).toBeLessThan(moving.vx);
+  });
+
   it("arena collisions consume one life and invulnerability prevents repeat hits", () => {
     const s = newAction("esquiva");
     s.objects = [{ x: s.x, y: s.y, vx: 0, vy: 0, r: 8, kind: "danger", hp: 1 }];
