@@ -784,3 +784,370 @@ html[data-arcade-contrast="true"] .progress-section h1 {
   -webkit-text-fill-color: #fff;
   color: #fff;
 }
+
+
+/* Premium pass 2: stronger product hierarchy and 100-game catalog polish */
+html {
+  scrollbar-color: rgba(201,246,90,.42) rgba(255,255,255,.035);
+}
+
+body {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+main {
+  isolation: isolate;
+}
+
+.site-header {
+  position: sticky;
+  top: 12px;
+  z-index: 50;
+}
+
+.site-header::after {
+  content: "";
+  position: absolute;
+  inset: auto 24px 0;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.13), transparent);
+}
+
+.catalog-heading {
+  align-items: flex-end;
+}
+
+.catalog-heading::before {
+  content: "CATÁLOGO";
+  position: absolute;
+  margin-top: -24px;
+  color: rgba(201,246,90,.78);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .18em;
+}
+
+.catalog-tools {
+  display: grid;
+  grid-template-columns: minmax(190px, auto) 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.catalog-tools > span {
+  justify-self: center;
+  color: var(--pg-muted);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.catalog-tools label {
+  color: var(--pg-muted);
+  font-size: 13px;
+}
+
+.catalog-tools select {
+  min-height: 40px;
+  margin-left: 6px;
+  padding-inline: 10px;
+}
+
+.game-card {
+  --card-accent: var(--pg-accent-2);
+  content-visibility: auto;
+  contain-intrinsic-size: 330px;
+  min-width: 0;
+}
+
+.game-card[data-game-category="Estratégia"],
+.game-card[data-game-category="Inteligência"] {
+  --card-accent: var(--pg-accent-3);
+}
+
+.game-card[data-game-category="Esportes"],
+.game-card[data-game-category="Reflexos"] {
+  --card-accent: var(--pg-warm);
+}
+
+.game-card[data-game-category="Tiro"] {
+  --card-accent: var(--pg-danger);
+}
+
+.game-card::before {
+  background: linear-gradient(90deg, transparent, var(--card-accent), transparent) !important;
+}
+
+.game-card::after {
+  content: "";
+  position: absolute;
+  inset: -40% -20% auto;
+  height: 62%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: .07;
+  background: radial-gradient(circle, var(--card-accent), transparent 65%);
+}
+
+.game-card:focus-within {
+  border-color: color-mix(in srgb, var(--card-accent) 50%, white 5%);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--card-accent) 12%, transparent),
+    0 18px 48px rgba(0,0,0,.28);
+}
+
+.game-card h3 {
+  min-height: 2.25em;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.game-card p {
+  min-height: 2.8em;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.preview::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.055), transparent 30%),
+    linear-gradient(0deg, rgba(5,8,13,.28), transparent 38%);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.025);
+}
+
+.game-card:hover .preview {
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.06) inset,
+    0 18px 42px rgba(0,0,0,.24),
+    0 0 34px color-mix(in srgb, var(--card-accent) 12%, transparent);
+}
+
+.game-category {
+  border-color: color-mix(in srgb, var(--card-accent) 24%, rgba(255,255,255,.08));
+  color: color-mix(in srgb, var(--card-accent) 58%, white);
+  background: color-mix(in srgb, var(--card-accent) 8%, rgba(255,255,255,.025));
+}
+
+.player::before {
+  content: "";
+  position: absolute;
+  inset: 0 12% auto;
+  height: 2px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(121,184,255,.66), rgba(201,246,90,.72), transparent);
+  box-shadow: 0 0 26px rgba(121,184,255,.18);
+}
+
+.player-toolbar {
+  position: relative;
+  z-index: 2;
+}
+
+.experience-tools {
+  position: relative;
+  overflow: hidden;
+}
+
+.experience-tools::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: linear-gradient(var(--pg-accent-2), var(--pg-accent));
+}
+
+.experience-tools details[open] {
+  background: rgba(255,255,255,.035);
+}
+
+.experience-tools details p {
+  max-width: 760px;
+  color: var(--pg-muted);
+}
+
+.app-focus .site-header,
+.app-focus footer,
+.app-focus .play-preferences {
+  opacity: .42;
+}
+
+.app-focus .player {
+  border-color: rgba(201,246,90,.19);
+  box-shadow:
+    0 28px 90px rgba(0,0,0,.44),
+    0 0 0 1px rgba(201,246,90,.035) inset;
+}
+
+.restart-dialog {
+  width: min(92vw, 520px);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 20px;
+  padding: 24px;
+  color: var(--pg-text);
+  background:
+    radial-gradient(circle at 80% 0%, rgba(201,246,90,.09), transparent 45%),
+    rgba(12,17,26,.98);
+  box-shadow: 0 30px 90px rgba(0,0,0,.58);
+}
+
+.restart-dialog::backdrop {
+  background: rgba(1,3,7,.72);
+  backdrop-filter: blur(7px);
+}
+
+.restart-dialog h2 {
+  margin-top: 0;
+  color: #fff;
+}
+
+.restart-dialog p {
+  color: var(--pg-muted);
+}
+
+.play-preferences {
+  border-radius: 16px;
+  backdrop-filter: blur(14px);
+}
+
+.play-preferences summary {
+  font-weight: 750;
+}
+
+.progress-backup {
+  border-radius: 18px;
+  padding: 20px;
+}
+
+.empty {
+  border: 1px dashed rgba(255,255,255,.12);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(121,184,255,.07), transparent 55%),
+    rgba(255,255,255,.018);
+}
+
+.storage-notice {
+  border-color: rgba(255,180,107,.25);
+  background: rgba(255,180,107,.055);
+}
+
+@media (max-width: 1180px) and (min-width: 701px) {
+  .game-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 850px) {
+  .catalog-tools {
+    grid-template-columns: 1fr auto;
+  }
+
+  .catalog-tools > span {
+    order: 3;
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 700px) {
+  .site-header {
+    top: 8px;
+  }
+
+  .catalog-heading::before {
+    position: static;
+    display: block;
+    margin: 0 0 7px;
+  }
+
+  .catalog-heading {
+    position: relative;
+  }
+
+  .catalog-tools {
+    grid-template-columns: 1fr;
+  }
+
+  .catalog-tools > span {
+    grid-column: auto;
+  }
+
+  .catalog-tools button,
+  .catalog-tools label,
+  .catalog-tools select {
+    width: 100%;
+  }
+
+  .catalog-tools select {
+    margin: 6px 0 0;
+  }
+
+  .game-card h3 {
+    min-height: 0;
+  }
+
+  .player::before {
+    inset-inline: 18%;
+  }
+
+  .restart-dialog {
+    padding: 20px 16px;
+  }
+
+  .restart-dialog .game-actions {
+    flex-direction: column;
+  }
+
+  .restart-dialog .game-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 340px) {
+  .game-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .preview {
+    height: 142px;
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .site-header,
+  .catalog,
+  .favorite,
+  .play-preferences {
+    background: rgba(10,14,22,.97);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-focus .site-header,
+  .app-focus footer,
+  .app-focus .play-preferences {
+    opacity: 1;
+  }
+}
+
+html[data-arcade-motion="reduced"] .app-focus .site-header,
+html[data-arcade-motion="reduced"] .app-focus footer,
+html[data-arcade-motion="reduced"] .app-focus .play-preferences {
+  opacity: 1;
+}
+
+html[data-arcade-contrast="true"] .game-card::after,
+html[data-arcade-contrast="true"] .preview::after,
+html[data-arcade-contrast="true"] .player::before,
+html[data-arcade-contrast="true"] .site-header::before {
+  display: none;
+}
