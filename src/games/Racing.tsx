@@ -124,6 +124,7 @@ export default function Racing({
             if (e.pointerType === "touch" || e.button !== 0 || status !== "running")
               return;
             drag.current = [e.clientX, e.clientY];
+            e.currentTarget.setPointerCapture(e.pointerId);
           }}
           onPointerMove={(e) => {
             const origin = drag.current;
@@ -141,6 +142,9 @@ export default function Racing({
           onPointerUp={(e) => {
             const origin = drag.current;
             drag.current = null;
+            if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+              e.currentTarget.releasePointerCapture(e.pointerId);
+            }
             if (!origin || status !== "running") return;
             const direction = directionFromSwipe(
               e.clientX - origin[0],
@@ -150,8 +154,11 @@ export default function Racing({
             if (direction === "left") steer(-1);
             if (direction === "right") steer(1);
           }}
-          onPointerCancel={() => {
+          onPointerCancel={(e) => {
             drag.current = null;
+            if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+              e.currentTarget.releasePointerCapture(e.pointerId);
+            }
           }}
           onTouchStart={(e) => {
             touch.current = e.touches.length === 1
