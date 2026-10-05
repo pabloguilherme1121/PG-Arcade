@@ -195,19 +195,55 @@ export function projectile(
   }
   return points;
 }
-export function basketHit(points: FlightPoint[], tolerance = 12) {
+export type BasketEntryQuality = "swish" | "rim" | "miss";
+
+export function basketEntryQuality(
+  points: FlightPoint[],
+  tolerance = 12,
+): BasketEntryQuality {
   for (let i = 1; i < points.length; i++) {
     const a = points[i - 1],
       b = points[i];
     if (a.y <= 125 && b.y >= 125 && b.y > a.y) {
       const x = a.x + ((b.x - a.x) * (125 - a.y)) / (b.y - a.y);
-      if (Math.abs(x - 285) <= tolerance) return true;
+      const offset = Math.abs(x - 285);
+      if (offset <= Math.max(4, tolerance * 0.4)) return "swish";
+      if (offset <= tolerance) return "rim";
     }
   }
-  return false;
+  return "miss";
 }
+
+export function basketHit(points: FlightPoint[], tolerance = 12) {
+  return basketEntryQuality(points, tolerance) !== "miss";
+}
+
 export function arrowImpact(aim: number, power: number, wind: number) {
-  return aim + wind * (100 / power) * 2 + (100 - power) * 0.18;
+  const normalizedPower = Math.max(10, Math.min(100, power));
+  const flightFactor = Math.pow(100 / normalizedPower, 1.25);
+  return (
+    aim +
+    wind * flightFactor * 2 +
+    (100 - normalizedPower) * 0.18
+  );
+}
+
+export function arrowTrajectory(
+  aim: number,
+  power: number,
+  wind: number,
+): FlightPoint[] {
+  const impact = arrowImpact(aim, power, wind);
+  const normalizedPower = Math.max(10, Math.min(100, power));
+  const lift = 12 + (100 - normalizedPower) * 0.08;
+  return Array.from({ length: 13 }, (_, index) => {
+    const t = index / 12;
+    const x = 30 + (305 - 30) * t;
+    const base = 150 + (aim - 150) * t;
+    const arc = -lift * 4 * t * (1 - t);
+    const driftAndDrop = (impact - aim) * t * t;
+    return { x, y: base + arc + driftAndDrop };
+  });
 }
 export function arrowPoints(y: number, tolerance = 1) {
   return Math.max(0, 100 - Math.round(Math.abs(y - 150) * tolerance));
