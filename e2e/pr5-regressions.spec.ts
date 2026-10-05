@@ -76,7 +76,8 @@ for (const preference of ["system", "saved"] as const) {
     for (const { id, name } of games) {
       await page.goto(`./#/jogar/${id}`);
       await expect(page.locator(".player > h1")).toHaveText(name);
-      const arena = page.locator("[data-arcade-arena]").first();
+      const arena = page.locator("[data-arcade-arena]");
+      await expect(arena).toHaveCount(1);
       await expect(arena).toBeVisible();
       const durations = await arena.evaluate((element) => {
         const style = getComputedStyle(element);
