@@ -39,7 +39,7 @@ export const actionCollectionGames = [
     name: "Voo entre Torres",
     description: "Controle a altitude e atravesse corredores estreitos.",
     category: "Casuais",
-    help: "Pressione Ação ou cima para bater as asas e ganhar altura. Cada toque é um impulso; atravesse o espaço entre as torres sem tocar nelas ou nas bordas.",
+    help: "Pressione Ação ou cima para bater as asas. Cada toque soma sustentação à velocidade atual: cair rápido exige recuperação gradual, e tocar cedo demais pode gerar excesso de subida. Atravesse as torres sem tocar nas bordas.",
   },
   {
     id: "jetpack",
@@ -53,7 +53,7 @@ export const actionCollectionGames = [
     name: "Arena de Esquiva",
     description: "Movimente-se numa arena e sobreviva às ondas cruzadas.",
     category: "Casuais",
-    help: "Use as quatro direções para evitar as esferas que cruzam a arena. O tempo sobrevivido vale pontos e cada onda acrescenta ameaças; observe as trajetórias.",
+    help: "Use as quatro direções para acelerar na arena. Ao soltar, há uma curta inércia antes de parar; antecipe a trajetória das ameaças e corrija o movimento com antecedência.",
   },
   {
     id: "pouso",
@@ -466,7 +466,7 @@ export function stepAction(
   } else if (s.id === "voo" || s.id === "jetpack") {
     s.x = 95;
     const jet = s.id === "jetpack";
-    if (!jet && tap) s.vy = -200;
+    if (!jet && tap) s.vy = clamp(s.vy - 170, -220, 260);
     s.vy += (jet ? (action && s.fuel > 0 ? -480 : 290) : 480) * dt;
     s.vy = clamp(s.vy, -220, 260);
     s.y += s.vy * dt;
@@ -501,16 +501,19 @@ export function stepAction(
     s.objects = s.objects.filter((o) => o.x > -40 && o.hp > 0);
     s.level = 1 + Math.floor(s.time / 25);
   } else if (s.id === "esquiva") {
-    s.x = clamp(
-      s.x + ((input.right ? 1 : 0) - (input.left ? 1 : 0)) * 200 * dt,
-      14,
-      466,
-    );
-    s.y = clamp(
-      s.y + ((input.down ? 1 : 0) - (input.up ? 1 : 0)) * 200 * dt,
-      14,
-      346,
-    );
+    const ax = (input.right ? 1 : 0) - (input.left ? 1 : 0);
+    const ay = (input.down ? 1 : 0) - (input.up ? 1 : 0);
+    s.vx = clamp(s.vx + ax * 900 * dt, -210, 210);
+    s.vy = clamp(s.vy + ay * 900 * dt, -210, 210);
+    const drag = Math.exp(-6 * dt);
+    s.vx *= drag;
+    s.vy *= drag;
+    const nextX = clamp(s.x + s.vx * dt, 14, 466);
+    const nextY = clamp(s.y + s.vy * dt, 14, 346);
+    if ((nextX === 14 && s.vx < 0) || (nextX === 466 && s.vx > 0)) s.vx = 0;
+    if ((nextY === 14 && s.vy < 0) || (nextY === 346 && s.vy > 0)) s.vy = 0;
+    s.x = nextX;
+    s.y = nextY;
     if (s.spawn > 0.7 / f) {
       s.spawn = 0;
       const side = Math.floor(rand(s) * 4),
