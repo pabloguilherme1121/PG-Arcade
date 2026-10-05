@@ -1,7 +1,8 @@
 import { test, expect } from "@playwright/test";
 import { games } from "../src/lib/catalog";
 
-test("all hundred games provide keyboard help and safe restart without losing records", async ({ page }) => {
+test("all hundred games provide keyboard help and safe restart without losing records", async ({ page, browserName }) => {
+  test.skip(browserName !== "chromium", "Full 100-game shell sweep runs once in Chromium; Firefox/WebKit stay covered by focused interaction suites.");
   test.setTimeout(games.length * 4000);
   await page.addInitScript(() => localStorage.setItem("pg-arcade-progress-v1", JSON.stringify({ records: { snake: 70 }, favorites: ["snake"] })));
   for (const game of games) {
