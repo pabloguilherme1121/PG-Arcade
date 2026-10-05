@@ -69,6 +69,31 @@ describe("Race", () => {
     expect(crash.traffic).toHaveLength(0);
   });
 
+  it("adds a short recovery window after a crash", () => {
+    const s = initialRace();
+    const first = tickRace(
+      { ...s, traffic: [{ id: 1, lane: 1, y: 72 }] },
+      3,
+    );
+    expect(first.lives).toBe(2);
+    expect(first.crashCooldown).toBeGreaterThan(0);
+
+    const protectedHit = tickRace(
+      { ...first, traffic: [{ id: 2, lane: 1, y: 72 }] },
+      3,
+    );
+    expect(protectedHit.lives).toBe(2);
+
+    let recovered = protectedHit;
+    for (let i = 0; i < 8; i++)
+      recovered = tickRace({ ...recovered, traffic: [] }, 3);
+    const nextCrash = tickRace(
+      { ...recovered, traffic: [{ id: 3, lane: 1, y: 72 }] },
+      3,
+    );
+    expect(nextCrash.lives).toBe(1);
+  });
+
   it("ignores other lanes and stops after the last life", () => {
     const s = initialRace();
     expect(
