@@ -73,7 +73,9 @@ export default function Racing({
             : status === "running"
               ? state.crashCooldown > 0
                 ? "Recuperando controle"
-                : "Desvie do trânsito"
+                : state.steerCooldown > 0
+                  ? "Completando troca de faixa"
+                  : "Desvie do trânsito"
               : status === "paused"
                 ? "Corrida pausada"
                 : "Fim da corrida"}
@@ -139,6 +141,7 @@ export default function Racing({
             className={`race-car ${state.crashCooldown > 0 ? "race-car-recovering" : ""}`}
             data-lane={state.lane}
             data-recovering={state.crashCooldown > 0}
+            data-steering={state.steerCooldown > 0}
             style={{ left: `${state.lane * 33.33 + 16.66}%` }}
           >
             <img src={`${import.meta.env.BASE_URL}art/car.webp`} alt="" />
@@ -223,8 +226,9 @@ export default function Racing({
           <option value={4}>Turbo</option>
         </select>
         <p>
-          Setas ou A/D dirigem, espaço pausa. No celular, deslize na pista ou use os dois botões
-          grandes abaixo da pista.
+          Setas ou A/D dirigem, espaço pausa. Cada comando muda uma faixa e o
+          esterço precisa de um instante para estabilizar antes da próxima troca.
+          No celular, deslize na pista ou use os dois botões grandes abaixo da pista.
         </p>
         <p>
           A corrida pausa ao trocar de aba ou sair da janela. O recorde é salvo
