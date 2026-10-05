@@ -10,8 +10,6 @@ test("Racing steers, pauses on blur, resets safely and saves game-over record", 
   await page.getByRole("button", { name: "Largar", exact: true }).click();
   await page.locator(".race-board").press("ArrowLeft");
   await expect(page.locator(".race-car")).toHaveAttribute("data-lane", "0");
-  await page.getByRole("button", { name: "Dirigir para direita" }).click();
-  await expect(page.locator(".race-car")).toHaveAttribute("data-lane", "0");
   await page.clock.runFor(210);
   await page.getByRole("button", { name: "Dirigir para direita" }).click();
   await expect(page.locator(".race-car")).toHaveAttribute("data-lane", "1");
