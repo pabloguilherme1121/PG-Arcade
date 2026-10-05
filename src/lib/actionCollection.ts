@@ -71,7 +71,7 @@ export const actionCollectionGames = [
   },
 ] as const;
 export type ActionId = (typeof actionCollectionGames)[number]["id"];
-export type Difficulty = "easy" | "normal" | "hard";
+export type Difficulty = "easy" | "normal" | "hard" | "master" | "expert";
 export type ActionMode = "mission" | "endless";
 export interface Body {
   x: number;
@@ -155,7 +155,7 @@ export function newAction(
     objects: [],
     shots: [],
     score: 0,
-    lives: difficulty === "easy" ? 5 : 3,
+    lives: difficulty === "easy" ? 5 : difficulty === "master" || difficulty === "expert" ? 2 : 3,
     level: 1,
     time: 0,
     spawn: 0,
@@ -195,6 +195,15 @@ function damage(s: ActionState) {
   s.cooldown = 1.1;
   if (s.lives <= 0) s.done = true;
 }
+export function actionPressure(difficulty: Difficulty, time: number) {
+  const ramp = Math.min(1, Math.max(0, time) / 120);
+  if (difficulty === "easy") return 0.7;
+  if (difficulty === "normal") return 1 + ramp * 0.12;
+  if (difficulty === "hard") return 1.28 * (1 + ramp * 0.16);
+  if (difficulty === "master") return 1.48 * (1 + ramp * 0.2);
+  return Math.min(2.15, 1.62 * (1 + ramp * 0.28));
+}
+
 function nextWave(s: ActionState) {
   s.level++;
   const fresh = newAction(s.id, s.difficulty, s.mode);
@@ -225,11 +234,8 @@ export function stepAction(
       objects: state.objects.map((o) => ({ ...o })),
       shots: state.shots.map((o) => ({ ...o })),
     };
-  // Pressure grows gradually; cap it so long sessions remain playable.
-  const ramp = Math.min(1, s.time / 120);
-  const f = s.difficulty === "easy" ? 0.7
-    : s.difficulty === "hard" ? 1.4 * (1 + ramp * 0.2)
-    : 1 + ramp * 0.12;
+  // Pressure grows gradually by level and stays capped so long sessions remain playable.
+  const f = actionPressure(s.difficulty, s.time);
   s.time += dt;
   s.spawn += dt;
   s.cooldown = Math.max(0, s.cooldown - dt);
