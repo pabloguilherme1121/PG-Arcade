@@ -46,7 +46,7 @@ export const actionCollectionGames = [
     name: "Jetpack de Resgate",
     description: "Dose o propulsor, recupere combustível e atravesse túneis.",
     category: "Casuais",
-    help: "Mantenha Ação ou cima pressionada para usar o propulsor. Solte para descer e recuperar combustível lentamente. Cada reserva repõe parte do tanque; administre o consumo para atravessar os obstáculos.",
+    help: "Mantenha Ação ou cima pressionada para usar o propulsor. Solte para planar e economizar combustível; o tanque não se regenera sozinho. Cada reserva repõe parte do tanque, então planeje a rota entre os obstáculos.",
   },
   {
     id: "esquiva",
@@ -60,7 +60,7 @@ export const actionCollectionGames = [
     name: "Pouso Lunar",
     description: "Controle a gravidade e pouse com velocidade segura.",
     category: "Inteligência",
-    help: "Use os lados para acionar propulsores de correção e cima ou Ação para o motor principal. Ambos consomem combustível; pouse com velocidade vertical abaixo de 35 e horizontal abaixo de 25.",
+    help: "Use os lados para os propulsores de correção e cima ou Ação para o motor principal. Ambos consomem combustível. Sobreviva abaixo de 35 vertical e 25 horizontal, mas pousos suaves e centralizados valem mais pontos.",
   },
   {
     id: "drift",
@@ -109,6 +109,7 @@ export interface ActionState {
   pressed: boolean;
   checkpoint: number;
   invDirection: number;
+  landingQuality: "soft" | "controlled" | "rough" | "crash" | null;
 }
 export interface ActionInput {
   left: boolean;
@@ -167,6 +168,7 @@ export function newAction(
     pressed: false,
     checkpoint: 0,
     invDirection: 1,
+    landingQuality: null,
   };
   if (id === "breakout")
     s.objects = Array.from({ length: 30 }, (_, i) =>
@@ -211,6 +213,35 @@ function damage(s: ActionState) {
   s.cooldown = 1.1;
   if (s.lives <= 0) s.done = true;
 }
+
+export function lunarLandingOutcome(
+  x: number,
+  vx: number,
+  vy: number,
+  fuel: number,
+) {
+  const offset = Math.abs(x - 345);
+  const horizontal = Math.abs(vx);
+  const vertical = Math.abs(vy);
+  const safe = offset < 40 && vertical < 35 && horizontal < 25;
+  if (!safe) return { safe: false, quality: "crash" as const, score: 0 };
+
+  const quality: "soft" | "controlled" | "rough" =
+    offset <= 18 && vertical <= 16 && horizontal <= 8
+      ? "soft"
+      : offset <= 28 && vertical <= 25 && horizontal <= 16
+        ? "controlled"
+        : "rough";
+  const bonus = quality === "soft" ? 60 : quality === "controlled" ? 30 : 0;
+  return {
+    safe: true,
+    quality,
+    score: Math.round(
+      200 + Math.max(0, Math.min(100, fuel)) * 2 + bonus,
+    ),
+  };
+}
+
 export function actionPressure(difficulty: Difficulty, time: number) {
   const ramp = Math.min(1, Math.max(0, time) / 120);
   if (difficulty === "easy") return 0.7;
@@ -474,7 +505,8 @@ export function stepAction(
     s.vy += (jet ? (action && s.fuel > 0 ? -480 : 290) : 480) * dt;
     s.vy = clamp(s.vy, -220, 260);
     s.y += s.vy * dt;
-    if (jet) s.fuel = clamp(s.fuel + (action ? -22 : 14) * dt, 0, 100);
+    if (jet && action && s.fuel > 0)
+      s.fuel = clamp(s.fuel - 22 * dt, 0, 100);
     if (s.y < 12 || s.y > 348) {
       damage(s);
       s.y = 180;
@@ -562,10 +594,10 @@ export function stepAction(
     s.x = clamp(s.x + s.vx * dt, 10, 470);
     s.y = Math.max(10, s.y + s.vy * dt);
     if (s.y >= 320) {
-      const safe =
-        Math.abs(s.x - 345) < 40 && Math.abs(s.vy) < 35 && Math.abs(s.vx) < 25;
-      if (safe) {
-        s.score += Math.round(200 + s.fuel * 2);
+      const landing = lunarLandingOutcome(s.x, s.vx, s.vy, s.fuel);
+      s.landingQuality = landing.quality;
+      if (landing.safe) {
+        s.score += landing.score;
         s.level++;
         s.x = 80 + rand(s) * 180;
         s.y = 35;
