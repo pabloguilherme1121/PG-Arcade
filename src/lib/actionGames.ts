@@ -110,8 +110,21 @@ export function lightsChallenge(level: number) {
     Array(25).fill(false) as boolean[],
   );
 }
-export function parkingScore(moves: number) {
-  return Math.max(10, 100 - moves);
+export function parkingSteeringCost(
+  previous: Direction | null,
+  next: Direction,
+) {
+  if (!previous || previous === next) return 0;
+  const reverse =
+    (previous === "up" && next === "down") ||
+    (previous === "down" && next === "up") ||
+    (previous === "left" && next === "right") ||
+    (previous === "right" && next === "left");
+  return reverse ? 2 : 1;
+}
+
+export function parkingScore(moves: number, steeringCost = 0) {
+  return Math.max(10, 100 - moves - steeringCost * 2);
 }
 export type TargetGameKind = "shoot" | "casual";
 export type TargetDifficulty = "easy" | "normal" | "hard";
