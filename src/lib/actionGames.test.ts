@@ -4,6 +4,7 @@ import {
   steerRace,
   tickRace,
   raceVelocity,
+  racePaceOffset,
   moveParking,
   parkingLevels,
   parkingScore,
@@ -35,6 +36,15 @@ describe("Race", () => {
     expect(raceVelocity(3, 0)).toBeCloseTo(2.55, 2);
     expect(raceVelocity(3, 300)).toBeGreaterThan(raceVelocity(3, 0));
     expect(raceVelocity(3, 5000)).toBeLessThanOrEqual(4.2);
+  });
+
+  it("accelerates and brakes progressively around the selected base pace", () => {
+    expect(racePaceOffset(0, 1)).toBeGreaterThan(0);
+    expect(racePaceOffset(0, -1)).toBeLessThan(0);
+    expect(racePaceOffset(0.8, 1)).toBeLessThanOrEqual(0.9);
+    expect(racePaceOffset(-0.8, -1)).toBeGreaterThanOrEqual(-0.9);
+    expect(racePaceOffset(0.5, 0)).toBeLessThan(0.5);
+    expect(racePaceOffset(-0.5, 0)).toBeGreaterThan(-0.5);
   });
 
   it("lets traffic cars move at modestly different relative speeds", () => {
