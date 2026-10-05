@@ -160,6 +160,9 @@ export default function Racing({
               e.currentTarget.releasePointerCapture(e.pointerId);
             }
           }}
+          onLostPointerCapture={() => {
+            drag.current = null;
+          }}
           onTouchStart={(e) => {
             touch.current = e.touches.length === 1
               ? [e.touches[0].clientX, e.touches[0].clientY]
