@@ -54,6 +54,20 @@ export const emptyInput = (): MotionInput => ({
   lane: -1,
 });
 const clamp = (n: number, a: number, b: number) => Math.max(a, Math.min(b, n));
+const within = (
+  ax: number,
+  ay: number,
+  bx: number,
+  by: number,
+  radius: number,
+  inclusive = false,
+) => {
+  const dx = ax - bx;
+  const dy = ay - by;
+  const distanceSquared = dx * dx + dy * dy;
+  const radiusSquared = radius * radius;
+  return inclusive ? distanceSquared <= radiusSquared : distanceSquared < radiusSquared;
+};
 function random(s: MotionState) {
   s.rng = (Math.imul(s.rng, 1664525) + 1013904223) >>> 0;
   return s.rng / 4294967296;
@@ -142,7 +156,7 @@ export function motionTarget(
   if (s.status !== "running" || s.id !== "balloons") return s;
   const next = structuredClone(s);
   const hit = next.objects
-    .filter((o) => o.active && Math.hypot(o.x - x, o.y - y) <= o.r + 8)
+    .filter((o) => o.active && within(o.x, o.y, x, y, o.r + 8, true))
     .sort((a, b) => a.r - b.r)[0];
   if (hit) {
     hit.active = false;
@@ -428,7 +442,7 @@ export function motionStep(
       for (const enemy of s.objects.filter(
         (o) => o.active && o.kind === "enemy",
       ))
-        if (Math.hypot(shot.x - enemy.x, shot.y - enemy.y) < enemy.r + shot.r) {
+        if (within(shot.x, shot.y, enemy.x, enemy.y, enemy.r + shot.r)) {
           shot.active = enemy.active = false;
           s.score += 100;
           s.message = "Alvo destruído.";
@@ -479,7 +493,7 @@ export function motionStep(
       for (const target of s.objects.filter(
         (o) => o.kind === "target" && o.active,
       ))
-        if (Math.hypot(target.x - shot.x, target.y - shot.y) < 20) {
+        if (within(target.x, target.y, shot.x, shot.y, 20)) {
           target.active = false;
           s.score += 100;
           shot.vy = -shot.vy;
