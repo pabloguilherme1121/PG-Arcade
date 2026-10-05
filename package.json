@@ -10,6 +10,7 @@
     "check:bundle": "node scripts/check-bundle.mjs",
     "preview": "vite preview --host 127.0.0.1 --port 5173",
     "test": "vitest run",
+    "audit": "npm audit --audit-level=high",
     "test:e2e": "playwright test",
     "pretest:e2e": "npm run build",
     "test:e2e:ci": "playwright test"
@@ -34,5 +35,7 @@
     "vite": "7.3.5",
     "vitest": "4.1.11"
   },
-  "overrides": { "esbuild": "0.28.1" }
+  "overrides": {
+    "esbuild": "0.28.1"
+  }
 }
