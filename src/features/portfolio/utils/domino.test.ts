@@ -6,6 +6,8 @@ import {
   dealDominoRound,
   getDominoPipTotal,
   getDominoRoundPoints,
+  getDominoWinnerPoints,
+  drawDominoUntilPlayable,
   sortDominoHand,
   getPlayableDominoSides,
   placeDominoTile,
@@ -77,13 +79,39 @@ describe("domino", () => {
     ]);
   });
 
-  it("awards the loser hand pips as round points", () => {
+  it("awards the loser hand pips as round points for either winner", () => {
     expect(
       getDominoRoundPoints([
         [6, 6],
         [3, 2],
       ]),
     ).toBe(17);
+    expect(getDominoWinnerPoints("player", [], [[6, 6], [1, 2]])).toBe(15);
+    expect(getDominoWinnerPoints("opponent", [[5, 5], [0, 3]], [])).toBe(13);
+  });
+
+  it("draws in one action until a playable tile appears or the boneyard empties", () => {
+    const hand = [[0, 0]] as const;
+    const chain = [[6, 6]] as const;
+    const result = drawDominoUntilPlayable(
+      [...hand],
+      [...chain],
+      [[1, 2], [3, 4], [5, 6], [0, 6]],
+    );
+    expect(result.hand).toEqual([[0, 0], [1, 2], [3, 4], [5, 6]]);
+    expect(result.boneyard).toEqual([[0, 6]]);
+    expect(result.drawn).toBe(3);
+  });
+
+  it("empties the boneyard when no drawn tile can play", () => {
+    const result = drawDominoUntilPlayable(
+      [[0, 0]],
+      [[6, 6]],
+      [[1, 2], [3, 4]],
+    );
+    expect(result.hand).toEqual([[0, 0], [1, 2], [3, 4]]);
+    expect(result.boneyard).toEqual([]);
+    expect(result.drawn).toBe(2);
   });
 
   it("sums pips for blocked-round scoring", () => {
