@@ -26,6 +26,7 @@ export default function Racing({
   const [speed, setSpeed] = useState(3);
   const board = useRef<HTMLDivElement>(null);
   const touch = useRef<[number, number] | null>(null);
+  const pointer = useRef<{ id: number; x: number; y: number } | null>(null);
   const throttle = useRef(0);
   const pause = useCallback(() => {
     throttle.current = 0;
@@ -105,7 +106,46 @@ export default function Racing({
           }
           tabIndex={0}
           role="group"
-          aria-label="Pista de corrida. A/D ou esquerda/direita dirigem; W/cima acelera; S/baixo freia; espaço pausa."
+          aria-label="Pista de corrida. A/D ou esquerda/direita dirigem; arraste horizontalmente com mouse ou caneta; W/cima acelera; S/baixo freia; espaço pausa."
+          onPointerDown={(e) => {
+            if (
+              status !== "running" ||
+              !e.isPrimary ||
+              !["mouse", "pen"].includes(e.pointerType) ||
+              (e.pointerType === "mouse" && e.button !== 0)
+            )
+              return;
+            pointer.current = {
+              id: e.pointerId,
+              x: e.clientX,
+              y: e.clientY,
+            };
+            e.currentTarget.setPointerCapture(e.pointerId);
+          }}
+          onPointerCancel={(e) => {
+            if (pointer.current?.id === e.pointerId) pointer.current = null;
+          }}
+          onLostPointerCapture={(e) => {
+            if (pointer.current?.id === e.pointerId) pointer.current = null;
+          }}
+          onPointerUp={(e) => {
+            const start = pointer.current;
+            pointer.current = null;
+            if (
+              !start ||
+              start.id !== e.pointerId ||
+              status !== "running" ||
+              !["mouse", "pen"].includes(e.pointerType)
+            )
+              return;
+            const direction = directionFromSwipe(
+              e.clientX - start.x,
+              e.clientY - start.y,
+              24,
+            );
+            if (direction === "left") steer(-1);
+            if (direction === "right") steer(1);
+          }}
           onTouchStart={(e) => {
             touch.current = [e.touches[0].clientX, e.touches[0].clientY];
           }}
@@ -140,6 +180,8 @@ export default function Racing({
           }}
           onBlur={() => {
             throttle.current = 0;
+            pointer.current = null;
+            touch.current = null;
           }}
         >
           <div className="road-line line-one" />
@@ -323,7 +365,8 @@ export default function Racing({
           A/D ou esquerda/direita dirigem; W/cima acelera e S/baixo freia.
           Soltar o pedal faz a velocidade retornar gradualmente ao ritmo-base.
           Cada comando muda uma faixa e o esterço precisa de um instante para
-          estabilizar. No celular, use os botões de direção e os pedais.
+          estabilizar. Você também pode arrastar horizontalmente com mouse ou
+          caneta; no celular, deslize na pista ou use os botões e pedais.
         </p>
         <p>
           A corrida pausa ao trocar de aba ou sair da janela. O recorde é salvo
