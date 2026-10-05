@@ -106,6 +106,21 @@ for (const id of ["vinteum", "dados", "boliche", "basquete", "arco"])
     await page.reload();
     await expect(page.locator(".casual-hud strong").nth(2)).toHaveText(record);
   });
+
+test("bowling hook visibly bends the ball trajectory", async ({ page }) => {
+  await start(page, "boliche");
+  await range(page, "Mira", 50);
+  await range(page, "Força", 65);
+  await range(page, "Hook", 80);
+  await page.getByRole("button", { name: "Lançar bola", exact: true }).click();
+
+  const points = await page.locator(".sport-boliche polyline").getAttribute("points");
+  expect(points).toBeTruthy();
+  const last = points!.trim().split(" ").at(-1)!.split(",").map(Number);
+  expect(last[0]).toBeGreaterThan(150);
+  expect(last[1]).toBeCloseTo(70, 0);
+});
+
 test("golf rewards straight alignment and controlled successive strokes", async ({
   page,
 }) => {
