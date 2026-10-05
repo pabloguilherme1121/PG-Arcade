@@ -55,7 +55,8 @@ export function stepRun(
 ): RunState {
   if (s.lives <= 0 || s.ticks >= options.limit) return s;
   let score = s.score,
-    lives = s.lives;
+    lives = s.lives,
+    damaged = false;
   const ticks = s.ticks + 1;
   const pace =
     (options.difficulty === "easy"
@@ -81,7 +82,10 @@ export function stepRun(
       }
       if (o.lane === s.lane && o.y >= 60 && o.y <= 90) {
         if (o.reward) score += kind === "rally" ? 25 : 10;
-        else lives--;
+        else if (!damaged) {
+          lives--;
+          damaged = true;
+        }
         return false;
       }
       return o.y < 110;
