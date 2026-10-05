@@ -289,6 +289,20 @@ export function bowlingHit(
 
   return pins.map((standing, i) => standing && !knocked.has(i));
 }
+export function fishingReelStep(
+  distance: number,
+  tension: number,
+  difficulty: number,
+) {
+  const level = Math.max(0, Math.min(2, difficulty));
+  const progress = Math.max(6, 14 - tension * 0.065 - level);
+  const tensionGain = 18 + level * 3 + Math.max(0, 45 - tension) * 0.035;
+  return {
+    distance: Math.max(0, distance - progress),
+    tension: Math.min(100, tension + tensionGain),
+  };
+}
+
 export function fishingTensionTick(
   tension: number,
   tick: number,
