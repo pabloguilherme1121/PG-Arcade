@@ -81,11 +81,13 @@ export function directionFromSwipe(
 
 export function queueSnakeDirection(
   current: Direction,
-  pending: Direction,
+  queued: Direction[],
   next: Direction,
-): Direction {
-  const reference = pending === opposite[current] ? current : pending;
-  return next === opposite[reference] ? pending : next;
+): Direction[] {
+  if (queued.length >= 2) return queued;
+  const reference = queued.at(-1) ?? current;
+  if (next === reference || next === opposite[reference]) return queued;
+  return [...queued, next];
 }
 export function samePoint(a: Point, b: Point) {
   return a.x === b.x && a.y === b.y;
