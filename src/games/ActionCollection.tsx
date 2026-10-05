@@ -350,6 +350,7 @@ export default function ActionCollection({
     canvas.current?.focus();
   }
   function key(e: React.KeyboardEvent<HTMLCanvasElement>, pressed: boolean) {
+    if (pressed && (status !== "running" || e.altKey || e.ctrlKey || e.metaKey)) return;
     const map: Record<string, keyof ActionInput> = {
       ArrowLeft: "left",
       a: "left",
@@ -493,6 +494,7 @@ export default function ActionCollection({
           onKeyUp={(e) => key(e, false)}
           onBlur={() => {
             input.current = { ...idleInput };
+            pending.current.clear();
           }}
         />
         {status !== "running" && (
@@ -550,6 +552,9 @@ export default function ActionCollection({
               input.current[key] = false;
             }}
             onPointerCancel={() => {
+              input.current[key] = false;
+            }}
+            onLostPointerCapture={() => {
               input.current[key] = false;
             }}
             onKeyDown={(e) => {
