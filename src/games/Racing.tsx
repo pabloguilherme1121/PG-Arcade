@@ -29,6 +29,7 @@ export default function Racing({
   const throttle = useRef(0);
   const pause = useCallback(() => {
     throttle.current = 0;
+    touch.current = null;
     setStatus((s) => (s === "running" ? "paused" : s));
   }, []);
   useAutoPause(pause);
@@ -107,8 +108,11 @@ export default function Racing({
           role="group"
           aria-label="Pista de corrida. A/D ou esquerda/direita dirigem; W/cima acelera; S/baixo freia; espaço pausa."
           onTouchStart={(e) => {
-            touch.current = [e.touches[0].clientX, e.touches[0].clientY];
+            touch.current = e.touches.length === 1
+              ? [e.touches[0].clientX, e.touches[0].clientY]
+              : null;
           }}
+          onTouchCancel={() => { touch.current = null; }}
           onTouchEnd={(e) => {
             if (!touch.current || status !== "running") return;
             const dx = e.changedTouches[0].clientX - touch.current[0];
@@ -215,6 +219,7 @@ export default function Racing({
             aria-label="Frear"
             disabled={status !== "running"}
             onPointerDown={(e) => {
+              e.preventDefault();
               e.currentTarget.setPointerCapture(e.pointerId);
               throttle.current = -1;
             }}
@@ -224,6 +229,7 @@ export default function Racing({
             onPointerCancel={() => {
               throttle.current = 0;
             }}
+            onLostPointerCapture={() => { throttle.current = 0; }}
             onKeyDown={(e) => {
               if (e.key === " " || e.key === "Enter") {
                 e.preventDefault();
@@ -243,6 +249,7 @@ export default function Racing({
             aria-label="Acelerar"
             disabled={status !== "running"}
             onPointerDown={(e) => {
+              e.preventDefault();
               e.currentTarget.setPointerCapture(e.pointerId);
               throttle.current = 1;
             }}
@@ -252,6 +259,7 @@ export default function Racing({
             onPointerCancel={() => {
               throttle.current = 0;
             }}
+            onLostPointerCapture={() => { throttle.current = 0; }}
             onKeyDown={(e) => {
               if (e.key === " " || e.key === "Enter") {
                 e.preventDefault();
