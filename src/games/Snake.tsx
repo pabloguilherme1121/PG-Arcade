@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Pause, Play, RotateCcw } from "lucide-react";
 import {
-  opposite,
+  queueSnakeDirection,
   samePoint,
   stepSnake,
   snakeFood,
@@ -32,7 +32,7 @@ export default function Snake({
     pending = useRef<Direction>("right");
   const touch = useRef<[number, number] | null>(null);
   function direction(d: Direction) {
-    if (d !== opposite[current.current]) pending.current = d;
+    pending.current = queueSnakeDirection(current.current, pending.current, d);
   }
   function reset() {
     setBody(initialBody());
