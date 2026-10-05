@@ -15,6 +15,22 @@ import type { Direction } from "./engines";
 import { games } from "./catalog";
 import { gameHelp, recordUnits } from "./gameHelp";
 describe("Race", () => {
+  it("loses only one life in a pile-up and allows recovery before another collision", () => {
+    const s = initialRace();
+    const cars = [{ id: 1, lane: 1, y: 72 }, { id: 2, lane: 1, y: 74 }];
+    const hit = tickRace({ ...s, traffic: cars }, 3);
+    expect(hit.lives).toBe(2);
+    expect(hit.recoveryTicks).toBe(10);
+    expect(hit.traffic).toHaveLength(0);
+    const protectedState = tickRace({ ...hit, traffic: cars }, 3);
+    expect(protectedState.lives).toBe(2);
+    expect(protectedState.recoveryTicks).toBe(9);
+    let recovered = hit;
+    for (let i = 0; i < 10; i++) recovered = tickRace(recovered, 3);
+    expect(recovered.recoveryTicks).toBe(0);
+    expect(tickRace({ ...recovered, traffic: cars }, 3).lives).toBe(1);
+    expect(s.lives).toBe(3);
+  });
   it("steers within lanes without changing the input", () => {
     const state = initialRace();
     expect(steerRace(state, -10).lane).toBe(0);
