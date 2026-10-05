@@ -1136,8 +1136,9 @@ function strategyClick(state: BoardState, i: number): BoardState {
   }
   if (s.id === "isolation" && s.status === "playing") {
     const pos = s.cells.indexOf(1),
-      free = neighbors(pos, s.size, true).filter((j) => !s.cells[j]);
-    if (free.length) s.cells[free[0]] = -1;
+      adjacent = neighbors(pos, s.size, true).find((j) => s.cells[j] === 0),
+      removal = adjacent ?? s.cells.findIndex((cell) => cell === 0);
+    if (removal >= 0) s.cells[removal] = -1;
     if (!strategyMoves(s, 1).length) end(s, false, "Você ficou sem saída.");
   }
   assessStrategy(s);
