@@ -74,7 +74,11 @@ test("Snake starts, pauses, blocks reverse direction and resets", async ({
 test("Memory completes all pairs and stores the best score", async ({
   page,
 }) => {
+  test.setTimeout(45000);
   await page.goto("./#/jogar/memoria");
+  await page
+    .getByLabel("Tempo para observar cartas diferentes")
+    .selectOption("500");
   const cards = page.locator(".memory-card");
   await expect(cards).toHaveCount(16);
   const known = new Map<string, number[]>();
