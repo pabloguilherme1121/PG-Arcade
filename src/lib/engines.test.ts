@@ -6,6 +6,7 @@ import {
   stepSnake,
   snakeFood,
   shuffledPairs,
+  queueSnakeDirection,
 } from "./engines";
 describe("2048", () => {
   it("merges each tile once and scores every merge", () => {
@@ -34,6 +35,12 @@ describe("2048", () => {
   });
 });
 describe("Snake", () => {
+  it("buffers a fast corner without allowing an immediate reverse", () => {
+    expect(queueSnakeDirection("right", "right", "left")).toBe("right");
+    expect(queueSnakeDirection("right", "right", "up")).toBe("up");
+    expect(queueSnakeDirection("right", "up", "left")).toBe("left");
+    expect(queueSnakeDirection("right", "up", "down")).toBe("up");
+  });
   it("grows on food and collides with walls", () => {
     const b = [
       { x: 1, y: 0 },
