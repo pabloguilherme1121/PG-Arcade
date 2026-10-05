@@ -66,6 +66,23 @@ describe("action collection physics", () => {
     expect(n.objects).toHaveLength(23);
     expect(n.score).toBe(25);
   });
+  it("runner supports a shorter jump when the player releases early", () => {
+    const s = newAction("runner");
+    const launched = stepAction(
+      s,
+      { ...idleInput, action: true },
+      0.02,
+    );
+    const held = stepAction(
+      launched,
+      { ...idleInput, action: true },
+      0.02,
+    );
+    const released = stepAction(launched, idleInput, 0.02);
+    expect(released.vy).toBeGreaterThan(held.vy);
+    expect(released.vy).toBeLessThan(0);
+  });
+
   it("runner jump requires a fresh press after landing", () => {
     const s = newAction("runner");
     const n = stepAction(s, { ...idleInput, action: true }, 0.02);
