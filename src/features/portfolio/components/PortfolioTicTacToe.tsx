@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import ArcadeDifficultyNotice from "./ArcadeDifficultyNotice";
-import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import {
   chooseTicTacToeBotMoveByDifficulty,
   emptyTicTacToeLifetimeStats,
@@ -196,7 +195,6 @@ export default function PortfolioTicTacToe() {
         }),
       );
     }
-    trackPortfolioEvent("tic_tac_toe_completed", { gameResult: nextResult });
   }
 
   function resolveBoard(next: TicTacToeBoard, mark: TicTacToeMark) {
@@ -217,10 +215,7 @@ export default function PortfolioTicTacToe() {
     if (board[index] || result || matchWinner) return;
     giveMobileFeedback(12);
     setHintIndex(null);
-    if (!started) {
-      setStarted(true);
-      trackPortfolioEvent("tic_tac_toe_started");
-    }
+    if (!started) setStarted(true);
 
     if (mode === "local") {
       const next = [...board];
@@ -264,14 +259,12 @@ export default function PortfolioTicTacToe() {
   function nextRound() {
     resetRound();
     setRound((current) => current + 1);
-    trackPortfolioEvent("tic_tac_toe_restarted");
   }
 
   function restartMatch() {
     resetRound();
     setScore({ player: 0, opponent: 0, draws: 0 });
     setRound(1);
-    trackPortfolioEvent("tic_tac_toe_restarted");
   }
 
   function changeMode(next: GameMode) {
@@ -293,9 +286,6 @@ export default function PortfolioTicTacToe() {
     setDifficulty(config.difficulty);
     setSeriesLength(config.seriesLength);
     restartMatch();
-    trackPortfolioEvent("tic_tac_toe_preset_selected", {
-      arcadePreset: preset,
-    });
   }
 
   function showHint() {
@@ -304,7 +294,6 @@ export default function PortfolioTicTacToe() {
     setHintIndex(nextHint >= 0 ? nextHint : null);
     if (nextHint >= 0) {
       setUsedHintThisRound(true);
-      trackPortfolioEvent("tic_tac_toe_hint_used");
     }
   }
 
