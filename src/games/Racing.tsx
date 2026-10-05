@@ -26,6 +26,7 @@ export default function Racing({
   const [speed, setSpeed] = useState(3);
   const board = useRef<HTMLDivElement>(null);
   const touch = useRef<[number, number] | null>(null);
+  const drag = useRef<[number, number] | null>(null);
   const throttle = useRef(0);
   const engine = useRef(state);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -117,6 +118,21 @@ export default function Racing({
           tabIndex={0}
           role="group"
           aria-label="Pista de corrida. A/D ou esquerda/direita dirigem; W/cima acelera; S/baixo freia; espaço pausa."
+          onPointerDown={(e) => {
+            if (e.pointerType === "touch" || e.button !== 0 || status !== "running") return;
+            drag.current = [e.clientX, e.clientY];
+            e.currentTarget.setPointerCapture(e.pointerId);
+          }}
+          onPointerUp={(e) => {
+            const origin = drag.current;
+            drag.current = null;
+            if (!origin || status !== "running") return;
+            const direction = directionFromSwipe(e.clientX - origin[0], e.clientY - origin[1], 24);
+            if (direction === "left") steer(-1);
+            if (direction === "right") steer(1);
+          }}
+          onPointerCancel={() => { drag.current = null; }}
+          onLostPointerCapture={() => { drag.current = null; }}
           onTouchStart={(e) => {
             touch.current = [e.touches[0].clientX, e.touches[0].clientY];
           }}

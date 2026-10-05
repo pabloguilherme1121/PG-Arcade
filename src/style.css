@@ -3078,12 +3078,10 @@ html[data-arcade-contrast="true"] .experience-tools {
 @keyframes arcade-board-enter {
   from {
     opacity: 0;
-    transform: translateY(8px) scale(.992);
     filter: saturate(.9);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
     filter: saturate(1);
   }
 }
@@ -3135,7 +3133,7 @@ html[data-arcade-contrast="true"] .experience-tools {
 
 @media (prefers-reduced-motion: no-preference) {
   [data-arcade-arena] {
-    animation: arcade-shell-enter var(--arcade-motion-slow) var(--arcade-ease-out) both;
+    animation: arcade-board-enter var(--arcade-motion-slow) var(--arcade-ease-out) both;
   }
 }
 
@@ -3152,10 +3150,4 @@ html[data-arcade-contrast="true"] .experience-tools {
     opacity: 1;
     transform: scale(1);
   }
-}
-
-/* Keep interactive controls stationary while the lazy-loaded shell appears. */
-@keyframes arcade-shell-enter {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
