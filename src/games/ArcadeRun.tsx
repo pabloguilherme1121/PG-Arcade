@@ -97,8 +97,11 @@ export default function ArcadeRun({
           tabIndex={0}
           aria-label={`${names[kind]}. Setas, A/D ou deslize para mover, espaço para pausar${kind === "orbital" ? ", Enter para disparar" : ""}.`}
           onTouchStart={(e) => {
-            touch.current = [e.touches[0].clientX, e.touches[0].clientY];
+            touch.current = e.touches.length === 1
+              ? [e.touches[0].clientX, e.touches[0].clientY]
+              : null;
           }}
+          onTouchCancel={() => { touch.current = null; }}
           onTouchEnd={(e) => {
             if (!touch.current || status !== "running") return;
             const dx = e.changedTouches[0].clientX - touch.current[0];
