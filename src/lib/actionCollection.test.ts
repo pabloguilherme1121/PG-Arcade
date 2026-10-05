@@ -5,6 +5,8 @@ import {
   idleInput,
   actionCollectionGames,
   actionPressure,
+  isExposedInvader,
+  invasionFormationFactor,
 } from "./actionCollection";
 describe("action collection physics", () => {
   it("defines ten distinct games and bounds frame delta", () => {
@@ -82,6 +84,25 @@ describe("action collection physics", () => {
     expect(n.objects).toHaveLength(2);
     expect(n.score).toBe(20);
   });
+  it("only exposed invaders can fire through their column", () => {
+    const front = { x: 100, y: 120, vx: 0, vy: 0, r: 13, kind: "invader", hp: 1 };
+    const back = { x: 100, y: 80, vx: 0, vy: 0, r: 13, kind: "invader", hp: 1 };
+    const side = { x: 150, y: 80, vx: 0, vy: 0, r: 13, kind: "invader", hp: 1 };
+    const formation = [back, front, side];
+    expect(isExposedInvader(front, formation)).toBe(true);
+    expect(isExposedInvader(back, formation)).toBe(false);
+    expect(isExposedInvader(side, formation)).toBe(true);
+  });
+
+  it("speeds the invader formation up as enemies are eliminated", () => {
+    expect(invasionFormationFactor(24)).toBe(1);
+    expect(invasionFormationFactor(12)).toBeGreaterThan(1);
+    expect(invasionFormationFactor(1)).toBeGreaterThan(
+      invasionFormationFactor(12),
+    );
+    expect(invasionFormationFactor(0)).toBeLessThanOrEqual(1.9);
+  });
+
   it("invasion projectile removes one enemy and leaves the formation", () => {
     const s = newAction("invasores");
     s.shots = [{ x: 76, y: 45, vx: 0, vy: 0, r: 3, kind: "laser", hp: 1 }];
