@@ -12,10 +12,12 @@ import {
   projectile,
   basketHit,
   basketEntryQuality,
+  basketballTrajectory,
   arrowImpact,
   arrowTrajectory,
   arrowPoints,
   bowlingHit,
+  bowlingTrajectory,
   golfStroke,
   fishingTensionTick,
   fishingReelStep,
@@ -108,6 +110,15 @@ describe("casual collection engines", () => {
       ]),
     ).toBe(false);
   });
+  it("basketball backboard can redirect a shot into the rim", () => {
+    const bank = basketballTrajectory(50, 100, 0);
+    expect(bank.banked).toBe(true);
+    expect(Math.max(...bank.points.map((point) => point.x))).toBeLessThanOrEqual(
+      297,
+    );
+    expect(basketEntryQuality(bank.points, 12)).toBe("swish");
+  });
+
   it("basketball distinguishes a clean swish from a rimmed make", () => {
     expect(
       basketEntryQuality([
@@ -151,6 +162,18 @@ describe("casual collection engines", () => {
     const midpoint = flight[Math.floor(flight.length / 2)];
     expect(midpoint.y).not.toBe(150);
   });
+  it("bowling hook bends late and high power reduces the lateral curve", () => {
+    const straight = bowlingTrajectory(50, 65, 0);
+    const hook = bowlingTrajectory(50, 65, 80);
+    const fastHook = bowlingTrajectory(50, 95, 80);
+    expect(straight.at(-1)?.x).toBeCloseTo(150, 5);
+    expect(hook.at(-1)!.x).toBeGreaterThan(straight.at(-1)!.x);
+    expect(hook.at(-1)!.x - straight.at(-1)!.x).toBeGreaterThan(
+      fastHook.at(-1)!.x - straight.at(-1)!.x,
+    );
+    expect(hook[Math.floor(hook.length / 2)].x).toBeLessThan(hook.at(-1)!.x);
+  });
+
   it("bowling keeps previous pins down and adds realistic pin carry", () => {
     const pins = Array(10).fill(true);
     pins[0] = false;
@@ -170,10 +193,23 @@ describe("casual collection engines", () => {
     expect(straight.position).toBeGreaterThan(angled.position);
   });
 
-  it("golf obstacle stops underpowered crossings and hole rewards controlled pace", () => {
-    expect(golfStroke(150, 50, 20, true).position).toBe(165);
-    expect(golfStroke(250, 50, 25, false).hole).toBe(true);
-    expect(golfStroke(250, 50, 100, false).hole).toBe(false);
+  it("golf green friction shortens roll and rewards a controlled putt", () => {
+    const fairway = golfStroke(100, 50, 30, false);
+    const green = golfStroke(260, 50, 30, false);
+    expect(fairway.position - 100).toBeGreaterThan(green.position - 260);
+    expect(fairway.surface).toBe("fairway");
+    expect(green.surface).toBe("green");
+
+    const putt = golfStroke(285, 50, 22, false);
+    expect(putt.hole).toBe(true);
+    expect(putt.surface).toBe("green");
+  });
+
+  it("golf obstacle absorbs and rebounds an underpowered crossing", () => {
+    const blocked = golfStroke(150, 50, 20, true);
+    expect(blocked.rebounded).toBe(true);
+    expect(blocked.position).toBeLessThan(165);
+    expect(golfStroke(150, 50, 80, true).rebounded).toBe(false);
   });
   it("fishing tension relaxes between deterministic fish pulls", () => {
     expect(fishingTensionTick(50, 1, 1)).toBeLessThan(50);
