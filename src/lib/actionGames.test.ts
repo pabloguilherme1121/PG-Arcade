@@ -36,6 +36,22 @@ describe("Race", () => {
     expect(crash.traffic).toHaveLength(0);
     expect(tickRace(crash, 3).lives).toBe(2);
   });
+  it("takes at most one life when multiple cars overlap in the same tick", () => {
+    const s = initialRace();
+    const crash = tickRace(
+      {
+        ...s,
+        traffic: [
+          { id: 1, lane: 1, y: 72 },
+          { id: 2, lane: 1, y: 78 },
+        ],
+      },
+      3,
+    );
+    expect(crash.lives).toBe(2);
+    expect(crash.traffic).toHaveLength(0);
+  });
+
   it("ignores other lanes and stops after the last life", () => {
     const s = initialRace();
     expect(
