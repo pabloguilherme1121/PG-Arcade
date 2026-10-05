@@ -18,7 +18,7 @@ export const casualGames = [
     name: "Boliche de Precisão",
     category: "Casuais",
     description: "Leia a pista e derrube os dez pinos.",
-    help: "Ajuste a direção e a força da bola. Cada rodada permite dois lançamentos; os pinos derrubados continuam fora na segunda tentativa.",
+    help: "Ajuste direção, força e hook. A curva aparece mais no fim da pista; potência alta reduz o tempo de fechamento. Cada rodada permite dois lançamentos e os pinos derrubados permanecem fora.",
   },
   {
     id: "basquete",
@@ -32,7 +32,7 @@ export const casualGames = [
     name: "Mini Golfe",
     category: "Casuais",
     description: "Superfícies, barreiras e tacadas planejadas.",
-    help: "Ajuste a força e a direção para levar a bola ao buraco. Evite a barreira; cada tacada parte da posição onde a bola parou.",
+    help: "Ajuste força e direção para levar a bola ao buraco. O fairway rola mais livre; no green a bola perde velocidade mais rápido. Obstáculos podem absorver energia e devolver uma tacada fraca.",
   },
   {
     id: "arco",
@@ -195,6 +195,50 @@ export function projectile(
   }
   return points;
 }
+export function basketballTrajectory(
+  angle: number,
+  power: number,
+  wind: number,
+  start: FlightPoint = { x: 35, y: 245 },
+) {
+  const radians = (angle * Math.PI) / 180;
+  const speed = power * 1.5;
+  let x = start.x;
+  let y = start.y;
+  let vx = Math.cos(radians) * speed;
+  let vy = -Math.sin(radians) * speed;
+  let banked = false;
+  const points: FlightPoint[] = [{ x, y }];
+
+  for (let elapsed = 0; elapsed <= 5; elapsed += 0.03) {
+    vx += wind * 0.03;
+    vy += 50 * 0.03;
+    let nextX = x + vx * 0.03;
+    const nextY = y + vy * 0.03;
+
+    if (
+      !banked &&
+      vx > 0 &&
+      x < 297 &&
+      nextX >= 297 &&
+      nextY >= 80 &&
+      nextY <= 132
+    ) {
+      nextX = 296;
+      vx = -Math.abs(vx) * 0.55;
+      vy *= 0.82;
+      banked = true;
+    }
+
+    x = nextX;
+    y = nextY;
+    points.push({ x, y });
+    if (y > 260 || x > 380 || x < 0) break;
+  }
+
+  return { points, banked };
+}
+
 export type BasketEntryQuality = "swish" | "rim" | "miss";
 
 export function basketEntryQuality(
@@ -248,14 +292,38 @@ export function arrowTrajectory(
 export function arrowPoints(y: number, tolerance = 1) {
   return Math.max(0, 100 - Math.round(Math.abs(y - 150) * tolerance));
 }
+export function bowlingTrajectory(
+  aim: number,
+  power: number,
+  hook = 0,
+): FlightPoint[] {
+  const normalizedAim = Math.max(0, Math.min(100, aim));
+  const normalizedPower = Math.max(10, Math.min(100, power));
+  const normalizedHook = Math.max(-100, Math.min(100, hook));
+  const line = 150 + (normalizedAim - 50) * 1.8;
+  const hookScale = Math.max(0.11, 0.24 - normalizedPower * 0.0011);
+  const hookOffset = normalizedHook * hookScale;
+
+  return Array.from({ length: 13 }, (_, index) => {
+    const t = index / 12;
+    const lateHook = hookOffset * Math.pow(t, 2.35);
+    return {
+      x: 150 + (line - 150) * t + lateHook,
+      y: 240 - 170 * t,
+    };
+  });
+}
+
 export function bowlingHit(
   pins: boolean[],
   aim: number,
   power: number,
   difficulty = 1,
+  hook = 0,
 ) {
   const normalizedPower = Math.max(0, Math.min(100, power));
-  const line = 150 + (Math.max(0, Math.min(100, aim)) - 50) * 1.8;
+  const trajectory = bowlingTrajectory(aim, normalizedPower, hook);
+  const line = trajectory.at(-1)?.x ?? 150;
   const positions = pins.map((_, i) => {
     const row = Math.floor((Math.sqrt(8 * i + 1) - 1) / 2);
     const first = (row * (row + 1)) / 2;
@@ -325,14 +393,36 @@ export function golfStroke(
   const normalizedPower = Math.max(0, Math.min(100, power));
   const angle = ((normalizedAim - 50) * 1.2 * Math.PI) / 180;
   const alignment = Math.max(0.45, Math.cos(angle));
-  let next = Math.min(
-    340,
-    Math.max(15, position + normalizedPower * 2.8 * alignment),
-  );
-  if (barrier && position < 180 && next > 180 && normalizedPower < 72)
-    next = 165;
+  const greenStart = 250;
+  const rawDistance = normalizedPower * 2.8 * alignment;
+
+  let next =
+    position >= greenStart
+      ? position + rawDistance * 0.56
+      : position + rawDistance;
+
+  if (position < greenStart && next > greenStart) {
+    const fairwayDistance = greenStart - position;
+    const remaining = Math.max(0, rawDistance - fairwayDistance);
+    next = greenStart + remaining * 0.56;
+  }
+
+  let rebounded = false;
+  if (barrier && position < 180 && next > 180 && normalizedPower < 72) {
+    const rebound = Math.max(0, 72 - normalizedPower) * 0.35;
+    next = Math.max(15, 165 - rebound);
+    rebounded = true;
+  }
+
+  next = Math.min(340, Math.max(15, next));
+  const surface = next >= greenStart ? "green" : "fairway";
+  const effectiveArrivalPower =
+    surface === "green" ? normalizedPower * 0.56 : normalizedPower;
+
   return {
     position: next,
-    hole: Math.abs(next - 320) < 12 && normalizedPower <= 55,
+    hole: Math.abs(next - 320) < 10 && effectiveArrivalPower <= 35,
+    surface,
+    rebounded,
   };
 }
