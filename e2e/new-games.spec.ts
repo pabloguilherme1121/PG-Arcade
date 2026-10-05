@@ -223,22 +223,22 @@ test("eight queens saves a genuine victory, undo cannot award it twice, and relo
   await expect(game.locator(".new-hud strong").nth(1)).toHaveText(record!);
 });
 
-test("all quiz rounds score real answers, complete and persist", async ({
-  page,
-}) => {
-  test.setTimeout(120000);
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  for (const id of [
-    "arithmetic",
-    "fractions",
-    "primes",
-    "equation",
-    "numsequence",
-    "anagram",
-    "stroop",
-    "oddone",
-    "estimate",
-  ]) {
+const scoredQuizIds = [
+  "arithmetic",
+  "fractions",
+  "primes",
+  "equation",
+  "numsequence",
+  "anagram",
+  "stroop",
+  "oddone",
+  "estimate",
+] as const;
+
+for (const id of scoredQuizIds)
+  test(`${id}: all quiz rounds score, complete and persist`, async ({ page }) => {
+    test.setTimeout(45000);
+    await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(`./#/jogar/${id}`);
     const arena = page.locator(`[data-new-game="${id}"]`);
     for (let r = 0; r < 10; r++) {
@@ -262,8 +262,7 @@ test("all quiz rounds score real answers, complete and persist", async ({
     await expect(arena.locator(".new-hud strong").nth(1)).not.toHaveText("0");
     await page.reload();
     await expect(arena.locator(".new-hud strong").nth(1)).not.toHaveText("0");
-  }
-});
+  });
 
 test("hangman and word search reach actual victory without timers", async ({
   page,
