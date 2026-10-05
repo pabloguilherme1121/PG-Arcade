@@ -13,6 +13,7 @@ import {
   chooseCheckersBotMove,
   createCheckersBoard,
   getCheckersCoordinates,
+  getCheckersContinuationFrom,
   getCheckersLegalMoves,
   getCheckersMovesFrom,
   getCheckersWinner,
@@ -114,15 +115,16 @@ export default function PortfolioCheckers() {
     const next = applyCheckersMove(board, move);
     setBoard(next);
 
-    if (move.capture !== undefined && allowContinuation) {
-      const continuation = getCheckersMovesFrom(next, move.to, true);
-      if (continuation.length) {
-        setHumanForcedFrom(move.to);
-        setSelected(move.to);
-        return;
-      }
+    const continuationFrom = allowContinuation
+      ? getCheckersContinuationFrom(next, move)
+      : null;
+    if (continuationFrom !== null) {
+      setHumanForcedFrom(continuationFrom);
+      setSelected(continuationFrom);
+      return;
     }
 
+    setHumanForcedFrom(null);
     const nextTurn: CheckersPlayer = player === "blue" ? "red" : "blue";
     const nextWinner = getCheckersWinner(next, nextTurn);
     setSelected(null);
@@ -177,12 +179,10 @@ export default function PortfolioCheckers() {
         setBoard(next);
         setSelected(null);
 
-        if (move.capture !== undefined) {
-          const continuation = getCheckersMovesFrom(next, move.to, true);
-          if (continuation.length) {
-            setBotForcedFrom(move.to);
-            return;
-          }
+        const continuationFrom = getCheckersContinuationFrom(next, move);
+        if (continuationFrom !== null) {
+          setBotForcedFrom(continuationFrom);
+          return;
         }
 
         setBotForcedFrom(null);
