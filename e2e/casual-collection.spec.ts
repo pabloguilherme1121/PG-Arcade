@@ -100,6 +100,20 @@ test("golf obstacle can be crossed with planned successive strokes", async ({
   await page.getByRole("button", { name: /Próxima rodada ·/ }).click();
   await expect(page.locator(".casual-hud strong").first()).toHaveText("2 / 5");
 });
+
+test("match3 keyboard cursor does not wrap across row edges", async ({ page }) => {
+  await start(page, "match3");
+  const board = page.locator(".jewel-board");
+  const cells = board.locator("button");
+  await board.focus();
+  for (let i = 0; i < 5; i++) await board.press("ArrowRight");
+  await expect(cells.nth(5)).toHaveClass(/cursor/);
+  await board.press("ArrowRight");
+  await expect(cells.nth(5)).toHaveClass(/cursor/);
+  await board.press("ArrowDown");
+  await expect(cells.nth(11)).toHaveClass(/cursor/);
+});
+
 test("match3 valid adjacent swap spends one move and produces points", async ({
   page,
 }) => {
