@@ -38,6 +38,25 @@ test("Racing prevents instant double lane changes while steering settles", async
   await expect(car).toHaveAttribute("data-lane", "1");
 });
 
+test("Racing supports pointer drag steering without changing throttle", async ({ page }) => {
+  await page.goto("./#/jogar/corrida");
+  await page.clock.install();
+  await page.getByRole("button", { name: "Largar", exact: true }).click();
+
+  const board = page.locator(".race-board");
+  const car = page.locator(".race-car");
+  const box = await board.boundingBox();
+  expect(box).not.toBeNull();
+
+  await page.mouse.move(box!.x + box!.width * 0.3, box!.y + box!.height * 0.5);
+  await page.mouse.down();
+  await page.mouse.move(box!.x + box!.width * 0.7, box!.y + box!.height * 0.5);
+  await page.mouse.up();
+
+  await expect(car).toHaveAttribute("data-lane", "2");
+  await expect(page.locator("[data-race-speed]")).toBeVisible();
+});
+
 test("Racing throttle and brake change the live speed progressively", async ({ page }) => {
   await page.goto("./#/jogar/corrida");
   await page.clock.install();
@@ -61,17 +80,18 @@ test("Racing throttle and brake change the live speed progressively", async ({ p
 });
 
 
-test("Racing can end voluntarily and persist the current distance", async ({ page }) => {
+test("Racing can end while running and persist its frozen final distance", async ({ page }) => {
   await page.goto("./#/jogar/corrida");
   await page.clock.install();
   await page.getByRole("button", { name: "Largar", exact: true }).click();
   await page.clock.runFor(600);
-  await page.getByRole("button", { name: "Pausar", exact: true }).click();
+  await page.getByRole("button", { name: "Encerrar e salvar", exact: true }).click();
 
   const distance = await page.locator(".scores strong").first().textContent();
   expect(Number(distance)).toBeGreaterThan(0);
-
-  await page.getByRole("button", { name: "Encerrar e salvar", exact: true }).click();
+  await page.clock.runFor(1000);
+  await expect(page.locator(".scores strong").first()).toHaveText(distance!);
+  await expect(page.locator(".scores strong").nth(1)).toHaveText(distance!);
   await expect(page.getByRole("button", { name: "Largar", exact: true })).toBeDisabled();
 
   await page.reload();
