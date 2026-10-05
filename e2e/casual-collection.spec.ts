@@ -83,16 +83,17 @@ for (const id of ["vinteum", "dados", "boliche", "basquete", "arco"])
     await page.reload();
     await expect(page.locator(".casual-hud strong").nth(2)).toHaveText(record);
   });
-test("golf obstacle can be crossed with planned successive strokes", async ({
+test("golf rewards straight alignment and controlled successive strokes", async ({
   page,
 }) => {
   await start(page, "golfe");
-  await range(page, "Mira", 80);
+  await range(page, "Mira", 50);
+  await range(page, "Força", 70);
   await page.getByRole("button", { name: "Dar tacada", exact: true }).click();
   await expect(page.locator(".sport-scene [role=status]")).toContainText(
     "Planeje",
   );
-  await range(page, "Mira", 78);
+  await range(page, "Força", 32);
   await page.getByRole("button", { name: "Dar tacada", exact: true }).click();
   await expect(page.locator(".sport-scene [role=status]")).toContainText(
     "Bola no buraco",
