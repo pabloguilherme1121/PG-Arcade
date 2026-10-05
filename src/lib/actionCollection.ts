@@ -11,7 +11,7 @@ export const actionCollectionGames = [
     name: "Pong de Arena",
     description: "Dispute uma partida de reflexos contra a máquina.",
     category: "Casuais",
-    help: "Use cima e baixo para mover sua raquete. Marque pontos fazendo a bola passar pela raquete rival. O adversário fica mais rápido na dificuldade alta.",
+    help: "Use cima e baixo para mover sua raquete. O ponto de contato e o movimento da raquete aplicam efeito à bola. Marque fazendo a bola passar pelo rival; a velocidade cresce nas trocas, mas tem limite para manter o rally controlável.",
   },
   {
     id: "asteroides",
@@ -289,20 +289,20 @@ export function stepAction(
         s.ball = body(240, 180, 120, -160 - s.level * 8, 7, "ball");
       }
     } else {
-      s.paddle = clamp(
-        s.paddle + ((input.down ? 1 : 0) - (input.up ? 1 : 0)) * 300 * dt,
-        40,
-        320,
-      );
-      s.enemy += clamp(b.y - s.enemy, -160 * f * dt, 160 * f * dt);
+      const paddleVelocity =
+        ((input.down ? 1 : 0) - (input.up ? 1 : 0)) * 300;
+      s.paddle = clamp(s.paddle + paddleVelocity * dt, 40, 320);
+      const enemyStep = clamp(b.y - s.enemy, -160 * f * dt, 160 * f * dt);
+      const enemyVelocity = dt > 0 ? enemyStep / dt : 0;
+      s.enemy += enemyStep;
       if (b.y < 7 || b.y > 353) {
         b.y = clamp(b.y, 7, 353);
         b.vy *= -1;
       }
       if (b.vx < 0 && b.x <= 29 && b.x >= 15 && Math.abs(b.y - s.paddle) < 43) {
         b.x = 30;
-        b.vx = Math.abs(b.vx) + 8;
-        b.vy = (b.y - s.paddle) * 4;
+        b.vx = Math.min(320, Math.abs(b.vx) + 8);
+        b.vy = clamp((b.y - s.paddle) * 4 + paddleVelocity * 0.22, -260, 260);
       }
       if (
         b.vx > 0 &&
@@ -311,8 +311,8 @@ export function stepAction(
         Math.abs(b.y - s.enemy) < 43
       ) {
         b.x = 450;
-        b.vx = -Math.abs(b.vx) - 5;
-        b.vy = (b.y - s.enemy) * 4;
+        b.vx = -Math.min(320, Math.abs(b.vx) + 5);
+        b.vy = clamp((b.y - s.enemy) * 4 + enemyVelocity * 0.18, -260, 260);
       }
       if (b.x > 490) {
         s.score += 100;
