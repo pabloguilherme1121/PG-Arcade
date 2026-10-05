@@ -12,6 +12,7 @@ import {
   projectile,
   basketHit,
   basketEntryQuality,
+  basketballTrajectory,
   arrowImpact,
   arrowTrajectory,
   arrowPoints,
@@ -108,6 +109,15 @@ describe("casual collection engines", () => {
       ]),
     ).toBe(false);
   });
+  it("basketball backboard can redirect a shot into the rim", () => {
+    const bank = basketballTrajectory(50, 100, 0);
+    expect(bank.banked).toBe(true);
+    expect(Math.max(...bank.points.map((point) => point.x))).toBeLessThanOrEqual(
+      297,
+    );
+    expect(basketEntryQuality(bank.points, 12)).toBe("swish");
+  });
+
   it("basketball distinguishes a clean swish from a rimmed make", () => {
     expect(
       basketEntryQuality([
