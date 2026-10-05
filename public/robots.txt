@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://pabloguilherme1121.github.io/PG-Arcade/sitemap.xml
