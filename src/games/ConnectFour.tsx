@@ -51,7 +51,12 @@ export default function ConnectFour() {
             : over ? "Empate!" : paused ? "Partida pausada"
             : botTurn ? "Bot pensando…" : `Vez do jogador ${turn} — ${turn === 1 ? "coral" : "lima"}`}
         </p>
-        <div className="connect-controls" aria-label="Escolha a coluna">
+        <div className="connect-controls" role="group" tabIndex={0} aria-label="Escolha a coluna. Use números de 1 a 7 ou os botões." onKeyDown={(e) => {
+          if (/^[1-7]$/.test(e.key) && !e.ctrlKey && !e.altKey && !e.metaKey) {
+            e.preventDefault();
+            if (!e.repeat) play(Number(e.key) - 1);
+          }
+        }}>
           {Array.from({ length: 7 }, (_, i) => (
             <button key={i} aria-label={`Jogar na coluna ${i + 1}`} disabled={over || paused || botTurn || !!board[i]} onClick={() => play(i)}>{i + 1} ↓</button>
           ))}
