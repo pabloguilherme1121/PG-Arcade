@@ -10,7 +10,6 @@ import {
   swapJewels,
   settleJewels,
   hasJewelMove,
-  projectile,
   basketEntryQuality,
   basketballTrajectory,
   arrowImpact,
