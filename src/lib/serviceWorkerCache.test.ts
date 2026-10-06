@@ -144,6 +144,9 @@ describe("service worker runtime cache policy", () => {
     expect(harness.entries.has(root)).toBe(true);
     expect(harness.entries.has(appJs)).toBe(true);
     expect(harness.entries.has(appCss)).toBe(true);
+    expect(
+      harness.entries.has(new URL("./assets/runtime-new.js", root).href),
+    ).toBe(true);
 
     const protectedUrls = new Set([root, appJs, appCss]);
     const runtimeCount = [...harness.entries.keys()].filter(
