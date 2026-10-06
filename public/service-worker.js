@@ -1,48 +1,21 @@
 const CACHE = "pg-arcade-2026-10-05-v2";
 const ROOT = new URL("./", self.registration.scope).href;
 const MAX_RUNTIME_ENTRIES = 120;
-const SHELL_REFERENCE_PATTERN = /\b(?:src|href)=["']([^"']+)["']/g;
-
-async function getProtectedShellUrls(cache) {
-  const protectedUrls = new Set([ROOT]);
-  const shell = await cache.match(ROOT);
-  if (!shell) return protectedUrls;
-
-  const html = await shell.clone().text();
-  for (const match of html.matchAll(SHELL_REFERENCE_PATTERN)) {
-    const reference = match[1];
-    if (!reference) continue;
-
-    try {
-      const url = new URL(reference, ROOT);
-      if (url.origin === self.location.origin) {
-        protectedUrls.add(url.href);
-      }
-    } catch {
-      // Ignore malformed optional references in the generated shell.
-    }
-  }
-
-  return protectedUrls;
-}
 
 async function trimRuntimeCache(cache) {
-  const protectedUrls = await getProtectedShellUrls(cache);
   const requests = (await cache.keys()).filter(
-    (request) => request.url !== ROOT && !protectedUrls.has(request.url),
+    (request) => request.url !== ROOT,
   );
   const overflow = requests.length - MAX_RUNTIME_ENTRIES;
   if (overflow <= 0) return;
-
   await Promise.all(
     requests.slice(0, overflow).map((request) => cache.delete(request)),
   );
 }
 
 async function cacheRuntimeResponse(request, response) {
-  if (!response.ok) return;
   const cache = await caches.open(CACHE);
-  await cache.put(request, response.clone());
+  await cache.put(request, response);
   await trimRuntimeCache(cache);
 }
 
@@ -76,34 +49,32 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET" || url.origin !== self.location.origin) return;
 
   if (request.mode === "navigate") {
-    const navigation = fetch(request)
-      .then((response) => ({ response, cacheable: response.ok }))
-      .catch(async () => ({
-        response: (await caches.match(ROOT)) || Response.error(),
-        cacheable: false,
-      }));
-
-    event.respondWith(navigation.then(({ response }) => response));
-    event.waitUntil(
-      navigation.then(async ({ response, cacheable }) => {
-        if (!cacheable) return;
-        const cache = await caches.open(CACHE);
-        await cache.put(ROOT, response.clone());
-      }),
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            const copy = response.clone();
+            event.waitUntil(
+              caches.open(CACHE).then((cache) => cache.put(ROOT, copy)),
+            );
+          }
+          return response;
+        })
+        .catch(async () => (await caches.match(ROOT)) || Response.error()),
     );
     return;
   }
 
-  const asset = caches.match(request).then(async (cached) => {
-    if (cached) return { response: cached, cacheable: false };
-    const response = await fetch(request);
-    return { response, cacheable: response.ok };
-  });
-
-  event.respondWith(asset.then(({ response }) => response));
-  event.waitUntil(
-    asset.then(({ response, cacheable }) =>
-      cacheable ? cacheRuntimeResponse(request, response) : undefined,
+  event.respondWith(
+    caches.match(request).then(
+      (cached) =>
+        cached ||
+        fetch(request).then((response) => {
+          if (response.ok) {
+            event.waitUntil(cacheRuntimeResponse(request, response.clone()));
+          }
+          return response;
+        }),
     ),
   );
 });
