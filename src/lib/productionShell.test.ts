@@ -25,7 +25,7 @@ describe("production shell", () => {
     expect(worker).toContain("request.mode === \"navigate\"");
     expect(worker).toContain("MAX_RUNTIME_ENTRIES");
     expect(worker).toContain("trimRuntimeCache");
-    expect(worker).toContain("request.url !== ROOT");
+    expect(worker).toContain("isShellRequest");
     expect(worker).toContain("event.waitUntil(cacheRuntimeResponse");
   });
 });
