@@ -1,5 +1,17 @@
 import { it, expect } from "vitest";
-import { normalizeProgress, mergeProgress } from "./progress";
+import { normalizeProgress, mergeProgress, emptyProgress } from "./progress";
+it("does not count imported records as visits or visits as records", () => {
+  const result = mergeProgress(emptyProgress(), {
+    records: { snake: 20 },
+    visits: { palavra: 3 },
+  });
+  expect(result.visits).toEqual({ palavra: 3 });
+  expect(result.records).toEqual({ snake: 20 });
+});
+it("discards zero results that do not represent explored games or records", () => {
+  expect(normalizeProgress({ visits: { snake: 0, palavra: 0.5 }, records: { memoria: 0 } }))
+    .toEqual(emptyProgress());
+});
 it("restores backups without losing better records or duplicating visits", () => {
   const current = normalizeProgress({
     favorites: ["snake"],

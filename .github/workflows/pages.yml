@@ -30,7 +30,7 @@ jobs:
         with:
           name: arcade-dist
           path: dist
-          retention-days: 1
+          retention-days: 7
 
   e2e:
     needs: quality
@@ -66,9 +66,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Require quality and all browser jobs
+        env:
+          QUALITY_RESULT: ${{ needs.quality.result }}
+          E2E_RESULT: ${{ needs.e2e.result }}
         run: |
-          test "${{ needs.quality.result }}" = "success"
-          test "${{ needs.e2e.result }}" = "success"
+          echo "Quality result: $QUALITY_RESULT"
+          echo "Browser matrix result: $E2E_RESULT"
+          if [ "$QUALITY_RESULT" != "success" ] || [ "$E2E_RESULT" != "success" ]; then
+            echo "::error::Quality and all browser jobs must succeed. Inspect the failed or cancelled upstream job."
+            exit 1
+          fi
 
   pages-artifact:
     if: github.event_name != 'pull_request'

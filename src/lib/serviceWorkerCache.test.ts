@@ -16,6 +16,7 @@ type FetchEventHarness = {
 
 function createHarness(blockedPutUrl?: string) {
   const entries = new Map<string, Response>();
+  const network = new Map<string, Response>();
   const handlers = new Map<string, (event: FetchEventHarness) => void>();
   const background: Promise<unknown>[] = [];
   let releasePut: (() => void) | undefined;
@@ -55,8 +56,10 @@ function createHarness(blockedPutUrl?: string) {
     Promise,
     Set,
     console,
-    fetch: async (request: Request) =>
-      new Response(`network:${request.url}`, {
+    fetch: async (request: Request | string) =>
+      network.get(normalize(request))?.clone() || new Response(normalize(request) === root
+        ? '<script type="module" src="./assets/index.js"></script><link rel="stylesheet" href="./assets/index.css"><link rel="modulepreload" href="./assets/vendor.js"><link rel="icon" href="./icon.svg">'
+        : `network:${normalize(request)}`, {
         status: 200,
         headers: { "content-type": "application/javascript" },
       }),
@@ -89,15 +92,25 @@ function createHarness(blockedPutUrl?: string) {
 
   return {
     entries,
+    network,
+    async install() {
+      const pending: Promise<unknown>[] = [];
+      handlers.get("install")?.({
+        waitUntil(promise: Promise<unknown>) { pending.push(promise); },
+      } as FetchEventHarness);
+      await Promise.all(pending);
+    },
     seed(url: string, body: string, contentType = "application/octet-stream") {
       entries.set(
         url,
         new Response(body, { headers: { "content-type": contentType } }),
       );
     },
-    dispatchFetch(url: string) {
+    dispatchFetch(url: string, mode?: string) {
+      const request = new Request(url);
+      if (mode) Object.defineProperty(request, "mode", { value: mode });
       const event: FetchEventHarness = {
-        request: new Request(url),
+        request,
         respondWith(promise) {
           event.response = Promise.resolve(promise);
         },
@@ -118,18 +131,57 @@ function createHarness(blockedPutUrl?: string) {
 }
 
 describe("service worker runtime cache policy", () => {
+  it("keeps the old offline HTML when a new navigation shell asset fails", async () => {
+    const harness = createHarness();
+    harness.seed(root, "old HTML", "text/html");
+    const nextAsset = new URL("./assets/index-next.js", root).href;
+    harness.network.set(root, new Response('<script type="module" src="./assets/index-next.js"></script>'));
+    harness.network.set(nextAsset, new Response("missing", { status: 404 }));
+    const event = harness.dispatchFetch(root, "navigate");
+    expect(await (await event.response).text()).toContain("index-next.js");
+    await Promise.all(event.background);
+    expect(await harness.entries.get(root)?.text()).toBe("old HTML");
+  });
+
+  it("returns new navigation HTML promptly and commits it only after its shell assets", async () => {
+    const nextAsset = new URL("./assets/index-next.js", root).href;
+    const harness = createHarness(nextAsset);
+    harness.seed(root, "old HTML", "text/html");
+    const nextHtml = '<script type="module" src="./assets/index-next.js"></script><link rel="modulepreload" href="./assets/vendor-next.js">';
+    harness.network.set(root, new Response(nextHtml));
+    const event = harness.dispatchFetch(root, "navigate");
+    expect(await (await event.response).text()).toBe(nextHtml);
+    expect(await harness.entries.get(root)?.clone().text()).toBe("old HTML");
+    harness.releasePut();
+    await Promise.all(event.background);
+    expect(await harness.entries.get(root)?.text()).toBe(nextHtml);
+    expect(harness.entries.has(nextAsset)).toBe(true);
+    expect(harness.entries.has(new URL("./assets/vendor-next.js", root).href)).toBe(true);
+  });
+  it("installs the complete initial shell before controlling the first visit", async () => {
+    const harness = createHarness();
+    await harness.install();
+    expect([...harness.entries.keys()]).toEqual(expect.arrayContaining([
+      root, new URL("./assets/index.js", root).href,
+      new URL("./assets/index.css", root).href,
+      new URL("./assets/vendor.js", root).href,
+    ]));
+    expect(harness.entries.has(new URL("./icon.svg", root).href)).toBe(false);
+  });
   it("keeps the root shell assets while limiting non-shell runtime entries to 120", async () => {
     const harness = createHarness();
     const appJs = new URL("./assets/index.js", root).href;
     const appCss = new URL("./assets/index.css", root).href;
+    const sharedModule = new URL("./assets/jsx-runtime.js", root).href;
 
     harness.seed(
       root,
-      '<!doctype html><link rel="stylesheet" href="./assets/index.css"><script type="module" src="./assets/index.js"></script>',
+      '<!doctype html><link rel="stylesheet" href="./assets/index.css"><script type="module" src="./assets/index.js"></script><link rel="modulepreload" href="./assets/jsx-runtime.js">',
       "text/html",
     );
     harness.seed(appJs, "app", "application/javascript");
     harness.seed(appCss, "css", "text/css");
+    harness.seed(sharedModule, "module", "application/javascript");
 
     for (let index = 0; index < 120; index += 1) {
       harness.seed(new URL(`./assets/runtime-${index}.js`, root).href, "chunk");
@@ -144,11 +196,12 @@ describe("service worker runtime cache policy", () => {
     expect(harness.entries.has(root)).toBe(true);
     expect(harness.entries.has(appJs)).toBe(true);
     expect(harness.entries.has(appCss)).toBe(true);
+    expect(harness.entries.has(sharedModule)).toBe(true);
     expect(
       harness.entries.has(new URL("./assets/runtime-new.js", root).href),
     ).toBe(true);
 
-    const protectedUrls = new Set([root, appJs, appCss]);
+    const protectedUrls = new Set([root, appJs, appCss, sharedModule]);
     const runtimeCount = [...harness.entries.keys()].filter(
       (url) => !protectedUrls.has(url),
     ).length;

@@ -25,7 +25,7 @@ export function normalizeProgress(raw: unknown): Progress {
           isGameId(key) &&
           typeof value === "number" &&
           Number.isFinite(value) &&
-          value >= 0
+          value >= 1
         )
           clean[field][key] = Math.floor(value);
   clean.last = isGameId(data.last) ? data.last : null;
@@ -52,17 +52,15 @@ export function mergeProgress(current: Progress, imported: unknown): Progress {
   const incoming = normalizeProgress(imported);
   const result = normalizeProgress(current);
   result.favorites = [...new Set([...result.favorites, ...incoming.favorites])];
-  for (const game of [
-    ...new Set([
-      ...Object.keys(incoming.visits),
-      ...Object.keys(incoming.records),
-    ]),
-  ]) {
+  for (const game of Object.keys(incoming.visits)) {
     if (!isGameId(game)) continue;
     result.visits[game] = Math.max(
       result.visits[game] || 0,
       incoming.visits[game] || 0,
     );
+  }
+  for (const game of Object.keys(incoming.records)) {
+    if (!isGameId(game)) continue;
     const oldScore = result.records[game] || 0,
       newScore = incoming.records[game] || 0;
     result.records[game] =

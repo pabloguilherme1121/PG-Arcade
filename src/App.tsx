@@ -43,6 +43,7 @@ import {
   type Progress,
 } from "./lib/progress";
 import { readPreferences, applyPreferences } from "./lib/preferences";
+import { useReducedMotion } from "./useReducedMotion";
 import "./features/portfolio/components/PortfolioArcade.css";
 type PlayerProps = { record: number; onRecord: (n: number) => void };
 const collectionPlayers = Object.fromEntries(
@@ -283,7 +284,7 @@ function Preview({ id }: { id: GameId }) {
     );
   if (id === "liga4" || id === "puzzle")
     return (
-      <div className={`preview new-preview ${id}`}>
+      <div className={`preview new-preview ${id}`} aria-hidden="true">
         {Array.from({ length: id === "liga4" ? 28 : 9 }, (_, i) => (
           <span key={i}>{id === "puzzle" ? (i < 8 ? i + 1 : "") : ""}</span>
         ))}
@@ -291,7 +292,7 @@ function Preview({ id }: { id: GameId }) {
     );
   if (id === "2048")
     return (
-      <div className="preview p2048">
+      <div className="preview p2048" aria-hidden="true">
         {[2, 4, 8, 16, 4, 8, 32, 64, 2, 16, 128, 256, 4, 8, 32, 512].map(
           (n, i) => (
             <span key={i} className={`tile-${n}`}>
@@ -303,7 +304,7 @@ function Preview({ id }: { id: GameId }) {
     );
   if (id === "snake")
     return (
-      <div className="preview psnake">
+      <div className="preview psnake" aria-hidden="true">
         <div className="mini-snake">
           {Array.from({ length: 7 }, (_, i) => (
             <i key={i} />
@@ -314,7 +315,7 @@ function Preview({ id }: { id: GameId }) {
     );
   if (id === "memoria")
     return (
-      <div className="preview pmemory">
+      <div className="preview pmemory" aria-hidden="true">
         <span>✦</span>
         <span>?</span>
         <span>✦</span>
@@ -325,7 +326,7 @@ function Preview({ id }: { id: GameId }) {
     );
   if (id === "xadrez" || id === "damas")
     return (
-      <div className={`preview pboard ${id}`}>
+      <div className={`preview pboard ${id}`} aria-hidden="true">
         {Array.from({ length: 32 }, (_, i) => (
           <span
             key={i}
@@ -344,14 +345,14 @@ function Preview({ id }: { id: GameId }) {
     );
   if (id === "futebol")
     return (
-      <div className="preview pfootball">
+      <div className="preview pfootball" aria-hidden="true">
         <div className="goal" />
         <span>⚽</span>
       </div>
     );
   if (id === "domino")
     return (
-      <div className="preview pdomino">
+      <div className="preview pdomino" aria-hidden="true">
         {[4, 2, 6].map((n, i) => (
           <div key={i}>
             <span>{n}</span>
@@ -361,7 +362,7 @@ function Preview({ id }: { id: GameId }) {
       </div>
     );
   return (
-    <div className="preview pvelha">
+    <div className="preview pvelha" aria-hidden="true">
       {["×", "○", "", "", "×", "○", "○", "", "×"].map((s, i) => (
         <span key={i}>{s}</span>
       ))}
@@ -371,6 +372,7 @@ function Preview({ id }: { id: GameId }) {
 const MemoPreview = memo(Preview);
 
 export default function App() {
+  const reducedMotion = useReducedMotion();
   const [page, setPage] = useState(route);
   const [focusMode, setFocusMode] = useState(false);
   const [preferences, setPreferences] = useState(readPreferences);
@@ -444,11 +446,7 @@ export default function App() {
   }, [page]);
   const update = useCallback(
     (fn: (p: Progress) => Progress) =>
-      setProgress((p) => {
-        const next = fn(p);
-        saveProgress(next);
-        return next;
-      }),
+      setProgress(fn),
     [],
   );
   useEffect(() => {
@@ -543,6 +541,7 @@ export default function App() {
   const normalizedQuery = useMemo(
     () =>
       query
+        .trim()
         .toLocaleLowerCase("pt-BR")
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, ""),
@@ -987,10 +986,7 @@ export default function App() {
                   onClick={(event) => {
                     event.preventDefault();
                     document.getElementById("catalogo")?.scrollIntoView({
-                      behavior: matchMedia("(prefers-reduced-motion: reduce)")
-                        .matches
-                        ? "instant"
-                        : "smooth",
+                      behavior: reducedMotion ? "instant" : "smooth",
                     });
                   }}
                 >
