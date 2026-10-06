@@ -2,9 +2,15 @@ const CACHE = "pg-arcade-2026-10-05-v2";
 const ROOT = new URL("./", self.registration.scope).href;
 const MAX_RUNTIME_ENTRIES = 120;
 
+function isShellRequest(request) {
+  if (request.url === ROOT) return true;
+  const url = new URL(request.url);
+  return /\/assets\/index(?:-[^/]+)?\.(?:js|css)$/.test(url.pathname);
+}
+
 async function trimRuntimeCache(cache) {
   const requests = (await cache.keys()).filter(
-    (request) => request.url !== ROOT,
+    (request) => !isShellRequest(request),
   );
   const overflow = requests.length - MAX_RUNTIME_ENTRIES;
   if (overflow <= 0) return;
