@@ -32,11 +32,12 @@ for (const ending of ["pointer loss", "animation win"] as const) {
         return setItem.call(this, key, value);
       };
     }, ending);
+    await page.goto("./#/jogar/balloons");
+    const game = page.locator('[data-new-game="balloons"]');
+    await expect(game.locator("canvas")).toBeVisible();
     const now = new Date("2026-10-06T12:00:00Z");
     await page.clock.install({ time: now });
     await page.clock.pauseAt(new Date(now.getTime() + 1000));
-    await page.goto("./#/jogar/balloons");
-    const game = page.locator('[data-new-game="balloons"]');
     await game.getByRole("button", { name: "Começar", exact: true }).click();
     await page.clock.runFor(150);
     if (ending === "pointer loss") {
@@ -68,11 +69,12 @@ test("moving focus to a motion control releases held canvas keys", async ({ page
       return result;
     }) as typeof structuredClone;
   });
+  await page.goto("./#/jogar/turret");
+  const game = page.locator('[data-new-game="turret"]');
+  await expect(game.locator("canvas")).toBeVisible();
   const now = new Date("2026-10-06T12:00:00Z");
   await page.clock.install({ time: now });
   await page.clock.pauseAt(new Date(now.getTime() + 1000));
-  await page.goto("./#/jogar/turret");
-  const game = page.locator('[data-new-game="turret"]');
   await game.getByRole("button", { name: "Começar", exact: true }).click();
   await expect(game.locator("canvas")).toBeFocused();
   await page.keyboard.down("ArrowRight");

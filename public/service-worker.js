@@ -81,7 +81,7 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
-  if (request.method !== "GET" || url.origin !== self.location.origin) return;
+  if (request.method !== "GET" || !url.href.startsWith(ROOT)) return;
 
   if (request.mode === "navigate") {
     event.respondWith(
@@ -101,7 +101,11 @@ self.addEventListener("fetch", (event) => {
   }
 
   event.respondWith(
-    caches.match(request).then(
+    // Public build assets are identical for every Origin header. Preview servers
+    // emit Vary: Origin, while module requests add Origin after shell precaching.
+    caches.match(request, {
+      ignoreVary: url.href.startsWith(new URL("assets/", ROOT).href),
+    }).then(
       (cached) =>
         cached ||
         fetch(request).then((response) => {
