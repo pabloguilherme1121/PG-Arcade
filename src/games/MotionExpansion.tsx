@@ -231,6 +231,11 @@ export default function MotionExpansion({
   }, []);
   useAutoPause(pause);
   useEffect(() => {
+    if (!["won", "lost"].includes(hud.status) || awarded.current) return;
+    awarded.current = true;
+    recordCallback.current(hud.score);
+  }, [hud.status, hud.score]);
+  useEffect(() => {
     if (hud.status === "running") return;
     const context = canvas.current?.getContext("2d");
     if (context) paintMotion(context, hud);
@@ -259,12 +264,7 @@ export default function MotionExpansion({
           pending.current = { action: false, lane: -1 };
           accumulator -= 1 / 60;
         }
-        if (
-          ["won", "lost"].includes(state.current.status) &&
-          !awarded.current
-        ) {
-          awarded.current = true;
-          recordCallback.current(state.current.score);
+        if (["won", "lost"].includes(state.current.status)) {
           setHud(state.current);
         }
       } else accumulator = 0;
@@ -431,6 +431,8 @@ export default function MotionExpansion({
               if (setKey(e.key, false)) e.preventDefault();
             }}
             onBlur={(e) => {
+              input.current = emptyInput();
+              pending.current = { action: false, lane: -1 };
               if (
                 !e.relatedTarget ||
                 !e.currentTarget.parentElement?.contains(

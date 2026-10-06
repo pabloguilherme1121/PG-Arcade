@@ -1,14 +1,48 @@
-const CACHE = "pg-arcade-2026-10-05-v2";
+const CACHE = "pg-arcade-2026-10-06-v3";
 const ROOT = new URL("./", self.registration.scope).href;
 const MAX_RUNTIME_ENTRIES = 120;
+const shellUrls = new Set([ROOT]);
+
+function discoverShell(html) {
+  const assets = new Set();
+  for (const tag of html.match(/<(?:script|link)\b[^>]*>/gi) || []) {
+    if (!/\btype\s*=\s*["']module["']/i.test(tag) &&
+        !/\brel\s*=\s*["'](?:stylesheet|modulepreload)["']/i.test(tag)) continue;
+    const path = tag.match(/\b(?:src|href)\s*=\s*["']([^"']+)["']/i)?.[1];
+    if (!path) continue;
+    const url = new URL(path, ROOT);
+    if (url.href.startsWith(ROOT)) assets.add(url.href);
+  }
+  for (const url of assets) shellUrls.add(url);
+  return assets;
+}
+
+async function cacheShell(response) {
+  const cache = await caches.open(CACHE);
+  if (!response.ok) throw new Error("Unable to load the arcade shell");
+  const assets = discoverShell(await response.clone().text());
+  await Promise.all([...assets].map(async (url) => {
+    const asset = await fetch(url, { cache: "reload" });
+    if (!asset.ok) throw new Error("Unable to load a shell asset");
+    await cache.put(url, asset);
+  }));
+  await cache.put(ROOT, response);
+}
+
+async function installShell() {
+  await cacheShell(await fetch(ROOT, { cache: "reload" }));
+  await self.skipWaiting();
+}
 
 function isShellRequest(request) {
-  if (request.url === ROOT) return true;
+  if (shellUrls.has(request.url)) return true;
   const url = new URL(request.url);
   return /\/assets\/index(?:-[^/]+)?\.(?:js|css)$/.test(url.pathname);
 }
 
 async function trimRuntimeCache(cache) {
+  const shell = await cache.match(ROOT);
+  if (shell) discoverShell(await shell.text());
   const requests = (await cache.keys()).filter(
     (request) => !isShellRequest(request),
   );
@@ -26,12 +60,7 @@ async function cacheRuntimeResponse(request, response) {
 }
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches
-      .open(CACHE)
-      .then((cache) => cache.add(ROOT))
-      .then(() => self.skipWaiting()),
-  );
+  event.waitUntil(installShell());
 });
 
 self.addEventListener("activate", (event) => {
@@ -52,7 +81,7 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
-  if (request.method !== "GET" || url.origin !== self.location.origin) return;
+  if (request.method !== "GET" || !url.href.startsWith(ROOT)) return;
 
   if (request.mode === "navigate") {
     event.respondWith(
@@ -61,7 +90,7 @@ self.addEventListener("fetch", (event) => {
           if (response.ok) {
             const copy = response.clone();
             event.waitUntil(
-              caches.open(CACHE).then((cache) => cache.put(ROOT, copy)),
+              cacheShell(copy).catch(() => undefined),
             );
           }
           return response;
@@ -72,7 +101,11 @@ self.addEventListener("fetch", (event) => {
   }
 
   event.respondWith(
-    caches.match(request).then(
+    // Public build assets are identical for every Origin header. Preview servers
+    // emit Vary: Origin, while module requests add Origin after shell precaching.
+    caches.match(request, {
+      ignoreVary: url.href.startsWith(new URL("assets/", ROOT).href),
+    }).then(
       (cached) =>
         cached ||
         fetch(request).then((response) => {
