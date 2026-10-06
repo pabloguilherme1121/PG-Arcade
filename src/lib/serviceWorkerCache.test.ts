@@ -107,8 +107,9 @@ function createHarness(blockedPutUrl?: string) {
         background,
       };
       handlers.get("fetch")?.(event);
-      if (!event.response) throw new Error("service worker did not respond");
-      return event;
+      const response = event.response;
+      if (!response) throw new Error("service worker did not respond");
+      return { ...event, response };
     },
     releasePut() {
       releasePut?.();
