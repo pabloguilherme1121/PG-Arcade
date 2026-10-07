@@ -26,7 +26,9 @@ test("Snake buffers rapid WASD corners in order", async ({ page }) => {
 
 test("Racing prevents instant double lane changes while steering settles", async ({ page }) => {
   await page.goto("./#/jogar/corrida");
-  await page.clock.install();
+  const frozen = new Date("2026-10-07T12:00:00Z");
+  await page.clock.install({ time: frozen });
+  await page.clock.pauseAt(frozen);
   await page.getByRole("button", { name: "Largar", exact: true }).click();
   const board = page.locator(".race-board");
   const car = page.locator(".race-car");
