@@ -1,5 +1,25 @@
 import { test, expect } from "@playwright/test";
 
+for (const width of [320, 390]) {
+  test(`progress backup fits ${width}px and still restores a file`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("./#/progresso");
+    const input = page.getByLabel("Restaurar cópia do progresso");
+    await expect(input).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    const bounds = await input.boundingBox();
+    expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width);
+    await input.setInputFiles({
+      name: "mobile-backup.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify({ favorites: ["snake"], records: { snake: 20 }, visits: {} })),
+    });
+    await expect(page.getByText("Progresso restaurado.", { exact: false })).toBeVisible();
+    await expect(page.locator('.record-list a[href="#/jogar/snake"]')).toContainText("20");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}
+
 test("search ignores accidental surrounding spaces and keeps named catalog links", async ({ page }) => {
   await page.goto("./");
   await page.getByLabel("Buscar jogo").fill("  sNaKe  ");

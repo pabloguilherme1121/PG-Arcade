@@ -1,7 +1,7 @@
-const CACHE = "pg-arcade-2026-10-06-v3";
+const CACHE = "pg-arcade-2026-10-07-v4";
 const ROOT = new URL("./", self.registration.scope).href;
 const MAX_RUNTIME_ENTRIES = 120;
-const shellUrls = new Set([ROOT]);
+const pendingShells = new Set();
 
 function discoverShell(html) {
   const assets = new Set();
@@ -13,7 +13,6 @@ function discoverShell(html) {
     const url = new URL(path, ROOT);
     if (url.href.startsWith(ROOT)) assets.add(url.href);
   }
-  for (const url of assets) shellUrls.add(url);
   return assets;
 }
 
@@ -21,12 +20,20 @@ async function cacheShell(response) {
   const cache = await caches.open(CACHE);
   if (!response.ok) throw new Error("Unable to load the arcade shell");
   const assets = discoverShell(await response.clone().text());
-  await Promise.all([...assets].map(async (url) => {
-    const asset = await fetch(url, { cache: "reload" });
-    if (!asset.ok) throw new Error("Unable to load a shell asset");
-    await cache.put(url, asset);
-  }));
-  await cache.put(ROOT, response);
+  pendingShells.add(assets);
+  try {
+    const writes = await Promise.allSettled([...assets].map(async (url) => {
+      const asset = await fetch(url, { cache: "reload" });
+      if (!asset.ok) throw new Error("Unable to load a shell asset");
+      await cache.put(url, asset);
+    }));
+    const failed = writes.find((write) => write.status === "rejected");
+    if (failed) throw failed.reason;
+    await cache.put(ROOT, response);
+  } finally {
+    pendingShells.delete(assets);
+    await trimRuntimeCache(cache);
+  }
 }
 
 async function installShell() {
@@ -34,17 +41,16 @@ async function installShell() {
   await self.skipWaiting();
 }
 
-function isShellRequest(request) {
-  if (shellUrls.has(request.url)) return true;
-  const url = new URL(request.url);
-  return /\/assets\/index(?:-[^/]+)?\.(?:js|css)$/.test(url.pathname);
-}
-
 async function trimRuntimeCache(cache) {
   const shell = await cache.match(ROOT);
-  if (shell) discoverShell(await shell.text());
+  // Only the committed HTML defines the protected shell. Old hashed entry
+  // bundles and assets from failed updates must still count toward the limit.
+  const shellUrls = new Set([ROOT, ...(shell ? discoverShell(await shell.text()) : [])]);
+  // Runtime requests can finish while an update is still writing its assets.
+  for (const assets of pendingShells)
+    for (const url of assets) shellUrls.add(url);
   const requests = (await cache.keys()).filter(
-    (request) => !isShellRequest(request),
+    (request) => !shellUrls.has(request.url),
   );
   const overflow = requests.length - MAX_RUNTIME_ENTRIES;
   if (overflow <= 0) return;
