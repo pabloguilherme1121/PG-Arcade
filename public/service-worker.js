@@ -1,7 +1,10 @@
-const CACHE = "pg-arcade-2026-10-07-v4";
+const CACHE = "pg-arcade-2026-10-07-v5";
 const ROOT = new URL("./", self.registration.scope).href;
 const MAX_RUNTIME_ENTRIES = 120;
 const pendingShells = new Set();
+let shellGeneration = 0;
+let committedGeneration = 0;
+let shellCommit = Promise.resolve();
 
 function discoverShell(html) {
   const assets = new Set();
@@ -17,6 +20,7 @@ function discoverShell(html) {
 }
 
 async function cacheShell(response) {
+  const generation = ++shellGeneration;
   const cache = await caches.open(CACHE);
   if (!response.ok) throw new Error("Unable to load the arcade shell");
   const assets = discoverShell(await response.clone().text());
@@ -29,7 +33,15 @@ async function cacheShell(response) {
     }));
     const failed = writes.find((write) => write.status === "rejected");
     if (failed) throw failed.reason;
-    await cache.put(ROOT, response);
+    // Serialize HTML writes so a slow older navigation cannot roll back a
+    // newer successful shell. A failed update still leaves the last good one.
+    const commit = shellCommit.then(async () => {
+      if (generation < committedGeneration) return;
+      await cache.put(ROOT, response);
+      committedGeneration = generation;
+    });
+    shellCommit = commit.catch(() => undefined);
+    await commit;
   } finally {
     pendingShells.delete(assets);
     await trimRuntimeCache(cache);
@@ -111,12 +123,12 @@ self.addEventListener("fetch", (event) => {
     // emit Vary: Origin, while module requests add Origin after shell precaching.
     caches.match(request, {
       ignoreVary: url.href.startsWith(new URL("assets/", ROOT).href),
-    }).then(
+    }).catch(() => undefined).then(
       (cached) =>
         cached ||
         fetch(request).then((response) => {
           if (response.ok) {
-            event.waitUntil(cacheRuntimeResponse(request, response.clone()));
+            event.waitUntil(cacheRuntimeResponse(request, response.clone()).catch(() => undefined));
           }
           return response;
         }),
