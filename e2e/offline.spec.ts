@@ -1,13 +1,36 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
-test("a previously loaded game remains playable after an offline reload", async ({ page, context, browserName }) => {
-  test.skip(browserName !== "chromium", "Service worker lifecycle is checked in Chromium.");
-  await page.goto("./");
+async function waitForOfflineShell(page: Page) {
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
     if (navigator.serviceWorker.controller) return;
     await new Promise<void>(resolve => navigator.serviceWorker.addEventListener("controllerchange", () => resolve(), { once: true }));
   });
+}
+
+test("an uncached offline game lets the player return and recover after reconnecting", async ({ page, context, browserName }) => {
+  test.skip(browserName !== "chromium", "Service worker lifecycle is checked in Chromium.");
+  await page.goto("./");
+  await waitForOfflineShell(page);
+  await context.setOffline(true);
+  try {
+    await page.getByRole("link", { name: "Jogar 2048", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "O jogo não carregou." })).toBeVisible();
+    await page.locator(".empty").getByRole("link", { name: "Voltar aos jogos", exact: true }).click();
+    await expect(page.locator(".game-card")).toHaveCount(100);
+    await context.setOffline(false);
+    await page.getByRole("link", { name: "Jogar 2048", exact: true }).click();
+    await page.getByRole("button", { name: "Tentar novamente", exact: true }).click();
+    await expect(page.locator(".board2048")).toBeVisible();
+  } finally {
+    await context.setOffline(false);
+  }
+});
+
+test("a previously loaded game remains playable after an offline reload", async ({ page, context, browserName }) => {
+  test.skip(browserName !== "chromium", "Service worker lifecycle is checked in Chromium.");
+  await page.goto("./");
+  await waitForOfflineShell(page);
   await page.getByRole("link", { name: "Jogar 2048", exact: true }).click();
   await expect(page.locator(".board2048")).toBeVisible();
   // Wait for the response's background cache write, rather than a fixed delay.
@@ -37,11 +60,7 @@ test("the catalog reloads offline after its first visit", async ({ page, context
   });
   await page.goto("./");
   await expect(page.locator(".game-grid")).toBeVisible();
-  await page.evaluate(async () => {
-    await navigator.serviceWorker.ready;
-    if (navigator.serviceWorker.controller) return;
-    await new Promise<void>(resolve => navigator.serviceWorker.addEventListener("controllerchange", () => resolve(), { once: true }));
-  });
+  await waitForOfflineShell(page);
   await context.setOffline(true);
   try {
     await page.reload();

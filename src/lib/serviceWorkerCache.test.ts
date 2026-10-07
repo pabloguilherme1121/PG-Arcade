@@ -14,7 +14,7 @@ type FetchEventHarness = {
   background: Promise<unknown>[];
 };
 
-function createHarness(blockedPutUrl?: string) {
+function createHarness(blockedPutUrl?: string, unavailableCache = false) {
   const entries = new Map<string, Response>();
   const network = new Map<string, Response>();
   const handlers = new Map<string, (event: FetchEventHarness) => void>();
@@ -34,9 +34,11 @@ function createHarness(blockedPutUrl?: string) {
       return [...entries.keys()].map((url) => new Request(url));
     },
     async match(request: Request | string) {
+      if (unavailableCache) throw new Error("Cache storage unavailable");
       return entries.get(normalize(request))?.clone();
     },
     async put(request: Request | string, response: Response) {
+      if (unavailableCache) throw new Error("Cache storage unavailable");
       const url = normalize(request);
       if (url === blockedPutUrl) await putGate;
       entries.set(url, response.clone());
@@ -131,6 +133,28 @@ function createHarness(blockedPutUrl?: string) {
 }
 
 describe("service worker runtime cache policy", () => {
+  it("serves online assets even when cache storage cannot be read or written", async () => {
+    const harness = createHarness(undefined, true);
+    const url = new URL("./assets/game.js", root).href;
+    const event = harness.dispatchFetch(url);
+    expect(await (await event.response).text()).toBe(`network:${url}`);
+    await Promise.all(event.background);
+  });
+  it("does not let a slow older navigation overwrite the newer offline shell", async () => {
+    const slowAsset = new URL("./assets/slow-shell.js", root).href;
+    const harness = createHarness(slowAsset);
+    await harness.install();
+    harness.network.set(root, new Response('<script type="module" src="./assets/slow-shell.js"></script>'));
+    const older = harness.dispatchFetch(root, "navigate");
+    await older.response;
+    harness.network.set(root, new Response('<script type="module" src="./assets/latest-shell.js"></script>'));
+    const newer = harness.dispatchFetch(root, "navigate");
+    await newer.response;
+    await newer.background.at(-1);
+    harness.releasePut();
+    await Promise.all(older.background);
+    expect(await harness.entries.get(root)?.text()).toContain("latest-shell.js");
+  });
   it("protects a pending update from concurrent runtime eviction and trims after commit", async () => {
     const nextAsset = new URL("./assets/index-next.js", root).href;
     const nextVendor = new URL("./assets/vendor-next.js", root).href;
