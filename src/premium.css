@@ -995,6 +995,12 @@ main {
 .progress-backup {
   border-radius: 18px;
   padding: 20px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.progress-backup input[type="file"] {
+  min-width: 0;
+  width: 100%;
 }
 
 .empty {
