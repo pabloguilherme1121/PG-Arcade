@@ -131,6 +131,28 @@ function createHarness(blockedPutUrl?: string) {
 }
 
 describe("service worker runtime cache policy", () => {
+  it("protects a pending update from concurrent runtime eviction and trims after commit", async () => {
+    const nextAsset = new URL("./assets/index-next.js", root).href;
+    const nextVendor = new URL("./assets/vendor-next.js", root).href;
+    const harness = createHarness(nextAsset);
+    await harness.install();
+    for (let index = 0; index < 120; index += 1)
+      harness.seed(new URL(`./assets/runtime-${index}.js`, root).href, "chunk");
+    harness.network.set(root, new Response('<script type="module" src="./assets/index-next.js"></script><link rel="modulepreload" href="./assets/vendor-next.js">'));
+    const navigation = harness.dispatchFetch(root, "navigate");
+    await navigation.response;
+    await expect.poll(() => harness.entries.has(nextVendor)).toBe(true);
+    for (let index = 0; index < 130; index += 1) {
+      const runtime = harness.dispatchFetch(new URL(`./assets/fresh-${index}.js`, root).href);
+      await runtime.response;
+      await runtime.background.at(-1);
+    }
+    expect(harness.entries.has(nextVendor)).toBe(true);
+    harness.releasePut();
+    await Promise.all(navigation.background);
+    expect(harness.entries.has(nextAsset)).toBe(true);
+    expect(harness.entries.size).toBeLessThanOrEqual(123);
+  });
   it("evicts obsolete entry bundles while preserving the committed offline shell", async () => {
     const harness = createHarness();
     await harness.install();
