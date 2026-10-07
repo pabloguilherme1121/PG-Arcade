@@ -131,6 +131,21 @@ function createHarness(blockedPutUrl?: string) {
 }
 
 describe("service worker runtime cache policy", () => {
+  it("evicts obsolete entry bundles while preserving the committed offline shell", async () => {
+    const harness = createHarness();
+    await harness.install();
+    for (let index = 0; index < 130; index += 1) {
+      harness.seed(new URL(`./assets/index-old-${index}.js`, root).href, "obsolete");
+    }
+    const event = harness.dispatchFetch(new URL("./assets/fresh.js", root).href);
+    await event.response;
+    await Promise.all(event.background);
+    expect(harness.entries.size).toBeLessThanOrEqual(124);
+    expect(harness.entries.has(new URL("./assets/index.js", root).href)).toBe(true);
+    expect(harness.entries.has(new URL("./assets/index.css", root).href)).toBe(true);
+    expect(harness.entries.has(new URL("./assets/vendor.js", root).href)).toBe(true);
+    expect(harness.entries.has(new URL("./assets/index-old-0.js", root).href)).toBe(false);
+  });
   it("keeps the old offline HTML when a new navigation shell asset fails", async () => {
     const harness = createHarness();
     harness.seed(root, "old HTML", "text/html");
