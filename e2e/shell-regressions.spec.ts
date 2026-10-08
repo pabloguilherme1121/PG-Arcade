@@ -77,7 +77,7 @@ test("favorite changes persist once per action", async ({ page }) => {
       return original.call(this, key, value);
     };
   });
-  await page.getByRole("button", { name: "Adicionar Snake aos favoritos" }).click();
+  await page.getByRole("button", { name: "Adicionar Snake aos favoritos", exact: true }).click();
   await expect(page.getByRole("button", { name: "Remover Snake dos favoritos" })).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("html")).toHaveAttribute("data-progress-writes", "1");
   await page.reload();

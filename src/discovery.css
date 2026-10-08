@@ -1,0 +1,113 @@
+/* Curated discovery and compact arena, sharing the existing PG lime identity. */
+:root { --pg-space-section: clamp(32px,5vw,64px); --pg-focus: #c9f65a; }
+html { scroll-padding-top: 96px; scrollbar-color: #526848 #0b1119; }
+::selection { background: #c9f65a; color: #0b1119; }
+input { caret-color: var(--pg-accent); }
+a { text-underline-offset: .2em; }
+button, summary, .button, select { min-height:44px; }
+summary { cursor:pointer; }
+:focus-visible { outline: 3px solid var(--pg-focus); outline-offset:4px; }
+[id], [data-arcade-arena] { scroll-margin-top: 96px; }
+.site-header { position:relative; top:auto; backdrop-filter:none; background:#101720; border-radius:14px; }
+.site-header::before, body::before { display:none; }
+.hero { min-height:0; padding:clamp(24px,4vw,48px); margin:24px 0 32px; grid-template-columns:1.15fr 1fr; border-radius:18px; }
+.hero::before, .hero::after { display:none; }
+.hero h1 { font-size:clamp(36px,4.2vw,60px); max-width:14ch; line-height:1.04; letter-spacing:-.035em; }
+.hero p { max-width:46ch; margin:18px 0 22px; font-size:16px; }
+.hero img { max-height:250px; width:100%; border-radius:12px; object-fit:cover; transform:none; }
+.last-game { display:flex; gap:8px; align-items:center; padding:12px 0 0; color:#dce6cd; }
+.discovery { display:grid; gap:var(--pg-space-section); margin-bottom:var(--pg-space-section); }
+.section-title { display:flex; align-items:baseline; justify-content:space-between; gap:16px; margin-bottom:18px; }
+.section-title h2, .catalog-heading h2 { font-size:clamp(24px,2.5vw,34px); letter-spacing:-.03em; margin:0; }
+.section-title p { color:#b4c5d0; margin:0; }
+.curated-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+.personal-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; }
+.curated-card { position:relative; min-width:0; border:1px solid #32414a; border-radius:16px; background:#101923; overflow:hidden; }
+.curated-card .game-link { display:block; padding:12px 12px 18px; height:100%; }
+.curated-card h3 { margin:12px 0 7px; font-size:22px; line-height:1.15; letter-spacing:-.025em; }
+.curated-card p { color:#b4c5d0; font-size:14px; line-height:1.5; margin:0 0 14px; }
+.curated-card:hover, .curated-card:focus-within { border-color:#9cbe58; }
+.game-card { border-radius:16px; box-shadow:none; }
+.game-card h3 { font-size:21px; }
+.game-metadata { display:block; padding-top:12px; margin-top:auto; font-size:12px; color:#d3dfc2; line-height:1.5; }
+.preview { min-width:0; overflow:hidden; height:160px; box-shadow:none; }
+.preview::after { display:none; }
+.mechanic-preview, .expanded-preview { display:block; padding:0; height:auto; aspect-ratio:8/5; background:#11232d; }
+.mechanic-preview > svg, .expanded-preview > svg { display:block; width:100%; height:100%; min-width:1px; min-height:1px; }
+.preview svg text { font-family:"Inter Variable",sans-serif; font-weight:600; }
+.game-card:hover .preview, .curated-card:hover .preview { transform:none; }
+.catalog { padding-top:24px; border-top:1px solid #32414a; }
+.catalog-heading { gap:20px; }
+.filters { gap:8px; }
+.filters button { padding:10px 14px; font-size:13px; }
+.catalog-tools { display:flex; flex-wrap:wrap; align-items:center; gap:12px 18px; }
+.catalog-tools label { display:flex; align-items:center; gap:8px; }
+.catalog-tools select { max-width:100%; }
+.favorites-jump { margin:24px 0 16px; }
+.favorite { min-width:44px; min-height:44px; right:17px; top:17px; backdrop-filter:none; background:#10212c; }
+.player { padding:clamp(16px,2.5vw,28px); margin-top:20px; border-radius:18px; background:#0d151e; box-shadow:none; }
+.player-toolbar { display:flex; align-items:start; justify-content:space-between; gap:12px; margin-bottom:16px; }
+.player-toolbar .button { padding:10px 12px; }
+.player-utilities { max-width:100%; }
+.player-utilities summary { display:flex; align-items:center; border:1px solid #52616d; border-radius:10px; padding:10px 14px; font-size:14px; }
+.player-utilities summary::after { content:"+"; margin-left:14px; }
+.player-utilities[open] summary::after { content:"−"; }
+.player-utilities > div { display:flex; flex-wrap:wrap; justify-content:end; gap:8px; padding-top:10px; max-width:460px; }
+.player > h1 { margin:0; text-align:left; font-size:clamp(26px,3vw,40px); line-height:1.1; letter-spacing:-.03em; }
+.player-description { margin:8px 0 12px; max-width:70ch; text-align:left; font-size:14px; color:#b4c5d0; }
+.experience-tools { display:flex; flex-wrap:wrap; justify-content:start; gap:8px; margin:12px 0 16px; padding:0; border:0; background:none; }
+.experience-tools > button { padding:8px 12px; font-size:13px; }
+.experience-tools > details { flex:1 1 230px; margin:0; padding:0; border:0; border-radius:0; background:none; }
+.experience-tools summary { padding:10px 12px; border:1px solid #52616d; border-radius:10px; font-size:13px; width:fit-content; }
+.experience-tools details[open] { flex-basis:100%; }
+.experience-tools details p { max-width:72ch; color:#c1ced8; font-size:14px; line-height:1.6; }
+.play-preferences { margin:32px 0; }
+.feedback:empty { display:none; }
+.player .new-options { margin-bottom:10px; gap:10px; }
+.player .new-hud { margin:10px 0; }
+.player .new-status { margin:8px 0 12px; padding:8px 12px; }
+.player .new-workspace { gap:20px; }
+.player .new-instructions { padding:16px; }
+.player .new-instructions h2 { font-size:20px; margin-top:0; }
+.player .new-instructions p { font-size:14px; line-height:1.55; }
+@media(min-width:1024px) { .personal-grid .preview { height:140px; } }
+@media(max-width:767px) {
+  html { scroll-padding-top:24px; }
+  [id], [data-arcade-arena] { scroll-margin-top:24px; }
+  .hero { grid-template-columns:1fr; padding:24px; margin-top:20px; }
+  .hero h1 { font-size:42px; }
+  .hero img { display:none; }
+  .section-title { align-items:start; flex-direction:column; gap:8px; }
+  .curated-grid, .personal-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  .curated-card h3 { font-size:18px; }
+  .curated-card p { font-size:13px; }
+  .curated-card .preview { height:118px; }
+  .curated-card .mechanic-preview { height:auto; }
+  .catalog-heading { align-items:start; }
+  .catalog-tools { gap:12px; }
+  .player-toolbar { flex-wrap:wrap; }
+  .player-utilities > div { justify-content:start; }
+  .player > h1 { font-size:28px; }
+  .player { padding:16px 12px; }
+  .player .new-options label { font-size:13px; }
+  .player .new-hud { flex-wrap:wrap; }
+  .player .new-hud span { padding:6px 9px; }
+}
+@media(max-width:359px) {
+  .hero { padding:20px; }
+  .hero h1 { font-size:36px; }
+  .curated-grid, .personal-grid { grid-template-columns:1fr; }
+  .curated-card .preview { height:150px; }
+  .curated-card .mechanic-preview { height:auto; }
+  .player-toolbar { align-items:stretch; }
+  .player-toolbar > * { width:100%; }
+}
+@media(prefers-reduced-motion:reduce) { .hero, .game-card, .curated-card { animation:none; transition:none; } }
+html[data-arcade-motion="reduced"] .curated-card { animation:none; transition:none; }
+html[data-arcade-contrast="true"] .curated-card, html[data-arcade-contrast="true"] .player { background:#000; border-color:#fff; }
+html[data-arcade-contrast="true"] .game-metadata, html[data-arcade-contrast="true"] .section-title p, html[data-arcade-contrast="true"] .curated-card p { color:#fff; }
+
+.illustrated-preview { display:block; padding:0; height:auto; aspect-ratio:8/5; background:#11232d; }
+.illustrated-preview img { display:block; width:100%; height:100%; object-fit:contain; }
+.illustrated-preview img[hidden], .illustrated-preview span[hidden] { display:none; }
+.illustrated-preview span { padding:24px; color:#c9f65a; font-size:16px; line-height:1.5; }

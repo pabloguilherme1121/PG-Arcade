@@ -5,6 +5,12 @@ Uma pausa. Uma nova jogada. **100 jogos gratuitos no navegador**, com controles 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
 
+## Descoberta e partida
+
+Comece por seis mecânicas diferentes, volte ao último jogo visitado ou explore seus favoritos. O catálogo completo combina busca por palavras sem acentos, categorias, modo solo/dupla local e ordenação. Voltar da arena recupera busca, filtros, ordem e posição da lista. A partida começa com título, objetivo e arena; compartilhar, favorito, tela cheia e conforto ficam em opções secundárias. Abrir novamente inicia uma nova sessão, sem confundir recordes com partidas salvas.
+
+Direção, contratos e inventário individual: [PRODUCT.md](PRODUCT.md), [DESIGN.md](DESIGN.md) e [GAME-INVENTORY.md](docs/GAME-INVENTORY.md).
+
 ## Expansão para 100 jogos
 
 A segunda expansão adiciona 28 jogos de tabuleiro e estratégia, 12 desafios de lógica e palavras e 10 jogos de ação. As regras são separadas da interface; os módulos são carregados sob demanda. Há controles de teclado e toque, pausa automática, reinício, dificuldade, recordes e ampliação de tabuleiro. Resta Um gera desafios por jogadas reversas, e os jogos de separar cores possuem soluções verificadas.

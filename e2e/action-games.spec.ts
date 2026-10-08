@@ -22,9 +22,8 @@ test("Racing steers, pauses on blur, resets safely and saves game-over record", 
   const score = await page.locator(".scores strong").first().textContent();
   await page.clock.runFor(2000);
   await expect(page.locator(".scores strong").first()).toHaveText(score!);
-  await page
-    .getByRole("button", { name: "Reiniciar jogo", exact: true })
-    .click();
+  await page.getByRole("button", { name: "Ir para o tabuleiro", exact: true }).focus();
+  await page.keyboard.press("Alt+Shift+r");
   await page
     .getByRole("button", { name: "Continuar esta partida", exact: true })
     .click();
@@ -212,17 +211,15 @@ test("All games offer keyboard focus, specific help, focus mode and safe restart
     await page
       .getByRole("button", { name: "Sair do modo foco", exact: true })
       .click();
-    await page
-      .getByRole("button", { name: "Reiniciar jogo", exact: true })
-      .click();
+    await page.getByRole("button", { name: "Ir para o tabuleiro", exact: true }).focus();
+  await page.keyboard.press("Alt+Shift+r");
     await expect(
       page.getByRole("dialog", { name: `Reiniciar ${name}?` }),
     ).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page.locator("dialog")).not.toBeVisible();
-    await page
-      .getByRole("button", { name: "Reiniciar jogo", exact: true })
-      .click();
+    await page.getByRole("button", { name: "Ir para o tabuleiro", exact: true }).focus();
+  await page.keyboard.press("Alt+Shift+r");
     await page
       .getByRole("button", { name: "Confirmar reinício", exact: true })
       .click();
