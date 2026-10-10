@@ -1,0 +1,82 @@
+/* Minefield premium — isolated in the lazy-loaded game module. */
+.player .mines-premium-hud {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 11px;
+}
+.player .mines-premium-hud > div {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 9px 5px;
+  border: 1px solid #566f8a;
+  border-radius: 11px;
+  background: linear-gradient(155deg, #26384e, #142338);
+  box-shadow: inset 0 1px #ffffff20, 0 3px 9px #0003;
+  font-variant-numeric: tabular-nums;
+}
+.player .mines-premium-hud span { color: #d8e5f4; font-size: clamp(11px, 2.6vw, 13px); text-align: center; }
+.player .mines-premium-hud strong { color: #dcffae; font-size: clamp(18px, 4.5vw, 24px); line-height: 1.2; }
+.player .mines-premium-progress {
+  height: 9px;
+  margin: 0 0 13px;
+  overflow: hidden;
+  border: 1px solid #5e7891;
+  border-radius: 999px;
+  background: #142439;
+}
+.player .mines-premium-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #6bc5e5, #c9f65a);
+}
+.player .mines-board {
+  min-width: 0;
+  gap: clamp(2px, 0.9vw, 5px);
+  padding: clamp(6px, 1.8vw, 12px);
+  border: 2px solid #537392;
+  background: linear-gradient(155deg, #20364b, #13253a);
+  box-shadow: 0 16px 30px #0006, inset 0 1px #ffffff24;
+}
+.player .mines-board button {
+  min-width: 0;
+  min-height: 0;
+  aspect-ratio: 1;
+  border: 1px solid #7f96b0;
+  border-radius: clamp(4px, 1.2vw, 7px);
+  padding: 0;
+  background: linear-gradient(135deg, #425f7c, #263b54);
+  box-shadow: inset 0 2px #ffffff2d, inset 0 -3px #0004, 0 2px 4px #0004;
+  font-size: clamp(12px, 3.8vw, 20px);
+}
+.player .mines-board button.mine-open {
+  border-color: #314760;
+  background: #101e2c;
+  box-shadow: inset 0 1px 3px #0006;
+}
+.player .mines-board button.mine-flagged {
+  border-color: #ffe4a4;
+  color: #ffe09b;
+  background: linear-gradient(155deg, #64543d, #40351f);
+}
+.player .mines-board button:focus-visible {
+  outline: 3px solid #fff3ac;
+  outline-offset: -1px;
+  position: relative;
+  z-index: 1;
+}
+.player .mines-board button:disabled { opacity: 1; }
+.player .mines-board button svg {
+  width: 56%;
+  height: 56%;
+}
+html[data-arcade-contrast="true"] .player :is(.mines-board, .mines-premium-progress, .mines-premium-hud > div) { border-color: #fff; }
+html[data-arcade-contrast="true"] .player .mines-board button { border: 2px solid #fff; }
+@media (max-width: 359px) {
+  .player .mines-premium-hud { gap: 5px; }
+  .player .mines-premium-hud > div { padding: 7px 3px; }
+}
