@@ -131,7 +131,7 @@ for (const width of [320, 390, 1280])
     await expect(page.locator(".game-card")).toHaveCount(games.length);
     for (const { id, name } of games) {
       await page.goto(`./#/jogar/${id}`);
-      await expect(page.locator(".player > h1")).toHaveText(name);
+      await expect(page.locator(".player h1")).toHaveText(name);
       await expect(page.locator("[data-arcade-arena]").first()).toBeVisible({ timeout: 15000 });
       await expect(page.getByText("Carregando", { exact: false })).toHaveCount(
         0,
