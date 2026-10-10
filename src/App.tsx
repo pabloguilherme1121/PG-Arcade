@@ -8,7 +8,6 @@ import {
   useCallback,
   useRef,
   useMemo,
-  memo,
   type ReactNode,
   type ComponentType,
 } from "react";
@@ -27,16 +26,15 @@ import {
 import { games, isGameId, type GameId } from "./lib/catalog";
 import {
   newGames,
-  isNewGameId,
   type NewGameId,
   type BoardId,
 } from "./lib/newCatalog";
 import {
   expandedGames,
-  isExpandedId,
   type ExpandedId,
 } from "./lib/expandedCatalog";
 import { gameHelp, recordUnits } from "./lib/gameHelp";
+import GameCover from "./GameCover";
 import {
   readProgress,
   saveProgress,
@@ -140,239 +138,7 @@ function route() {
         ? "progresso"
         : "catalogo";
 }
-function Preview({ id }: { id: GameId }) {
-  if (isNewGameId(id)) {
-    const game = newGames.find((g) => g.id === id)!;
-    const marks = game.family === "board" ? ["♛", "▦", "◇"] : game.family === "quiz" ? ["?", "24", "A"] : ["◉", "↗", "▶"];
-    return (
-      <div className={`preview new-preview preview-${game.family}`} aria-hidden="true">
-        <svg viewBox="0 0 240 150">
-          <rect width="240" height="150" rx="16" fill="#12283c" />
-          <path d="M0 120 L240 30 M0 150 L240 60" stroke="#31516d" strokeWidth="18" />
-          {marks.map((m, i) => (
-            <text key={i} x={45 + i * 75} y={92 - i * 8} fill={i === 1 ? "#c9f65a" : "#79b8ff"} fontSize={35} fontWeight="700" textAnchor="middle">{m}</text>
-          ))}
-        </svg>
-      </div>
-    );
-  }
-  if (isExpandedId(id)) {
-    const family = expandedGames.find((g) => g.id === id)!.family;
-    return (
-      <div
-        className={`preview expanded-preview expanded-${family}`}
-        aria-hidden="true"
-      >
-        <svg viewBox="0 0 240 150">
-          <defs>
-            <linearGradient id={`surface-${id}`} x2="1" y2="1">
-              <stop stopColor="#1e3644" />
-              <stop offset="1" stopColor="#101922" />
-            </linearGradient>
-          </defs>
-          <rect width="240" height="150" rx="16" fill={`url(#surface-${id})`} />
-          {family === "logic" ? (
-            <>
-              {Array.from({ length: 16 }, (_, i) => (
-                <rect
-                  key={i}
-                  x={65 + (i % 4) * 28}
-                  y={22 + Math.floor(i / 4) * 28}
-                  width="24"
-                  height="24"
-                  rx="5"
-                  fill={i % 3 === 0 ? "#c9f65a" : "#466578"}
-                />
-              ))}
-            </>
-          ) : family === "action" ? (
-            <>
-              <path
-                d="M0 120Q60 40 120 80T240 30"
-                stroke="#7ea3bb"
-                strokeWidth="5"
-                fill="none"
-              />
-              <path d="m110 52 22 44-22-8-22 8Z" fill="#c9f65a" />
-              <circle cx="48" cy="39" r="9" fill="#e7a25b" />
-              <circle cx="195" cy="105" r="15" fill="#456d82" />
-            </>
-          ) : (
-            <>
-              <ellipse
-                cx="122"
-                cy="115"
-                rx="46"
-                ry="8"
-                fill="#000"
-                opacity=".4"
-              />
-              <circle cx="120" cy="74" r="38" fill="#dfad6e" />
-              <path
-                d="M82 74h76M120 36v76M93 47q54 27 0 54M147 47q-54 27 0 54"
-                fill="none"
-                stroke="#69472a"
-                strokeWidth="3"
-              />
-            </>
-          )}
-        </svg>
-      </div>
-    );
-  }
-  if (id === "sequencia" || id === "palavra")
-    return (
-      <div
-        className={`preview puzzle-preview preview-${id}`}
-        aria-hidden="true"
-      >
-        {(id === "sequencia"
-          ? ["1", "2", "3", "4"]
-          : ["J", "O", "G", "O", "S"]
-        ).map((v, i) => (
-          <span key={i} className={`pad-${i}`}>
-            {v}
-          </span>
-        ))}
-      </div>
-    );
-  if (
-    [
-      "corrida",
-      "estacionamento",
-      "rally",
-      "coleta",
-      "orbital",
-      "tiro",
-      "estrelas",
-    ].includes(id)
-  )
-    return (
-      <div
-        className={`preview art-preview ${["orbital", "tiro", "estrelas"].includes(id) ? "art-space" : "art-road"}`}
-        aria-hidden="true"
-      >
-        <img
-          src={`${import.meta.env.BASE_URL}art/${["orbital", "tiro", "estrelas"].includes(id) ? "ship" : "car"}.webp`}
-          alt=""
-          loading="lazy"
-        />
-      </div>
-    );
-  if (id === "minas" || id === "reflexo")
-    return (
-      <div className={`preview logic-preview preview-${id}`} aria-hidden="true">
-        {id === "minas" ? (
-          <>
-            <span>1</span>
-            <span>2</span>
-            <span>⚑</span>
-            <span>1</span>
-            <span>3</span>
-            <span>2</span>
-          </>
-        ) : (
-          <strong>AGORA!</strong>
-        )}
-      </div>
-    );
-  if (id === "luzes")
-    return (
-      <div className="preview action-preview preview-luzes" aria-hidden="true">
-        <span>☀</span>
-        <i />
-        <i />
-        <i />
-      </div>
-    );
-  if (id === "liga4" || id === "puzzle")
-    return (
-      <div className={`preview new-preview ${id}`} aria-hidden="true">
-        {Array.from({ length: id === "liga4" ? 28 : 9 }, (_, i) => (
-          <span key={i}>{id === "puzzle" ? (i < 8 ? i + 1 : "") : ""}</span>
-        ))}
-      </div>
-    );
-  if (id === "2048")
-    return (
-      <div className="preview p2048" aria-hidden="true">
-        {[2, 4, 8, 16, 4, 8, 32, 64, 2, 16, 128, 256, 4, 8, 32, 512].map(
-          (n, i) => (
-            <span key={i} className={`tile-${n}`}>
-              {n}
-            </span>
-          ),
-        )}
-      </div>
-    );
-  if (id === "snake")
-    return (
-      <div className="preview psnake" aria-hidden="true">
-        <div className="mini-snake">
-          {Array.from({ length: 7 }, (_, i) => (
-            <i key={i} />
-          ))}
-        </div>
-        <span className="mini-fruit" />
-      </div>
-    );
-  if (id === "memoria")
-    return (
-      <div className="preview pmemory" aria-hidden="true">
-        <span>✦</span>
-        <span>?</span>
-        <span>✦</span>
-        <span>?</span>
-        <span>?</span>
-        <span>♡</span>
-      </div>
-    );
-  if (id === "xadrez" || id === "damas")
-    return (
-      <div className={`preview pboard ${id}`} aria-hidden="true">
-        {Array.from({ length: 32 }, (_, i) => (
-          <span
-            key={i}
-            className={(Math.floor(i / 8) + i) % 2 ? "dark" : "light"}
-          >
-            {id === "xadrez" && i === 12
-              ? "♞"
-              : id === "xadrez" && i === 20
-                ? "♙"
-                : id === "damas" && [9, 11, 13, 18, 20, 22].includes(i)
-                  ? "●"
-                  : ""}
-          </span>
-        ))}
-      </div>
-    );
-  if (id === "futebol")
-    return (
-      <div className="preview pfootball" aria-hidden="true">
-        <div className="goal" />
-        <span>⚽</span>
-      </div>
-    );
-  if (id === "domino")
-    return (
-      <div className="preview pdomino" aria-hidden="true">
-        {[4, 2, 6].map((n, i) => (
-          <div key={i}>
-            <span>{n}</span>
-            <span>{6 - n}</span>
-          </div>
-        ))}
-      </div>
-    );
-  return (
-    <div className="preview pvelha" aria-hidden="true">
-      {["×", "○", "", "", "×", "○", "○", "", "×"].map((s, i) => (
-        <span key={i}>{s}</span>
-      ))}
-    </div>
-  );
-}
-const MemoPreview = memo(Preview);
+
 
 export default function App() {
   const reducedMotion = useReducedMotion();
@@ -383,6 +149,7 @@ export default function App() {
   const [session, setSession] = useState(0);
   const restartDialog = useRef<HTMLDialogElement>(null);
   const quickHelp = useRef<HTMLDetailsElement>(null);
+  const searchInput = useRef<HTMLInputElement>(null);
   function focusBoard() {
     const arenaElement = arena.current?.querySelector<HTMLElement>(
       "[data-arcade-arena]",
@@ -415,6 +182,11 @@ export default function App() {
   useEffect(() => {
     if (!isGameId(page)) return;
     const shortcuts = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && quickHelp.current?.open && !restartDialog.current?.open) {
+        quickHelp.current.open = false;
+        quickHelp.current.querySelector("summary")?.focus();
+        return;
+      }
       if (
         !event.altKey ||
         !event.shiftKey ||
@@ -525,6 +297,18 @@ export default function App() {
       "Cópia de progresso preparada. Guarde o arquivo para restaurar em outro navegador.",
     );
   }
+  useEffect(() => {
+    if (isGameId(page) || page === "progresso") return;
+    const onShortcut = (event: KeyboardEvent) => {
+      if (event.key !== "/" || event.altKey || event.ctrlKey || event.metaKey || event.isComposing) return;
+      const target = event.target;
+      if (target instanceof HTMLElement && target.closest('input,textarea,select,[contenteditable="true"]')) return;
+      event.preventDefault();
+      searchInput.current?.focus();
+    };
+    window.addEventListener("keydown", onShortcut);
+    return () => window.removeEventListener("keydown", onShortcut);
+  }, [page]);
   const game = games.find((g) => g.id === page);
   const Player = game ? players[game.id] : null;
   const normalizedQuery = useMemo(
@@ -722,14 +506,21 @@ export default function App() {
                 </button>
               </div>
             </div>
-            <div className="player-kicker" aria-hidden="true">
-              <span>{game.category}</span>
-              <span>PG Arcade</span>
+            <div className="player-coverline">
+              <GameCover id={game.id} name={game.name} category={game.category} compact />
+              <div>
+                <div className="player-kicker" aria-hidden="true">
+                  <span>{game.category}</span>
+                  <span>PG Arcade</span>
+                </div>
+                <h1 ref={heading} tabIndex={-1}>{game.name}</h1>
+                <p className="player-description">{game.description}</p>
+              </div>
             </div>
-            <h1 ref={heading} tabIndex={-1}>
-              {game.name}
-            </h1>
-            <p className="player-description">{game.description}</p>
+            <div className="player-gameplay-orientation" data-gameplay-orientation>
+              <strong>Como jogar {game.name}</strong>
+              <span>{gameHelp[game.id].split(". ")[0]}</span>
+            </div>
             <p className="feedback" role="status">
               {message}
             </p>
@@ -1016,6 +807,8 @@ export default function App() {
                   <Search size={18} />
                   <input
                     aria-label="Buscar jogo"
+                    ref={searchInput}
+                    onKeyDown={(event) => { if (event.key === "Escape") { setQuery(""); event.currentTarget.blur(); } }}
                     placeholder="Buscar jogo"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
@@ -1067,7 +860,7 @@ export default function App() {
                       href={`#/jogar/${g.id}`}
                       aria-label={`Jogar ${g.name}`}
                     >
-                      <MemoPreview id={g.id} />
+                      <GameCover id={g.id} name={g.name} category={g.category} />
                       <span className="game-category">{g.category}</span>
                       <h3>{g.name}</h3>
                       <p>{g.description}</p>
