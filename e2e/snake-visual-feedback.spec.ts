@@ -6,7 +6,7 @@ test("Snake premium shows length, queued turn and pace without losing touch cont
   await page.clock.install();
   const board = page.locator(".snake-board");
   const progressive = page.getByRole("checkbox", { name: /aceleração progressiva/i });
-  await expect(progressive).toBeUnchecked();
+  await expect(progressive).not.toBeChecked();
   await expect(page.locator("[data-snake-length]")).toHaveText("3");
   await expect(page.locator("[data-snake-pace]")).toHaveText("160 ms");
   await progressive.check();
