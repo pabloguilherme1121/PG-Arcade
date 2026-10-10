@@ -389,7 +389,7 @@ export default function App() {
     );
     const target =
       arenaElement?.querySelector<HTMLElement>(
-        'canvas[tabindex="0"],[data-expanded-board],[role="gridcell"][tabindex="0"],.connect-board,.board2048,.snake-board,.race-board,.parking-board,.targets-board,.sliding-board,.sequence-board,.word-input,.reaction-board,.mines-board button:not(:disabled),[role="slider"][tabindex="0"],[data-game-cell]:not(:disabled),[data-domino-tile]:not(:disabled)',
+        'canvas[tabindex="0"],[data-expanded-board],[role="gridcell"][tabindex="0"],.connect-board,.board2048,.snake-board,.memory-board,.race-board,.parking-board,.targets-board,.sliding-board,.sequence-board,.word-input,.reaction-board,.mines-board button:not(:disabled),[role="slider"][tabindex="0"],[data-game-cell]:not(:disabled),[data-domino-tile]:not(:disabled)',
       ) ||
       arenaElement?.querySelector<HTMLElement>(
         '[role="gridcell"]:not([aria-disabled="true"]):not(:disabled),.connect-controls button:not(:disabled),.lights-board button:not(:disabled),.memory-card:not(:disabled),button:not(:disabled)',
