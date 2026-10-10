@@ -93,3 +93,11 @@ html[data-arcade-contrast="true"] .player :is(.snake-premium-hud > div, .snake-b
     padding: 8px 4px;
   }
 }
+
+/* On short immersive landscape screens, prioritize the board and driving controls.
+   Telemetry remains available in portrait and regular gameplay layouts. */
+@media (orientation: landscape) and (min-width: 568px) and (max-height: 540px) {
+  .player[data-immersive="true"] .snake-premium-hud {
+    display: none;
+  }
+}
