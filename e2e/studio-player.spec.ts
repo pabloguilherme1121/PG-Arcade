@@ -65,7 +65,7 @@ test("session timer pauses on interruption, resumes and blocks play at its deadl
   await page.goto("./#/jogar/2048");
   await expect(page.locator(".board2048")).toBeVisible();
   const time = new Date("2026-10-09T12:00:00Z");
-  await page.clock.install({ time });
+  await page.clock.install({ time: new Date(time.getTime() - 60_000) });
   await page.clock.pauseAt(time);
   await page.getByLabel("Modo de sessão").selectOption("sprint");
   await page.getByLabel("Dificuldade do desafio de tempo").selectOption("hard");
@@ -114,7 +114,7 @@ test("Snake portal crosses a wall and hard 2048 removes undo", async ({ page }) 
   await page.goto("./#/jogar/snake");
   await page.getByLabel("Modo do Snake").selectOption("wrap");
   const time = new Date("2026-10-09T12:00:00Z");
-  await page.clock.install({ time });
+  await page.clock.install({ time: new Date(time.getTime() - 60_000) });
   await page.clock.pauseAt(time);
   await page.getByRole("button", { name: "Jogar", exact: true }).click();
   await page.clock.runFor(160 * 9);

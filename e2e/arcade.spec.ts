@@ -59,7 +59,7 @@ test("Snake starts, pauses, blocks reverse direction and resets", async ({
   await page.goto("./#/jogar/snake");
   await expect(page.locator(".snake-board")).toBeVisible();
   const time = new Date("2026-10-09T12:00:00Z");
-  await page.clock.install({ time });
+  await page.clock.install({ time: new Date(time.getTime() - 60_000) });
   await page.clock.pauseAt(time);
   await page.getByRole("button", { name: "Jogar", exact: true }).click();
   await expect(
