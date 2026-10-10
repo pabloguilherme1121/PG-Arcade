@@ -20,7 +20,12 @@ test("Reflexo Rápido mostra tempo, média e progresso após o sinal", async ({ 
   await expect(page.locator("[data-reaction-average]")).toContainText("ms");
   await expect(page.locator("[data-reaction-false]")).toHaveText("0");
   await expect(bar).toHaveAttribute("aria-valuenow", "1");
-  await expect(page.locator(".scores strong").first()).not.toHaveText("0");
+  // A resposta foi válida mesmo se demorou além da janela e rendeu zero.
+  // Confira a regra contra o tempo efetivamente medido pelo jogo.
+  const measured = Number((await page.locator("[data-reaction-last]").textContent())?.replace(" ms", ""));
+  expect(Number.isFinite(measured)).toBe(true);
+  const expectedPoints = Math.max(0, Math.round(1000 * (1 - measured / 1000)));
+  await expect(page.locator(".scores strong").first()).toHaveText(String(expectedPoints));
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
