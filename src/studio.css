@@ -1,3 +1,26 @@
+/* Game-only controls and arena presentation. */
+.player-toolbar { display:flex; align-items:start; justify-content:space-between; gap:12px; margin-bottom:16px; }
+.player-toolbar .button { padding:10px 12px; }
+.player-utilities { max-width:100%; }
+.player-utilities summary { display:flex; align-items:center; border:1px solid #52616d; border-radius:10px; padding:10px 14px; font-size:14px; }
+.player-utilities summary::after { content:"+"; margin-left:14px; }
+.player-utilities[open] summary::after { content:"−"; }
+.player-utilities > div { display:flex; flex-wrap:wrap; justify-content:end; gap:8px; padding-top:10px; max-width:460px; }
+.player > h1 { margin:0; text-align:left; font-size:clamp(26px,3vw,40px); line-height:1.1; letter-spacing:-.03em; }
+.player-description { margin:8px 0 12px; max-width:70ch; text-align:left; font-size:14px; color:#b4c5d0; }
+.experience-tools { display:flex; flex-wrap:wrap; justify-content:start; gap:8px; margin:12px 0 16px; padding:0; border:0; background:none; }
+.experience-tools > button { padding:8px 12px; font-size:13px; }
+.experience-tools > details { flex:1 1 230px; margin:0; padding:0; border:0; border-radius:0; background:none; }
+.experience-tools summary { padding:10px 12px; border:1px solid #52616d; border-radius:10px; font-size:13px; width:fit-content; }
+.experience-tools details[open] { flex-basis:100%; }
+.experience-tools details p { max-width:72ch; color:#c1ced8; font-size:14px; line-height:1.6; }
+.player .new-options { margin-bottom:10px; gap:10px; }
+.player .new-hud { margin:10px 0; }
+.player .new-status { margin:8px 0 12px; padding:8px 12px; }
+.player .new-workspace { gap:20px; }
+.player .new-instructions { padding:16px; }
+.player .new-instructions h2 { font-size:20px; margin-top:0; }
+.player .new-instructions p { font-size:14px; line-height:1.55; }
 /* Player presentation: scale the play surface, keep every control reachable. */
 .app-immersive > :is(.site-header, footer) { visibility: hidden; }
 .app-immersive main { isolation: auto; }
@@ -251,3 +274,5 @@ html[data-arcade-contrast="true"] .player { --control-border: #b6c8dd; --control
   .player[data-immersive="true"] .board-column:has(.snake-board) .game-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .player[data-immersive="true"] .board-column:has(.snake-board) .game-actions button { font-size: 12px; padding: 6px; }
 }
+
+@media(max-width:767px) { .player-utilities > div { justify-content:start; } }
