@@ -71,7 +71,7 @@ export default function Minesweeper({
         </div>
         <div className="mines-premium-hud" aria-label="Andamento do Campo Minado">
           <div><span>Seguras</span><strong data-mines-safe>{open.length}/{safeTotal}</strong></div>
-          <div><span>Minas restantes</span><strong data-mines-remaining>{Math.max(0, mineCount - flags.length)}</strong></div>
+          <div><span>Bandeiras livres</span><strong data-mines-remaining>{Math.max(0, mineCount - flags.length)}</strong></div>
           <div><span>Jogadas</span><strong>{moves}</strong></div>
         </div>
         <div className="mines-premium-progress" role="progressbar" aria-label="Casas seguras reveladas"
