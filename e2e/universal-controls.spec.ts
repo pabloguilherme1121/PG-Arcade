@@ -17,7 +17,10 @@ test("all hundred games provide keyboard help and safe restart without losing re
     await page.keyboard.press("Alt+Shift+h");
     await expect(help).not.toHaveAttribute("open", "");
     await page.keyboard.press("Alt+Shift+b");
-    expect(await page.evaluate(() => Boolean(document.activeElement?.closest("[data-arcade-arena]")))).toBe(true);
+    await expect.poll(
+      () => page.evaluate(() => Boolean(document.activeElement?.closest("[data-arcade-arena]"))),
+      { message: `${game.id}: keyboard shortcut must focus the game arena`, timeout: 2000 },
+    ).toBe(true);
     // Word games deliberately ignore shortcuts while the answer field has focus.
     await page.getByRole("button", { name: "Reiniciar jogo", exact: true }).focus();
     await page.keyboard.press("Alt+Shift+r");
