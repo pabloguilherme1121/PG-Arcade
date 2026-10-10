@@ -6,7 +6,11 @@ test("damas destaca a última jogada e permite cancelar uma seleção comum", as
   const game = page.locator('[data-checkers-game="true"]');
   await game.getByRole("button", { name: /1 × 1 local/i }).click();
   const board = game.locator('[data-checkers-board="true"]');
-  const source = board.getByRole("gridcell", { name: /Peça azul/i }).first();
+  const firstBlue = board.getByRole("gridcell", { name: /Peça azul/i }).first();
+  const sourceIndex = await firstBlue.evaluate((cell) =>
+    Array.from(cell.closest('[role="grid"]')!.querySelectorAll('[role="gridcell"]')).indexOf(cell),
+  );
+  const source = board.locator('[role="gridcell"]').nth(sourceIndex);
 
   await source.click();
   await expect(source).toHaveAttribute("aria-selected", "true");
@@ -16,7 +20,11 @@ test("damas destaca a última jogada e permite cancelar uma seleção comum", as
   await expect(board.locator('[data-legal-destination="true"]')).toHaveCount(0);
 
   await source.click();
-  const destination = board.locator('[data-legal-destination="true"]').first();
+  const firstDestination = board.locator('[data-legal-destination="true"]').first();
+  const destinationIndex = await firstDestination.evaluate((cell) =>
+    Array.from(cell.closest('[role="grid"]')!.querySelectorAll('[role="gridcell"]')).indexOf(cell),
+  );
+  const destination = board.locator('[role="gridcell"]').nth(destinationIndex);
   await destination.click();
   await expect(source).toHaveAttribute("data-last-move", "from");
   await expect(destination).toHaveAttribute("data-last-move", "to");
@@ -33,8 +41,11 @@ test("xadrez evidencia movimentos e limpa o destaque ao desfazer e reiniciar", a
   const game = page.locator('[data-chess-game="true"]');
   await game.getByRole("button", { name: /1 × 1 local/i }).click();
   const board = game.locator('[data-chess-board="true"]');
-  const from = board.getByRole("gridcell", { name: /e2 · peão branco/i });
-  const to = board.getByRole("gridcell", { name: /e4 · vazia/i });
+  // Fixed board coordinates remain stable after a piece changes square or name.
+  const from = board.locator('[role="gridcell"]').nth(52); // e2
+  const to = board.locator('[role="gridcell"]').nth(36); // e4
+  await expect(from).toHaveAttribute("aria-label", /e2 · peão branco/i);
+  await expect(to).toHaveAttribute("aria-label", /e4 · vazia/i);
 
   await from.click();
   await to.click();
