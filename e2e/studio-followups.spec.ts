@@ -74,7 +74,10 @@ test("desktop immersive canvas uses the available stage without horizontal overf
     await page.getByRole("button", { name: "Tela cheia", exact: true }).click();
     await expect(page.locator(".player")).toHaveAttribute("data-immersive", "true");
     await expect.poll(() => page.locator("canvas").evaluate((element) => element.getBoundingClientRect().width)).toBeGreaterThanOrEqual(560);
-    expect(await page.locator("canvas").evaluate((element) => element.getBoundingClientRect().bottom)).toBeLessThanOrEqual(900);
+    // CSS subpixel rounding may exceed the viewport edge by a fraction of a pixel.
+    expect(await page.locator("canvas").evaluate((element) =>
+      element.getBoundingClientRect().bottom - window.innerHeight
+    )).toBeLessThanOrEqual(1);
     expect(await page.locator(".player").evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
     await expect(page.getByRole("button", { name: "Sair da tela cheia", exact: true })).toBeVisible();
   }
