@@ -520,6 +520,7 @@ export default function App() {
             <div className="player-gameplay-orientation" data-gameplay-orientation>
               <strong>Como jogar {game.name}</strong>
               <span>{gameHelp[game.id].split(". ")[0]}</span>
+              <small data-player-record>{progress.records[game.id] ? `Sua melhor marca: ${progress.records[game.id]} ${recordUnits[game.id] ?? "pontos"}` : "Primeira partida — faça sua marca"}</small>
             </div>
             <p className="feedback" role="status">
               {message}
