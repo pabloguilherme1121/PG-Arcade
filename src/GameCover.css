@@ -1,5 +1,5 @@
 /* Lightweight shared artwork for all 100 catalog entries. */
-.game-cover {
+.preview.game-cover {
   display: block;
   width: 100%;
   height: auto;
@@ -53,7 +53,7 @@
   border:1px solid #8ba5c1;
   box-shadow: 0 6px 14px #0007;
 }
-.player-coverline h1 {
+.player .player-coverline h1 {
   font-size: clamp(21px,4vw,42px);
   line-height:1.12;
   overflow-wrap:anywhere;
@@ -93,7 +93,7 @@
 @media(max-width:540px) {
   .game-card .game-cover { border-radius:8px; }
   .player-coverline { grid-template-columns: 96px minmax(0,1fr);gap:11px;padding:10px;margin:8px 0; }
-  .player-coverline h1 { font-size:clamp(19px,5vw,26px); }
+  .player .player-coverline h1 { font-size:clamp(19px,5vw,26px); }
   .player-coverline .player-description {
     display: -webkit-box;
     -webkit-box-orient:vertical;
@@ -105,7 +105,7 @@
 }
 @media(max-width:350px) {
   .player-coverline {grid-template-columns:80px minmax(0,1fr);padding:7px;gap:8px;}
-  .player-coverline h1 {font-size:19px;}
+  .player .player-coverline h1 {font-size:19px;}
   .player-gameplay-orientation {padding:8px;}
 }
 .player[data-immersive="true"] .player-coverline .game-cover { display:none; }
