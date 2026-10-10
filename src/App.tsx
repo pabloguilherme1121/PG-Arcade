@@ -50,7 +50,16 @@ import { useReducedMotion } from "./useReducedMotion";
 import { useImmersivePlayer } from "./lib/useImmersivePlayer";
 import "./features/portfolio/components/PortfolioArcade.css";
 const SessionChallenge = lazy(() => import("./games/SessionChallenge"));
-const GamePreview = lazy(() => import("./GamePreview"));
+function PreviewPlaceholder({ id }: { id: NewGameId }) {
+  return <div className="preview mechanic-preview" data-preview-game={id} aria-hidden="true">
+    <svg width="240" height="150" viewBox="0 0 240 150" focusable="false">
+      <rect width="240" height="150" fill="#11232d" />
+      <path d="M36 75h168" stroke="#c9f65a" strokeWidth="6" />
+      <circle cx="120" cy="75" r="18" fill="#79b8ff" />
+    </svg>
+  </div>;
+}
+const GamePreview = lazy(() => import("./GamePreview").catch(() => ({ default: PreviewPlaceholder })));
 type PlayerProps = { record: number; onRecord: (n: number) => void };
 const collectionPlayers = Object.fromEntries(
   expandedGames.map((g) => [
@@ -145,15 +154,7 @@ function route() {
 }
 function Preview({ id }: { id: GameId }) {
   if (isNewGameId(id)) return (
-    <Suspense fallback={
-      <div className="preview mechanic-preview" aria-hidden="true">
-        <svg width="240" height="150" viewBox="0 0 240 150" focusable="false">
-          <rect width="240" height="150" fill="#11232d" />
-          <path d="M36 75h168" stroke="#c9f65a" strokeWidth="6" />
-          <circle cx="120" cy="75" r="18" fill="#79b8ff" />
-        </svg>
-      </div>
-    }>
+    <Suspense fallback={<PreviewPlaceholder id={id} />}>
       <GamePreview id={id} />
     </Suspense>
   );

@@ -1,4 +1,20 @@
 import { test, expect } from "@playwright/test";
+
+test("catalog remains usable if the optional preview chunk fails to load", async ({ page }) => {
+  let blocked = 0;
+  const pageErrors: string[] = [];
+  page.on("pageerror", error => pageErrors.push(error.message));
+  await page.route(/\/assets\/GamePreview-[^/]+\.js(?:\?.*)?$/, async route => {
+    blocked++;
+    await route.abort();
+  });
+  await page.goto("./");
+  await expect.poll(() => blocked).toBeGreaterThan(0);
+  await expect(page.locator(".game-card")).toHaveCount(100);
+  await expect(page.locator(".game-card .preview")).toHaveCount(100);
+  await expect(page.locator('[data-preview-game="flood"]')).toBeVisible();
+  expect(pageErrors).toEqual([]);
+});
 test("all catalog previews have visible contents across responsive widths", async ({ page }) => {
   for (const width of [320,360,390,430,768,1024,1440]) {
     await page.setViewportSize({width,height:900});
