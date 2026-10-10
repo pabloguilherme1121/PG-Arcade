@@ -10,7 +10,6 @@ test("Quebra-cabeça premium desfaz jogadas sem criar pontuação e mostra a dis
   await expect(undo).toBeDisabled();
   const distance=page.locator("[data-puzzle-distance]");
   const before=await distance.textContent();
-  const tile=board.getByRole("button",{name:/Peça \d/}).filter({hasNot: page.locator("[disabled]")}).first();
   const legal=board.locator("button:not([disabled])").first();
   await legal.click();
   await expect(page.locator("[data-puzzle-last]")).toBeVisible();
