@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAutoPause } from "./useAutoPause";
+import "./gameplay.css";
 const colors = ["Verde", "Azul", "Rosa", "Amarelo"];
 export default function ColorSequence({
   record,
@@ -91,7 +92,7 @@ export default function ColorSequence({
           aria-label="Sequência de cores. Teclas 1 a 4."
           className="sequence-board"
           onKeyDown={(e) => {
-            if (e.target === e.currentTarget && /^[1-4]$/.test(e.key)) {
+            if (!e.altKey && !e.ctrlKey && !e.metaKey && !e.repeat && /^[1-4]$/.test(e.key)) {
               e.preventDefault();
               choose(Number(e.key) - 1);
             }

@@ -6,6 +6,7 @@ import {
   type TargetDifficulty,
 } from "../lib/actionGames";
 import { useAutoPause, type PlayStatus } from "./useAutoPause";
+import "./gameplay.css";
 type Target = { id: number; cell: number };
 export default function TargetGame({
   kind,
@@ -26,14 +27,25 @@ export default function TargetGame({
   );
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
+  const [attempts, setAttempts] = useState(0);
+  const [hits, setHits] = useState(0);
+  const [feedback, setFeedback] = useState<{cell:number;points:number} | null>(null);
   const [targets, setTargets] = useState<Target[]>([]);
   const [message, setMessage] = useState("Comece quando estiver pronto.");
   const id = useRef(0);
   const board = useRef<HTMLDivElement>(null);
-  const pause = useCallback(
-    () => setStatus((s) => (s === "running" ? "paused" : s)),
-    [],
-  );
+  const timeLeft = useRef(duration * 1000);
+  const deadline = useRef<number | null>(null);
+  const settle = useCallback(() => {
+    if (deadline.current === null) return;
+    timeLeft.current = Math.max(0, deadline.current - performance.now());
+    setRemaining(Math.ceil(timeLeft.current / 1000));
+  }, []);
+  const pause = useCallback(() => {
+    settle();
+    deadline.current = null;
+    setStatus((s) => (s === "running" ? "paused" : s));
+  }, [settle]);
   useAutoPause(pause);
   function freshTargets() {
     const cells = Array.from({ length: 9 }, (_, i) => i);
@@ -46,12 +58,15 @@ export default function TargetGame({
   }
   useEffect(() => {
     if (status !== "running") return;
-    const timer = setInterval(
-      () => setRemaining((r) => Math.max(0, r - 1)),
-      1000,
-    );
+    deadline.current ??= performance.now() + timeLeft.current;
+    const timer = setInterval(settle, 100);
     return () => clearInterval(timer);
-  }, [status]);
+  }, [status, settle]);
+  useEffect(() => {
+    if (!feedback) return;
+    const timer = setTimeout(() => setFeedback(null), 400);
+    return () => clearTimeout(timer);
+  }, [feedback]);
   useEffect(() => {
     if (shoot || status !== "running") return;
     const timer = setInterval(
@@ -63,24 +78,30 @@ export default function TargetGame({
   useEffect(() => {
     if (remaining === 0 && status === "running") {
       onRecord(score);
+      deadline.current = null;
       setStatus("done");
     }
   }, [remaining, status, score, onRecord]);
   function start() {
     if (status === "ready") setTargets(freshTargets());
+    deadline.current = performance.now() + timeLeft.current;
     setStatus("running");
     board.current?.focus();
   }
   function hit(cell: number) {
-    if (status !== "running") return;
+    if (status !== "running" || deadline.current === null || performance.now() >= deadline.current) return;
+    setAttempts((n) => n + 1);
     const target = targets.find((t) => t.cell === cell);
     if (!target) {
       setCombo(0);
+      setFeedback({cell,points:0});
       setMessage("Não acertou. Procure o próximo alvo.");
       return;
     }
     const nextScore = shoot ? hitScore(score, combo) : score + 1;
     setScore(nextScore);
+    setHits((n) => n + 1);
+    setFeedback({cell,points:nextScore-score});
     setCombo((c) => c + 1);
     setMessage(
       shoot
@@ -100,10 +121,15 @@ export default function TargetGame({
     } else setTargets(freshTargets());
   }
   function reset(nextDifficulty: TargetDifficulty = difficulty) {
+    deadline.current = null;
+    timeLeft.current = targetGameRules(kind, nextDifficulty).duration * 1000;
     setStatus("ready");
     setRemaining(targetGameRules(kind, nextDifficulty).duration);
     setScore(0);
     setCombo(0);
+    setAttempts(0);
+    setHits(0);
+    setFeedback(null);
     setTargets([]);
     setMessage("Nova rodada. Comece quando quiser.");
   }
@@ -118,6 +144,7 @@ export default function TargetGame({
             Tempo<strong>{remaining}s</strong>
           </div>
         </div>
+        <p className="targets-summary">Sequência <strong>{combo}</strong> · Acertos <strong>{hits}/{attempts}</strong></p>
         <div
           ref={board}
           className={`targets-board ${shoot ? "space-targets" : "casual-targets"}`}
@@ -147,6 +174,7 @@ export default function TargetGame({
                 disabled={status !== "running"}
                 aria-label={`${shoot ? "Alvo" : "Estrela"} ${i + 1}: ${active ? "presente" : "vazio"}`}
                 className={active ? "target-present" : ""}
+                data-feedback={feedback?.cell === i ? feedback.points > 0 ? "hit" : "miss" : undefined}
                 onClick={() => hit(i)}
               >
                 <small>{i + 1}</small>
@@ -163,6 +191,7 @@ export default function TargetGame({
                 ) : (
                   <span aria-hidden="true">·</span>
                 )}
+                {feedback?.cell === i && <span className="hit-feedback" aria-hidden="true">{feedback.points > 0 ? `+${feedback.points}` : "Erro"}</span>}
               </button>
             );
           })}

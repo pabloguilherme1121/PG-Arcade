@@ -11,8 +11,9 @@ import { newGames, type NewGameId } from "../lib/newCatalog";
 import { useAutoPause } from "./useAutoPause";
 import { revealPlayfield } from "./revealPlayfield";
 import { useResponsiveCanvas } from "./useResponsiveCanvas";
-import { paintAtmosphere, paintBlock, paintOrb } from "./canvasMaterials";
+import { paintAtmosphere, paintBlock, paintOrb, paintRoadCar, paintFrog, paintRock } from "./canvasMaterials";
 import "./newGames.css";
+import "./gameplay.css";
 export function paintMotion(c: CanvasRenderingContext2D, s: MotionState) {
   c.clearRect(0, 0, 480, 380);
   const bg = c.createLinearGradient(0, 0, 0, 380);
@@ -60,12 +61,7 @@ export function paintMotion(c: CanvasRenderingContext2D, s: MotionState) {
     if (o.kind === "block") {
       paintBlock(c, o.x - o.r, o.y, o.r * 2, 20, "#82cda7");
     } else if (o.kind === "car") {
-      paintBlock(c, o.x - o.r, o.y - 14, o.r * 2, 28, o.lane % 2 ? "#ff8f80" : "#79b8ff");
-      c.fillStyle = "#162939";
-      c.fillRect(o.x - 10, o.y - 10, 15, 20);
-      c.fillStyle = "#fff4c9";
-      c.fillRect(o.x + o.r - 4, o.y - 10, 3, 5);
-      c.fillRect(o.x + o.r - 4, o.y + 5, 3, 5);
+      paintRoadCar(c,o.x,o.y,o.r,o.lane % 2 ? "#ff8f80" : "#79b8ff",o.vx);
     } else if (o.kind === "gate") {
       c.strokeStyle = "#166f4b";
       c.lineWidth = 4;
@@ -101,6 +97,8 @@ export function paintMotion(c: CanvasRenderingContext2D, s: MotionState) {
       c.moveTo(o.x, o.y + o.r);
       c.lineTo(o.x, o.y + o.r + 25);
       c.stroke();
+    } else if (o.kind === "meteor") {
+      paintRock(c,o.x,o.y,o.r);
     } else {
       circle(
         o.x,
@@ -152,6 +150,8 @@ export function paintMotion(c: CanvasRenderingContext2D, s: MotionState) {
     c.fillRect(232, s.y - 9, 16, 24);
   }
   if (["turret", "ricochet"].includes(s.id)) {
+    c.fillStyle="#23394b";c.beginPath();c.roundRect(212,323,56,39,8);c.fill();
+    c.strokeStyle="#7f9bb0";c.lineWidth=2;c.stroke();
     circle(240, 340, 20, "#79b8ff");
     c.strokeStyle = "#c9f65a";
     c.lineWidth = 7;
@@ -185,7 +185,7 @@ export function paintMotion(c: CanvasRenderingContext2D, s: MotionState) {
     }
   }
   if (s.id === "crossroad") {
-    circle(s.x, s.y, 12, "#c9f65a");
+    paintFrog(c,s.x,s.y);
   }
   const edge = c.createRadialGradient(240, 190, 130, 240, 190, 360);
   edge.addColorStop(0, "#00000000");
@@ -235,6 +235,7 @@ export default function MotionExpansion({
   }, [hud.status, hud.score]);
   useEffect(() => {
     if (hud.status === "running") return;
+    canvas.current?.closest('.motion-stage')?.querySelectorAll('[data-held]').forEach(button=>button.removeAttribute('data-held'));
     const context = canvas.current?.getContext("2d");
     if (context) paintMotion(context, hud);
   }, [hud]);
@@ -334,10 +335,11 @@ export default function MotionExpansion({
     }
     return false;
   }
-  function held(field: keyof MotionInput, label: string) {
+  function held(field: keyof MotionInput, label: string, primary = false) {
     return (
       <button
         key={field}
+        className={primary ? "primary" : undefined}
         disabled={hud.status !== "running"}
         aria-label={label}
         onClick={(e) => {
@@ -346,26 +348,31 @@ export default function MotionExpansion({
         onPointerDown={(e) => {
           e.preventDefault();
           e.currentTarget.setPointerCapture(e.pointerId);
+          e.currentTarget.dataset.held = "true";
           if (field !== "lane") {
             input.current[field] = true;
             pending.current[field] = true;
           }
         }}
-        onPointerUp={() => {
+        onPointerUp={(e) => {
+          delete e.currentTarget.dataset.held;
           if (field !== "lane") input.current[field] = false;
         }}
-        onPointerCancel={() => {
+        onPointerCancel={(e) => {
+          delete e.currentTarget.dataset.held;
           if (field !== "lane") {
             input.current[field] = false;
             pending.current[field] = false;
           }
         }}
-        onLostPointerCapture={() => {
+        onLostPointerCapture={(e) => {
+          delete e.currentTarget.dataset.held;
           if (field !== "lane") input.current[field] = false;
         }}
         onKeyDown={(e) => {
           if (e.key === " " || e.key === "Enter") {
             e.preventDefault();
+            e.currentTarget.dataset.held = "true";
             if (field !== "lane") {
               input.current[field] = true;
               if (!e.repeat) pending.current[field] = true;
@@ -375,10 +382,12 @@ export default function MotionExpansion({
         onKeyUp={(e) => {
           if (e.key === " " || e.key === "Enter") {
             e.preventDefault();
+            delete e.currentTarget.dataset.held;
             if (field !== "lane") input.current[field] = false;
           }
         }}
-        onBlur={() => {
+        onBlur={(e) => {
+          delete e.currentTarget.dataset.held;
           if (field !== "lane") input.current[field] = false;
         }}
       >
@@ -520,24 +529,7 @@ export default function MotionExpansion({
                 {gameId === "crossroad" && held("down", "↓ Baixo")}
                 {held("right", "Direita →")}
                 {["stack", "rope", "turret", "ricochet"].includes(gameId) && (
-                  <button
-                    disabled={hud.status !== "running"}
-                    className="primary"
-                    onClick={(e) => {
-                      if (e.detail === 0) pending.current.action = true;
-                    }}
-                    onPointerDown={(e) => {
-                      e.preventDefault();
-                      e.currentTarget.setPointerCapture(e.pointerId);
-                      input.current.action = true;
-                      pending.current.action = true;
-                    }}
-                    onPointerUp={() => (input.current.action = false)}
-                    onPointerCancel={() => (input.current.action = false)}
-                    onLostPointerCapture={() => (input.current.action = false)}
-                  >
-                    Ação
-                  </button>
+                  held("action", "Ação", true)
                 )}
               </>
             )}
