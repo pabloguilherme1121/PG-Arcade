@@ -19,6 +19,8 @@ export default function Game2048({
 }) {
   const [state, setState] = useState(() => ({ board: new2048(), score: 0 }));
   const [previous, setPrevious] = useState<typeof state | null>(null);
+  const [difficulty, setDifficulty] = useState("normal");
+  const twoChance = difficulty === "easy" ? 0.98 : difficulty === "hard" ? 0.7 : 0.9;
   const touch = useRef<[number, number] | null>(null);
   const [announcement, setAnnouncement] = useState("");
   function move(direction: Direction) {
@@ -26,7 +28,7 @@ export default function Game2048({
     if (!result.changed) return;
     const score = state.score + result.score;
     setPrevious(state);
-    setState({ board: spawn2048(result.board), score });
+    setState({ board: spawn2048(result.board, Math.random, twoChance), score });
     onRecord(score);
     setAnnouncement(
       result.score
@@ -39,6 +41,19 @@ export default function Game2048({
   return (
     <div className="game-layout">
       <div className="board-column">
+        <div className="session-options"><label>Dificuldade do 2048
+          <select aria-label="Dificuldade do 2048" value={difficulty} onChange={(e) => {
+            const next = e.target.value;
+            setDifficulty(next);
+            setState({ board: new2048(next === "easy" ? 0.98 : next === "hard" ? 0.7 : 0.9), score: 0 });
+            setPrevious(null);
+            setAnnouncement("Nova partida iniciada.");
+          }}>
+            <option value="easy">Fácil · mais peças 2</option>
+            <option value="normal">Normal · clássico</option>
+            <option value="hard">Difícil · mais peças 4, sem desfazer</option>
+          </select>
+        </label></div>
         <div className="scores">
           <div>
             Pontos<strong>{state.score}</strong>
@@ -94,7 +109,7 @@ export default function Game2048({
         </p>
         <div className="game-actions">
           <button
-            disabled={!previous}
+            disabled={!previous || difficulty === "hard"}
             onClick={() => {
               if (previous) {
                 setState(previous);
@@ -109,7 +124,7 @@ export default function Game2048({
           <button
             className="primary"
             onClick={() => {
-              setState({ board: new2048(), score: 0 });
+              setState({ board: new2048(twoChance), score: 0 });
               setPrevious(null);
               setAnnouncement("Nova partida iniciada.");
             }}

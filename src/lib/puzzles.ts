@@ -51,10 +51,10 @@ export const solvedPuzzle = [1, 2, 3, 4, 5, 6, 7, 8, 0];
 export function puzzleSolved(board: number[]) {
   return board.every((v, i) => v === solvedPuzzle[i]);
 }
-export function shuffledPuzzle(random = Math.random) {
+export function shuffledPuzzle(random = Math.random, steps = 100) {
   let board = [...solvedPuzzle];
   let previous = -1;
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < steps; i++) {
     const empty = board.indexOf(0);
     const options = board
       .map((_, j) => j)

@@ -13,6 +13,8 @@ import {
 } from "../lib/actionCollection";
 import { useAutoPause, type PlayStatus } from "./useAutoPause";
 import { useReducedMotion } from "../useReducedMotion";
+import { useResponsiveCanvas } from "./useResponsiveCanvas";
+import { paintBlock } from "./canvasMaterials";
 import "./actionCollection.css";
 const artwork = (() => {
   const images: Partial<Record<"car" | "ship", HTMLImageElement>> = {};
@@ -67,12 +69,7 @@ function paint(
     ctx.fill();
   };
   const box = (x: number, y: number, w: number, h: number, c: string) => {
-    ctx.fillStyle = "rgba(0,0,0,.3)";
-    ctx.fillRect(x + 3, y + 4, w, h);
-    ctx.fillStyle = c;
-    ctx.fillRect(x, y, w, h);
-    ctx.fillStyle = "rgba(255,255,255,.3)";
-    ctx.fillRect(x, y, w, 3);
+    paintBlock(ctx, x, y, w, h, c);
   };
   if (s.id === "drift") {
     ctx.fillStyle = "#263e32";
@@ -300,6 +297,7 @@ export default function ActionCollection({
     saved = useRef(false),
     onRecordRef = useRef(onRecord);
   onRecordRef.current = onRecord;
+  useResponsiveCanvas(canvas, 480, 360, (context) => paint(context, state.current, reducedMotion));
   const pending = useRef(new Set<keyof ActionInput>());
   const pause = useCallback(() => {
     input.current = { ...idleInput };

@@ -4,6 +4,7 @@ import "@fontsource-variable/inter";
 import "@fontsource-variable/space-grotesk";
 import "./style.css";
 import "./premium.css";
+import "./studio.css";
 
 createRoot(document.getElementById("root")!).render(<App />);
 

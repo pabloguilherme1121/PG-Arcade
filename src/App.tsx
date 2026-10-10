@@ -3,6 +3,7 @@ import {
   lazy,
   Suspense,
   useEffect,
+  useLayoutEffect,
   useState,
   useCallback,
   useRef,
@@ -44,6 +45,8 @@ import {
 } from "./lib/progress";
 import { readPreferences, applyPreferences } from "./lib/preferences";
 import { useReducedMotion } from "./useReducedMotion";
+import { useImmersivePlayer } from "./lib/useImmersivePlayer";
+import SessionChallenge from "./games/SessionChallenge";
 import "./features/portfolio/components/PortfolioArcade.css";
 type PlayerProps = { record: number; onRecord: (n: number) => void };
 const collectionPlayers = Object.fromEntries(
@@ -386,7 +389,7 @@ export default function App() {
     );
     const target =
       arenaElement?.querySelector<HTMLElement>(
-        '[data-expanded-board],[role="gridcell"][tabindex="0"],.connect-board,.board2048,.snake-board,.race-board,.parking-board,.targets-board,.sliding-board,.sequence-board,.word-input,.reaction-board,.mines-board button:not(:disabled),[role="slider"][tabindex="0"],[data-game-cell]:not(:disabled),[data-domino-tile]:not(:disabled)',
+        'canvas[tabindex="0"],[data-expanded-board],[role="gridcell"][tabindex="0"],.connect-board,.board2048,.snake-board,.race-board,.parking-board,.targets-board,.sliding-board,.sequence-board,.word-input,.reaction-board,.mines-board button:not(:disabled),[role="slider"][tabindex="0"],[data-game-cell]:not(:disabled),[data-domino-tile]:not(:disabled)',
       ) ||
       arenaElement?.querySelector<HTMLElement>(
         '[role="gridcell"]:not([aria-disabled="true"]):not(:disabled),.connect-controls button:not(:disabled),.lights-board button:not(:disabled),.memory-card:not(:disabled),button:not(:disabled)',
@@ -405,8 +408,8 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("Todos");
   const [message, setMessage] = useState("");
-  const [fullscreen, setFullscreen] = useState(false);
   const arena = useRef<HTMLDivElement>(null);
+  const { active: fullscreen, viewport, toggle: toggleFullscreen } = useImmersivePlayer(arena, page);
   const heading = useRef<HTMLHeadingElement>(null);
   const lastRoute = useRef(page);
   useEffect(() => {
@@ -449,7 +452,8 @@ export default function App() {
       setProgress(fn),
     [],
   );
-  useEffect(() => {
+  useLayoutEffect(() => {
+    // Persist before a completed round can paint and the player reloads.
     setStorageOk(saveProgress(progress));
   }, [progress]);
   useEffect(() => {
@@ -475,11 +479,6 @@ export default function App() {
       lastRoute.current = page;
     }
   }, [page, update]);
-  useEffect(() => {
-    const change = () => setFullscreen(Boolean(document.fullscreenElement));
-    document.addEventListener("fullscreenchange", change);
-    return () => document.removeEventListener("fullscreenchange", change);
-  }, []);
   const setRecord = useCallback(
     (value: number) => {
       if (!isGameId(page) || !Number.isFinite(value) || value <= 0) return;
@@ -500,16 +499,6 @@ export default function App() {
         ? p.favorites.filter((v) => v !== id)
         : [...p.favorites, id],
     }));
-  }
-  async function toggleFullscreen() {
-    try {
-      if (document.fullscreenElement) await document.exitFullscreen();
-      else if (arena.current?.requestFullscreen)
-        await arena.current.requestFullscreen();
-      else setMessage("A tela cheia não está disponível neste navegador.");
-    } catch {
-      setMessage("A tela cheia não está disponível neste navegador.");
-    }
   }
   async function copyLink() {
     try {
@@ -573,7 +562,7 @@ export default function App() {
     [visible, sort, progress.visits],
   );
   return (
-    <div className={focusMode && game ? "app-focus" : ""}>
+    <div className={`${focusMode && game ? "app-focus" : ""} ${fullscreen && game ? "app-immersive" : ""}`}>
       <a
         className="skip-link"
         href="#main"
@@ -691,6 +680,8 @@ export default function App() {
             ref={arena}
             data-current-game={game.id}
             data-game-category={game.category}
+            data-immersive={fullscreen}
+            data-viewport-fullscreen={viewport}
             className={`player ${focusMode ? "focus-game" : ""}`}
           >
             <div className="player-toolbar">
@@ -720,7 +711,8 @@ export default function App() {
                   <span className="hide-small">Compartilhar</span>
                 </button>
                 <button
-                  onClick={toggleFullscreen}
+                  onClick={(event) => void toggleFullscreen(event.currentTarget)}
+                  aria-pressed={fullscreen}
                   aria-label={fullscreen ? "Sair da tela cheia" : "Tela cheia"}
                 >
                   {fullscreen ? <Minimize size={19} /> : <Maximize size={19} />}
@@ -823,7 +815,8 @@ export default function App() {
                 </button>
               </div>
             </dialog>
-            <GameError key={`${game.id}-${session}`}>
+            <SessionChallenge key={`${game.id}-${session}`}>
+            <GameError>
               <Suspense
                 fallback={
                   <p className="empty" role="status">
@@ -851,6 +844,7 @@ export default function App() {
                 </div>
               </Suspense>
             </GameError>
+            </SessionChallenge>
           </div>
         ) : page === "progresso" ? (
           <section className="progress-section">

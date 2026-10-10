@@ -9,6 +9,8 @@ import {
 } from "../lib/motionExpansion";
 import { newGames, type NewGameId } from "../lib/newCatalog";
 import { useAutoPause } from "./useAutoPause";
+import { useResponsiveCanvas } from "./useResponsiveCanvas";
+import { paintAtmosphere, paintBlock, paintOrb } from "./canvasMaterials";
 import "./newGames.css";
 export function paintMotion(c: CanvasRenderingContext2D, s: MotionState) {
   c.clearRect(0, 0, 480, 380);
@@ -17,19 +19,9 @@ export function paintMotion(c: CanvasRenderingContext2D, s: MotionState) {
   bg.addColorStop(1, s.id === "ski" ? "#f0f5f8" : "#1a2d3e");
   c.fillStyle = bg;
   c.fillRect(0, 0, 480, 380);
-  c.lineWidth = 1;
-  c.strokeStyle = s.id === "ski" ? "#a0c0d0" : "#294050";
-  for (let x = 0; x < 480; x += 40) {
-    c.beginPath();
-    c.moveTo(x, 0);
-    c.lineTo(x, 380);
-    c.stroke();
-  }
+  paintAtmosphere(c, 380, s.id === "ski");
   const circle = (x: number, y: number, r: number, color: string) => {
-    c.fillStyle = color;
-    c.beginPath();
-    c.arc(x, y, r, 0, Math.PI * 2);
-    c.fill();
+    paintOrb(c, x, y, r, color);
   };
   c.font = "bold 18px sans-serif";
   c.textAlign = "center";
@@ -65,13 +57,14 @@ export function paintMotion(c: CanvasRenderingContext2D, s: MotionState) {
   }
   for (const o of s.objects) {
     if (o.kind === "block") {
-      c.fillStyle = "#82cda7";
-      c.fillRect(o.x - o.r, o.y, o.r * 2, 20);
+      paintBlock(c, o.x - o.r, o.y, o.r * 2, 20, "#82cda7");
     } else if (o.kind === "car") {
-      c.fillStyle = o.lane % 2 ? "#ff8f80" : "#79b8ff";
-      c.fillRect(o.x - o.r, o.y - 14, o.r * 2, 28);
+      paintBlock(c, o.x - o.r, o.y - 14, o.r * 2, 28, o.lane % 2 ? "#ff8f80" : "#79b8ff");
       c.fillStyle = "#162939";
       c.fillRect(o.x - 10, o.y - 10, 15, 20);
+      c.fillStyle = "#fff4c9";
+      c.fillRect(o.x + o.r - 4, o.y - 10, 3, 5);
+      c.fillRect(o.x + o.r - 4, o.y + 5, 3, 5);
     } else if (o.kind === "gate") {
       c.strokeStyle = "#166f4b";
       c.lineWidth = 4;
@@ -127,10 +120,8 @@ export function paintMotion(c: CanvasRenderingContext2D, s: MotionState) {
     }
   }
   if (s.id === "stack") {
-    c.fillStyle = "#596e84";
-    c.fillRect(s.base - s.width / 2, 353, s.width, 20);
-    c.fillStyle = "#c9f65a";
-    c.fillRect(s.x - s.width / 2, 307 - s.progress * 23, s.width, 20);
+    paintBlock(c, s.base - s.width / 2, 353, s.width, 20, "#596e84");
+    paintBlock(c, s.x - s.width / 2, 307 - s.progress * 23, s.width, 20, "#c9f65a");
   }
   if (s.id === "balance") {
     c.save();
@@ -195,6 +186,11 @@ export function paintMotion(c: CanvasRenderingContext2D, s: MotionState) {
   if (s.id === "crossroad") {
     circle(s.x, s.y, 12, "#c9f65a");
   }
+  const edge = c.createRadialGradient(240, 190, 130, 240, 190, 360);
+  edge.addColorStop(0, "#00000000");
+  edge.addColorStop(1, s.id === "ski" ? "#54788b22" : "#00000060");
+  c.fillStyle = edge;
+  c.fillRect(0, 0, 480, 380);
 }
 export default function MotionExpansion({
   gameId,
@@ -210,15 +206,16 @@ export default function MotionExpansion({
     [hud, setHud] = useState(() => newMotion(gameId));
   const state = useRef(hud),
     input = useRef(emptyInput()),
-    pending = useRef({ action: false, lane: -1 }),
+    pending = useRef(emptyInput()),
     canvas = useRef<HTMLCanvasElement>(null),
     recordCallback = useRef(onRecord),
     awarded = useRef(false);
   recordCallback.current = onRecord;
+  useResponsiveCanvas(canvas, 480, 380, (context) => paintMotion(context, state.current));
   const meta = newGames.find((g) => g.id === gameId)!;
   const pause = useCallback(() => {
     input.current = emptyInput();
-    pending.current = { action: false, lane: -1 };
+    pending.current = emptyInput();
     if (state.current.status === "running") {
       state.current = {
         ...state.current,
@@ -254,6 +251,10 @@ export default function MotionExpansion({
         while (accumulator >= 1 / 60 && state.current.status === "running") {
           const keys = {
             ...input.current,
+            left: input.current.left || pending.current.left,
+            right: input.current.right || pending.current.right,
+            up: input.current.up || pending.current.up,
+            down: input.current.down || pending.current.down,
             action: input.current.action || pending.current.action,
             lane:
               pending.current.lane >= 0
@@ -261,7 +262,7 @@ export default function MotionExpansion({
                 : input.current.lane,
           };
           state.current = motionStep(state.current, keys, 1 / 60);
-          pending.current = { action: false, lane: -1 };
+          pending.current = emptyInput();
           accumulator -= 1 / 60;
         }
         if (["won", "lost"].includes(state.current.status)) {
@@ -288,7 +289,7 @@ export default function MotionExpansion({
     state.current = newMotion(gameId, d, next);
     setHud(state.current);
     input.current = emptyInput();
-    pending.current = { action: false, lane: -1 };
+    pending.current = emptyInput();
     awarded.current = false;
   }
   function start() {
@@ -300,7 +301,7 @@ export default function MotionExpansion({
       lastLane: -1,
     };
     input.current = emptyInput();
-    pending.current = { action: false, lane: -1 };
+    pending.current = emptyInput();
     setHud(state.current);
     canvas.current?.focus({ preventScroll: true });
   }
@@ -321,7 +322,7 @@ export default function MotionExpansion({
     const field = mapping[k];
     if (field && field !== "lane") {
       input.current[field] = value;
-      if (field === "action" && value) pending.current.action = true;
+      if (value) pending.current[field] = true;
       return true;
     }
     if (/^[1-4]$/.test(key)) {
@@ -337,16 +338,25 @@ export default function MotionExpansion({
         key={field}
         disabled={hud.status !== "running"}
         aria-label={label}
+        onClick={(e) => {
+          if (e.detail === 0 && field !== "lane") pending.current[field] = true;
+        }}
         onPointerDown={(e) => {
           e.preventDefault();
           e.currentTarget.setPointerCapture(e.pointerId);
-          if (field !== "lane") input.current[field] = true;
+          if (field !== "lane") {
+            input.current[field] = true;
+            pending.current[field] = true;
+          }
         }}
         onPointerUp={() => {
           if (field !== "lane") input.current[field] = false;
         }}
         onPointerCancel={() => {
-          if (field !== "lane") input.current[field] = false;
+          if (field !== "lane") {
+            input.current[field] = false;
+            pending.current[field] = false;
+          }
         }}
         onLostPointerCapture={() => {
           if (field !== "lane") input.current[field] = false;
@@ -354,7 +364,10 @@ export default function MotionExpansion({
         onKeyDown={(e) => {
           if (e.key === " " || e.key === "Enter") {
             e.preventDefault();
-            if (field !== "lane") input.current[field] = true;
+            if (field !== "lane") {
+              input.current[field] = true;
+              if (!e.repeat) pending.current[field] = true;
+            }
           }
         }}
         onKeyUp={(e) => {
@@ -432,7 +445,7 @@ export default function MotionExpansion({
             }}
             onBlur={(e) => {
               input.current = emptyInput();
-              pending.current = { action: false, lane: -1 };
+              pending.current = emptyInput();
               if (
                 !e.relatedTarget ||
                 !e.currentTarget.parentElement?.contains(
@@ -507,8 +520,11 @@ export default function MotionExpansion({
                   <button
                     disabled={hud.status !== "running"}
                     className="primary"
-                    onClick={() => (pending.current.action = true)}
+                    onClick={(e) => {
+                      if (e.detail === 0) pending.current.action = true;
+                    }}
                     onPointerDown={(e) => {
+                      e.preventDefault();
                       e.currentTarget.setPointerCapture(e.pointerId);
                       input.current.action = true;
                       pending.current.action = true;
