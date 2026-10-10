@@ -8,11 +8,13 @@ import {
   UsersRound,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import "./PortfolioDomino.css";
 import ArcadeDifficultyNotice from "./ArcadeDifficultyNotice";
 import {
   chooseDominoBotMove,
   dealDominoRound,
   getDominoPipTotal,
+  getDominoEnds,
   getDominoWinnerPoints,
   drawDominoUntilPlayable,
   sortDominoHand,
@@ -55,28 +57,47 @@ const tileColors = [
   "#7dd3fc",
   "#c4b5fd",
 ];
+// Conventional 3 × 3 pip positions: top-left to bottom-right.
+const dominoPipPositions: Record<number, readonly number[]> = {
+  0: [],
+  1: [4],
+  2: [0, 8],
+  3: [0, 4, 8],
+  4: [0, 2, 6, 8],
+  5: [0, 2, 4, 6, 8],
+  6: [0, 2, 3, 5, 6, 8],
+};
+
 function TileFace({ tile }: { tile: DominoTile }) {
   return (
-    <span data-domino-face="true" className="inline-grid min-w-14 grid-cols-[1fr_auto_1fr] items-center gap-1 rounded-[9px] border border-white/15 bg-[#0a1b2b] px-2 py-2 font-display text-base text-white shadow-[0_8px_20px_rgba(0,0,0,0.16)]">
-      <span
-        className="rounded px-1.5 py-1"
-        style={{
-          color: tileColors[tile[0]],
-          backgroundColor: `${tileColors[tile[0]]}20`,
-        }}
-      >
-        {tile[0]}
-      </span>
-      <span className="h-5 w-px bg-white/20" aria-hidden="true" />
-      <span
-        className="rounded px-1.5 py-1"
-        style={{
-          color: tileColors[tile[1]],
-          backgroundColor: `${tileColors[tile[1]]}20`,
-        }}
-      >
-        {tile[1]}
-      </span>
+    <span
+      data-domino-face="true"
+      className="domino-face"
+      role="img"
+      aria-label={`Pedra ${tile[0]} por ${tile[1]}`}
+    >
+      {tile.map((value, index) => (
+        <span
+          key={index}
+          className="domino-half"
+          data-domino-half="true"
+          data-domino-value={value}
+          style={{ color: tileColors[value] }}
+          aria-hidden="true"
+        >
+          <span className="domino-pip-grid">
+            {dominoPipPositions[value].map((position) => (
+              <span
+                key={position}
+                data-domino-pip="true"
+                className="domino-pip"
+                style={{ gridColumn: (position % 3) + 1, gridRow: Math.floor(position / 3) + 1 }}
+              />
+            ))}
+          </span>
+          <span className="domino-half-number">{value}</span>
+        </span>
+      ))}
     </span>
   );
 }
@@ -101,12 +122,14 @@ export default function PortfolioDomino() {
   const [lastMove, setLastMove] = useState(
     "Escolha uma pedra para abrir a mesa.",
   );
+  const [lastPlacement, setLastPlacement] = useState<DominoSide | null>(null);
   const [handoffPending, setHandoffPending] = useState(false);
   const [pendingMove, setPendingMove] = useState<PendingMove>(null);
 
   const handSize = variant === "quick" ? 5 : 7;
   const currentHand = turn === "player" ? playerHand : opponentHand;
   const canPlay = hasPlayableDominoTile(currentHand, chain);
+  const ends = getDominoEnds(chain);
   const canDraw =
     !winner &&
     !handoffPending &&
@@ -125,6 +148,8 @@ export default function PortfolioDomino() {
     setOpponentHand(dealt.opponent);
     setBoneyard(dealt.boneyard);
     setChain([]);
+    setLastPlacement(null);
+    setLastMove("Escolha uma pedra para abrir a mesa.");
     setTurn("player");
     setWinner(null);
     setPasses(0);
@@ -134,7 +159,6 @@ export default function PortfolioDomino() {
       setRound(1);
       setScore({ player: 0, opponent: 0, draws: 0 });
       setPoints({ player: 0, opponent: 0 });
-      setLastMove("Escolha uma pedra para abrir a mesa.");
       setMatchWinner(null);
     }
   };
@@ -199,6 +223,10 @@ export default function PortfolioDomino() {
     const nextTurn: Turn = owner === "player" ? "opponent" : "player";
 
     setChain(nextChain);
+    setLastPlacement(side);
+    setLastMove(
+      `${owner === "player" ? (mode === "bot" ? "Você" : "Jogador 1") : "Jogador 2"} jogou ${tile[0]} por ${tile[1]} à ${chain.length ? (side === "left" ? "esquerda" : "direita") : "mesa"}.`,
+    );
     setPasses(0);
     setPendingMove(null);
 
@@ -290,6 +318,7 @@ export default function PortfolioDomino() {
 
         if (!move) {
           setOpponentHand(nextHand);
+          setLastMove("PG Bot passou a vez.");
           if (passes >= 1) resolveBlockedRound(playerHand, nextHand);
           else {
             setPasses((value) => value + 1);
@@ -303,6 +332,8 @@ export default function PortfolioDomino() {
         nextHand.splice(move.index, 1);
         setOpponentHand(nextHand);
         setChain(nextChain);
+        setLastPlacement(move.side);
+        setLastMove(`PG Bot jogou ${tile[0]} por ${tile[1]} à ${chain.length ? (move.side === "left" ? "esquerda" : "direita") : "mesa"}.`);
         setPasses(0);
 
         if (!nextHand.length) {
@@ -417,6 +448,20 @@ export default function PortfolioDomino() {
             ))}
           </div>
           <div
+            className="domino-table-feedback"
+            data-domino-ends="true"
+            aria-label="Pontas abertas da mesa"
+          >
+            {ends ? (
+              <>
+                <span data-domino-end="left"><ArrowLeft aria-hidden="true" size={15} /> Esquerda <strong>{ends.left}</strong></span>
+                <span data-domino-end="right">Direita <strong>{ends.right}</strong> <ArrowRight aria-hidden="true" size={15} /></span>
+              </>
+            ) : (
+              <span className="domino-table-empty">Mesa livre · qualquer pedra abre a partida</span>
+            )}
+          </div>
+          <div
             data-domino-chain="true"
             aria-label="Mesa de dominó"
             className="mt-3 flex min-h-32 snap-x items-center gap-2 overflow-x-auto rounded-[16px] border border-white/10 bg-[radial-gradient(circle_at_center,_#0b2940,_#04101b_68%)] p-4 shadow-inner"
@@ -424,7 +469,9 @@ export default function PortfolioDomino() {
             {chain.length ? (
               chain.map((tile, index) => (
                 <span
-                  className="snap-center"
+                  className="snap-center domino-chain-tile"
+                  data-domino-latest={lastPlacement &&
+                    (lastPlacement === "left" ? index === 0 : index === chain.length - 1) ? "true" : undefined}
                   key={`${tile.join("-")}-${index}`}
                 >
                   <TileFace tile={tile} />
@@ -437,6 +484,9 @@ export default function PortfolioDomino() {
             )}
           </div>
 
+          <p className="domino-last-move" data-domino-last-move="true" role="status" aria-live="polite">
+            {lastMove}
+          </p>
           <div className="mt-5">
             <div className="mb-2 flex items-center justify-between">
               <p className="font-body text-xs uppercase tracking-[0.1em] text-[#7191a8]">
@@ -490,6 +540,9 @@ export default function PortfolioDomino() {
                           ? "Pedra oculta do PG Bot"
                           : `Pedra ${tile[0]} por ${tile[1]}`
                       }
+                      aria-description={playable && !hidden && !handoffPending
+                        ? `Encaixe disponível: ${getPlayableDominoSides(tile, chain).map((side) => side === "left" ? "esquerda" : "direita").join(" ou ")}.`
+                        : undefined}
                       onClick={() => playTile(turn, index)}
                       className={`min-h-12 rounded-[10px] transition ${playable && !hidden ? "scale-[1.02] ring-1 ring-cyan-300/50 hover:-translate-y-1" : ""} disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]`}
                     >
