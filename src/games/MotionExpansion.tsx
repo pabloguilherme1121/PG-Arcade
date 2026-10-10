@@ -9,6 +9,7 @@ import {
 } from "../lib/motionExpansion";
 import { newGames, type NewGameId } from "../lib/newCatalog";
 import { useAutoPause } from "./useAutoPause";
+import { revealPlayfield } from "./revealPlayfield";
 import { useResponsiveCanvas } from "./useResponsiveCanvas";
 import { paintAtmosphere, paintBlock, paintOrb } from "./canvasMaterials";
 import "./newGames.css";
@@ -304,6 +305,7 @@ export default function MotionExpansion({
     pending.current = emptyInput();
     setHud(state.current);
     canvas.current?.focus({ preventScroll: true });
+    revealPlayfield(canvas.current);
   }
   function setKey(key: string, value: boolean) {
     const k = key.toLowerCase(),
@@ -498,6 +500,7 @@ export default function MotionExpansion({
               )}
             </div>
           )}
+          <div className="motion-inputs">
           <div className="motion-controls">
             {["rhythm", "balloons"].includes(gameId) ? (
               [0, 1, 2, 3].map((i) => (
@@ -539,6 +542,11 @@ export default function MotionExpansion({
               </>
             )}
           </div>
+          <div className="new-actions">
+            <button disabled={hud.status !== "running"} onClick={pause}>Pausar</button>
+            <button onClick={() => reset()}>Reiniciar</button>
+          </div>
+          </div>
         </div>
         <aside className="new-instructions">
           <h2>Como jogar</h2>
@@ -551,12 +559,6 @@ export default function MotionExpansion({
                 : "Normal: velocidade, tolerância e recuperação equilibradas."}
           </p>
           {gameId === "ricochet" && <p>Disparos restantes: {hud.shots}</p>}
-          <div className="new-actions">
-            <button disabled={hud.status !== "running"} onClick={pause}>
-              Pausar
-            </button>
-            <button onClick={() => reset()}>Reiniciar</button>
-          </div>
           <p className="new-tip">
             A partida pausa ao trocar de janela. Use Escape para pausar. As
             setas e WASD funcionam com a arena em foco.
