@@ -1,0 +1,94 @@
+/* Focused visual feedback for Lights Out — imported only by this game. */
+.player .lights-premium-hud {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  gap: 9px;
+  margin: 10px 0;
+  font-variant-numeric: tabular-nums;
+}
+.player .lights-premium-hud > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid #56738f;
+  border-radius: 12px;
+  background: linear-gradient(155deg,#1c354b,#142337);
+  box-shadow: inset 0 1px #ffffff28, 0 5px 13px #0003;
+}
+.player .lights-premium-hud span {
+  color: #d7e6f6;
+  font-size: clamp(11px,2.9vw,13px);
+}
+.player .lights-premium-hud strong {
+  color: #d9ff9b;
+  font-size: clamp(15px,3.4vw,23px);
+  font-weight: 770;
+  min-width: 0;
+}
+.player .lights-premium-hud strong[data-lights-impact] {
+  font-size: clamp(12px,2.7vw,16px);
+}
+.player .lights-premium-hud small { font-size: 12px; color: #c8dbee; }
+.player .lights-board {
+  min-width: 0;
+  gap: clamp(5px,1.5vw,9px);
+  padding: clamp(8px,2vw,14px);
+  border: 2px solid #517798;
+  border-radius: 19px;
+  background: radial-gradient(circle at 50% 0%,#284863,#12243a 76%);
+  box-shadow: inset 0 1px #ffffff32,0 17px 30px #0007;
+}
+.player .lights-board button {
+  position: relative;
+  min-height: 0;
+  min-width: 0;
+  aspect-ratio: 1;
+  border: 2px solid #718aa8;
+  border-radius: clamp(8px,2vw,15px);
+  background: linear-gradient(145deg,#344b65,#1c2e45);
+  box-shadow: inset 0 3px #ffffff12,inset 0 -5px #0005,0 3px 7px #0005;
+  color: #d4e4f3;
+}
+.player .lights-board button.light-on {
+  border-color: #edffba;
+  background: radial-gradient(circle at 35% 25%,#faffd4,#c9f65a 60%,#8bb636);
+  box-shadow: inset 0 3px #ffffff8b,inset 0 -6px #628a1b77,0 0 15px #c9f65a28;
+  color: #1d310f;
+}
+.player .lights-board button[data-lights-affected="true"]::after {
+  content: "";
+  position: absolute;
+  inset: 8%;
+  border: 2px dashed currentColor;
+  border-radius: inherit;
+  opacity: .85;
+  pointer-events: none;
+}
+.player .lights-board button[data-lights-selected="true"] {
+  outline: 3px solid #b8e7ff;
+  outline-offset: -4px;
+}
+.player .lights-board button[data-lights-last="true"]::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: inherit;
+  border: 2px solid #ffbb83;
+  pointer-events: none;
+}
+.player .lights-board button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+  z-index: 2;
+}
+.player .lights-board button:disabled { opacity: 1; }
+html[data-arcade-contrast="true"] .player :is(.lights-board,.lights-premium-hud>div) { border-color: #fff; }
+html[data-arcade-contrast="true"] .player .lights-board button { border-color: #fff; }
+@media(max-width:359px) {
+  .player .lights-premium-hud { gap: 6px; }
+  .player .lights-premium-hud > div { padding: 8px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .player .lights-board button { transition: none; }
+}
