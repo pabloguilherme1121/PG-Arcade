@@ -44,12 +44,13 @@ import {
   type Progress,
 } from "./lib/progress";
 import { readPreferences, applyPreferences } from "./lib/preferences";
-import GamePreview from "./GamePreview";
+
 import { searchText, matchesGame, categoryGroup, recommended, gameMode, readCatalogView, saveCatalogView } from "./lib/discovery";
 import { useReducedMotion } from "./useReducedMotion";
 import { useImmersivePlayer } from "./lib/useImmersivePlayer";
 import "./features/portfolio/components/PortfolioArcade.css";
 const SessionChallenge = lazy(() => import("./games/SessionChallenge"));
+const GamePreview = lazy(() => import("./GamePreview"));
 type PlayerProps = { record: number; onRecord: (n: number) => void };
 const collectionPlayers = Object.fromEntries(
   expandedGames.map((g) => [
@@ -143,7 +144,19 @@ function route() {
         : "catalogo";
 }
 function Preview({ id }: { id: GameId }) {
-  if (isNewGameId(id)) return <GamePreview id={id}/>;
+  if (isNewGameId(id)) return (
+    <Suspense fallback={
+      <div className="preview mechanic-preview" aria-hidden="true">
+        <svg width="240" height="150" viewBox="0 0 240 150" focusable="false">
+          <rect width="240" height="150" fill="#11232d" />
+          <path d="M36 75h168" stroke="#c9f65a" strokeWidth="6" />
+          <circle cx="120" cy="75" r="18" fill="#79b8ff" />
+        </svg>
+      </div>
+    }>
+      <GamePreview id={id} />
+    </Suspense>
+  );
   if (isExpandedId(id)) return <div className="preview illustrated-preview" aria-hidden="true"><img src={`${import.meta.env.BASE_URL}previews/${id}.svg`} alt="" width="240" height="150" loading="lazy" onError={(e) => { e.currentTarget.hidden=true; e.currentTarget.nextElementSibling?.removeAttribute("hidden"); }}/><span hidden>{games.find(g => g.id === id)?.description}</span></div>;
   if (id === "sequencia" || id === "palavra")
     return (
