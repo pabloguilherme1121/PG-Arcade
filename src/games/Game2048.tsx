@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import "./gameplay.css";
 import { Undo2, Play } from "lucide-react";
 import {
   new2048,
@@ -17,18 +18,21 @@ export default function Game2048({
   record: number;
   onRecord: (n: number) => void;
 }) {
-  const [state, setState] = useState(() => ({ board: new2048(), score: 0 }));
-  const [previous, setPrevious] = useState<typeof state | null>(null);
+  const [state, setState] = useState(() => ({ board: new2048(), score: 0, moves: 0 }));
+  const [history, setHistory] = useState<(typeof state)[]>([]);
   const [difficulty, setDifficulty] = useState("normal");
   const twoChance = difficulty === "easy" ? 0.98 : difficulty === "hard" ? 0.7 : 0.9;
+  const undoLimit = difficulty === "easy" ? 3 : difficulty === "normal" ? 1 : 0;
+  const bestTile = Math.max(...state.board);
+  const level = Math.min(11, Math.log2(bestTile || 1));
   const touch = useRef<[number, number] | null>(null);
   const [announcement, setAnnouncement] = useState("");
   function move(direction: Direction) {
     const result = slide2048(state.board, direction);
     if (!result.changed) return;
     const score = state.score + result.score;
-    setPrevious(state);
-    setState({ board: spawn2048(result.board, Math.random, twoChance), score });
+    setHistory((current) => undoLimit ? [...current, state].slice(-undoLimit) : []);
+    setState({ board: spawn2048(result.board, Math.random, twoChance), score, moves: state.moves + 1 });
     onRecord(score);
     setAnnouncement(
       result.score
@@ -45,8 +49,8 @@ export default function Game2048({
           <select aria-label="Dificuldade do 2048" value={difficulty} onChange={(e) => {
             const next = e.target.value;
             setDifficulty(next);
-            setState({ board: new2048(next === "easy" ? 0.98 : next === "hard" ? 0.7 : 0.9), score: 0 });
-            setPrevious(null);
+            setState({ board: new2048(next === "easy" ? 0.98 : next === "hard" ? 0.7 : 0.9), score: 0, moves: 0 });
+            setHistory([]);
             setAnnouncement("Nova partida iniciada.");
           }}>
             <option value="easy">Fácil · mais peças 2</option>
@@ -61,6 +65,11 @@ export default function Game2048({
           <div>
             Recorde<strong>{record}</strong>
           </div>
+        </div>
+        <div className="game2048-insights" aria-label="Estatísticas da partida">
+          <span>Movimentos<strong data-2048-moves>{state.moves}</strong></span>
+          <span>Maior peça<strong data-2048-best-tile>{bestTile}</strong></span>
+          <span>Voltas disponíveis<strong data-2048-undo-count>{history.length}</strong></span>
         </div>
         <div
           className="board2048"
@@ -100,22 +109,26 @@ export default function Game2048({
             </div>
           ))}
         </div>
+        <div className="game2048-progress" role="progressbar" aria-label="Progresso até a peça 2048" aria-valuemin={0} aria-valuemax={11} aria-valuenow={level} aria-valuetext={`Maior peça ${bestTile}, objetivo 2048`}>
+          <div className="game2048-progress-copy"><span>Rumo ao 2048</span><strong>{Math.round(level / 11 * 100)}%</strong></div>
+          <div className="game2048-progress-track"><span style={{ width: `${level / 11 * 100}%` }} /></div>
+        </div>
         <p className="game-status" role="status">
           {over
-            ? "Sem movimentos. Desfaça ou comece outra partida."
+            ? history.length ? "Sem movimentos. Desfaça ou comece outra partida." : "Sem movimentos. Comece outra partida."
             : won
               ? "Você chegou ao 2048! Continue para superar seu recorde."
               : announcement || "Sua próxima jogada está nas suas mãos."}
         </p>
         <div className="game-actions">
           <button
-            disabled={!previous || difficulty === "hard"}
+            disabled={!history.length || undoLimit === 0}
             onClick={() => {
-              if (previous) {
-                setState(previous);
-                setPrevious(null);
-                setAnnouncement("Última jogada desfeita.");
-              }
+              const previous = history.at(-1);
+              if (!previous) return;
+              setState(previous);
+              setHistory((current) => current.slice(0, -1));
+              setAnnouncement("Última jogada desfeita.");
             }}
           >
             <Undo2 size={19} />
@@ -124,8 +137,8 @@ export default function Game2048({
           <button
             className="primary"
             onClick={() => {
-              setState({ board: new2048(twoChance), score: 0 });
-              setPrevious(null);
+              setState({ board: new2048(twoChance), score: 0, moves: 0 });
+              setHistory([]);
               setAnnouncement("Nova partida iniciada.");
             }}
           >
@@ -141,7 +154,7 @@ export default function Game2048({
         <p>Use as setas ou WASD no teclado, ou deslize no tabuleiro.</p>
         <hr />
         <h3>No seu ritmo</h3>
-        <p>Desfaça a última jogada e tente outra estratégia.</p>
+        <p>No fácil, desfaça até três jogadas. No normal, desfaça uma. No difícil, jogue sem desfazer. O recorde não é apagado ao voltar uma jogada.</p>
         <p className="small">
           Clique no tabuleiro para usar o teclado. Seu recorde fica salvo neste
           navegador.
