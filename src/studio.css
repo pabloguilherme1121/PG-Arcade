@@ -42,6 +42,23 @@
   inset: 0;
   z-index: 1000;
 }
+/* Keep expanded controls accessible without increasing the immersive header height. */
+.player[data-immersive="true"] .player-utilities { position: relative; }
+.player[data-immersive="true"] .player-utilities > div {
+  position: absolute;
+  z-index: 6;
+  top: calc(100% + 4px);
+  right: 0;
+  width: min(460px, calc(100vw - 32px));
+  max-width: none;
+  max-height: 65dvh;
+  overflow-y: auto;
+  padding: 12px;
+  border: 1px solid #52616d;
+  border-radius: 12px;
+  background: #0c121f;
+  box-shadow: 0 12px 28px #0008;
+}
 .player[data-immersive="true"] .player-toolbar {
   position: sticky;
   top: 0;

@@ -10,7 +10,9 @@ for (const size of [{width:844,height:390},{width:568,height:320}]) {
       await page.clock.resume();
       await page.goto(`./#/jogar/${id}`);
       await expect(page.locator('[data-arcade-arena]').first()).toBeVisible();
-      await page.locator(".player-utilities summary").click();
+      if (await page.locator(".player-utilities:not([open]) summary").count()) {
+    await page.locator(".player-utilities summary").click();
+  }
       await page.getByRole('button',{name:'Tela cheia',exact:true}).click();
       await page.clock.pauseAt(await page.evaluate(()=>Date.now()+10_000));
       await page.getByRole('button',{name:id==='snake'?'Jogar':'Começar',exact:true}).click();
@@ -43,7 +45,9 @@ test('rotating a paused landscape game preserves its round and controls', async 
   await page.setViewportSize({width:844,height:390});
   await page.addInitScript(()=>{Element.prototype.requestFullscreen=()=>Promise.reject(new Error('fallback'));});
   await page.goto('./#/jogar/turret');
-  await page.locator(".player-utilities summary").click();
+  if (await page.locator(".player-utilities:not([open]) summary").count()) {
+    await page.locator(".player-utilities summary").click();
+  }
   await page.getByRole('button',{name:'Tela cheia',exact:true}).click();
   await page.getByRole('button',{name:'Começar',exact:true}).click();
   await page.getByRole('button',{name:'Pausar',exact:true}).click();

@@ -686,9 +686,9 @@ export default function App() {
                 </button>
               </div>
             </dialog>
+            <GameError key={`${game.id}-${session}`}>
             <Suspense fallback={<p className="empty" role="status">Preparando partida…</p>}>
             <SessionChallenge key={`${game.id}-${session}`}>
-            <GameError>
               <Suspense
                 fallback={
                   <p className="empty" role="status">
@@ -715,9 +715,9 @@ export default function App() {
                   />
                 </div>
               </Suspense>
-            </GameError>
             </SessionChallenge>
             </Suspense>
+            </GameError>
           </div>
         ) : page === "progresso" ? (
           <section className="progress-section">

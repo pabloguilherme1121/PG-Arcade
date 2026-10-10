@@ -4,13 +4,17 @@ import { games } from "../src/lib/catalog";
 
 test("native fullscreen or viewport fallback keeps a working exit and navigation", async ({ page }) => {
   await page.goto("./#/jogar/2048");
-  await page.locator(".player-utilities summary").click();
+  if (await page.locator(".player-utilities:not([open]) summary").count()) {
+    await page.locator(".player-utilities summary").click();
+  }
   await page.getByRole("button", { name: "Tela cheia", exact: true }).click();
   await expect(page.locator(".player")).toHaveAttribute("data-immersive", "true");
   await page.getByRole("button", { name: "Sair da tela cheia", exact: true }).click();
   await expect(page.locator(".player")).toHaveAttribute("data-immersive", "false");
   await expect(page.getByRole("button", { name: "Tela cheia", exact: true })).toBeFocused();
-  await page.locator(".player-utilities summary").click();
+  if (await page.locator(".player-utilities:not([open]) summary").count()) {
+    await page.locator(".player-utilities summary").click();
+  }
   await page.getByRole("button", { name: "Tela cheia", exact: true }).click();
   await page.getByRole("link", { name: "Voltar aos jogos", exact: true }).click();
   await expect(page.locator(".game-card").first()).toBeVisible();
@@ -31,7 +35,9 @@ for (const width of [320, 390, 1280]) {
       await page.goto(`./#/jogar/${game.id}`);
       await expect(page.locator("[data-arcade-arena]").first()).toBeVisible();
       await expect(page.getByLabel("Modo de sessão").locator("option")).toHaveCount(3);
-      await page.locator(".player-utilities summary").click();
+      if (await page.locator(".player-utilities:not([open]) summary").count()) {
+    await page.locator(".player-utilities summary").click();
+  }
       await page.getByRole("button", { name: "Tela cheia", exact: true }).click();
       const player = page.locator(".player");
       await expect(player).toHaveAttribute("data-viewport-fullscreen", "true");
@@ -49,7 +55,9 @@ test("viewport fullscreen isolates keyboard focus, restores scroll and passes ax
   await page.setViewportSize({ width: 390, height: 844 });
   await page.addInitScript(() => { Element.prototype.requestFullscreen = () => Promise.reject(new Error("denied")); });
   await page.goto("./#/jogar/2048");
-  await page.locator(".player-utilities summary").click();
+  if (await page.locator(".player-utilities:not([open]) summary").count()) {
+    await page.locator(".player-utilities summary").click();
+  }
   await page.getByRole("button", { name: "Tela cheia", exact: true }).click();
   await expect(page.locator(".site-header")).toHaveAttribute("inert");
   await expect(page.locator(".site-header")).not.toBeVisible();
