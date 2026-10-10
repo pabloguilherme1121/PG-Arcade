@@ -1,0 +1,100 @@
+/* Shared race engine: premium 3-lane awareness without extra assets. */
+.player .run-premium-radar {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: clamp(5px,1.2vw,9px);
+  margin: 8px 0 11px;
+}
+.player .run-premium-radar > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 9px 5px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(155deg,#20374d,#142338);
+  border: 1px solid #6583a0;
+  border-radius: 11px;
+  box-shadow: inset 0 1px #ffffff23, 0 5px 12px #0003;
+}
+.player .run-premium-radar span {
+  color: #cce0f1;
+  font-size: clamp(11px,2.6vw,13px);
+}
+.player .run-premium-radar strong {
+  color: #e5f1f8;
+  font-size: clamp(13px,3.4vw,18px);
+  letter-spacing: .01em;
+}
+.player .run-premium-radar [data-state="danger"] {
+  border-color: #ffb29a;
+  background: linear-gradient(155deg,#613836,#351f2b);
+}
+.player .run-premium-radar [data-state="danger"] strong { color: #ffdbce; }
+.player .run-premium-radar [data-state="reward"] {
+  border-color: #dfff9b;
+  background: linear-gradient(155deg,#35513e,#1d332f);
+}
+.player .run-premium-radar [data-state="reward"] strong { color: #e2ffb2; }
+.player .run-premium-radar [data-active="true"] {
+  outline: 2px solid #fff1b2;
+  outline-offset: 1px;
+}
+.player .run-premium-progress {
+  height: 8px;
+  margin: 0 0 12px;
+  border: 1px solid #66839b;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #13253a;
+}
+.player .run-premium-progress > span {
+  display:block;
+  height:100%;
+  width:0;
+  border-radius:inherit;
+  background:linear-gradient(90deg,#76c9f1,#c9f65a);
+}
+.player .run-board.run-premium {
+  border:2px solid #86a5c3;
+  border-radius: 17px;
+  box-shadow: inset 0 2px #ffffff30,0 16px 32px #0007;
+}
+.player .run-board.run-premium::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  background:linear-gradient(90deg,transparent 0 33.333%,#ffffff12 33.333% 66.666%,transparent 66.666%);
+  opacity:.8;
+  pointer-events:none;
+}
+.player .run-board.run-premium[data-run-lane="0"]::before {
+  background:linear-gradient(90deg,#b8edff1c 0 33.333%,transparent 33.333%);
+}
+.player .run-board.run-premium[data-run-lane="2"]::before {
+  background:linear-gradient(90deg,transparent 0 66.666%,#b8edff1c 66.666% 100%);
+}
+.player .run-board.run-premium :is(.run-object,.race-car,.laser) {
+  z-index:1;
+}
+.player .run-board.run-premium .action-overlay {z-index:3;}
+.player .run-board.run-premium .race-car img {
+  filter: drop-shadow(0 8px 4px #000a);
+}
+.player .run-board.run-premium .run-reward svg {
+  filter:drop-shadow(0 0 9px #c9f65a88);
+}
+.player .run-board.run-premium .run-enemy img {
+  filter:drop-shadow(3px 5px 3px #000b);
+}
+html[data-arcade-contrast="true"] .player :is(.run-premium-radar>div,.run-premium-progress,.run-board.run-premium) {
+  border-color:#fff;
+}
+@media(max-width:359px) {
+  .player .run-premium-radar {gap:4px;}
+  .player .run-premium-radar>div {padding:8px 2px;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .player .run-premium-progress>span {transition:none;}
+}

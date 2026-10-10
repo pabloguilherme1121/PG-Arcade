@@ -10,6 +10,8 @@ import {
 } from "../lib/runEngine";
 import { useAutoPause, type PlayStatus } from "./useAutoPause";
 import { directionFromSwipe } from "../lib/engines";
+import { runLaneRadar, runTimeProgress } from "../lib/runFeedback";
+import "./ArcadeRun.css";
 const names = {
   rally: "Rally de Checkpoints",
   coleta: "Coleta na Estrada",
@@ -31,6 +33,8 @@ export default function ArcadeRun({
   const [limit, setLimit] = useState(900);
   const board = useRef<HTMLDivElement>(null);
   const touch = useRef<[number, number] | null>(null);
+  const radar = runLaneRadar(state.objects);
+  const progress = runTimeProgress(state.ticks, limit);
   const pause = useCallback(
     () => setStatus((s) => (s === "running" ? "paused" : s)),
     [],
@@ -79,7 +83,7 @@ export default function ArcadeRun({
           </div>
         </div>
         <p role="status" className="race-lives">
-          {state.lives} vidas • Etapa {1 + Math.floor(state.ticks / 300)}
+          <span data-run-lives>{state.lives}</span> vidas • Etapa {1 + Math.floor(state.ticks / 300)}
           {state.streak > 1 ? ` • Combo x${state.streak}` : ""} •{" "}
           {status === "done"
             ? "Rodada concluída"
@@ -91,9 +95,27 @@ export default function ArcadeRun({
                   ? "Completando troca de faixa"
                   : "Prepare sua próxima manobra"}
         </p>
+        <div className="run-premium-radar" role="group" aria-label="Radar de faixas. Mostra apenas objetos próximos já visíveis.">
+          {radar.map((status, lane) => (
+            <div key={lane} data-run-radar-lane={lane} data-state={status}
+              data-active={state.lane === lane ? "true" : undefined}
+              aria-label={`Faixa ${lane+1}: ${status === "danger" ? "obstáculo próximo" : status === "reward" ? (kind==="rally" ? "bandeira próxima" : "moeda próxima") : "sem objetos no radar"}`}>
+              <span>Faixa {lane+1}</span>
+              <strong>{status === "danger" ? "Atenção" : status === "reward" ? "Bônus" : "Livre"}</strong>
+            </div>
+          ))}
+        </div>
+        {progress !== null && (
+          <div className="run-premium-progress" role="progressbar" aria-label="Progresso da expedição"
+            aria-valuemin={0} aria-valuemax={limit} aria-valuenow={Math.min(limit,state.ticks)}
+            aria-valuetext={`${Math.ceil(Math.max(0, limit-state.ticks)/10)} segundos restantes`}>
+            <span style={{width:`${progress}%`}} />
+          </div>
+        )}
         <div
           ref={board}
-          className={`run-board race-board ${kind === "orbital" ? "orbital-board" : ""} ${status === "running" ? "racing-running" : ""}`}
+          data-run-lane={state.lane}
+          className={`run-board race-board run-premium ${kind === "orbital" ? "orbital-board" : ""} ${status === "running" ? "racing-running" : ""}`}
           role="group"
           tabIndex={0}
           aria-label={`${names[kind]}. Setas, A/D ou deslize para mover, espaço para pausar${kind === "orbital" ? ", Enter para disparar" : ""}.`}
@@ -289,7 +311,9 @@ export default function ArcadeRun({
         </p>
         <p>
           Escolha uma expedição de 90 segundos, um sprint ou sobreviva sem
-          limite. O ritmo aumenta a cada etapa de 30 segundos. São três vidas,
+          limite. O radar indica obstáculos e recompensas apenas quando já estão
+          próximos e visíveis; ele não prevê novos objetos e não substitui
+          observar a pista. O ritmo aumenta a cada etapa de 30 segundos. São três vidas,
           com uma breve recuperação após impactos para evitar dano impossível de reagir.
           Use setas, A/D, deslize horizontalmente ou use os botões. Cada comando
           muda uma faixa e o esterço precisa de um instante para estabilizar antes
