@@ -46,7 +46,7 @@ import {
 import { readPreferences, applyPreferences } from "./lib/preferences";
 import { useReducedMotion } from "./useReducedMotion";
 import { useImmersivePlayer } from "./lib/useImmersivePlayer";
-import SessionChallenge from "./games/SessionChallenge";
+const SessionChallenge = lazy(() => import("./games/SessionChallenge"));
 import "./features/portfolio/components/PortfolioArcade.css";
 type PlayerProps = { record: number; onRecord: (n: number) => void };
 const collectionPlayers = Object.fromEntries(
@@ -815,8 +815,9 @@ export default function App() {
                 </button>
               </div>
             </dialog>
-            <SessionChallenge key={`${game.id}-${session}`}>
             <GameError>
+            <Suspense fallback={<p className="empty" role="status">Carregando sessão…</p>}>
+            <SessionChallenge key={`${game.id}-${session}`}>
               <Suspense
                 fallback={
                   <p className="empty" role="status">
@@ -843,8 +844,9 @@ export default function App() {
                   />
                 </div>
               </Suspense>
-            </GameError>
             </SessionChallenge>
+            </Suspense>
+            </GameError>
           </div>
         ) : page === "progresso" ? (
           <section className="progress-section">
