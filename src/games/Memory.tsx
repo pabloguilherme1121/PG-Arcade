@@ -16,7 +16,9 @@ import {
   Anchor,
 } from "lucide-react";
 import { shuffledPairs } from "../lib/engines";
+import { memoryAccuracy, memoryFocusTarget } from "../lib/memoryFeedback";
 import "./gameplay.css";
+import "./Memory.css";
 const icons = [Diamond, Heart, Star, Sun, Moon, Flame, Leaf, Zap, Crown, Cloud, Music, Anchor];
 const names = ["diamante", "coração", "estrela", "sol", "lua", "chama", "folha", "raio", "coroa", "nuvem", "música", "âncora"];
 export default function Memory({
@@ -36,7 +38,10 @@ export default function Memory({
   const [open, setOpen] = useState<number[]>([]);
   const [matched, setMatched] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const boardRef = useRef<HTMLDivElement>(null);
   const [message, setMessage] = useState("Encontre o primeiro par.");
+  const accuracy = memoryAccuracy(matched.length, moves);
   const won = matched.length === pairs;
   function reset(nextPairs = pairs) {
     setPairs(nextPairs);
@@ -44,6 +49,8 @@ export default function Memory({
     setOpen([]);
     setMatched([]);
     setMoves(0);
+    setStreak(0);
+    observeLeft.current = peekTime;
     setPaused(false);
     setMessage("Nova partida. Encontre o primeiro par.");
   }
@@ -53,9 +60,11 @@ export default function Memory({
     if (cards[a] === cards[b]) {
       if (matched.length === pairs - 1) onRecord(moves);
       setMatched((m) => [...m, cards[a]]);
+      setStreak((value) => value + 1);
       setOpen([]);
-      setMessage("Par encontrado!");
+      setMessage("Par encontrado! Continue a sequência.");
     } else {
+      setStreak(0);
       setMessage("Não foi desta vez. Memorize as cartas.");
       const deadline = performance.now() + observeLeft.current;
       const id = setTimeout(() => setOpen([]), observeLeft.current);
@@ -98,11 +107,32 @@ export default function Memory({
             Melhor partida<strong>{record || "—"}</strong>
           </div>
         </div>
+        <div className="memory-stats" aria-label="Progresso na memória">
+          <div><span>Pares</span><strong data-memory-pairs>{matched.length}/{pairs}</strong></div>
+          <div><span>Sequência</span><strong data-memory-streak>{streak}</strong></div>
+          <div><span>Precisão</span><strong data-memory-accuracy>{accuracy}%</strong></div>
+        </div>
+        <div className="memory-progress" role="progressbar" aria-label="Pares encontrados"
+          aria-valuemin={0} aria-valuemax={pairs} aria-valuenow={matched.length}
+          aria-valuetext={`${matched.length} de ${pairs} pares encontrados`}>
+          <span style={{ width: `${matched.length / pairs * 100}%` }} />
+        </div>
         <div
           className="memory-board"
+          ref={boardRef}
           tabIndex={0}
           role="group"
           aria-label={`Jogo da memória com ${pairs} pares`}
+          onKeyDown={(event) => {
+            if (!event.key.startsWith("Arrow") || event.altKey || event.ctrlKey || event.metaKey) return;
+            const buttons = Array.from(boardRef.current?.querySelectorAll<HTMLButtonElement>(".memory-card") ?? []);
+            const from = buttons.findIndex((button) => button === event.target);
+            if (from < 0) return;
+            const next = memoryFocusTarget(from, event.key, buttons.map(button => button.disabled));
+            if (next === null) return;
+            event.preventDefault();
+            buttons[next].focus();
+          }}
         >
           {cards.map((card, i) => {
             const visible = open.includes(i) || matched.includes(card),
@@ -110,6 +140,7 @@ export default function Memory({
             return (
               <button
                 key={i}
+                data-memory-index={i}
                 className={`memory-card ${visible ? "revealed" : ""} ${matched.includes(card) ? "matched" : ""}`}
                 disabled={
                   paused || matched.includes(card) ||
@@ -164,7 +195,7 @@ export default function Memory({
           Os símbolos ajudam você a reconhecer os pares sem depender apenas de
           cores.
         </p>
-        <p className="small">Use Tab e Enter para jogar com o teclado.</p>
+        <p className="small">Use Tab e Enter ou as setas para percorrer a grade sem virar uma carta. A precisão é calculada por pares encontrados sobre tentativas concluídas; a sequência zera após um erro.</p>
       </aside>
     </div>
   );
