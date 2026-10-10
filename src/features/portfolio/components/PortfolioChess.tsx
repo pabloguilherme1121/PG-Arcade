@@ -85,6 +85,7 @@ export default function PortfolioChess() {
   const [state, setState] = useState(createInitialChessState);
   const { board, turn } = state;
   const [selected, setSelected] = useState<number | null>(null);
+  const [lastMove, setLastMove] = useState<Pick<ChessMove, "from" | "to"> | null>(null);
   const [history, setHistory] = useState<ChessState[]>([]);
   const legal = useMemo(() => getChessLegalMoves(state), [state]);
   const statusKind = getChessStatus(state).kind;
@@ -96,6 +97,7 @@ export default function PortfolioChess() {
     setState(createInitialChessState());
     setPaused(false); setBotError("");
     setSelected(null);
+    setLastMove(null);
     setHistory([]);
   };
   const commit = (move: ChessMove) => {
@@ -103,6 +105,7 @@ export default function PortfolioChess() {
     if (!next) return;
     setHistory((current) => [...current, state]);
     setState(next);
+    setLastMove({ from: move.from, to: move.to });
     setSelected(null);
   };
   const undo = () => {
@@ -111,6 +114,7 @@ export default function PortfolioChess() {
     const previous = history[index];
     if (!previous) return;
     setState(previous);
+    setLastMove(null);
     setSelected(null);
     setHistory(history.slice(0, index));
   };
@@ -156,6 +160,9 @@ export default function PortfolioChess() {
     selected === null
       ? []
       : legal.filter((m) => m.from === selected).map((m) => m.to);
+  const checkedKingIndex = isChessKingInCheck(board, turn)
+    ? board.findIndex((piece) => piece?.type === "king" && piece.color === turn)
+    : -1;
   const status = paused ? "Partida pausada" :
     outcome === "checkmate"
       ? turn === "white"
@@ -219,6 +226,9 @@ export default function PortfolioChess() {
                           : `${squareName(i)} · vazia${target ? " · destino disponível" : ""}`
                       }
                       aria-selected={active}
+                      data-last-move={lastMove?.from === i ? "from" : lastMove?.to === i ? "to" : undefined}
+                      data-in-check={checkedKingIndex === i ? "true" : undefined}
+                      aria-description={checkedKingIndex === i ? "Rei em xeque" : lastMove?.from === i ? "Origem da última jogada" : lastMove?.to === i ? "Destino da última jogada" : undefined}
                       onClick={() => click(i)}
                       className={`relative grid min-h-0 place-items-center text-[clamp(1.35rem,7vw,3rem)] focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 ${(row + col) % 2 ? "bg-[#31506a]" : "bg-[#d7e3e8]"} ${active ? "ring-4 ring-inset ring-cyan-300" : ""}`}
                     >
@@ -283,6 +293,7 @@ export default function PortfolioChess() {
           <p className="mt-3 flex items-center gap-2 text-xs text-[#8fa8bd]">
             <Swords className="h-4 w-4" />
             Selecione uma peça; os destinos legais são marcados no tabuleiro.
+            A origem e o destino da última jogada ficam destacados.
           </p>
         </div>
         <div data-arcade-settings>
