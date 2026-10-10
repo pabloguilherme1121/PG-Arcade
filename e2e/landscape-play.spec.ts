@@ -5,11 +5,16 @@ for (const size of [{width:844,height:390},{width:568,height:320}]) {
     test.setTimeout(120_000);
     await page.setViewportSize(size);
     await page.addInitScript(()=>{Element.prototype.requestFullscreen=()=>Promise.reject(new Error('fallback'));});
+    await page.clock.install();
     for(const id of ['snake','asteroides','runner','turret','crossroad','rhythm']) {
+      await page.clock.resume();
       await page.goto(`./#/jogar/${id}`);
       await expect(page.locator('[data-arcade-arena]').first()).toBeVisible();
       await page.getByRole('button',{name:'Tela cheia',exact:true}).click();
+      await page.clock.pauseAt(await page.evaluate(()=>Date.now()+10_000));
       await page.getByRole('button',{name:id==='snake'?'Jogar':'Começar',exact:true}).click();
+      // Keep an idle round alive while WebKit waits for layout stability.
+      await page.clock.runFor(100);
       await expect.poll(()=>page.evaluate(()=>{
         const selectors=['canvas,.snake-board','.dpad,.action-controls,.motion-controls'];
         const toolbar=document.querySelector('.player-toolbar')!.getBoundingClientRect();
@@ -25,6 +30,7 @@ for (const size of [{width:844,height:390},{width:568,height:320}]) {
       await pause.click();
       await expect(page.getByRole('button',{name:'Continuar',exact:true})).toBeVisible();
       await page.getByRole('button',{name:'Continuar',exact:true}).click();
+      await page.clock.runFor(100);
       await expect(pause).toBeEnabled();
       await page.getByRole('button',{name:'Sair da tela cheia',exact:true}).click();
       await expect(page.locator('.player')).toHaveAttribute('data-immersive','false');
