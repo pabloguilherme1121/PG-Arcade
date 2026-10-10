@@ -78,8 +78,8 @@ test("favorite changes persist once per action", async ({ page }) => {
     };
   });
   await page.getByRole("button", { name: "Adicionar Snake aos favoritos", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Remover Snake dos favoritos" })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("button", { name: "Remover Snake dos favoritos", exact: true })).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("html")).toHaveAttribute("data-progress-writes", "1");
   await page.reload();
-  await expect(page.getByRole("button", { name: "Remover Snake dos favoritos" })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("button", { name: "Remover Snake dos favoritos", exact: true })).toHaveAttribute("aria-pressed", "true");
 });
