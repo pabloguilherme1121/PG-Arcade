@@ -1,0 +1,134 @@
+/* Parking: premium tabletop and optional route guidance, lazy loaded per game. */
+.player .parking-navigation-hud {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(5px,1.4vw,10px);
+  margin:8px 0 12px;
+}
+.player .parking-navigation-hud>div {
+  display:grid;
+  align-content:center;
+  gap:5px;
+  min-width:0;
+  padding:10px 6px;
+  border:1px solid #66809a;
+  border-radius:12px;
+  background:linear-gradient(150deg,#253d53,#14283d);
+  box-shadow:inset 0 1px #ffffff24,0 6px 12px #0003;
+  text-align:center;
+  font-variant-numeric:tabular-nums;
+}
+.player .parking-navigation-hud span {
+  color:#d2e2f2;
+  font-size:clamp(11px,2.45vw,13px);
+}
+.player .parking-navigation-hud strong {
+  color:#dcff9d;
+  font-size:clamp(17px,4vw,23px);
+  line-height:1.2;
+}
+.player .parking-hint-tools {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:7px 12px;
+  margin-bottom:11px;
+  min-width:0;
+}
+.player .parking-hint-tools button {
+  min-height:44px;
+  border:1px solid #91bedc;
+  background:#203b50;
+  color:#ecf8ff;
+}
+.player .parking-hint-tools button[aria-pressed="true"] {
+  border-color:#dcffac;
+  background:#34513f;
+  color:#fff;
+}
+.player .parking-hint-tools span {
+  flex:1 1 175px;
+  color:#b6cde0;
+  font-size:12px;
+}
+.player .parking-board {
+  min-width:0;
+  gap:clamp(3px,1.15vw,6px);
+  padding:clamp(7px,1.75vw,14px);
+  border:2px solid #6489aa;
+  border-radius:17px;
+  box-shadow:inset 0 2px #ffffff35,0 16px 30px #0006;
+}
+.player .parking-board>span {
+  position:relative;
+  min-width:0;
+  border:1px solid #688098;
+  border-radius:clamp(4px,1vw,9px);
+  background:#162638aa;
+  box-shadow:inset 0 1px #ffffff28,0 2px 4px #0006;
+}
+.player .parking-board>span.parking-wall {
+  background:linear-gradient(140deg,#697877,#34474c) !important;
+  border-color:#b3c1c4;
+  color:#e9f1f2;
+}
+.player .parking-board>span.parking-goal {
+  border:2px solid #d5ffa9;
+  background:linear-gradient(140deg,#397452,#214532);
+  color:#edffe9;
+}
+.player .parking-board>span.parking-car {
+  border:2px solid #eaffaf;
+  background:#d3ff9540 !important;
+  z-index:2;
+  box-shadow:inset 0 1px #ffffff50,0 0 0 2px #c9f65a44,0 3px 8px #0008;
+}
+.player .parking-board>span[data-parking-available="true"]::after {
+  content:"";
+  position:absolute;
+  inset:30%;
+  border-radius:50%;
+  border:2px solid #e7f7ff;
+  background:#89d8e56b;
+  pointer-events:none;
+}
+.player .parking-board>span[data-parking-hint="true"] {
+  outline:3px solid #ffe697;
+  outline-offset:-3px;
+}
+.player .parking-board>span[data-parking-hint="true"]::after {
+  content:"➤";
+  display:grid;
+  place-items:center;
+  inset:10%;
+  border-radius:50%;
+  border:2px solid #ffe697;
+  background:#ffda8177;
+  color:#fff;
+  font-size:clamp(14px,4vw,24px);
+  font-weight:800;
+  text-shadow:0 2px 4px #000b;
+}
+.player .parking-board>span[data-parking-trail="true"]:not([data-parking-available="true"])::before {
+  content:"";
+  position:absolute;
+  inset:40%;
+  background:#9bc7e5;
+  border-radius:50%;
+  opacity:.8;
+}
+html[data-arcade-contrast="true"] .player :is(.parking-board,.parking-navigation-hud>div,.parking-hint-tools button) {
+  border-color:#fff;
+}
+html[data-arcade-contrast="true"] .player .parking-board>span[data-parking-available="true"]::after {
+  border-color:#fff;
+  background:transparent;
+}
+@media(max-width:359px) {
+  .player .parking-navigation-hud {gap:5px;}
+  .player .parking-navigation-hud>div {padding:8px 4px;}
+  .player .parking-board {padding:6px;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .player .parking-board>span {transition:none;}
+}
