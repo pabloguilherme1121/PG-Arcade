@@ -5,7 +5,6 @@ import "./fonts.css";
 import "./style.css";
 import "./premium.css";
 import "./discovery.css";
-import "./studio.css";
 
 createRoot(document.getElementById("root")!).render(<App />);
 

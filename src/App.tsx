@@ -48,8 +48,8 @@ import GamePreview from "./GamePreview";
 import { searchText, matchesGame, categoryGroup, recommended, gameMode, readCatalogView, saveCatalogView } from "./lib/discovery";
 import { useReducedMotion } from "./useReducedMotion";
 import { useImmersivePlayer } from "./lib/useImmersivePlayer";
-import SessionChallenge from "./games/SessionChallenge";
 import "./features/portfolio/components/PortfolioArcade.css";
+const SessionChallenge = lazy(() => import("./games/SessionChallenge"));
 type PlayerProps = { record: number; onRecord: (n: number) => void };
 const collectionPlayers = Object.fromEntries(
   expandedGames.map((g) => [
@@ -686,6 +686,7 @@ export default function App() {
                 </button>
               </div>
             </dialog>
+            <Suspense fallback={<p className="empty" role="status">Preparando partida…</p>}>
             <SessionChallenge key={`${game.id}-${session}`}>
             <GameError>
               <Suspense
@@ -716,6 +717,7 @@ export default function App() {
               </Suspense>
             </GameError>
             </SessionChallenge>
+            </Suspense>
           </div>
         ) : page === "progresso" ? (
           <section className="progress-section">
