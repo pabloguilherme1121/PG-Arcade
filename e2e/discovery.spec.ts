@@ -17,11 +17,17 @@ test("all catalog previews have visible contents across responsive widths", asyn
 test("preview assets load and recover with useful objectives if an illustration fails", async ({page}) => {
   await page.goto("./");
   const images = page.locator(".game-card .preview img");
-  for (let i=0; i<await images.count(); i++) {
-    const img=images.nth(i);
-    await img.locator("xpath=ancestor::article").scrollIntoViewIfNeeded();
-    await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0);
-  }
+  expect(await images.count()).toBeGreaterThan(0);
+  // Request every local illustration without repeated scrolling of lazy-loaded cards.
+  // This exercises the browser's image decoder while keeping production loading lazy.
+  await images.evaluateAll(elements => {
+    for (const element of elements) (element as HTMLImageElement).loading = "eager";
+  });
+  await expect.poll(() => images.evaluateAll(elements =>
+    elements
+      .filter(element => (element as HTMLImageElement).naturalWidth === 0)
+      .map(element => (element as HTMLImageElement).currentSrc || (element as HTMLImageElement).src)
+  ), { timeout: 15000 }).toEqual([]);
   await page.getByLabel("Buscar jogo").fill("hanoi");
   await page.locator(".game-card .illustrated-preview img").evaluate((el: HTMLImageElement) => { el.src = "data:image/svg+xml,broken"; });
   await expect(page.locator(".game-card .illustrated-preview span")).toBeVisible();
