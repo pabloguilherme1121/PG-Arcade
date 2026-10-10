@@ -12,6 +12,7 @@ import {
 } from "../lib/engines";
 import Controls from "./Controls";
 import { revealPlayfield } from "./revealPlayfield";
+import "./gameplay.css";
 const initialBody = () => [
   { x: 7, y: 8 },
   { x: 6, y: 8 },
@@ -111,6 +112,7 @@ export default function Snake({
         </div>
         <div
           className="snake-board"
+          data-facing={current.current}
           ref={board}
           tabIndex={0}
           role="group"
@@ -138,6 +140,16 @@ export default function Snake({
               : null;
           }}
           onTouchCancel={() => { touch.current = null; }}
+          onTouchMove={(e) => {
+            if (e.touches.length !== 1) { touch.current = null; return; }
+            if (!touch.current || status !== "running") return;
+            const point = e.touches[0];
+            const d = directionFromSwipe(point.clientX-touch.current[0], point.clientY-touch.current[1], 15);
+            if (d) {
+              direction(d);
+              touch.current = [point.clientX,point.clientY];
+            }
+          }}
           onTouchEnd={(e) => {
             if (!touch.current) return;
             const dx = e.changedTouches[0].clientX - touch.current[0],

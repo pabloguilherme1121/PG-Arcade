@@ -16,6 +16,7 @@ import {
   Anchor,
 } from "lucide-react";
 import { shuffledPairs } from "../lib/engines";
+import "./gameplay.css";
 const icons = [Diamond, Heart, Star, Sun, Moon, Flame, Leaf, Zap, Crown, Cloud, Music, Anchor];
 const names = ["diamante", "coração", "estrela", "sol", "lua", "chama", "folha", "raio", "coroa", "nuvem", "música", "âncora"];
 export default function Memory({
@@ -118,7 +119,7 @@ export default function Memory({
                 aria-pressed={visible}
                 onClick={() => flip(i)}
               >
-                {visible ? <Icon size={32} /> : <span>?</span>}
+                {visible ? <Icon size={32} /> : <span className="memory-back" aria-hidden="true"><Diamond size={28} /></span>}
               </button>
             );
           })}
