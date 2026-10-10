@@ -1,4 +1,5 @@
 import { useEffect, useRef, type RefObject } from "react";
+import { calculateCanvasPixels } from "../lib/touchCanvas";
 
 /** Preserve world coordinates while matching the drawing buffer to display pixels. */
 export function useResponsiveCanvas(
@@ -17,9 +18,10 @@ export function useResponsiveCanvas(
     const resize = () => {
       const bounds = element.getBoundingClientRect();
       if (bounds.width <= 0) return;
-      // Bound GPU memory on 4K/retina displays; physics never depend on resolution.
-      const pixels = Math.min(2560, Math.round(bounds.width * Math.min(window.devicePixelRatio || 1, 3)));
-      const rows = Math.round(pixels * height / width);
+      // Preserve game-space physics while keeping canvas buffers below ~1.5 MP.
+      const {width:pixels,height:rows} = calculateCanvasPixels(
+        bounds.width,width,height,window.devicePixelRatio || 1,
+      );
       if (element.width !== pixels || element.height !== rows) {
         element.width = pixels;
         element.height = rows;
