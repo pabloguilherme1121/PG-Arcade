@@ -102,6 +102,22 @@
   font-style: normal;
   font-variant-numeric: tabular-nums;
 }
+.player-gameplay-orientation .gameplay-control-toggle {
+  flex: 0 1 auto;
+  min-height: 44px;
+  min-width: 0;
+  padding: 8px 12px;
+  border-color: #8db5d0;
+  background: #1d3c51;
+  color: #eef9ff;
+  font-size: 12px;
+  font-weight: 700;
+}
+.player-gameplay-orientation .gameplay-control-toggle[aria-pressed="true"] {
+  border-color: #d7ffa0;
+  background: #29432d;
+  color: #efffdc;
+}
 @media(max-width:540px) {
   .game-card .game-cover { border-radius:8px; }
   .player-coverline { grid-template-columns: 96px minmax(0,1fr);gap:11px;padding:10px;margin:8px 0; }
