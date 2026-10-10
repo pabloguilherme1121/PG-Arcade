@@ -12,11 +12,12 @@ for (const [id,selector] of [
     const canvas=game.locator("canvas").first();
     await expect(canvas).toBeVisible();
     await expect(canvas).toHaveCSS("touch-action","none");
-    const box=await canvas.boundingBox();
-    expect(box).not.toBeNull();
     const nativePixels=await canvas.evaluate(node=>({width:(node as HTMLCanvasElement).width,height:(node as HTMLCanvasElement).height}));
     expect(nativePixels.width*nativePixels.height).toBeLessThanOrEqual(1_500_000);
     await game.getByRole("button",{name:"Começar",exact:true}).click();
+    await canvas.scrollIntoViewIfNeeded();
+    const box=await canvas.boundingBox();
+    expect(box).not.toBeNull();
     await page.touchscreen.tap(box!.x+box!.width/2,box!.y+box!.height/2);
     await expect(canvas).toHaveAttribute("data-touch-ready","true");
     await expect(canvas).toHaveAttribute("data-touch-last-gesture","tap");
