@@ -10,6 +10,7 @@ export default function SlidingPuzzle({
   const [board, setBoard] = useState(shuffledPuzzle);
   const [showGoal, setShowGoal] = useState(false);
   const [moves, setMoves] = useState(0);
+  const [difficulty, setDifficulty] = useState(100);
   const won = puzzleSolved(board);
   function move(i: number) {
     if (won) return;
@@ -23,6 +24,18 @@ export default function SlidingPuzzle({
   return (
     <div className="game-layout">
       <div className="board-column">
+        <div className="session-options"><label>Embaralhamento
+          <select aria-label="Dificuldade do Quebra-cabeça" value={difficulty} onChange={(e) => {
+            const depth = Number(e.target.value);
+            setDifficulty(depth);
+            setBoard(shuffledPuzzle(Math.random, depth));
+            setMoves(0);
+          }}>
+            <option value={12}>Fácil · embaralhamento curto</option>
+            <option value={40}>Normal · intermediário</option>
+            <option value={100}>Difícil · embaralhamento longo</option>
+          </select>
+        </label></div>
         <div className="scores">
           <div>
             Jogadas<strong>{moves}</strong>
@@ -72,7 +85,7 @@ export default function SlidingPuzzle({
         <button
           className="primary"
           onClick={() => {
-            setBoard(shuffledPuzzle());
+            setBoard(shuffledPuzzle(Math.random, difficulty));
             setMoves(0);
           }}
         >

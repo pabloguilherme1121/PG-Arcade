@@ -14,6 +14,8 @@ export default function Reaction({
     [score, setScore] = useState(0),
     [message, setMessage] = useState("Espere o sinal verde antes de tocar.");
   const signal = useRef(0);
+  const [difficulty, setDifficulty] = useState("normal");
+  const scoringWindow = difficulty === "easy" ? 1400 : difficulty === "hard" ? 600 : 1000;
   const pause = useCallback(
     () => setPhase((p) => (p === "wait" || p === "go" ? "paused" : p)),
     [],
@@ -26,10 +28,10 @@ export default function Reaction({
         signal.current = performance.now();
         setPhase("go");
       },
-      1200 + Math.random() * 1800,
+      difficulty === "hard" ? 700 + Math.random() * 2300 : difficulty === "easy" ? 1800 + Math.random() * 1000 : 1200 + Math.random() * 1800,
     );
     return () => clearTimeout(timer);
-  }, [phase]);
+  }, [phase, difficulty]);
   function tap() {
     if (phase === "ready" || phase === "result" || phase === "paused") {
       setPhase("wait");
@@ -37,10 +39,11 @@ export default function Reaction({
     }
     if (phase !== "wait" && phase !== "go") return;
     const elapsed = Math.round(performance.now() - signal.current);
-    const next = score + (phase === "go" ? Math.max(0, 1000 - elapsed) : 0);
+    const earned = phase === "go" ? Math.max(0, Math.round(1000 * (1 - elapsed / scoringWindow))) : 0;
+    const next = score + earned;
     setMessage(
       phase === "go"
-        ? `${elapsed} ms. ${Math.max(0, 1000 - elapsed)} pontos nesta rodada.`
+        ? `${elapsed} ms. ${earned} pontos nesta rodada.`
         : "Cedo demais! Esta rodada vale zero.",
     );
     setScore(next);
@@ -53,6 +56,13 @@ export default function Reaction({
   return (
     <div className="game-layout">
       <div className="board-column">
+        <div className="session-options"><label>Dificuldade do reflexo
+          <select aria-label="Dificuldade do Reflexo Rápido" value={difficulty} disabled={round > 0 || phase === "wait" || phase === "go" || phase === "paused"} onChange={(e) => setDifficulty(e.target.value)}>
+            <option value="easy">Fácil · janela de 1,4 segundo</option>
+            <option value="normal">Normal · janela de 1 segundo</option>
+            <option value="hard">Difícil · janela de 0,6 segundo</option>
+          </select>
+        </label></div>
         <div className="scores">
           <div>
             Pontos<strong>{score}</strong>

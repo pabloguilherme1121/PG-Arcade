@@ -428,6 +428,7 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
           </div>
           <p className="new-tip">
             Setas navegam entre casas. Enter confirma. Desfazer recupera a
+            {" "}
             {strategic.includes(gameId) || ["mancala", "chomp"].includes(gameId)
               ? "última jogada e a resposta do adversário."
               : "última jogada. Planeje a próxima tentativa no seu ritmo."}

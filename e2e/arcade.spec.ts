@@ -60,11 +60,17 @@ test("Snake starts, pauses, blocks reverse direction and resets", async ({
   page,
 }) => {
   await page.goto("./#/jogar/snake");
+  await expect(page.locator(".snake-board")).toBeVisible();
+  const time = new Date("2026-10-09T12:00:00Z");
+  await page.clock.install({ time: new Date(time.getTime() - 60_000) });
+  await page.clock.pauseAt(time);
   await page.getByRole("button", { name: "Jogar", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Pausar", exact: true }),
   ).toBeVisible();
   await page.locator(".snake-board").press("ArrowLeft");
+  await page.clock.runFor(170);
+  await expect(page.locator(".snake-board > span").nth(8 * 16 + 8)).toHaveClass(/snake-head/);
   await page.getByRole("button", { name: "Pausar", exact: true }).click();
   await expect(
     page.getByText("Partida pausada.", { exact: true }),

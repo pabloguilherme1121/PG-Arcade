@@ -146,6 +146,12 @@ for (const [id, prefix, duration] of [
     await expect(
       page.getByText(`Fim da rodada: ${score} pontos.`, { exact: true }),
     ).toBeVisible();
+    expect(
+      await page.evaluate(
+        (gameId) => JSON.parse(localStorage.getItem("pg-arcade-progress-v1") || "{}").records?.[gameId],
+        id,
+      ),
+    ).toBe(Number(score));
     await page.reload();
     await expect(page.locator(".instructions")).toContainText(
       `Recorde: ${score} pontos`,

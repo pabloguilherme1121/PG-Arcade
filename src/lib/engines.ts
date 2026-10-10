@@ -32,16 +32,16 @@ export function slide2048(board: number[], direction: Direction) {
     changed: next.some((value, n) => value !== board[n]),
   };
 }
-export function spawn2048(board: number[], random: () => number = Math.random) {
+export function spawn2048(board: number[], random: () => number = Math.random, twoChance = 0.9) {
   const empty = board.flatMap((value, index) => (value ? [] : [index]));
   if (!empty.length) return board;
   const next = [...board];
   next[empty[Math.min(empty.length - 1, Math.floor(random() * empty.length))]] =
-    random() < 0.9 ? 2 : 4;
+    random() < Math.max(0, Math.min(1, twoChance)) ? 2 : 4;
   return next;
 }
-export function new2048() {
-  return spawn2048(spawn2048(Array(16).fill(0)));
+export function new2048(twoChance = 0.9) {
+  return spawn2048(spawn2048(Array(16).fill(0), Math.random, twoChance), Math.random, twoChance);
 }
 export function canMove2048(board: number[]) {
   return (["up", "down", "left", "right"] as Direction[]).some(
@@ -97,11 +97,16 @@ export function stepSnake(
   direction: Direction,
   food: Point,
   size = 16,
+  wrap = false,
 ) {
   const delta = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[
     direction
   ];
   const head = { x: body[0].x + delta[0], y: body[0].y + delta[1] };
+  if (wrap) {
+    head.x = (head.x + size) % size;
+    head.y = (head.y + size) % size;
+  }
   const ate = samePoint(head, food);
   const collision =
     head.x < 0 ||

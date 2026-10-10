@@ -11,6 +11,7 @@ import {
   type Point,
 } from "../lib/engines";
 import Controls from "./Controls";
+import { revealPlayfield } from "./revealPlayfield";
 const initialBody = () => [
   { x: 7, y: 8 },
   { x: 6, y: 8 },
@@ -30,10 +31,12 @@ export default function Snake({
   >("ready");
   const [score, setScore] = useState(0);
   const [speed, setSpeed] = useState(160);
+  const [mode, setMode] = useState("classic");
   const current = useRef<Direction>("right");
   const queued = useRef<Direction[]>([]);
   const touch = useRef<[number, number] | null>(null);
   const bodyRef = useRef(body);
+  const board = useRef<HTMLDivElement>(null);
   const foodRef = useRef(food);
   const scoreRef = useRef(score);
   const onRecordRef = useRef(onRecord);
@@ -61,7 +64,7 @@ export default function Snake({
       if (!activeFood) return;
       const nextDirection = queued.current.shift();
       if (nextDirection) current.current = nextDirection;
-      const result = stepSnake(bodyRef.current, current.current, activeFood);
+      const result = stepSnake(bodyRef.current, current.current, activeFood, 16, mode === "wrap");
       if (result.collision) {
         setStatus("over");
         return;
@@ -80,7 +83,7 @@ export default function Snake({
       }
     }, speed);
     return () => clearInterval(id);
-  }, [status, speed]);
+  }, [status, speed, mode]);
   useEffect(() => {
     const pause = () => {
       if (document.hidden) setStatus((s) => (s === "running" ? "paused" : s));
@@ -108,6 +111,7 @@ export default function Snake({
         </div>
         <div
           className="snake-board"
+          ref={board}
           tabIndex={0}
           role="group"
           aria-label="Tabuleiro Snake. Use as setas ou WASD para mover e espaço para pausar."
@@ -196,9 +200,10 @@ export default function Snake({
           <button
             className="primary"
             disabled={status === "over" || status === "won"}
-            onClick={() =>
-              setStatus(status === "running" ? "paused" : "running")
-            }
+            onClick={() => {
+              setStatus(status === "running" ? "paused" : "running");
+              if (status !== "running") revealPlayfield(board.current);
+            }}
           >
             {status === "running" ? <Pause size={18} /> : <Play size={18} />}{" "}
             {status === "running"
@@ -222,6 +227,12 @@ export default function Snake({
           espaço pausa a partida.
         </p>
         <hr />
+        <label htmlFor="snake-mode">Modo do Snake</label>
+        <select id="snake-mode" value={mode} disabled={status === "running" || status === "paused"} onChange={(e) => { setMode(e.target.value); reset(); }}>
+          <option value="classic">Clássico · paredes fechadas</option>
+          <option value="wrap">Portal · atravesse as bordas</option>
+        </select>
+        <p className="small">No Portal, sair de uma borda leva à borda oposta. O próprio corpo continua sendo um obstáculo.</p>
         <label htmlFor="snake-speed">Velocidade</label>
         <select
           id="snake-speed"
