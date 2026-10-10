@@ -58,6 +58,8 @@ Arte original local para carros, nave, asfalto e espaço; jogos em DOM, SVG e Ca
 
 Os 20 jogos em Canvas ajustam o buffer à largura visível e à densidade de pixels, com teto de 2560 pixels e densidade 3 para limitar memória. Ampliar ou girar a tela mantém as coordenadas e a física da partida. Materiais vetoriais adicionam iluminação, relevo e atmosfera sem downloads de texturas adicionais.
 
+Em tela cheia horizontal, com largura de pelo menos 568 px e altura de até 540 px, Snake e os jogos em Canvas posicionam os controles ao lado da arena. Iniciar ou continuar a partida traz essa área para baixo da barra de navegação, mantendo pausa e reinício próximos aos controles. Configurações, placar e instruções continuam acessíveis pela rolagem. A suíte verifica arenas e comandos em 844×390 e 568×320, além da rotação de uma partida pausada.
+
 Sem conta, publicidade ou envio de dados das partidas a servidores. Progresso é salvo neste navegador. Limpar os dados do navegador remove o progresso; guarde sua cópia. Trocar de jogo inicia outra partida, sem restaurar automaticamente a partida em andamento.
 
 ## Desenvolvimento e validação

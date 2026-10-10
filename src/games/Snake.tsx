@@ -11,6 +11,7 @@ import {
   type Point,
 } from "../lib/engines";
 import Controls from "./Controls";
+import { revealPlayfield } from "./revealPlayfield";
 const initialBody = () => [
   { x: 7, y: 8 },
   { x: 6, y: 8 },
@@ -35,6 +36,7 @@ export default function Snake({
   const queued = useRef<Direction[]>([]);
   const touch = useRef<[number, number] | null>(null);
   const bodyRef = useRef(body);
+  const board = useRef<HTMLDivElement>(null);
   const foodRef = useRef(food);
   const scoreRef = useRef(score);
   const onRecordRef = useRef(onRecord);
@@ -109,6 +111,7 @@ export default function Snake({
         </div>
         <div
           className="snake-board"
+          ref={board}
           tabIndex={0}
           role="group"
           aria-label="Tabuleiro Snake. Use as setas ou WASD para mover e espaço para pausar."
@@ -197,9 +200,10 @@ export default function Snake({
           <button
             className="primary"
             disabled={status === "over" || status === "won"}
-            onClick={() =>
-              setStatus(status === "running" ? "paused" : "running")
-            }
+            onClick={() => {
+              setStatus(status === "running" ? "paused" : "running");
+              if (status !== "running") revealPlayfield(board.current);
+            }}
           >
             {status === "running" ? <Pause size={18} /> : <Play size={18} />}{" "}
             {status === "running"

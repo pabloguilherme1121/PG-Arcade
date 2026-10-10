@@ -99,6 +99,7 @@ export default function Memory({
         </div>
         <div
           className="memory-board"
+          tabIndex={0}
           role="group"
           aria-label={`Jogo da memória com ${pairs} pares`}
         >

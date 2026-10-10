@@ -12,6 +12,7 @@ import {
   type ActionInput,
 } from "../lib/actionCollection";
 import { useAutoPause, type PlayStatus } from "./useAutoPause";
+import { revealPlayfield } from "./revealPlayfield";
 import { useReducedMotion } from "../useReducedMotion";
 import { useResponsiveCanvas } from "./useResponsiveCanvas";
 import { paintBlock } from "./canvasMaterials";
@@ -361,6 +362,7 @@ export default function ActionCollection({
     if (status === "paused") {
       setStatus("running");
       canvas.current?.focus();
+      revealPlayfield(canvas.current);
       return;
     }
     const fresh = newAction(id, difficulty, mode);
@@ -371,6 +373,7 @@ export default function ActionCollection({
     pending.current.clear();
     setStatus("running");
     canvas.current?.focus();
+    revealPlayfield(canvas.current);
   }
   function key(e: React.KeyboardEvent<HTMLCanvasElement>, pressed: boolean) {
     if (
@@ -521,6 +524,7 @@ export default function ActionCollection({
           )}
         </p>
       )}
+      <div className="action-playfield">
       <div className="action-canvas-wrap">
         <canvas
           data-expanded-board
@@ -564,6 +568,7 @@ export default function ActionCollection({
           </div>
         )}
       </div>
+      <div className="action-inputs">
       <div className="action-controls" aria-label="Controles do jogo">
         {controls.map(([key, label]) => (
           <button
@@ -616,10 +621,6 @@ export default function ActionCollection({
           </button>
         ))}
       </div>
-      <p className="action-help">
-        Fácil: ritmo estável para aprender. Normal e Difícil aumentam a pressão gradualmente.
-        Mestre reduz a margem de erro; Especialista usa a curva mais intensa, ainda com limite de velocidade para manter a partida jogável.
-      </p>
       <div className="action-footer">
         <button disabled={status !== "running"} onClick={pause}>
           Pausar
@@ -642,6 +643,12 @@ export default function ActionCollection({
                 : "Escolha o modo e a dificuldade antes de começar."}
         </p>
       </div>
+      </div>
+      </div>
+      <p className="action-help">
+        Fácil: ritmo estável para aprender. Normal e Difícil aumentam a pressão gradualmente.
+        Mestre reduz a margem de erro; Especialista usa a curva mais intensa, ainda com limite de velocidade para manter a partida jogável.
+      </p>
     </div>
   );
 }
