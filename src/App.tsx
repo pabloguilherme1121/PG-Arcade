@@ -521,6 +521,17 @@ export default function App() {
               <strong>Como jogar {game.name}</strong>
               <span>{gameHelp[game.id].split(". ")[0]}</span>
               <small data-player-record>{progress.records[game.id] ? `Sua melhor marca: ${progress.records[game.id]} ${recordUnits[game.id] ?? "pontos"}` : "Primeira partida — faça sua marca"}</small>
+              <button
+                type="button"
+                className="gameplay-control-toggle"
+                aria-pressed={preferences.controls === "large"}
+                onClick={() => setPreferences(p => ({
+                  ...p,
+                  controls: p.controls === "large" ? "standard" : "large",
+                }))}
+              >
+                {preferences.controls === "large" ? "Controles padrão" : "Ampliar controles"}
+              </button>
             </div>
             <p className="feedback" role="status">
               {message}
