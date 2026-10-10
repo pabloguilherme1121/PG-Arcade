@@ -240,3 +240,25 @@
     backdrop-filter: blur(4px);
   }
 }
+
+
+/* Direct touch steering, readable held states and lightweight cinematic glass. */
+.action-canvas-wrap canvas {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: crosshair;
+}
+.action-controls button[data-held="true"] {
+  border-color: #e8ffb2;
+  background: linear-gradient(160deg,#547965,#274e4b);
+  box-shadow: inset 0 3px 8px #0008, 0 0 0 2px #c9f65a44;
+}
+@media (pointer: coarse) {
+  .action-controls button { min-height: 56px; }
+  .action-canvas-wrap canvas { cursor: default; }
+}
+html[data-arcade-contrast="true"] .action-controls button[data-held="true"] { outline: 2px solid #fff; }
+@media (prefers-reduced-motion: reduce) {
+  .action-controls button { transition: none; }
+}
