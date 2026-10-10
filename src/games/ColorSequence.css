@@ -1,0 +1,79 @@
+/* Simon-style color challenge: tactile readable controls and honest progress. */
+.player .sequence-round-hud {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.player .sequence-round-hud > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid #536e89;
+  border-radius: 12px;
+  background: linear-gradient(145deg,#20334a,#111e30);
+}
+.player .sequence-round-hud span {
+  color: #c6d9ed;
+  font-size: 12px;
+}
+.player .sequence-round-hud strong {
+  color: #ddfba9;
+  font-size: clamp(12px, 2.8vw, 14px);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.player .sequence-progress {
+  height: 9px;
+  margin: 0 0 14px;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid #4e627c;
+  background: #172639;
+}
+.player .sequence-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg,#74bbff,#c9f65a);
+  transition: width .22s ease;
+}
+.player .sequence-board {
+  padding: clamp(10px, 2vw, 16px);
+  border: 1px solid #58748e;
+  border-radius: 18px;
+  background: radial-gradient(circle at 50% 30%,#1c3b52,#111e30 68%);
+  box-shadow: inset 0 1px #ffffff26, 0 20px 36px #0006;
+}
+.player .sequence-board .sequence-pad {
+  position: relative;
+  border: 2px solid #ffffff44;
+  border-radius: clamp(12px, 3vw, 24px);
+  box-shadow: inset 0 4px #ffffff24,inset 0 -6px #0004,0 8px 16px #0005;
+  text-shadow: 0 2px 2px #0009;
+}
+.player .sequence-board .sequence-pad.pad-lit {
+  outline: 4px solid #fff9d4;
+  outline-offset: -6px;
+  box-shadow: inset 0 0 22px #fff7,0 0 22px #b9f3ffa8;
+}
+.player .sequence-board .sequence-pad:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+html[data-arcade-contrast="true"] .player :is(.sequence-board,.sequence-round-hud > div,.sequence-progress) {
+  border-color: #fff;
+}
+@media (prefers-reduced-motion: reduce) {
+  .player .sequence-progress span { transition: none; }
+}
+html[data-arcade-motion="reduced"] .player .sequence-progress span { transition: none; }
+@media (max-width:359px) {
+  .player .sequence-round-hud { gap: 6px; }
+  .player .sequence-round-hud > div { padding: 8px; gap: 4px; }
+  .player .sequence-round-hud span { font-size: 11px; }
+}
