@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-test.use({ hasTouch: true, isMobile: true });
+test.use({ hasTouch: true });
 
 for (const [id,selector] of [
   ["runner",".action-collection"],["invasores",".action-collection"],["rhythm",".motion-expansion"],["stack",".motion-expansion"],
