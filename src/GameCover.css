@@ -90,6 +90,18 @@
   min-width:0;
   font-size:clamp(12px,2.8vw,14px);
 }
+.player-gameplay-orientation [data-player-record] {
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 5px 9px;
+  border: 1px solid #91ad84;
+  border-radius: 999px;
+  background: #274034;
+  color: #e4ffc9;
+  font-size: 12px;
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+}
 @media(max-width:540px) {
   .game-card .game-cover { border-radius:8px; }
   .player-coverline { grid-template-columns: 96px minmax(0,1fr);gap:11px;padding:10px;margin:8px 0; }
