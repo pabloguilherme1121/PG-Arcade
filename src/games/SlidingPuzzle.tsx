@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { movePuzzle, puzzleSolved, shuffledPuzzle } from "../lib/puzzles";
+import { puzzleInPlaceCount, puzzleManhattanDistance } from "../lib/puzzleFeedback";
+import "./SlidingPuzzle.css";
 export default function SlidingPuzzle({
   record,
   onRecord,
@@ -10,13 +12,32 @@ export default function SlidingPuzzle({
   const [board, setBoard] = useState(shuffledPuzzle);
   const [showGoal, setShowGoal] = useState(false);
   const [moves, setMoves] = useState(0);
+  const [history, setHistory] = useState<number[][]>([]);
+  const [lastTile, setLastTile] = useState<number | null>(null);
   const [difficulty, setDifficulty] = useState(100);
   const won = puzzleSolved(board);
+  const placed = puzzleInPlaceCount(board);
+  const distance = puzzleManhattanDistance(board);
+  function shuffle(depth: number) {
+    setBoard(shuffledPuzzle(Math.random, depth));
+    setMoves(0);
+    setHistory([]);
+    setLastTile(null);
+  }
+  function undo() {
+    if (won || !history.length) return;
+    setBoard(history[history.length - 1]);
+    setHistory(h => h.slice(0, -1));
+    setMoves(m => Math.max(0, m - 1));
+    setLastTile(null);
+  }
   function move(i: number) {
     if (won) return;
     const next = movePuzzle(board, i);
     if (next) {
       if (puzzleSolved(next)) onRecord(moves + 1);
+      setHistory(h => [...h, board]);
+      setLastTile(board[i]);
       setBoard(next);
       setMoves((m) => m + 1);
     }
@@ -28,8 +49,7 @@ export default function SlidingPuzzle({
           <select aria-label="Dificuldade do Quebra-cabeça" value={difficulty} onChange={(e) => {
             const depth = Number(e.target.value);
             setDifficulty(depth);
-            setBoard(shuffledPuzzle(Math.random, depth));
-            setMoves(0);
+            shuffle(depth);
           }}>
             <option value={12}>Fácil · embaralhamento curto</option>
             <option value={40}>Normal · intermediário</option>
@@ -44,7 +64,11 @@ export default function SlidingPuzzle({
             Melhor partida<strong>{record || "—"}</strong>
           </div>
         </div>
-        <p role="status">
+        <div className="sliding-premium-hud" aria-label="Progresso do quebra-cabeça">
+          <div><span>Peças no lugar</span><strong data-puzzle-placed>{placed}/8</strong></div>
+          <div><span>Distância estimada</span><strong data-puzzle-distance>{distance}</strong></div>
+        </div>
+        <p role="status" className="game-status">
           {won
             ? "Você organizou todas as peças!"
             : "Leve as peças de 1 a 8 até a ordem correta."}
@@ -71,6 +95,7 @@ export default function SlidingPuzzle({
             v ? (
               <button
                 key={i}
+                data-puzzle-last={v === lastTile ? "true" : undefined}
                 aria-label={`Peça ${v}`}
                 disabled={won || !movePuzzle(board, i)}
                 onClick={() => move(i)}
@@ -82,15 +107,10 @@ export default function SlidingPuzzle({
             ),
           )}
         </div>
-        <button
-          className="primary"
-          onClick={() => {
-            setBoard(shuffledPuzzle(Math.random, difficulty));
-            setMoves(0);
-          }}
-        >
-          Embaralhar novamente
-        </button>
+        <div className="game-actions">
+          <button onClick={undo} disabled={won || !history.length}>Desfazer jogada</button>
+          <button className="primary" onClick={() => shuffle(difficulty)}>Embaralhar novamente</button>
+        </div>
       </div>
       <aside className="instructions">
         <h2>Um espaço, muitas possibilidades</h2>
@@ -117,8 +137,10 @@ export default function SlidingPuzzle({
           direção indicada. Também pode usar Tab e Enter.
         </p>
         <p>
-          Todo embaralhamento tem solução. Seu recorde guarda a menor quantidade
-          de jogadas.
+          Todo embaralhamento tem solução. Desfaça uma jogada sem penalidade enquanto
+          a rodada estiver em andamento. A distância estimada mede quantas casas
+          as peças estão longe da posição correta, mas não é uma solução automática.
+          Seu recorde guarda a menor quantidade de jogadas.
         </p>
       </aside>
     </div>
