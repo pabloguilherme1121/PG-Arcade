@@ -19,6 +19,7 @@ for (const [id,selector] of [
     await game.getByRole("button",{name:"Começar",exact:true}).click();
     await page.touchscreen.tap(box!.x+box!.width/2,box!.y+box!.height/2);
     await expect(canvas).toHaveAttribute("data-touch-ready","true");
+    await expect(canvas).toHaveAttribute("data-touch-last-gesture","tap");
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   });
 }
