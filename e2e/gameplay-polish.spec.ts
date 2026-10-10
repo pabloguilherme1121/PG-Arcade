@@ -27,7 +27,7 @@ test('snake steers during a continuous swipe and ignores cancelled gestures',asy
   // Firefox desktop has no Touch constructor; supply the event data consumed by React.
   const gesture=async(type:string,clientX:number,clientY:number)=>board.evaluate((el,data)=>{
     const event=new Event(data.type,{bubbles:true,cancelable:true});
-    Object.defineProperty(event,'touches',{value:[{identifier:1,clientX:data.clientX,clientY:data.clientY}]});
+    Object.defineProperty(event,'touches',{value:data.type==='touchcancel'?[]:[{identifier:1,clientX:data.clientX,clientY:data.clientY}]});
     el.dispatchEvent(event);
   },{type,clientX,clientY});
   await gesture('touchstart',170,260);
@@ -35,7 +35,7 @@ test('snake steers during a continuous swipe and ignores cancelled gestures',asy
   await page.clock.runFor(160);await expect(board.locator('> span').nth(119)).toHaveClass('snake-head');
   await gesture('touchmove',130,220);
   await page.clock.runFor(160);await expect(board.locator('> span').nth(118)).toHaveClass('snake-head');
-  await board.dispatchEvent('touchcancel');
+  await gesture('touchcancel',0,0);
   await gesture('touchmove',130,180);
   await page.clock.runFor(160);await expect(board.locator('> span').nth(117)).toHaveClass('snake-head');
 });
