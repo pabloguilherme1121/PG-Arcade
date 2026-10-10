@@ -300,7 +300,8 @@ export default function ActionCollection({
     canvas = useRef<HTMLCanvasElement>(null),
     saved = useRef(false),
     onRecordRef = useRef(onRecord),
-    pointerStart = useRef<{id:number;x:number;y:number} | null>(null);
+    pointerStart = useRef<{id:number;x:number;y:number} | null>(null),
+    pointerDirection = useRef<"left" | "right" | "up" | "down" | null>(null);
   onRecordRef.current = onRecord;
   useResponsiveCanvas(canvas, 480, 360, (context) => paint(context, state.current, reducedMotion));
   const pending = useRef(new Set<keyof ActionInput>());
@@ -308,6 +309,7 @@ export default function ActionCollection({
     input.current = { ...idleInput };
     pending.current.clear();
     pointerStart.current = null;
+    pointerDirection.current = null;
     setStatus((p) => (p === "running" ? "paused" : p));
   }, []);
   useAutoPause(pause);
@@ -551,11 +553,23 @@ export default function ActionCollection({
               pending.current.add("action");
             }
           }}
+          onPointerMove={(e) => {
+            const start = pointerStart.current;
+            if (!start || start.id !== e.pointerId || status !== "running") return;
+            const gesture = identifyTouchGesture(start.x,start.y,e.clientX,e.clientY);
+            const direction = gesture !== "tap" ? gesture : null;
+            if (pointerDirection.current && pointerDirection.current !== direction)
+              input.current[pointerDirection.current] = false;
+            if (direction) input.current[direction] = true;
+            pointerDirection.current = direction;
+          }}
           onPointerUp={(e) => {
             const start = pointerStart.current;
             if (!start || start.id !== e.pointerId) return;
             pointerStart.current = null;
             input.current.action = false;
+            if (pointerDirection.current) input.current[pointerDirection.current] = false;
+            pointerDirection.current = null;
             const gesture = identifyTouchGesture(start.x,start.y,e.clientX,e.clientY);
             if (!gesture) return;
             e.currentTarget.dataset.touchLastGesture = gesture;
@@ -567,11 +581,15 @@ export default function ActionCollection({
             if (pointerStart.current?.id !== e.pointerId) return;
             pointerStart.current = null;
             input.current.action = false;
+            if (pointerDirection.current) input.current[pointerDirection.current] = false;
+            pointerDirection.current = null;
           }}
           onLostPointerCapture={(e) => {
             if (pointerStart.current?.id !== e.pointerId) return;
             pointerStart.current = null;
             input.current.action = false;
+            if (pointerDirection.current) input.current[pointerDirection.current] = false;
+            pointerDirection.current = null;
           }}
           onKeyDown={(e) => key(e, true)}
           onKeyUp={(e) => key(e, false)}
