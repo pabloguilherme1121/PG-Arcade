@@ -22,6 +22,10 @@ for (const width of [320,390,1280]) {
     await expect(page.getByRole("button",{name:"Ir para o tabuleiro"})).toBeVisible();
     await expect(page.locator("[data-gameplay-orientation]")).toContainText("Xadrez");
     await expect(page.locator("[data-player-record]")).toContainText("Primeira partida");
+    await page.getByRole("button",{name:"Ampliar controles",exact:true}).click();
+    await expect(page.locator("html")).toHaveAttribute("data-arcade-controls","large");
+    await page.getByRole("button",{name:"Controles padrão",exact:true}).click();
+    await expect(page.locator("html")).toHaveAttribute("data-arcade-controls","standard");
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   });
 }
