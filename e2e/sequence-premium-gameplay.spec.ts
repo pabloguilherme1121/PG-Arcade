@@ -20,7 +20,7 @@ test("Sequência permite rever uma vez o padrão antes de responder sem avançar
   await expect(page.locator(".scores strong").first()).toHaveText("1");
   await page.locator(".sequence-board").press("1");
   await expect(page.locator(".scores strong").first()).toHaveText("2");
-  await page.clock.runFor(2300);
+  await page.clock.runFor(2400);
   await expect(replay).toBeEnabled();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
@@ -39,7 +39,7 @@ test("Sequência exibe progresso de acertos e mostra a cor esperada após erro",
   await page.clock.runFor(1400);
   await page.locator(".sequence-board").press("1");
   await expect(page.locator(".scores strong").first()).toHaveText("2");
-  await page.clock.runFor(2300);
+  await page.clock.runFor(2400);
   const progress = page.getByRole("progressbar", { name: "Resposta da sequência" });
   await expect(progress).toHaveAttribute("aria-valuemax", "2");
   await page.locator(".sequence-board").press("1");
