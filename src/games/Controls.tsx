@@ -1,5 +1,6 @@
 import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from "lucide-react";
 import type { Direction } from "../lib/engines";
+import "./gameplay.css";
 export default function Controls({
   onMove,
   disabled = false,

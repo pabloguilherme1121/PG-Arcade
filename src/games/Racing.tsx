@@ -14,6 +14,7 @@ import {
 } from "../lib/actionGames";
 import { directionFromKey, directionFromSwipe } from "../lib/engines";
 import { useAutoPause, type PlayStatus } from "./useAutoPause";
+import "./racing.css";
 export default function Racing({
   record,
   onRecord,
@@ -62,11 +63,13 @@ export default function Racing({
     state.ticks,
   );
   const speedKmh = Math.round(currentVelocity * 36);
-  function steer(delta: number) {
-    if (status === "running") {
-      engine.current = steerRace(engine.current, delta);
-      setState(engine.current);
-    }
+  function steer(delta: number): boolean {
+    if (status !== "running") return false;
+    const next = steerRace(engine.current, delta);
+    if (next === engine.current) return false;
+    engine.current = next;
+    setState(next);
+    return true;
   }
   function start() {
     throttle.current = 0;
@@ -89,6 +92,7 @@ export default function Racing({
           <span className="race-speedometer" data-race-speed>
             {speedKmh} km/h
           </span>
+          <span data-race-current-lane>Faixa {state.lane + 1} de 3</span>
           <span>•</span>{" "}
           <span role="status">
             {status === "ready"
@@ -168,11 +172,31 @@ export default function Racing({
               ? [e.touches[0].clientX, e.touches[0].clientY]
               : null;
           }}
+          onTouchMove={(e) => {
+            if (!touch.current || status !== "running") return;
+            if (e.touches.length !== 1) {
+              touch.current = null;
+              return;
+            }
+            const point = e.touches[0];
+            const direction = directionFromSwipe(
+              point.clientX - touch.current[0],
+              point.clientY - touch.current[1],
+              24,
+            );
+            if ((direction === "left" || direction === "right") &&
+              steer(direction === "left" ? -1 : 1)) {
+              // Retain the remaining drag so a continuous gesture can change lanes again.
+              touch.current = [point.clientX, point.clientY];
+            }
+          }}
           onTouchCancel={() => { touch.current = null; }}
           onTouchEnd={(e) => {
             if (!touch.current || status !== "running") return;
-            const dx = e.changedTouches[0].clientX - touch.current[0];
-            const dy = e.changedTouches[0].clientY - touch.current[1];
+            const ended = e.changedTouches[0];
+            if (!ended) { touch.current = null; return; }
+            const dx = ended.clientX - touch.current[0];
+            const dy = ended.clientY - touch.current[1];
             touch.current = null;
             const direction = directionFromSwipe(dx, dy, 24);
             if (direction === "left") steer(-1);
@@ -202,6 +226,13 @@ export default function Racing({
             throttle.current = 0;
           }}
         >
+          <div className="race-lane-guide" aria-hidden="true">
+            {Array.from({ length: 3 }, (_, lane) => (
+              <span key={lane} data-race-lane-indicator={lane} data-active={lane === state.lane}>
+                {lane + 1}
+              </span>
+            ))}
+          </div>
           <div className="road-line line-one" />
           <div className="road-line line-two" />
           {state.traffic.map((car) => (
@@ -273,6 +304,7 @@ export default function Racing({
         <div className="wide-controls race-pedals">
           <button
             aria-label="Frear"
+            data-held={throttle.current === -1}
             disabled={status !== "running"}
             onPointerDown={(e) => {
               e.preventDefault();
@@ -303,6 +335,7 @@ export default function Racing({
           </button>
           <button
             aria-label="Acelerar"
+            data-held={throttle.current === 1}
             disabled={status !== "running"}
             onPointerDown={(e) => {
               e.preventDefault();

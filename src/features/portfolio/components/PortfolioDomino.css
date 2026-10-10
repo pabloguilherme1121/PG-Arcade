@@ -1,0 +1,140 @@
+/* Domino: tactile pips, accessible contrasts and readable table endpoints. */
+.arcade-hub .domino-face {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  position: relative;
+  width: 84px;
+  min-width: 84px;
+  height: 62px;
+  overflow: hidden;
+  vertical-align: middle;
+  border: 1px solid #8297a8;
+  border-radius: 11px;
+  background: linear-gradient(145deg, #1a3245, #081b2a 68%);
+  box-shadow: inset 0 2px #ffffff24, inset 0 -3px #0007, 0 5px 13px #0006;
+}
+.arcade-hub .domino-face::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: calc(50% - 1px);
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: #bed3df;
+  opacity: .55;
+}
+.arcade-hub .domino-half {
+  display: grid;
+  position: relative;
+  place-items: center;
+  min-width: 0;
+  overflow: hidden;
+}
+.arcade-hub .domino-pip-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 7px);
+  grid-template-rows: repeat(3, 7px);
+  align-items: center;
+  justify-items: center;
+  gap: 1px;
+  width: 23px;
+  height: 23px;
+  margin-top: -8px;
+}
+.arcade-hub .domino-pip {
+  width: 6px;
+  height: 6px;
+  background: currentColor;
+  border: 1px solid #ffffff52;
+  border-radius: 50%;
+  box-shadow: inset 0 1px #ffffff5c, 0 1px 2px #0009;
+}
+.arcade-hub .domino-half-number {
+  position: absolute;
+  bottom: 2px;
+  right: 6px;
+  font: 700 11px/1.1 ui-sans-serif, system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.arcade-hub .domino-table-feedback {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  min-height: 39px;
+}
+.arcade-hub .domino-table-feedback > span {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  min-height: 36px;
+  padding: 7px 11px;
+  border: 1px solid #507d89;
+  border-radius: 10px;
+  background: #102b36;
+  color: #e6fcff;
+  font-size: 12px;
+  font-weight: 600;
+}
+.arcade-hub .domino-table-feedback strong {
+  color: #c9f65a;
+  font-variant-numeric: tabular-nums;
+  font-size: 17px;
+}
+.arcade-hub .domino-table-feedback .domino-table-empty {
+  width: 100%;
+  justify-content: center;
+  color: #d1e4ee;
+  text-align: center;
+}
+.arcade-hub .domino-chain-tile {
+  display: inline-flex;
+  flex: 0 0 auto;
+  padding: 3px;
+  border: 2px solid transparent;
+  border-radius: 13px;
+}
+.arcade-hub .domino-chain-tile[data-domino-latest="true"] {
+  border-color: #c9f65a;
+  box-shadow: 0 0 0 2px #c9f65a28;
+}
+.arcade-hub .domino-last-move {
+  min-height: 42px;
+  margin-top: 9px;
+  padding: 11px 12px;
+  border-left: 3px solid #7dd3fc;
+  border-radius: 7px;
+  background: #0e2b39;
+  color: #ddf3fe;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.arcade-hub [data-domino-tile]:not(:disabled):focus-visible .domino-face {
+  outline: 2px solid #c9f65a;
+  outline-offset: 2px;
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  html:not([data-arcade-motion="reduced"]) .arcade-hub [data-domino-tile]:not(:disabled):hover .domino-face {
+    box-shadow: inset 0 2px #ffffff30, 0 10px 20px #0009;
+  }
+}
+html[data-arcade-contrast="true"] .arcade-hub .domino-face,
+html[data-arcade-contrast="true"] .arcade-hub .domino-table-feedback > span {
+  border-color: #f8fafc;
+}
+html[data-arcade-contrast="true"] .arcade-hub .domino-chain-tile[data-domino-latest="true"] {
+  border-color: #fff;
+}
+@media (max-width: 359px) {
+  .arcade-hub .domino-face {
+    width: 78px;
+    min-width: 78px;
+  }
+  .arcade-hub .domino-table-feedback > span {
+    padding-inline: 7px;
+    font-size: 11px;
+  }
+}

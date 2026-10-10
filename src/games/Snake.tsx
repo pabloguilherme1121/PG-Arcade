@@ -12,6 +12,10 @@ import {
 } from "../lib/engines";
 import Controls from "./Controls";
 import { revealPlayfield } from "./revealPlayfield";
+import { snakeTickDelay } from "../lib/snakePacing";
+import "./gameplay.css";
+import "./Snake.css";
+const arrows: Record<Direction, string> = { up: "↑", down: "↓", left: "←", right: "→" };
 const initialBody = () => [
   { x: 7, y: 8 },
   { x: 6, y: 8 },
@@ -32,6 +36,9 @@ export default function Snake({
   const [score, setScore] = useState(0);
   const [speed, setSpeed] = useState(160);
   const [mode, setMode] = useState("classic");
+  const [progressive, setProgressive] = useState(false);
+  const [queuedPreview, setQueuedPreview] = useState<Direction[]>([]);
+  const delay = snakeTickDelay(speed, score, progressive);
   const current = useRef<Direction>("right");
   const queued = useRef<Direction[]>([]);
   const touch = useRef<[number, number] | null>(null);
@@ -42,7 +49,12 @@ export default function Snake({
   const onRecordRef = useRef(onRecord);
   onRecordRef.current = onRecord;
   function direction(d: Direction) {
-    queued.current = queueSnakeDirection(current.current, queued.current, d);
+    if (status !== "running") return;
+    const next = queueSnakeDirection(current.current, queued.current, d);
+    if (next !== queued.current) {
+      queued.current = next;
+      setQueuedPreview([...next]);
+    }
   }
   function reset() {
     const nextBody = initialBody();
@@ -55,6 +67,7 @@ export default function Snake({
     setScore(0);
     current.current = "right";
     queued.current = [];
+    setQueuedPreview([]);
     setStatus("ready");
   }
   useEffect(() => {
@@ -63,7 +76,10 @@ export default function Snake({
       const activeFood = foodRef.current;
       if (!activeFood) return;
       const nextDirection = queued.current.shift();
-      if (nextDirection) current.current = nextDirection;
+      if (nextDirection) {
+        current.current = nextDirection;
+        setQueuedPreview([...queued.current]);
+      }
       const result = stepSnake(bodyRef.current, current.current, activeFood, 16, mode === "wrap");
       if (result.collision) {
         setStatus("over");
@@ -81,9 +97,9 @@ export default function Snake({
         setFood(next);
         if (!next) setStatus("won");
       }
-    }, speed);
+    }, delay);
     return () => clearInterval(id);
-  }, [status, speed, mode]);
+  }, [status, delay, mode]);
   useEffect(() => {
     const pause = () => {
       if (document.hidden) setStatus((s) => (s === "running" ? "paused" : s));
@@ -109,8 +125,14 @@ export default function Snake({
             Recorde<strong>{record}</strong>
           </div>
         </div>
+        <div className="snake-premium-hud" aria-label="Dados da partida">
+          <div><span>Comprimento</span><strong data-snake-length>{body.length}</strong></div>
+          <div><span>Ritmo</span><strong data-snake-pace>{delay} ms</strong></div>
+          <div><span>Próximas curvas</span><strong data-snake-queued aria-label={queuedPreview.length ? queuedPreview.join(", ") : "Nenhuma curva programada"}>{queuedPreview.length ? queuedPreview.map(d => arrows[d]).join(" ") : "Livre"}</strong></div>
+        </div>
         <div
           className="snake-board"
+          data-facing={current.current}
           ref={board}
           tabIndex={0}
           role="group"
@@ -138,10 +160,24 @@ export default function Snake({
               : null;
           }}
           onTouchCancel={() => { touch.current = null; }}
+          onTouchMove={(e) => {
+            if (e.touches.length !== 1) { touch.current = null; return; }
+            if (!touch.current || status !== "running") return;
+            const point = e.touches[0];
+            const d = directionFromSwipe(point.clientX-touch.current[0], point.clientY-touch.current[1], 15);
+            if (d) {
+              direction(d);
+              touch.current = [point.clientX,point.clientY];
+            }
+          }}
           onTouchEnd={(e) => {
-            if (!touch.current) return;
-            const dx = e.changedTouches[0].clientX - touch.current[0],
-              dy = e.changedTouches[0].clientY - touch.current[1];
+            const end = e.changedTouches[0];
+            if (!touch.current || !end || status !== "running") {
+              touch.current = null;
+              return;
+            }
+            const dx = end.clientX - touch.current[0],
+              dy = end.clientY - touch.current[1];
             touch.current = null;
             const d = directionFromSwipe(dx, dy, 15);
             if (d) direction(d);
@@ -244,9 +280,15 @@ export default function Snake({
           <option value={160}>Clássico</option>
           <option value={100}>Rápido</option>
         </select>
-        <p className="small">
-          A partida pausa quando você troca de aba ou sai da janela.
+        <label className="snake-challenge-toggle">
+          <input type="checkbox" checked={progressive} disabled={status === "running" || status === "paused"}
+            onChange={(event) => setProgressive(event.target.checked)} />
+          <span>Aceleração progressiva</span>
+        </label>
+        <p className="small" data-snake-challenge>
+          {progressive ? "Progressivo: a cada duas frutas, a cobra avança mais rápido (mínimo 90 ms)." : "Constante: o ritmo escolhido não muda."}
         </p>
+        <p className="small">A partida pausa quando você troca de aba ou sai da janela.</p>
       </aside>
     </div>
   );

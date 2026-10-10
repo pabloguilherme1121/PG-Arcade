@@ -120,3 +120,74 @@
 .legacy-game [aria-label="Modalidade"] button[aria-pressed="true"] {
   color: #02111f;
 }
+
+/* Shot assistance: readable presets and a calibrated landing marker. */
+.football-shot-presets {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  margin-bottom: 10px;
+}
+.football-shot-presets button {
+  min-width: 0;
+  min-height: 48px;
+  padding: 8px 6px;
+  border: 1px solid #648096;
+  border-radius: 10px;
+  background: #112638;
+  color: #e5f5ff;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.3;
+  text-align: center;
+}
+.football-shot-presets button[aria-pressed="true"] {
+  border-color: #b8f1dc;
+  background: #1b4b40;
+  color: #f3fff9;
+  box-shadow: inset 0 0 0 1px rgba(184, 241, 220, .22);
+}
+.football-shot-presets button:focus-visible {
+  outline: 3px solid #c9f65a;
+  outline-offset: 3px;
+}
+.football-shot-presets button:disabled {
+  opacity: .54;
+}
+.football-forecast {
+  padding: 11px 12px;
+  margin-bottom: 12px;
+  border: 1px solid #5a8192;
+  border-radius: 10px;
+  background: #122935;
+  color: #e5f7f4;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.football-forecast strong {
+  color: #f5ffe9;
+}
+.football-forecast[data-football-forecast="out"] {
+  border-color: #d69d8c;
+  background: #342524;
+}
+.football-forecast[data-football-forecast="wall"] {
+  border-color: #f5d17b;
+  background: #39301d;
+}
+.football-target-ring,
+.football-target-cross {
+  stroke: #d9ff8a;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .85));
+}
+[data-football-target][data-outcome="out"] :is(.football-target-ring, .football-target-cross) {
+  stroke: #ffb3ac;
+}
+[data-football-target][data-outcome="wall"] :is(.football-target-ring, .football-target-cross) {
+  stroke: #ffde90;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-arcade-motion="reduced"]) .football-shot-presets button {
+    transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+  }
+}

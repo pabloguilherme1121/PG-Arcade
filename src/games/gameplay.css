@@ -1,0 +1,134 @@
+/* Game materials load with the engines, preserving the catalog's initial budget. */
+.player :is(.scores,.new-hud,.action-hud) { font-variant-numeric: tabular-nums; }
+.player :is(.scores strong,.new-hud strong,.action-hud strong) { letter-spacing: -.025em; }
+.player :is(.board2048,.sliding-board,.lights-board,.connect-board,.new-board-wrap) { border-color: #475970; }
+.player .tile-0 { background: #182330; box-shadow: inset 0 2px 5px #0005; }
+.player .snake-board { background: #0e211e; border-color: #49695a; }
+.player .snake-board > span { background: #172f29; }
+.player .snake-board :is(.snake-head,.snake-body,.snake-food) { position: relative; }
+.player .snake-board .snake-body { background: linear-gradient(145deg,#bce570,#7fa944); border-radius: 25%; }
+.player .snake-board .snake-head { background: linear-gradient(145deg,#eeffa9,#b8df69); border-radius: 35%; }
+.player .snake-head::after { content: ''; position: absolute; right: 18%; top: 20%; width: 14%; height: 14%; border-radius: 50%; background: #173520; box-shadow: 0 .4em #173520; }
+.player .snake-board[data-facing="up"] .snake-head { rotate: -90deg; }
+.player .snake-board[data-facing="down"] .snake-head { rotate: 90deg; }
+.player .snake-board[data-facing="left"] .snake-head { rotate: 180deg; }
+.player .snake-board .snake-food { background: radial-gradient(circle at 30% 25%,#ffd2a6,#ee765c 55%,#b94742); box-shadow: 0 2px 4px #0005; }
+.player .snake-food::after { content: ''; position: absolute; top: -10%; left: 52%; width: 35%; height: 25%; border-radius: 70% 15%; background: #a5d777; rotate: -30deg; }
+.player .memory-card { border-color: #53677c; background: repeating-linear-gradient(135deg,#ffffff04 0 1px,transparent 1px 9px),linear-gradient(145deg,#20394d,#132335); color: #c5def0; box-shadow: inset 0 2px 0 #ffffff10,0 3px 8px #0003; }
+.player .memory-back { display: grid; place-items: center; width: 60%; height: 60%; border: 1px solid #789bb65c; border-radius: 25%; }
+.player .memory-back svg { width: 52%; height: 52%; }
+.player .memory-card.revealed { background: #354d76; border-color: #91afdb; color: #fff0c8; }
+.player .memory-card.matched { background: #234c3b; border-color: #9bc978; color: #deffc5; box-shadow: inset 0 0 0 2px #adc88b22; }
+.player .memory-card:disabled:not(.matched) { opacity: .75; }
+.player .sequence-pad { border: 1px solid #ffffff38; box-shadow: inset 0 3px 0 #ffffff25,0 4px 12px #0004; }
+.player .sequence-pad strong { font-family: 'Space Grotesk Variable',sans-serif; }
+.player .sequence-pad.pad-lit { outline: 3px solid #f5fbff; outline-offset: -7px; }
+.player .targets-board button { background: #152638c4; border-color: #587088; color: #c9dced; box-shadow: inset 0 1px 0 #ffffff16; }
+.player .targets-board .target-present { background: #243b43; border-color: #c9f65a; color: #e7ffa8; box-shadow: inset 0 0 0 3px #b4d57c26; }
+.player .space-targets .target-present { background: #34314f; border-color: #d8c5ff; color: #f1e7ff; }
+.player .targets-summary { margin: 4px 0 10px; text-align: center; font-size: 13px; color: #c5d6e4; font-variant-numeric: tabular-nums; }
+.player .targets-summary strong { color: #edf5ff; }
+.player .targets-board button[data-feedback="miss"] { border-color: #ffb69e; }
+.player .targets-board button > .hit-feedback { position: absolute; inset: auto 0 8%; font: 700 clamp(12px,2.5vw,18px) 'Space Grotesk Variable',sans-serif; color: #edffc9; text-shadow: 0 2px 3px #000; pointer-events: none; }
+.player .targets-board button[data-feedback="miss"] > .hit-feedback { color: #ffcfbd; }
+.player :is(.motion-controls,.action-controls) button[data-held="true"] { background: #314957; color: #edf5ff; border-color: #c9f65a; box-shadow: inset 0 2px 4px #0005; }
+html[data-arcade-contrast="true"] .player :is(.memory-card,.snake-board,.sequence-pad,.targets-board button) { border-color: #edf5ff; }
+
+/* 2048: visual hierarchy and persistent progress, scoped to the lazy game CSS. */
+.player .game2048-insights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 12px;
+}
+.player .game2048-insights > span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+  border: 1px solid #536479;
+  border-radius: 12px;
+  padding: 10px 8px;
+  background: linear-gradient(155deg, #253145, #121b29);
+  color: #c4d4e4;
+  text-align: center;
+  font-size: clamp(10px, 2.5vw, 13px);
+  line-height: 1.35;
+}
+.player .game2048-insights strong {
+  font-size: clamp(20px, 5vw, 29px);
+  font-variant-numeric: tabular-nums;
+  color: #f0f9ff;
+  line-height: 1.1;
+}
+.player .board2048 {
+  min-width: 0;
+  border-color: #65758a;
+  background: linear-gradient(150deg, #29394b, #131f2b);
+  box-shadow: 0 18px 32px #0006, inset 0 1px #ffffff24;
+}
+.player .board2048 .tile {
+  position: relative;
+  font-size: clamp(16px, 5.4vw, 30px);
+  font-variant-numeric: tabular-nums;
+  border-radius: 10px;
+  border-color: #ffffff3f;
+  text-shadow: 0 1px #ffffff38;
+  box-shadow: inset 0 2px #ffffff45, inset 0 -3px #0002, 0 3px 6px #0004;
+}
+.player .board2048 .tile-0 {
+  text-shadow: none;
+  border-color: #394658;
+  background: #1a2936;
+  box-shadow: inset 0 3px 8px #0006;
+}
+.player .board2048 :is(.tile-1024, .tile-2048) {
+  color: #142017;
+  border-color: #dfffa9;
+  font-size: clamp(14px, 4vw, 24px);
+  box-shadow: inset 0 2px #ffffff65, 0 0 14px #c9f65a3b;
+}
+.player .game2048-progress {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #54707a;
+  background: #11252e;
+}
+.player .game2048-progress-copy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  color: #e0f5ed;
+  font-size: 13px;
+  font-weight: 650;
+}
+.player .game2048-progress-track {
+  overflow: hidden;
+  height: 9px;
+  border-radius: 99px;
+  background: #3a5362;
+}
+.player .game2048-progress-track > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #75c4ba, #d6fc7a);
+  border-radius: inherit;
+}
+html[data-arcade-contrast="true"] .player .board2048 .tile {
+  border-color: #fff;
+}
+html[data-arcade-contrast="true"] .player .game2048-progress-track {
+  outline: 2px solid #fff;
+}
+@media (max-width: 359px) {
+  .player .board2048 {
+    gap: 5px;
+    padding: 7px;
+  }
+  .player .game2048-insights > span {
+    padding-inline: 4px;
+  }
+}

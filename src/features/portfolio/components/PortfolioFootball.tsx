@@ -57,7 +57,18 @@ export default function PortfolioFootball() {
     "expert",
   ];
   const nextLevel = levels[levels.indexOf(difficulty) + 1];
+  const shotPresets = [
+    { label: "Chute controlado", power: 62, lift: 46, curve: 0 },
+    { label: "Chute colocado", power: 73, lift: 55, curve: mode === "free-kick" ? 20 : 0 },
+    { label: mode === "free-kick" ? "Chute com curva" : "Chute potente",
+      power: mode === "free-kick" ? 68 : 84,
+      lift: mode === "free-kick" ? 54 : 62,
+      curve: mode === "free-kick" ? 60 : 0 },
+  ];
   const preview = resolveFootballShot(mode, aim, power, curve, 50, lift);
+  const previewState = preview.result === "fora" ? "out" :
+    preview.result === "barreira" ? "wall" : "on-target";
+  const previewX = Math.max(15, Math.min(385, 40 + preview.x * 3.2));
   const previewY =
     preview.result === "barreira"
       ? 185
@@ -374,13 +385,19 @@ export default function PortfolioFootball() {
                 )}
                 <path
                   data-football-preview
-                  d={`M200 250 Q${200 + (mode === "free-kick" ? curve * 0.7 : 0)} 140 ${Math.max(15, Math.min(385, 40 + preview.x * 3.2))} ${previewY}`}
+                  d={`M200 250 Q${200 + (mode === "free-kick" ? curve * 0.7 : 0)} 140 ${previewX} ${previewY}`}
                   stroke="#f6d383"
                   strokeWidth="2"
                   strokeDasharray="4 6"
                   opacity=".5"
                   fill="none"
                 />
+                {!flight && (
+                  <g data-football-target data-outcome={previewState} transform={`translate(${previewX},${previewY})`} aria-hidden="true">
+                    <circle className="football-target-ring" r="12" fill="none" strokeWidth="2" />
+                    <path className="football-target-cross" d="M-18 0H-7M7 0H18M0 -18V-7M0 7V18" fill="none" strokeWidth="2" />
+                  </g>
+                )}
                 <g
                   className={flight ? "football-ball football-ball-flight" : "football-ball"}
                   key={`${shots.length}-${Boolean(flight)}`}
@@ -473,6 +490,8 @@ export default function PortfolioFootball() {
                       "ArrowUp",
                       "Home",
                       "End",
+                      "PageUp",
+                      "PageDown",
                     ].includes(event.key)
                   ) {
                     event.preventDefault();
@@ -481,18 +500,10 @@ export default function PortfolioFootball() {
                         ? 0
                         : event.key === "End"
                           ? 100
-                          : Math.max(
-                              0,
-                              Math.min(
-                                100,
-                                value +
-                                  (["ArrowLeft", "ArrowDown"].includes(
-                                    event.key,
-                                  )
-                                    ? -5
-                                    : 5),
-                              ),
-                            ),
+                          : Math.max(0, Math.min(100,
+                              value + (["ArrowLeft", "ArrowDown", "PageDown"].includes(event.key) ? -1 : 1)
+                                * (event.key.startsWith("Page") ? 10 : event.shiftKey ? 1 : 5),
+                            )),
                     );
                   }
                 }}
@@ -518,6 +529,39 @@ export default function PortfolioFootball() {
             </p>
           </div>
           <div className="min-w-0 lg:border-l lg:border-white/10 lg:pl-6">
+            <div
+              className="football-shot-presets"
+              role="group"
+              aria-label="Ajustes rápidos para o chute"
+            >
+              {shotPresets.map((preset) => (
+                <button
+                  key={preset.label}
+                  type="button"
+                  disabled={Boolean(flight) || finished}
+                  aria-pressed={power === preset.power && lift === preset.lift && curve === preset.curve}
+                  onClick={() => {
+                    setPower(preset.power);
+                    setLift(preset.lift);
+                    setCurve(preset.curve);
+                  }}
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+            <p
+              className="football-forecast"
+              data-football-forecast={previewState}
+              aria-live="off"
+            >
+              <strong>Trajetória estimada:</strong>{" "}
+              {previewState === "out"
+                ? "a bola tende a sair para fora; ajuste força, elevação ou curva."
+                : previewState === "wall"
+                  ? "a bola encontra a barreira; eleve ou curve o chute."
+                  : "a bola está na direção do gol; o goleiro ainda pode defender."}
+            </p>
             <div
               className="mb-3 grid grid-cols-3 gap-2"
               aria-label="Escolher canto rápido"

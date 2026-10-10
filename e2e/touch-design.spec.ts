@@ -64,6 +64,13 @@ test('a fast motion tap reaches physics once and cancelled direction stays relea
   await page.clock.runFor(100);
   expect((await sample()).angle).toBeCloseTo(stopped, 6);
   const action = page.getByRole('button', { name: 'Ação', exact: true });
+  await action.hover();
+  await page.mouse.down();
+  await action.dispatchEvent('pointercancel', { pointerId: 1, pointerType: 'mouse' });
+  await page.mouse.up();
+  await page.clock.runFor(100);
+  expect(await page.evaluate(() => (window as unknown as { motionPulses: number }).motionPulses)).toBe(0);
+  await expect(action).not.toHaveAttribute('data-held', 'true');
   await action.tap();
   await page.clock.runFor(100);
   const pulses = () => page.evaluate(() => (window as unknown as { motionPulses: number }).motionPulses);

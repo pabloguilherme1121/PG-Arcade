@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { chooseDiscMove, winningDiscs, discColumnFromKey } from "./connectFour";
+import { chooseDiscMove, winningDiscs, discColumnFromKey, discLandingIndex, nextDiscColumn } from "./connectFour";
 import { discWinner, dropDisc } from "./puzzles";
 describe("Liga 4 keyboard input", () => {
   it("maps number keys 1 through 7 directly to columns", () => {
@@ -69,5 +69,28 @@ describe("Liga 4 tactical bot", () => {
       }
       expect(!!discWinner(board) || board.every(Boolean)).toBe(true);
     }
+  });
+});
+
+describe("Liga 4 preview and keyboard targeting", () => {
+  it("predicts a gravity landing without modifying the board", () => {
+    const board = Array(42).fill(0);
+    expect(discLandingIndex(board, 3)).toBe(38);
+    const placed = dropDisc(board, 3, 1)!;
+    expect(discLandingIndex(placed, 3)).toBe(31);
+    expect(discLandingIndex(placed, -1)).toBeNull();
+    expect(discLandingIndex(placed, 7)).toBeNull();
+    expect(board.every(value => value === 0)).toBe(true);
+  });
+
+  it("refuses full columns and advances only through playable columns", () => {
+    let board = Array(42).fill(0);
+    for (let i = 0; i < 6; i++) board = dropDisc(board, 2, (i % 2) + 1)!;
+    expect(discLandingIndex(board, 2)).toBeNull();
+    expect(nextDiscColumn(board, 3, -1)).toBe(1);
+    expect(nextDiscColumn(board, 1, 1)).toBe(3);
+    expect(nextDiscColumn(board, 6, 1)).toBe(6);
+    expect(nextDiscColumn(board, 0, -1)).toBe(0);
+    expect(nextDiscColumn(board, 1, 0)).toBe(1);
   });
 });

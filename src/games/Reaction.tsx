@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useAutoPause } from "./useAutoPause";
+import { reactionPoints, reactionSummary } from "../lib/reactionFeedback";
+import "./Reaction.css";
 export default function Reaction({
   record,
   onRecord,
@@ -15,6 +17,10 @@ export default function Reaction({
     [message, setMessage] = useState("Espere o sinal verde antes de tocar.");
   const signal = useRef(0);
   const [difficulty, setDifficulty] = useState("normal");
+  const [responseTimes, setResponseTimes] = useState<number[]>([]);
+  const [lastTime, setLastTime] = useState<number | null>(null);
+  const [falseStarts, setFalseStarts] = useState(0);
+  const { best, average } = reactionSummary(responseTimes);
   const scoringWindow = difficulty === "easy" ? 1400 : difficulty === "hard" ? 600 : 1000;
   const pause = useCallback(
     () => setPhase((p) => (p === "wait" || p === "go" ? "paused" : p)),
@@ -38,11 +44,18 @@ export default function Reaction({
       return;
     }
     if (phase !== "wait" && phase !== "go") return;
-    const elapsed = Math.round(performance.now() - signal.current);
-    const earned = phase === "go" ? Math.max(0, Math.round(1000 * (1 - elapsed / scoringWindow))) : 0;
+    const elapsed = phase === "go" ? Math.max(0, Math.round(performance.now() - signal.current)) : null;
+    const earned = elapsed !== null ? reactionPoints(elapsed, scoringWindow) : 0;
+    if (elapsed !== null) {
+      setLastTime(elapsed);
+      setResponseTimes((times) => [...times, elapsed]);
+    } else {
+      setLastTime(null);
+      setFalseStarts((count) => count + 1);
+    }
     const next = score + earned;
     setMessage(
-      phase === "go"
+      elapsed !== null
         ? `${elapsed} ms. ${earned} pontos nesta rodada.`
         : "Cedo demais! Esta rodada vale zero.",
     );
@@ -70,6 +83,17 @@ export default function Reaction({
           <div>
             Rodadas<strong>{round}/5</strong>
           </div>
+        </div>
+        <div className="reaction-session-hud" aria-label="Estatísticas de reação">
+          <div><span>Última resposta</span><strong data-reaction-last>{lastTime === null ? "—" : `${lastTime} ms`}</strong></div>
+          <div><span>Melhor tempo</span><strong data-reaction-best>{best === null ? "—" : `${best} ms`}</strong></div>
+          <div><span>Tempo médio</span><strong data-reaction-average>{average === null ? "—" : `${average} ms`}</strong></div>
+          <div><span>Antecipações</span><strong data-reaction-false>{falseStarts}</strong></div>
+        </div>
+        <div className="reaction-session-progress" role="progressbar" aria-label="Rodadas do reflexo"
+          aria-valuemin={0} aria-valuemax={5} aria-valuenow={round}
+          aria-valuetext={`${round} de 5 rodadas concluídas`}>
+          <span style={{ width: `${round / 5 * 100}%` }} />
         </div>
         <button
           className={`reaction-board reaction-${phase}`}
@@ -113,6 +137,9 @@ export default function Reaction({
               setPhase("ready");
               setRound(0);
               setScore(0);
+              setResponseTimes([]);
+              setLastTime(null);
+              setFalseStarts(0);
               setMessage("Espere o sinal verde antes de tocar.");
             }}
           >
@@ -134,6 +161,7 @@ export default function Reaction({
           Toque, Enter ou espaço funcionam. Ao pausar ou sair da janela, a
           rodada espera um novo sinal, sem penalidade.
         </p>
+        <p>Os tempos e a média incluem apenas toques realizados depois do sinal. Uma antecipação custa a rodada, mas não é considerada um tempo de reação. O recorde continua sendo a maior pontuação nas cinco rodadas.</p>
         <p>Recorde: {record || "—"} pontos.</p>
       </aside>
     </div>

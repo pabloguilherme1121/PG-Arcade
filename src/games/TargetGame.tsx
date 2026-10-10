@@ -6,6 +6,9 @@ import {
   type TargetDifficulty,
 } from "../lib/actionGames";
 import { useAutoPause, type PlayStatus } from "./useAutoPause";
+import { targetAccuracy, targetFocusTarget } from "../lib/targetFeedback";
+import "./TargetGame.css";
+import "./gameplay.css";
 type Target = { id: number; cell: number };
 export default function TargetGame({
   kind,
@@ -26,14 +29,27 @@ export default function TargetGame({
   );
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
+  const [attempts, setAttempts] = useState(0);
+  const [hits, setHits] = useState(0);
+  const [selected, setSelected] = useState(4);
+  const accuracy = targetAccuracy(hits, attempts);
+  const [feedback, setFeedback] = useState<{cell:number;points:number} | null>(null);
   const [targets, setTargets] = useState<Target[]>([]);
   const [message, setMessage] = useState("Comece quando estiver pronto.");
   const id = useRef(0);
   const board = useRef<HTMLDivElement>(null);
-  const pause = useCallback(
-    () => setStatus((s) => (s === "running" ? "paused" : s)),
-    [],
-  );
+  const timeLeft = useRef(duration * 1000);
+  const deadline = useRef<number | null>(null);
+  const settle = useCallback(() => {
+    if (deadline.current === null) return;
+    timeLeft.current = Math.max(0, deadline.current - performance.now());
+    setRemaining(Math.ceil(timeLeft.current / 1000));
+  }, []);
+  const pause = useCallback(() => {
+    settle();
+    deadline.current = null;
+    setStatus((s) => (s === "running" ? "paused" : s));
+  }, [settle]);
   useAutoPause(pause);
   function freshTargets() {
     const cells = Array.from({ length: 9 }, (_, i) => i);
@@ -46,12 +62,15 @@ export default function TargetGame({
   }
   useEffect(() => {
     if (status !== "running") return;
-    const timer = setInterval(
-      () => setRemaining((r) => Math.max(0, r - 1)),
-      1000,
-    );
+    deadline.current ??= performance.now() + timeLeft.current;
+    const timer = setInterval(settle, 100);
     return () => clearInterval(timer);
-  }, [status]);
+  }, [status, settle]);
+  useEffect(() => {
+    if (!feedback) return;
+    const timer = setTimeout(() => setFeedback(null), 400);
+    return () => clearTimeout(timer);
+  }, [feedback]);
   useEffect(() => {
     if (shoot || status !== "running") return;
     const timer = setInterval(
@@ -63,24 +82,30 @@ export default function TargetGame({
   useEffect(() => {
     if (remaining === 0 && status === "running") {
       onRecord(score);
+      deadline.current = null;
       setStatus("done");
     }
   }, [remaining, status, score, onRecord]);
   function start() {
     if (status === "ready") setTargets(freshTargets());
+    deadline.current = performance.now() + timeLeft.current;
     setStatus("running");
     board.current?.focus();
   }
   function hit(cell: number) {
-    if (status !== "running") return;
+    if (status !== "running" || deadline.current === null || performance.now() >= deadline.current) return;
+    setAttempts((n) => n + 1);
     const target = targets.find((t) => t.cell === cell);
     if (!target) {
       setCombo(0);
+      setFeedback({cell,points:0});
       setMessage("Não acertou. Procure o próximo alvo.");
       return;
     }
     const nextScore = shoot ? hitScore(score, combo) : score + 1;
     setScore(nextScore);
+    setHits((n) => n + 1);
+    setFeedback({cell,points:nextScore-score});
     setCombo((c) => c + 1);
     setMessage(
       shoot
@@ -100,10 +125,16 @@ export default function TargetGame({
     } else setTargets(freshTargets());
   }
   function reset(nextDifficulty: TargetDifficulty = difficulty) {
+    deadline.current = null;
+    timeLeft.current = targetGameRules(kind, nextDifficulty).duration * 1000;
     setStatus("ready");
     setRemaining(targetGameRules(kind, nextDifficulty).duration);
     setScore(0);
     setCombo(0);
+    setAttempts(0);
+    setHits(0);
+    setSelected(4);
+    setFeedback(null);
     setTargets([]);
     setMessage("Nova rodada. Comece quando quiser.");
   }
@@ -118,17 +149,40 @@ export default function TargetGame({
             Tempo<strong>{remaining}s</strong>
           </div>
         </div>
+        <div className="target-premium-hud" aria-label="Estatísticas da rodada">
+          <div><span>Sequência</span><strong data-target-combo>{combo}</strong></div>
+          <div><span>Precisão</span><strong data-target-accuracy>{accuracy}%</strong></div>
+          <div><span>Acertos</span><strong>{hits}/{attempts}</strong></div>
+        </div>
+        <div className="target-timer-progress" role="progressbar" aria-label="Tempo restante da rodada"
+          aria-valuemin={0} aria-valuemax={duration} aria-valuenow={remaining}
+          aria-valuetext={`${remaining} de ${duration} segundos restantes`}>
+          <span style={{width:`${remaining / duration * 100}%`}} />
+        </div>
         <div
           ref={board}
-          className={`targets-board ${shoot ? "space-targets" : "casual-targets"}`}
+          className={`targets-board targets-premium ${shoot ? "space-targets" : "casual-targets"}`}
+          data-target-selected={selected+1}
           tabIndex={0}
           role="group"
           aria-label={
             shoot
-              ? "Arena de tiro. Use os números de 1 a 9 ou toque nos alvos."
-              : "Campo de estrelas. Use os números de 1 a 9 ou toque na estrela."
+              ? "Arena de tiro. Use os números de 1 a 9 ou toque nos alvos. Setas para selecionar uma casa."
+              : "Campo de estrelas. Use os números de 1 a 9 ou toque na estrela. Setas para selecionar uma casa."
           }
           onKeyDown={(e) => {
+            if (e.altKey || e.ctrlKey || e.metaKey) return;
+            if (e.key.startsWith("Arrow") && status === "running") {
+              e.preventDefault();
+              const buttons=Array.from(e.currentTarget.querySelectorAll<HTMLButtonElement>("button"));
+              const from=buttons.indexOf(e.target as HTMLButtonElement);
+              const next=targetFocusTarget(from<0?selected:from,e.key);
+              if (next!==null) {
+                setSelected(next);
+                buttons[next]?.focus();
+              }
+              return;
+            }
             if (/^[1-9]$/.test(e.key)) {
               e.preventDefault();
               hit(Number(e.key) - 1);
@@ -147,7 +201,11 @@ export default function TargetGame({
                 disabled={status !== "running"}
                 aria-label={`${shoot ? "Alvo" : "Estrela"} ${i + 1}: ${active ? "presente" : "vazio"}`}
                 className={active ? "target-present" : ""}
-                onClick={() => hit(i)}
+                data-target-focus={i===selected && status==="running" ? "true" : undefined}
+                onFocus={()=>setSelected(i)}
+                onPointerEnter={()=>setSelected(i)}
+                data-feedback={feedback?.cell === i ? feedback.points > 0 ? "hit" : "miss" : undefined}
+                onClick={() => {setSelected(i);hit(i);}}
               >
                 <small>{i + 1}</small>
                 {active ? (
@@ -163,6 +221,7 @@ export default function TargetGame({
                 ) : (
                   <span aria-hidden="true">·</span>
                 )}
+                {feedback?.cell === i && <span className="hit-feedback" aria-hidden="true">{feedback.points > 0 ? `+${feedback.points}` : "Erro"}</span>}
               </button>
             );
           })}
@@ -232,8 +291,10 @@ export default function TargetGame({
             : `Toque na estrela antes que ela mude de lugar. Cada estrela vale um ponto; a rodada dura ${duration} segundos e o intervalo muda com a dificuldade.`}
         </p>
         <p>
-          Toque, clique ou use os números 1 a 9 na disposição do tabuleiro. Tab
-          e Enter também funcionam. Espaço no tabuleiro pausa.
+          Toque, clique ou use os números 1 a 9 na disposição do tabuleiro.
+          As setas movem a seleção entre as casas e Enter confirma a escolhida.
+          A precisão conta acertos sobre tentativas; errar zera a sequência.
+          Espaço no tabuleiro pausa.
         </p>
         <p>
           Recorde: {record} pontos. A rodada pausa ao trocar de aba ou sair da

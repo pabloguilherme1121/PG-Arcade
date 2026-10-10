@@ -52,6 +52,7 @@ export default function PortfolioCheckers() {
   );
   const [turn, setTurn] = useState<CheckersPlayer>("blue");
   const [selected, setSelected] = useState<number | null>(null);
+  const [lastMove, setLastMove] = useState<{ from: number; to: number } | null>(null);
   const [humanForcedFrom, setHumanForcedFrom] = useState<number | null>(null);
   const [botForcedFrom, setBotForcedFrom] = useState<number | null>(null);
   const [winner, setWinner] = useState<CheckersPlayer | null>(null);
@@ -73,6 +74,7 @@ export default function PortfolioCheckers() {
 
   const restart = (resetScore = false) => {
     setBoard(createCheckersBoard(variant));
+    setLastMove(null);
     setTurn("blue");
     setSelected(null);
     setHumanForcedFrom(null);
@@ -114,6 +116,7 @@ export default function PortfolioCheckers() {
   ) => {
     const next = applyCheckersMove(board, move);
     setBoard(next);
+    setLastMove({ from: move.from, to: move.to });
 
     const continuationFrom = allowContinuation
       ? getCheckersContinuationFrom(next, move)
@@ -141,7 +144,7 @@ export default function PortfolioCheckers() {
         humanForcedFrom !== null && index !== humanForcedFrom
       )
         return;
-      setSelected(index);
+      setSelected((current) => current === index && humanForcedFrom === null ? null : index);
       return;
     }
 
@@ -177,6 +180,7 @@ export default function PortfolioCheckers() {
 
         const next = applyCheckersMove(board, move);
         setBoard(next);
+        setLastMove({ from: move.from, to: move.to });
         setSelected(null);
 
         const continuationFrom = getCheckersContinuationFrom(next, move);
@@ -311,6 +315,8 @@ export default function PortfolioCheckers() {
                       }}
                       aria-selected={active}
                       data-checkers-cell="true"
+                      data-last-move={lastMove?.from === index ? "from" : lastMove?.to === index ? "to" : undefined}
+                      aria-description={lastMove?.from === index ? "Origem da última jogada" : lastMove?.to === index ? "Destino da última jogada" : undefined}
                       data-legal-destination={
                         legalDestination ? "true" : "false"
                       }
@@ -343,9 +349,10 @@ export default function PortfolioCheckers() {
 
           <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
             <p className="font-body text-xs leading-5 text-[#8fa8c7]">
-              Toque em uma peça e depois em uma casa marcada. No teclado, use as
-              setas e Enter. Capturas encadeadas mantêm a mesma peça ativa até a
-              sequência terminar.
+              Toque em uma peça e depois em uma casa marcada; toque novamente
+              para cancelar a seleção. No teclado, use as setas e Enter. As duas
+              últimas casas da jogada ficam destacadas. Capturas encadeadas
+              mantêm a mesma peça ativa até a sequência terminar.
             </p>
             <div className="flex flex-wrap gap-2">
               <button

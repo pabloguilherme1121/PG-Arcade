@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { dropDisc, discWinner } from "../lib/puzzles";
-import { chooseDiscMove, winningDiscs, discColumnFromKey, type DiscDifficulty } from "../lib/connectFour";
+import { chooseDiscMove, winningDiscs, discColumnFromKey, discLandingIndex, nextDiscColumn, type DiscDifficulty } from "../lib/connectFour";
 import { useAutoPause } from "./useAutoPause";
+import "./ConnectFour.css";
 export default function ConnectFour() {
   const [board, setBoard] = useState<number[]>(Array(42).fill(0));
   const [turn, setTurn] = useState(1);
+  const [selectedColumn, setSelectedColumn] = useState(3);
   const [history, setHistory] = useState<{ board: number[]; turn: number }[]>([]);
   const [mode, setMode] = useState("local");
   const [difficulty, setDifficulty] = useState<DiscDifficulty>("normal");
@@ -16,8 +18,10 @@ export default function ConnectFour() {
   const botTurn = mode === "bot" && turn === 2 && !over;
   const winning = winningDiscs(board);
   const last = history.length ? board.findIndex((v, i) => v !== history[history.length - 1].board[i]) : -1;
+  const projected = !over && !paused && !botTurn ? discLandingIndex(board, selectedColumn) : null;
+  const projectionRow = projected === null ? null : Math.floor(projected / 7) + 1;
   function reset() {
-    setBoard(Array(42).fill(0)); setTurn(1); setHistory([]); setPaused(false);
+    setBoard(Array(42).fill(0)); setTurn(1); setHistory([]); setPaused(false); setSelectedColumn(3);
   }
   function play(column: number) {
     if (over || paused || botTurn) return;
@@ -51,25 +55,49 @@ export default function ConnectFour() {
             : over ? "Empate!" : paused ? "Partida pausada"
             : botTurn ? "Bot pensando…" : `Vez do jogador ${turn} — ${turn === 1 ? "coral" : "lima"}`}
         </p>
+        <div className="connect-preview-hud" data-connect-hud aria-label="Visão antecipada da jogada">
+          <span>Jogador <strong>{turn}</strong> · {turn === 1 ? "coral" : "lima"}</span>
+          <span>{over ? "Rodada encerrada" : botTurn ? "Bot planejando" : paused ? "Em pausa" : projectionRow === null ? "Coluna cheia" : `Coluna ${selectedColumn + 1} → linha ${projectionRow}`}</span>
+        </div>
         <div className="connect-controls" aria-label="Escolha a coluna">
           {Array.from({ length: 7 }, (_, i) => (
-            <button key={i} aria-label={`Jogar na coluna ${i + 1}`} disabled={over || paused || botTurn || !!board[i]} onClick={() => play(i)}>{i + 1} ↓</button>
+            <button key={i} aria-label={`Jogar na coluna ${i + 1}`} data-connect-selected={selectedColumn === i ? "true" : undefined}
+              disabled={over || paused || botTurn || !!board[i]}
+              onFocus={() => setSelectedColumn(i)} onPointerEnter={() => setSelectedColumn(i)}
+              onClick={() => { setSelectedColumn(i); play(i); }}>{i + 1} ↓</button>
           ))}
         </div>
         <div
           className="connect-board"
+          data-selected-column={selectedColumn + 1}
           role="group"
           tabIndex={0}
-          aria-label={`Tabuleiro Liga 4. Use as teclas 1 a 7 para jogar. ${board.map((v, i) => v ? `Linha ${Math.floor(i / 7) + 1}, coluna ${(i % 7) + 1}: jogador ${v}` : "").filter(Boolean).join("; ") || "Tabuleiro vazio"}`}
+          aria-label={`Tabuleiro Liga 4. Coluna selecionada ${selectedColumn + 1}. Use as setas, Enter ou números 1 a 7 para jogar. ${board.map((v, i) => v ? `Linha ${Math.floor(i / 7) + 1}, coluna ${(i % 7) + 1}: jogador ${v}` : "").filter(Boolean).join("; ") || "Tabuleiro vazio"}`}
           onKeyDown={(e) => {
+            if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+              e.preventDefault();
+              setSelectedColumn(column => nextDiscColumn(board, column, e.key === "ArrowLeft" ? -1 : 1));
+              return;
+            }
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              play(selectedColumn);
+              return;
+            }
             const column = discColumnFromKey(e.key);
             if (column !== null) {
               e.preventDefault();
+              setSelectedColumn(column);
               play(column);
             }
           }}
         >
-          {board.map((v, i) => <span key={i} className={`disc disc-${v} ${winning.includes(i) ? "disc-winning" : ""} ${last === i ? "disc-last" : ""}`}>{v || ""}</span>)}
+          {board.map((v, i) => {
+            const isProjection = projected === i && v === 0;
+            return <span key={i} data-cell={i} data-disc-preview={isProjection ? "true" : undefined}
+              data-player={isProjection ? turn : undefined}
+              className={`disc disc-${v} ${isProjection ? `disc-preview disc-preview-${turn}` : ""} ${winning.includes(i) ? "disc-winning" : ""} ${last === i ? "disc-last" : ""}`}>{v || ""}</span>;
+          })}
         </div>
         <div className="game-actions">
           <button disabled={!history.length} onClick={undo}>Desfazer jogada</button>
@@ -90,7 +118,7 @@ export default function ConnectFour() {
         <p>Forme quatro peças na horizontal, vertical ou diagonal. Coral começa. A última peça tem um contorno; a linha vencedora ganha destaque.</p>
         <p>Jogue com outra pessoa ou enfrente o bot. Fácil escolhe colunas livres; Normal procura vitórias e bloqueios; Difícil planeja cinco jogadas à frente.</p>
         <h3>Toque ou teclado</h3>
-        <p>Toque no número da coluna, pressione 1–7 diretamente ou use Tab e Enter. Contra o bot, desfazer volta seu turno inteiro. Trocar adversário ou dificuldade inicia outra partida.</p>
+        <p>Toque no número da coluna, use as setas ← e → para mover a previsão e pressione Enter ou Espaço para soltar a peça. Teclas 1–7 continuam lançando diretamente. Contra o bot, desfazer volta seu turno inteiro. Trocar adversário ou dificuldade inicia outra partida.</p>
       </aside>
     </div>
   );

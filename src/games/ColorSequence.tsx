@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAutoPause } from "./useAutoPause";
+import "./gameplay.css";
+import "./ColorSequence.css";
 const colors = ["Verde", "Azul", "Rosa", "Amarelo"];
 export default function ColorSequence({
   record,
@@ -15,6 +17,8 @@ export default function ColorSequence({
   const [lit, setLit] = useState(-1),
     [position, setPosition] = useState(0),
     [speed, setSpeed] = useState(700);
+  const [reviewUsed, setReviewUsed] = useState(false);
+  const [expectedColor, setExpectedColor] = useState<string | null>(null);
   const board = useRef<HTMLDivElement>(null);
   const pause = useCallback(
     () => setPhase((p) => (p === "show" || p === "input" ? "paused" : p)),
@@ -47,17 +51,29 @@ export default function ColorSequence({
   function choose(value: number) {
     if (phase !== "input") return;
     if (sequence[position] !== value) {
+      setExpectedColor(colors[sequence[position]]);
       setPhase("done");
       return;
     }
     if (position + 1 === sequence.length) {
       onRecord(sequence.length * 100);
+      setReviewUsed(false);
+      setExpectedColor(null);
       setSequence((s) => [...s, Math.floor(Math.random() * 4)]);
       setPhase("show");
     } else setPosition((p) => p + 1);
   }
   function start() {
+    setReviewUsed(false);
+    setExpectedColor(null);
     setSequence([Math.floor(Math.random() * 4)]);
+    setPosition(0);
+    setPhase("show");
+    board.current?.focus();
+  }
+  function reviewPattern() {
+    if (phase !== "input" || reviewUsed) return;
+    setReviewUsed(true);
     setPosition(0);
     setPhase("show");
     board.current?.focus();
@@ -81,9 +97,18 @@ export default function ColorSequence({
               : phase === "paused"
                 ? "Pausado. Continuar repete a sequência inteira."
                 : phase === "done"
-                  ? "Sequência encerrada. Tente superar seu nível!"
+                  ? `Sequência encerrada. Cor esperada: ${expectedColor ?? "—"}. Tente superar seu nível!`
                   : "Observe as cores e repita na mesma ordem."}
         </p>
+        <div className="sequence-round-hud" aria-label="Progresso da sequência">
+          <div><span>Rodada</span><strong data-sequence-round>{phase === "done" ? "Encerrado" : phase === "input" ? `${position} de ${sequence.length}` : phase === "show" ? "Memorize" : phase === "paused" ? "Em pausa" : "Preparar"}</strong></div>
+          <div><span>Revisão</span><strong data-sequence-review>{reviewUsed ? "Revisão usada" : "Disponível"}</strong></div>
+        </div>
+        <div className="sequence-progress" role="progressbar" aria-label="Resposta da sequência"
+          aria-valuemin={0} aria-valuemax={Math.max(1, sequence.length)} aria-valuenow={phase === "input" ? position : 0}
+          aria-valuetext={phase === "input" ? `${position} de ${sequence.length} cores respondidas` : "Aguardando resposta"}>
+          <span style={{width: `${phase === "input" && sequence.length ? position / sequence.length * 100 : 0}%`}} />
+        </div>
         <div
           ref={board}
           tabIndex={0}
@@ -91,7 +116,7 @@ export default function ColorSequence({
           aria-label="Sequência de cores. Teclas 1 a 4."
           className="sequence-board"
           onKeyDown={(e) => {
-            if (e.target === e.currentTarget && /^[1-4]$/.test(e.key)) {
+            if (!e.altKey && !e.ctrlKey && !e.metaKey && !e.repeat && /^[1-4]$/.test(e.key)) {
               e.preventDefault();
               choose(Number(e.key) - 1);
             }
@@ -125,10 +150,15 @@ export default function ColorSequence({
           >
             Pausar
           </button>
+          <button onClick={reviewPattern} disabled={phase !== "input" || reviewUsed}>
+            Rever sequência
+          </button>
           <button
             onClick={() => {
               setSequence([]);
               setPosition(0);
+              setReviewUsed(false);
+              setExpectedColor(null);
               setPhase("ready");
             }}
           >
@@ -156,6 +186,10 @@ export default function ColorSequence({
             <option value={400}>Rápido</option>
           </select>
         </label>
+        <p>
+          Você pode rever o padrão uma vez a cada nível antes de completar sua resposta.
+          A revisão reinicia a tentativa daquele nível e não altera os recordes.
+        </p>
         <p>
           A partida pausa ao sair da janela. Ao continuar, você vê o padrão
           desde o começo, sem penalidade.

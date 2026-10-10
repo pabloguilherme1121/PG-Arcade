@@ -1,0 +1,73 @@
+/* Eight-piece puzzle visual feedback, loaded with the game. */
+.player .sliding-premium-hud {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 10px;
+  margin: 12px 0;
+}
+.player .sliding-premium-hud > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  border: 1px solid #576e8e;
+  border-radius: 12px;
+  background: linear-gradient(155deg,#233a50,#16253b);
+  padding: 10px 12px;
+}
+.player .sliding-premium-hud span {
+  color: #d6e7f6;
+  font-size: 12px;
+}
+.player .sliding-premium-hud strong {
+  color: #dcffa6;
+  font-size: clamp(18px,4vw,24px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.player .sliding-board {
+  width: min(100%,420px);
+  gap: clamp(5px,1.9vw,9px);
+  margin: 14px 0 18px;
+  border: 2px solid #4b779e;
+  border-radius: 18px;
+  padding: clamp(8px,2vw,13px);
+  background: radial-gradient(circle at top,#22435f,#14243a 75%);
+  box-shadow: inset 0 1px #ffffff30,0 18px 32px #0007;
+}
+.player .sliding-board button {
+  border: 1px solid #f3ffb6a6;
+  background: linear-gradient(145deg,#ecffc3,#c9f65a 65%,#9dcc42);
+  box-shadow: inset 0 3px #ffffff8f,inset 0 -5px #456e286b,0 5px 9px #0007;
+  color: #16210d;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+.player .sliding-board button:disabled {
+  opacity: 1;
+  background: linear-gradient(155deg,#314256,#27364d);
+  border-color: #60718b;
+  box-shadow: inset 0 2px #ffffff10;
+  color: #deeaf3;
+}
+.player .sliding-board button[data-puzzle-last="true"] {
+  outline: 3px solid #fff3af;
+  outline-offset: -5px;
+}
+.player .sliding-board button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+.player .sliding-board span {
+  border: 2px dashed #47688a;
+  border-radius: 12px;
+  background: #101b2a;
+  box-shadow: inset 0 4px 10px #0008;
+}
+html[data-arcade-contrast="true"] .player :is(.sliding-board,.sliding-premium-hud > div) { border-color: #fff; }
+@media(max-width:359px) {
+  .player .sliding-premium-hud { gap: 6px; }
+  .player .sliding-premium-hud > div { padding: 7px; }
+  .player .sliding-premium-hud span { font-size: 11px; }
+}

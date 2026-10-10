@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Flag, Bomb } from "lucide-react";
 import { neighbors, plantMines, revealCells, chordCells } from "../lib/mines";
+import { minesFocusTarget } from "../lib/minesNavigation";
+import "./Minesweeper.css";
 export default function Minesweeper({
   record,
   onRecord,
@@ -15,7 +17,8 @@ export default function Minesweeper({
     [lost, setLost] = useState(false),
     [moves, setMoves] = useState(0);
   const [mineCount, setMineCount] = useState(10);
-  const won = open.length === 64 - mineCount;
+  const safeTotal = 64 - mineCount;
+  const won = open.length === safeTotal;
   function reset() {
     setMines(null); setOpen([]); setFlags([]); setLost(false); setMoves(0); setFlagMode(false);
   }
@@ -66,10 +69,37 @@ export default function Minesweeper({
             Recorde<strong>{record || "—"}</strong>
           </div>
         </div>
+        <div className="mines-premium-hud" aria-label="Andamento do Campo Minado">
+          <div><span>Seguras</span><strong data-mines-safe>{open.length}/{safeTotal}</strong></div>
+          <div><span>Bandeiras livres</span><strong data-mines-remaining>{Math.max(0, mineCount - flags.length)}</strong></div>
+          <div><span>Jogadas</span><strong>{moves}</strong></div>
+        </div>
+        <div className="mines-premium-progress" role="progressbar" aria-label="Casas seguras reveladas"
+          aria-valuemin={0} aria-valuemax={safeTotal} aria-valuenow={open.length}
+          aria-valuetext={`${open.length} de ${safeTotal} casas seguras abertas`}>
+          <span style={{width:`${open.length / safeTotal * 100}%`}} />
+        </div>
         <div
           className="mines-board"
           role="group"
-          aria-label="Campo minado, oito linhas e oito colunas"
+          aria-label="Campo minado, oito linhas e oito colunas. Use as setas para navegar e F para marcar."
+          onKeyDown={(event) => {
+            if (event.altKey || event.ctrlKey || event.metaKey) return;
+            const buttons = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>("button"));
+            const current = buttons.indexOf(event.target as HTMLButtonElement);
+            if (current < 0) return;
+            if (event.key.toLowerCase() === "f") {
+              event.preventDefault();
+              if (!event.repeat) select(current, true);
+              return;
+            }
+            if (!event.key.startsWith("Arrow")) return;
+            const next = minesFocusTarget(current, event.key, buttons.map(button => button.disabled));
+            if (next !== null) {
+              event.preventDefault();
+              buttons[next].focus();
+            }
+          }}
         >
           {Array.from({ length: 64 }, (_, i) => {
             const count = mines
@@ -79,7 +109,7 @@ export default function Minesweeper({
             return (
               <button
                 key={i}
-                className={exposed ? `mine-open mine-${count}` : ""}
+                className={exposed ? `mine-open mine-${count}` : flags.includes(i) ? "mine-flagged" : ""}
                 disabled={lost || won || (exposed && !count)}
                 aria-label={`Casa ${i + 1}: ${lost && mines?.includes(i) ? "mina" : flags.includes(i) ? "marcada" : exposed ? `${count} minas vizinhas` : "fechada"}`}
                 onClick={() => select(i)}
@@ -134,9 +164,10 @@ export default function Minesweeper({
           seguras no modo Normal. A dificuldade define a quantidade de minas.
         </p>
         <p>
-          Ative Modo bandeira para marcar suspeitas no celular ou use o botão
-          direito. Desmarque uma bandeira antes de revelar a casa. Tab e Enter
-          também funcionam.
+          No celular, ative Modo bandeira para marcar suspeitas. No computador, use
+          o botão direito ou a tecla F sobre uma casa; as setas navegam pela grade,
+          pulando casas desabilitadas. Enter revela a casa selecionada.
+          Desmarque uma bandeira antes de revelar a casa.
         </p>
         <p>Toque em um número aberto para revelar as casas vizinhas quando suas bandeiras corresponderem ao número. Bandeiras incorretas podem abrir uma mina.</p>
         <p>

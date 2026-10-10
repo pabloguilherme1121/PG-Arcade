@@ -15,8 +15,9 @@ import { useAutoPause, type PlayStatus } from "./useAutoPause";
 import { revealPlayfield } from "./revealPlayfield";
 import { useReducedMotion } from "../useReducedMotion";
 import { useResponsiveCanvas } from "./useResponsiveCanvas";
-import { paintBlock } from "./canvasMaterials";
+import { paintBlock, paintRock } from "./canvasMaterials";
 import "./actionCollection.css";
+import "./gameplay.css";
 const artwork = (() => {
   const images: Partial<Record<"car" | "ship", HTMLImageElement>> = {};
   if (typeof Image !== "undefined")
@@ -170,7 +171,8 @@ function paint(
         ctx.fillStyle = "#80e7e7";
         ctx.fillRect(-4, -4, 8, 5);
         ctx.restore();
-      } else
+      } else if (o.kind === "rock") paintRock(ctx,o.x,o.y,o.r);
+      else
         circle(
           o.x,
           o.y,
@@ -316,6 +318,7 @@ export default function ActionCollection({
   }, [id, difficulty, mode]);
   useEffect(() => {
     if (status === "running") return;
+    canvas.current?.closest('.action-playfield')?.querySelectorAll('[data-held]').forEach(button=>button.removeAttribute('data-held'));
     const ctx = canvas.current?.getContext("2d");
     if (ctx) paint(ctx, state.current, reducedMotion);
   }, [hud, status, reducedMotion]);
@@ -591,29 +594,37 @@ export default function ActionCollection({
             onPointerDown={(e) => {
               e.preventDefault();
               e.currentTarget.setPointerCapture(e.pointerId);
+              e.currentTarget.dataset.held = "true";
               input.current[key] = true;
               pending.current.add(key);
             }}
-            onPointerUp={() => {
+            onPointerUp={(e) => {
+              delete e.currentTarget.dataset.held;
               input.current[key] = false;
             }}
-            onPointerCancel={() => {
+            onPointerCancel={(e) => {
+              delete e.currentTarget.dataset.held;
               input.current[key] = false;
+              pending.current.delete(key);
             }}
-            onLostPointerCapture={() => {
+            onLostPointerCapture={(e) => {
+              delete e.currentTarget.dataset.held;
               input.current[key] = false;
             }}
             onKeyDown={(e) => {
               if (e.key === " " || e.key === "Enter") {
                 e.preventDefault();
+                e.currentTarget.dataset.held = "true";
                 input.current[key] = true;
                 if (!e.repeat) pending.current.add(key);
               }
             }}
-            onKeyUp={() => {
+            onKeyUp={(e) => {
+              delete e.currentTarget.dataset.held;
               input.current[key] = false;
             }}
-            onBlur={() => {
+            onBlur={(e) => {
+              delete e.currentTarget.dataset.held;
               input.current[key] = false;
             }}
           >
