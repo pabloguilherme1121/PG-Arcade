@@ -29,10 +29,10 @@ test("2048 oferece três voltas na dificuldade fácil sem apagar recordes", asyn
 });
 
 test("2048 limita as voltas na dificuldade normal e desativa no difícil", async ({ page }) => {
-  await page.goto("./#/jogar/2048");
   await page.addInitScript(() => {
     Math.random = () => 0;
   });
+  await page.goto("./#/jogar/2048");
   const board = page.locator(".board2048");
   const undo = page.getByRole("button", { name: "Desfazer", exact: true });
   await board.press("ArrowLeft");
