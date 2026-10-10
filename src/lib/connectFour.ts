@@ -22,6 +22,25 @@ export function discColumnFromKey(key: string): number | null {
   if (!/^[1-7]$/.test(key)) return null;
   return Number(key) - 1;
 }
+/** The exact playable landing cell (42-cell board, row-major, top first). */
+export function discLandingIndex(board: readonly number[], column: number): number | null {
+  if (!Number.isInteger(column) || column < 0 || column > 6 || board[column]) return null;
+  for (let row = 5; row >= 0; row--) {
+    const index = row * 7 + column;
+    if (board[index] === 0) return index;
+  }
+  return null;
+}
+
+/** Move the board's selected column without wrapping or choosing a full column. */
+export function nextDiscColumn(board: readonly number[], from: number, direction: number): number {
+  if (direction !== -1 && direction !== 1) return from;
+  for (let col = from + direction; col >= 0 && col < 7; col += direction) {
+    if (discLandingIndex(board, col) !== null) return col;
+  }
+  return from;
+}
+
 export function winningDiscs(board: number[]): number[] {
   for (const indexes of lines)
     if (board[indexes[0]] && indexes.every((i) => board[i] === board[indexes[0]])) return [...indexes];
