@@ -182,7 +182,7 @@ test("All games offer keyboard focus, specific help, focus mode and safe restart
   await page.setViewportSize({ width: 390, height: 844 });
   for (const { id, name } of games) {
     await page.goto(`./#/jogar/${id}`);
-    await expect(page.locator(".player > h1")).toHaveText(name);
+    await expect(page.locator(".player h1")).toHaveText(name);
     const arena = page.locator("[data-arcade-arena]").first();
     await expect(arena).toBeVisible();
     const motion = await arena.evaluate((element) => {
