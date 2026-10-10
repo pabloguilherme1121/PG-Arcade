@@ -1,0 +1,104 @@
+/* Memory: tactile cards and transparent strategic feedback, scoped to this game. */
+.player .memory-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 10px;
+}
+.player .memory-stats > div {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 11px 5px;
+  border: 1px solid #596a83;
+  border-radius: 12px;
+  background: linear-gradient(150deg, #24324c, #151d34);
+  box-shadow: inset 0 1px #ffffff1a, 0 5px 12px #0003;
+}
+.player .memory-stats span {
+  font-size: clamp(11px, 2.6vw, 13px);
+  color: #d1dcf6;
+}
+.player .memory-stats strong {
+  font-size: clamp(18px, 5.2vw, 26px);
+  line-height: 1.15;
+  color: #e6fca8;
+  font-variant-numeric: tabular-nums;
+}
+.player .memory-progress {
+  height: 9px;
+  margin: 0 0 14px;
+  background: #334561;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.player .memory-progress > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #78b6ea, #ccf889);
+  border-radius: inherit;
+}
+.player .memory-board {
+  aspect-ratio: auto;
+  min-width: 0;
+  gap: clamp(6px, 1.5vw, 10px);
+  padding: clamp(7px, 2vw, 13px);
+  border: 1px solid #576a86;
+  border-radius: 16px;
+  background: linear-gradient(160deg, #1b2a3c, #0e1829);
+  box-shadow: 0 14px 30px #0006, inset 0 1px #ffffff1a;
+}
+.player .memory-board .memory-card {
+  aspect-ratio: 1;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border-radius: clamp(9px, 2vw, 14px);
+  border: 1px solid #7791b7;
+  background: linear-gradient(150deg, #304262, #17283b);
+  box-shadow: inset 0 2px #ffffff2a, inset 0 -4px #0004, 0 4px 8px #0005;
+  color: #e9f2ff;
+}
+.player .memory-board .memory-card.revealed {
+  background: linear-gradient(150deg, #806dc5, #463d85);
+  border-color: #ccbdff;
+  color: #fff4cd;
+  box-shadow: inset 0 2px #ffffff36, 0 4px 14px #0006;
+}
+.player .memory-board .memory-card.matched {
+  background: linear-gradient(155deg, #397452, #174b36);
+  border-color: #a5ecaa;
+  color: #e9ffc3;
+  opacity: 1;
+  box-shadow: inset 0 1px #ffffff41, 0 0 0 2px #70d99922;
+}
+.player .memory-board .memory-card:focus-visible {
+  outline: 3px solid #f6dc84;
+  outline-offset: 1px;
+  z-index: 1;
+}
+.player .memory-board .memory-back {
+  border-radius: 18%;
+  background: linear-gradient(140deg, #294563, #1c3047);
+}
+.player .memory-board .memory-card svg {
+  width: clamp(20px, 7vw, 32px);
+  height: clamp(20px, 7vw, 32px);
+}
+html[data-arcade-contrast="true"] .player .memory-board .memory-card {
+  border: 2px solid #fff;
+}
+html[data-arcade-contrast="true"] .player .memory-progress {
+  outline: 2px solid #fff;
+}
+@media (max-width: 359px) {
+  .player .memory-board {
+    gap: 5px;
+    padding: 6px;
+  }
+  .player .memory-stats > div {
+    padding: 8px 4px;
+  }
+}
