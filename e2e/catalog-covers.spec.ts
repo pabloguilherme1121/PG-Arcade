@@ -21,6 +21,7 @@ for (const width of [320,390,1280]) {
     await expect(page.locator(".player [data-game-cover='xadrez']")).toBeVisible();
     await expect(page.getByRole("button",{name:"Ir para o tabuleiro"})).toBeVisible();
     await expect(page.locator("[data-gameplay-orientation]")).toContainText("Xadrez");
+    await expect(page.locator("[data-player-record]")).toContainText("Primeira partida");
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   });
 }
