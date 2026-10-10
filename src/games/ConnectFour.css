@@ -1,0 +1,83 @@
+/* Connect Four: gravity guidance and tactile tabletop, loaded only with this game. */
+.player .connect-preview-hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 14px;
+  min-width: 0;
+  margin: 0 0 10px;
+  padding: 10px 13px;
+  border: 1px solid #59728d;
+  border-radius: 12px;
+  background: linear-gradient(135deg,#21384f,#131f33);
+  color: #dcecff;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.player .connect-preview-hud strong { color: #ebffb2; font-size: 16px; }
+.player .connect-preview-hud span:last-child { color: #d9eaa6; font-weight: 650; }
+.player .connect-controls { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: clamp(3px,1.1vw,6px); }
+.player .connect-controls button {
+  min-width: 0;
+  min-height: 44px;
+  padding: 6px 0;
+  border: 1px solid #647d97;
+  border-radius: 10px;
+  background: linear-gradient(155deg,#243a50,#182639);
+  color: #e3f4ff;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+.player .connect-controls button[data-connect-selected="true"]:not(:disabled) {
+  border-color: #c9f65a;
+  color: #e8ffb0;
+  box-shadow: inset 0 0 0 1px #c9f65a66, 0 0 0 2px #c9f65a22;
+}
+.player .connect-board {
+  overflow: hidden;
+  min-width: 0;
+  gap: clamp(3px,1.5vw,7px);
+  padding: clamp(8px,1.7vw,13px);
+  border: 2px solid #4d79a4;
+  border-radius: 16px;
+  background: linear-gradient(160deg,#254b73,#142d4d);
+  box-shadow: inset 0 2px #ffffff20, 0 15px 32px #0007;
+}
+.player .connect-board .disc {
+  position: relative;
+  min-width: 0;
+  border: 1px solid #ffffff20;
+  box-shadow: inset 0 3px 5px #0008,0 1px 1px #ffffff12;
+}
+.player .connect-board .disc-1 {
+  background: radial-gradient(circle at 34% 29%,#ffd3c6,#ff957e 56%,#bd5143);
+  box-shadow: inset 0 2px 2px #fff6,inset 0 -4px #6a261b7a,0 2px 4px #0007;
+}
+.player .connect-board .disc-2 {
+  background: radial-gradient(circle at 34% 29%,#eeffbf,#c9f65a 56%,#709a2c);
+  box-shadow: inset 0 2px 2px #fff8,inset 0 -4px #486f2470,0 2px 4px #0007;
+}
+.player .connect-board .disc-preview::before {
+  content: "";
+  position: absolute;
+  inset: 16%;
+  border-radius: inherit;
+  border: 2px dashed currentColor;
+  background: currentColor;
+  opacity: .4;
+}
+.player .connect-board .disc-preview-1 { color: #ff957e; }
+.player .connect-board .disc-preview-2 { color: #c9f65a; }
+.player .connect-board .disc-last { outline: 2px solid #fff; outline-offset: -3px; }
+.player .connect-board .disc-winning {
+  outline: 3px solid #f9e888;
+  outline-offset: -3px;
+  filter: brightness(1.15);
+}
+html[data-arcade-contrast="true"] .player :is(.connect-board,.connect-preview-hud,.connect-controls button) { border-color: #fff; }
+html[data-arcade-contrast="true"] .player .connect-board .disc-preview::before { opacity: .75; background: none; border-style: solid; }
+@media(max-width:359px) {
+  .player .connect-preview-hud { padding: 8px; font-size: 12px; }
+  .player .connect-board { padding: 6px; }
+}
