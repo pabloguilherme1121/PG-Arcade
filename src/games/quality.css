@@ -27,3 +27,11 @@ html[data-arcade-motion="reduced"] [data-arcade-arena] button {transition:none;t
 @media(prefers-reduced-motion:reduce) {[data-arcade-arena] button {transition:none;transform:none!important;}}
 @media(max-width:540px) {.session-mode-cards {margin:0;gap:6px;}.session-mode-cards button {padding:6px 8px;min-height:44px;align-items:center;justify-content:center;text-align:center;}.session-mode-cards span {display:none;}.session-mode-cards strong {font-size:13px;}.session-challenge .session-options {margin-bottom:4px;}}
 .player[data-immersive="true"] .session-mode-cards {display:none;}
+
+/* Clear score hierarchy and durable board materials, without decorative loops. */
+[data-arcade-arena] :is(.new-hud,.action-hud,.lc-stats,.scores){border:1px solid #566c7c;border-radius:12px;background:linear-gradient(125deg,#233342,#12212c);box-shadow:inset 0 1px #ffffff18}
+[data-arcade-arena] :is(.new-hud,.action-hud,.lc-stats,.scores) strong{color:#e8ffd0;text-shadow:0 1px 2px #0005}
+[data-arcade-arena] :is(.new-grid,.lc-grid,.jewel-board,.wordsearch-grid){border-radius:14px;padding:6px}
+[data-arcade-arena] :is(.new-grid,.wordsearch-grid,.sort-board) .selected{outline:2px solid #e8ffbb;outline-offset:-3px;box-shadow:inset 0 0 0 4px #b7e97930}
+[data-arcade-arena] :is(.new-grid,.lc-grid,.wordsearch-grid) button:focus-visible{outline:3px solid #f4ffd5;outline-offset:1px;position:relative;z-index:1}
+html[data-arcade-contrast="true"] [data-arcade-arena] :is(.new-hud,.action-hud,.lc-stats,.scores){background:#000;border-color:#fff}
