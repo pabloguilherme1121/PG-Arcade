@@ -26,3 +26,11 @@ export function calculateCanvasPixels(
   const height=Math.max(1,Math.floor(width*ratio));
   return {width,height};
 }
+
+/**
+ * A held action already starts on pointer down. Releasing the finger must not
+ * enqueue another pulse; discrete shooters can still act on a quick tap.
+ */
+export function shouldQueueCanvasTapAction(gameId: string, hasActionControl: boolean): boolean {
+  return hasActionControl && !["runner", "voo", "jetpack"].includes(gameId);
+}
