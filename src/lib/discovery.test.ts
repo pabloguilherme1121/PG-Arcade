@@ -29,6 +29,22 @@ describe("catalog discovery", () => {
     vi.stubGlobal("sessionStorage", {getItem: () => JSON.stringify({category:"Removed",sort:"unknown",mode:"Online",scroll:-5,focusId:"missing"})});
     expect(readCatalogView()).toEqual(defaultView);
   });
+
+  it("restores smart filters and recommendations after reload, while accepting older sessions", () => {
+    const stored = { ...defaultView, sort: "recomendados", modeFilter: "dupla" as const, scroll: 160, focusId: "xadrez" as const };
+    let raw = JSON.stringify(stored);
+    vi.stubGlobal("sessionStorage", {
+      getItem: () => raw,
+      setItem: (_key: string, value: string) => { raw = value; },
+    });
+    expect(readCatalogView()).toEqual(stored);
+    saveCatalogView({ ...stored, modeFilter: "favoritos" });
+    expect(readCatalogView()).toEqual({ ...stored, modeFilter: "favoritos" });
+    raw = JSON.stringify({ ...stored, modeFilter: "invalid-mode", sort: "invalid-sort" });
+    expect(readCatalogView()).toEqual({ ...stored, modeFilter: "todos", sort: "destaques" });
+    raw = JSON.stringify({ query: "xadrez", category: "Todos", sort: "nome", mode: "Todos" });
+    expect(readCatalogView()).toEqual({ ...defaultView, query: "xadrez", sort: "nome" });
+  });
   it("provides engine-derived sample states for all new board and quiz games", () => {
     for (const g of newGames) {
       if (g.family === "board") expect(boardSnapshots[g.id]?.cells, g.id).toEqual(newBoard(g.id as BoardId,1,1).cells);
