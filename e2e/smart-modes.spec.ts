@@ -74,3 +74,16 @@ test("faixa de modos não ocupa a área do canvas imersivo", async ({ page }) =>
     element => element.getBoundingClientRect().bottom - innerHeight
   )).toBeLessThanOrEqual(1);
 });
+
+test("modo inteligente e ordem personalizada sobrevivem ao reload da partida", async ({ page }) => {
+  await page.goto("./");
+  await page.getByRole("button", { name: "Dupla local", exact: true }).click();
+  await page.getByRole("combobox", { name: "Ordenar jogos" }).selectOption("recomendados");
+  await expect(page.locator(".game-card")).toHaveCount(5);
+  await page.getByRole("link", { name: "Jogar Xadrez", exact: true }).click();
+  await page.reload();
+  await page.getByRole("link", { name: "Voltar aos jogos", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Dupla local", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("combobox", { name: "Ordenar jogos" })).toHaveValue("recomendados");
+  await expect(page.locator(".game-card")).toHaveCount(5);
+});
