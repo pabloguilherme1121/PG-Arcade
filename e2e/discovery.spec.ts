@@ -12,7 +12,7 @@ test("catalog remains usable if the optional preview chunk fails to load", async
   await expect.poll(() => blocked).toBeGreaterThan(0);
   await expect(page.locator(".game-card")).toHaveCount(100);
   await expect(page.locator(".game-card .preview")).toHaveCount(100);
-  await expect(page.locator('[data-preview-game="flood"]')).toBeVisible();
+  await expect(page.locator('.game-card [data-preview-game="flood"]')).toBeVisible();
   expect(pageErrors).toEqual([]);
 });
 test("all catalog previews have visible contents across responsive widths", async ({ page }) => {
@@ -20,13 +20,12 @@ test("all catalog previews have visible contents across responsive widths", asyn
     await page.setViewportSize({width,height:900});
     await page.goto("./");
     await expect(page.locator(".game-card")).toHaveCount(100);
-    const collapsed = await page.locator(".game-card .preview").evaluateAll(previews => previews.filter(p => {
+    await expect.poll(() => page.locator(".game-card .preview").evaluateAll(previews => previews.filter(p => {
       const rect=p.getBoundingClientRect();
       const svg=p.querySelector("svg");
       const svgRect=svg?.getBoundingClientRect();
       return rect.width<20 || rect.height<20 || (svgRect && (svgRect.width<20 || svgRect.height<20)) || !p.children.length;
-    }).length);
-    expect(collapsed, `visible previews at ${width}px`).toBe(0);
+    }).length), { message: `visible previews at ${width}px` }).toBe(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });
@@ -55,7 +54,8 @@ test("combined filters and catalog position survive a game and reload", async ({
   await page.getByLabel("Filtrar por modo").selectOption("Solo");
   await page.getByLabel("Ordenar jogos").selectOption("nome");
   await expect(page.locator(".game-card")).toHaveCount(1);
-  await page.getByRole("link",{name:"Jogar Maré de Cores",exact:true}).scrollIntoViewIfNeeded();
+  await page.getByRole("link",{name:"Jogar Maré de Cores",exact:true}).evaluate(link =>
+    link.scrollIntoView({ block: "center", behavior: "instant" }));
   const scroll=await page.evaluate(() => scrollY);
   await page.getByRole("link",{name:"Jogar Maré de Cores",exact:true}).click();
   await expect(page.locator("[data-arcade-arena] .new-grid")).toBeVisible();
