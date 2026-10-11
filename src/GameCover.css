@@ -183,6 +183,36 @@ html[data-arcade-contrast="true"] :is(.smart-mode-discovery,.smart-mode-chips bu
     background:#345571;border-color:#d6ebf8;
   }
 }
+/* Preserve above-the-fold gameplay on narrow mobile screens. */
+@media (max-width: 600px) {
+  .player-mode-ribbon {
+    flex-wrap: nowrap;
+    gap: 6px;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 29px;
+    margin: 2px 0 3px;
+    padding: 3px 7px;
+    border-radius: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+  }
+  .player-mode-ribbon strong {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-size: 11px;
+  }
+  .player-mode-ribbon span {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-size: 11px;
+    line-height: 1.2;
+    padding: 3px 6px;
+  }
+  .player-mode-ribbon small { display: none; }
+}
 /* A fita de modos é informativa, não deve reduzir a arena em modo imersivo. */
 .player[data-immersive="true"] .player-mode-ribbon{display:none}
 @media (prefers-reduced-motion:reduce){
