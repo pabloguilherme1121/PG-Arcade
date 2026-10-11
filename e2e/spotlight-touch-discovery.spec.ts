@@ -39,6 +39,41 @@ test.describe("descoberta premium mobile", () => {
     });
   }
 
+  test("modos Livre, Sprint e Maratona têm alvos touch e foco visível", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 844 });
+    await page.goto("./#/jogar/2048");
+    const modes = page.getByRole("group", { name: "Escolha seu ritmo de partida" });
+    const buttons = modes.getByRole("button");
+    await expect(buttons).toHaveCount(3);
+    for (const button of await buttons.all()) {
+      await expect(button).toBeVisible();
+      expect(await button.evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
+      expect(await button.evaluate(el => getComputedStyle(el).touchAction)).toBe("manipulation");
+    }
+    const sprint = modes.getByRole("button", { name: /Sprint/ });
+    await page.keyboard.press("Tab");
+    await sprint.focus();
+    await expect(sprint).toBeFocused();
+    const focusOutline = await sprint.evaluate(el => ({
+      style: getComputedStyle(el).outlineStyle,
+      width: Number.parseFloat(getComputedStyle(el).outlineWidth),
+    }));
+    expect(focusOutline.style).not.toBe("none");
+    expect(focusOutline.width).toBeGreaterThanOrEqual(2);
+    await sprint.tap();
+    await expect(sprint).toHaveAttribute("aria-pressed", "true");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+
+  test("movimento reduzido também desliga transições dos modos de sessão", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("./#/jogar/2048");
+    const sprint = page.getByRole("group", { name: "Escolha seu ritmo de partida" })
+      .getByRole("button", { name: /Sprint/ });
+    await expect(sprint).toBeVisible();
+    expect(await sprint.evaluate(el => getComputedStyle(el).transitionDuration)).toMatch(/^0s(?:, 0s)*$/);
+  });
+
   test("capas permanecem uma por jogo e o destaque não carrega os motores", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     const modules: string[] = [];
