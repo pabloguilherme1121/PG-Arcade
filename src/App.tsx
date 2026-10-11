@@ -341,10 +341,10 @@ export default function App() {
   const curated = recommended.map(id => games.find(g => g.id === id)!);
   const visited = games.filter(g => progress.visits[g.id]).sort((a,b) => (b.id === progress.last ? 1 : 0) - (a.id === progress.last ? 1 : 0) || (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)).slice(0,4);
   const saved = games.filter(g => progress.favorites.includes(g.id)).slice(0,4);
-  function renderCard(g: typeof games[number], contextual = false) {
+  function renderCard(g: typeof games[number], contextual = false, priority = false) {
     return <article className={contextual ? "curated-card" : "game-card"} key={g.id} data-game-category={g.category} data-catalog-game={contextual ? undefined : g.id}>
       <a className="game-link" href={`#/jogar/${g.id}`} aria-label={`${contextual ? "Começar com" : "Jogar"} ${g.name}`} onClick={() => rememberCatalog(g.id)}>
-        <GameCover id={g.id} name={g.name} category={g.category} /><span className="game-category">{categoryGroup(g.category)}</span>
+        <GameCover id={g.id} name={g.name} category={g.category} priority={priority} /><span className="game-category">{categoryGroup(g.category)}</span>
         <div className="card-mode-tags" aria-label="Estilos e modos disponíveis">
           {(modeTags(g).filter(tag => tag !== "classico").slice(0, 2).length
             ? modeTags(g).filter(tag => tag !== "classico").slice(0, 2)
@@ -823,7 +823,7 @@ export default function App() {
                 </button>
               </div>
               <div className="game-grid">
-                {sorted.map(g => renderCard(g))}
+                {sorted.map((g, index) => renderCard(g, false, index < 4))}
 
               </div>
               {!visible.length && (
