@@ -81,7 +81,8 @@ test("lunar touchdown feedback survives pause and resets with a new game", async
   const hud = await page.locator(".action-telemetry").textContent();
   await page.clock.runFor(1000);
   await expect(page.locator(".action-telemetry")).toHaveText(hud!);
-  await page.getByRole("button", { name: "Reiniciar jogo", exact: true }).click();
+  await page.getByRole("button", { name: "Ir para o tabuleiro", exact: true }).focus();
+  await page.keyboard.press("Alt+Shift+r");
   await page.getByRole("button", { name: "Confirmar reinício", exact: true }).click();
   await expect(page.locator(".action-telemetry")).not.toContainText("Último toque");
 });

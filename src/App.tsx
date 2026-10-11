@@ -8,7 +8,6 @@ import {
   useCallback,
   useRef,
   useMemo,
-  memo,
   type ReactNode,
   type ComponentType,
 } from "react";
@@ -27,16 +26,15 @@ import {
 import { games, isGameId, type GameId } from "./lib/catalog";
 import {
   newGames,
-  isNewGameId,
   type NewGameId,
   type BoardId,
 } from "./lib/newCatalog";
 import {
   expandedGames,
-  isExpandedId,
   type ExpandedId,
 } from "./lib/expandedCatalog";
 import { gameHelp, recordUnits } from "./lib/gameHelp";
+import GameCover from "./GameCover";
 import {
   readProgress,
   saveProgress,
@@ -44,10 +42,12 @@ import {
   type Progress,
 } from "./lib/progress";
 import { readPreferences, applyPreferences } from "./lib/preferences";
+
+import { searchText, matchesGame, categoryGroup, recommended, gameMode, readCatalogView, saveCatalogView } from "./lib/discovery";
 import { useReducedMotion } from "./useReducedMotion";
 import { useImmersivePlayer } from "./lib/useImmersivePlayer";
-const SessionChallenge = lazy(() => import("./games/SessionChallenge"));
 import "./features/portfolio/components/PortfolioArcade.css";
+const SessionChallenge = lazy(() => import("./games/SessionChallenge"));
 type PlayerProps = { record: number; onRecord: (n: number) => void };
 const collectionPlayers = Object.fromEntries(
   expandedGames.map((g) => [
@@ -140,239 +140,7 @@ function route() {
         ? "progresso"
         : "catalogo";
 }
-function Preview({ id }: { id: GameId }) {
-  if (isNewGameId(id)) {
-    const game = newGames.find((g) => g.id === id)!;
-    const marks = game.family === "board" ? ["♛", "▦", "◇"] : game.family === "quiz" ? ["?", "24", "A"] : ["◉", "↗", "▶"];
-    return (
-      <div className={`preview new-preview preview-${game.family}`} aria-hidden="true">
-        <svg viewBox="0 0 240 150">
-          <rect width="240" height="150" rx="16" fill="#12283c" />
-          <path d="M0 120 L240 30 M0 150 L240 60" stroke="#31516d" strokeWidth="18" />
-          {marks.map((m, i) => (
-            <text key={i} x={45 + i * 75} y={92 - i * 8} fill={i === 1 ? "#c9f65a" : "#79b8ff"} fontSize={35} fontWeight="700" textAnchor="middle">{m}</text>
-          ))}
-        </svg>
-      </div>
-    );
-  }
-  if (isExpandedId(id)) {
-    const family = expandedGames.find((g) => g.id === id)!.family;
-    return (
-      <div
-        className={`preview expanded-preview expanded-${family}`}
-        aria-hidden="true"
-      >
-        <svg viewBox="0 0 240 150">
-          <defs>
-            <linearGradient id={`surface-${id}`} x2="1" y2="1">
-              <stop stopColor="#1e3644" />
-              <stop offset="1" stopColor="#101922" />
-            </linearGradient>
-          </defs>
-          <rect width="240" height="150" rx="16" fill={`url(#surface-${id})`} />
-          {family === "logic" ? (
-            <>
-              {Array.from({ length: 16 }, (_, i) => (
-                <rect
-                  key={i}
-                  x={65 + (i % 4) * 28}
-                  y={22 + Math.floor(i / 4) * 28}
-                  width="24"
-                  height="24"
-                  rx="5"
-                  fill={i % 3 === 0 ? "#c9f65a" : "#466578"}
-                />
-              ))}
-            </>
-          ) : family === "action" ? (
-            <>
-              <path
-                d="M0 120Q60 40 120 80T240 30"
-                stroke="#7ea3bb"
-                strokeWidth="5"
-                fill="none"
-              />
-              <path d="m110 52 22 44-22-8-22 8Z" fill="#c9f65a" />
-              <circle cx="48" cy="39" r="9" fill="#e7a25b" />
-              <circle cx="195" cy="105" r="15" fill="#456d82" />
-            </>
-          ) : (
-            <>
-              <ellipse
-                cx="122"
-                cy="115"
-                rx="46"
-                ry="8"
-                fill="#000"
-                opacity=".4"
-              />
-              <circle cx="120" cy="74" r="38" fill="#dfad6e" />
-              <path
-                d="M82 74h76M120 36v76M93 47q54 27 0 54M147 47q-54 27 0 54"
-                fill="none"
-                stroke="#69472a"
-                strokeWidth="3"
-              />
-            </>
-          )}
-        </svg>
-      </div>
-    );
-  }
-  if (id === "sequencia" || id === "palavra")
-    return (
-      <div
-        className={`preview puzzle-preview preview-${id}`}
-        aria-hidden="true"
-      >
-        {(id === "sequencia"
-          ? ["1", "2", "3", "4"]
-          : ["J", "O", "G", "O", "S"]
-        ).map((v, i) => (
-          <span key={i} className={`pad-${i}`}>
-            {v}
-          </span>
-        ))}
-      </div>
-    );
-  if (
-    [
-      "corrida",
-      "estacionamento",
-      "rally",
-      "coleta",
-      "orbital",
-      "tiro",
-      "estrelas",
-    ].includes(id)
-  )
-    return (
-      <div
-        className={`preview art-preview ${["orbital", "tiro", "estrelas"].includes(id) ? "art-space" : "art-road"}`}
-        aria-hidden="true"
-      >
-        <img
-          src={`${import.meta.env.BASE_URL}art/${["orbital", "tiro", "estrelas"].includes(id) ? "ship" : "car"}.webp`}
-          alt=""
-          loading="lazy"
-        />
-      </div>
-    );
-  if (id === "minas" || id === "reflexo")
-    return (
-      <div className={`preview logic-preview preview-${id}`} aria-hidden="true">
-        {id === "minas" ? (
-          <>
-            <span>1</span>
-            <span>2</span>
-            <span>⚑</span>
-            <span>1</span>
-            <span>3</span>
-            <span>2</span>
-          </>
-        ) : (
-          <strong>AGORA!</strong>
-        )}
-      </div>
-    );
-  if (id === "luzes")
-    return (
-      <div className="preview action-preview preview-luzes" aria-hidden="true">
-        <span>☀</span>
-        <i />
-        <i />
-        <i />
-      </div>
-    );
-  if (id === "liga4" || id === "puzzle")
-    return (
-      <div className={`preview new-preview ${id}`} aria-hidden="true">
-        {Array.from({ length: id === "liga4" ? 28 : 9 }, (_, i) => (
-          <span key={i}>{id === "puzzle" ? (i < 8 ? i + 1 : "") : ""}</span>
-        ))}
-      </div>
-    );
-  if (id === "2048")
-    return (
-      <div className="preview p2048" aria-hidden="true">
-        {[2, 4, 8, 16, 4, 8, 32, 64, 2, 16, 128, 256, 4, 8, 32, 512].map(
-          (n, i) => (
-            <span key={i} className={`tile-${n}`}>
-              {n}
-            </span>
-          ),
-        )}
-      </div>
-    );
-  if (id === "snake")
-    return (
-      <div className="preview psnake" aria-hidden="true">
-        <div className="mini-snake">
-          {Array.from({ length: 7 }, (_, i) => (
-            <i key={i} />
-          ))}
-        </div>
-        <span className="mini-fruit" />
-      </div>
-    );
-  if (id === "memoria")
-    return (
-      <div className="preview pmemory" aria-hidden="true">
-        <span>✦</span>
-        <span>?</span>
-        <span>✦</span>
-        <span>?</span>
-        <span>?</span>
-        <span>♡</span>
-      </div>
-    );
-  if (id === "xadrez" || id === "damas")
-    return (
-      <div className={`preview pboard ${id}`} aria-hidden="true">
-        {Array.from({ length: 32 }, (_, i) => (
-          <span
-            key={i}
-            className={(Math.floor(i / 8) + i) % 2 ? "dark" : "light"}
-          >
-            {id === "xadrez" && i === 12
-              ? "♞"
-              : id === "xadrez" && i === 20
-                ? "♙"
-                : id === "damas" && [9, 11, 13, 18, 20, 22].includes(i)
-                  ? "●"
-                  : ""}
-          </span>
-        ))}
-      </div>
-    );
-  if (id === "futebol")
-    return (
-      <div className="preview pfootball" aria-hidden="true">
-        <div className="goal" />
-        <span>⚽</span>
-      </div>
-    );
-  if (id === "domino")
-    return (
-      <div className="preview pdomino" aria-hidden="true">
-        {[4, 2, 6].map((n, i) => (
-          <div key={i}>
-            <span>{n}</span>
-            <span>{6 - n}</span>
-          </div>
-        ))}
-      </div>
-    );
-  return (
-    <div className="preview pvelha" aria-hidden="true">
-      {["×", "○", "", "", "×", "○", "○", "", "×"].map((s, i) => (
-        <span key={i}>{s}</span>
-      ))}
-    </div>
-  );
-}
-const MemoPreview = memo(Preview);
+
 
 export default function App() {
   const reducedMotion = useReducedMotion();
@@ -383,6 +151,7 @@ export default function App() {
   const [session, setSession] = useState(0);
   const restartDialog = useRef<HTMLDialogElement>(null);
   const quickHelp = useRef<HTMLDetailsElement>(null);
+  const searchInput = useRef<HTMLInputElement>(null);
   function focusBoard() {
     const arenaElement = arena.current?.querySelector<HTMLElement>(
       "[data-arcade-arena]",
@@ -404,9 +173,18 @@ export default function App() {
   }
   const [progress, setProgress] = useState(readProgress);
   const [storageOk, setStorageOk] = useState(true);
-  const [sort, setSort] = useState("destaques");
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("Todos");
+  const [initialView] = useState(readCatalogView);
+  const catalogView = useRef(initialView);
+  const [sort, setSort] = useState(initialView.sort);
+  const [query, setQuery] = useState(initialView.query);
+  const [category, setCategory] = useState(initialView.category);
+  const [mode, setMode] = useState(initialView.mode);
+  catalogView.current = { ...catalogView.current, query, category, sort, mode };
+  const rememberCatalog = (id: GameId) => {
+    catalogView.current = { ...catalogView.current, scroll: window.scrollY, returnPage: page, focusId: id };
+    saveCatalogView(catalogView.current);
+  };
+  useEffect(() => { saveCatalogView(catalogView.current); }, [query, category, sort, mode]);
   const [message, setMessage] = useState("");
   const arena = useRef<HTMLDivElement>(null);
   const { active: fullscreen, viewport, toggle: toggleFullscreen } = useImmersivePlayer(arena, page);
@@ -415,6 +193,11 @@ export default function App() {
   useEffect(() => {
     if (!isGameId(page)) return;
     const shortcuts = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && quickHelp.current?.open && !restartDialog.current?.open) {
+        quickHelp.current.open = false;
+        quickHelp.current.querySelector("summary")?.focus();
+        return;
+      }
       if (
         !event.altKey ||
         !event.shiftKey ||
@@ -475,7 +258,12 @@ export default function App() {
       }));
     if (lastRoute.current !== page) {
       heading.current?.focus();
-      window.scrollTo({ top: 0 });
+      if (isGameId(lastRoute.current) && (page === "catalogo" || page === "favoritos")) {
+        window.requestAnimationFrame(() => {
+          document.querySelector<HTMLElement>(`[data-catalog-game="${catalogView.current.focusId}"] .game-link`)?.focus({ preventScroll: true });
+          window.scrollTo({ top: catalogView.current.scroll, behavior: "instant" });
+        });
+      } else window.scrollTo({ top: 0 });
       lastRoute.current = page;
     }
   }, [page, update]);
@@ -525,31 +313,39 @@ export default function App() {
       "Cópia de progresso preparada. Guarde o arquivo para restaurar em outro navegador.",
     );
   }
+  useEffect(() => {
+    if (isGameId(page) || page === "progresso") return;
+    const onShortcut = (event: KeyboardEvent) => {
+      if (event.key !== "/" || event.altKey || event.ctrlKey || event.metaKey || event.isComposing) return;
+      const target = event.target;
+      if (target instanceof HTMLElement && target.closest('input,textarea,select,[contenteditable="true"]')) return;
+      event.preventDefault();
+      searchInput.current?.focus();
+    };
+    window.addEventListener("keydown", onShortcut);
+    return () => window.removeEventListener("keydown", onShortcut);
+  }, [page]);
   const game = games.find((g) => g.id === page);
   const Player = game ? players[game.id] : null;
-  const normalizedQuery = useMemo(
-    () =>
-      query
-        .trim()
-        .toLocaleLowerCase("pt-BR")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, ""),
-    [query],
-  );
-  const visible = useMemo(
-    () =>
-      games.filter(
-        (g) =>
-          (page !== "favoritos" || progress.favorites.includes(g.id)) &&
-          (category === "Todos" || g.category === category) &&
-          g.name
-            .toLocaleLowerCase("pt-BR")
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .includes(normalizedQuery),
-      ),
-    [page, progress.favorites, category, normalizedQuery],
-  );
+  useEffect(() => { document.title = `${game ? game.name : page === "favoritos" ? "Seus favoritos" : page === "progresso" ? "Meu progresso" : "100 jogos no navegador"} — PG Arcade`; }, [game, page]);
+  const normalizedQuery = useMemo(() => searchText(query), [query]);
+  const visible = useMemo(() => games.filter(g =>
+    (page !== "favoritos" || progress.favorites.includes(g.id)) &&
+    (category === "Todos" || categoryGroup(g.category) === category) &&
+    (mode === "Todos" || (mode === "Dupla local" ? gameMode(g.id).includes("dupla") : gameMode(g.id) === "Solo")) &&
+    matchesGame(g, normalizedQuery)), [page, progress.favorites, category, mode, normalizedQuery]);
+  const curated = recommended.map(id => games.find(g => g.id === id)!);
+  const visited = games.filter(g => progress.visits[g.id]).sort((a,b) => (b.id === progress.last ? 1 : 0) - (a.id === progress.last ? 1 : 0) || (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)).slice(0,4);
+  const saved = games.filter(g => progress.favorites.includes(g.id)).slice(0,4);
+  function renderCard(g: typeof games[number], contextual = false) {
+    return <article className={contextual ? "curated-card" : "game-card"} key={g.id} data-game-category={g.category} data-catalog-game={contextual ? undefined : g.id}>
+      <a className="game-link" href={`#/jogar/${g.id}`} aria-label={`${contextual ? "Começar com" : "Jogar"} ${g.name}`} onClick={() => rememberCatalog(g.id)}>
+        <GameCover id={g.id} name={g.name} category={g.category} /><span className="game-category">{categoryGroup(g.category)}</span><h3>{g.name}</h3><p>{g.description}</p>
+        <span className="game-metadata">{gameMode(g.id)} · Teclado e toque</span>
+      </a>
+      <button className="favorite" onClick={() => favorite(g.id)} aria-label={`${contextual ? "Seleção: " : ""}${progress.favorites.includes(g.id) ? "Remover" : "Adicionar"} ${g.name} ${progress.favorites.includes(g.id) ? "dos" : "aos"} favoritos`} aria-pressed={progress.favorites.includes(g.id)}><Heart size={19} fill={progress.favorites.includes(g.id) ? "currentColor" : "none"}/></button>
+    </article>;
+  }
   const sorted = useMemo(
     () =>
       [...visible].sort((a, b) =>
@@ -608,67 +404,6 @@ export default function App() {
         </a>
       </header>
       <main id="main" tabIndex={-1}>
-        <details
-          className="play-preferences"
-          onToggle={(event) => {
-            if (event.currentTarget.open && game)
-              window.dispatchEvent(new Event("pg-arcade-pause"));
-          }}
-        >
-          <summary>Conforto visual</summary>
-          <div className="preference-options">
-            <label>
-              <input
-                type="checkbox"
-                checked={preferences.contrast}
-                onChange={(e) =>
-                  setPreferences((p) => ({
-                    ...p,
-                    contrast: e.target.checked,
-                  }))
-                }
-              />
-              Alto contraste
-            </label>
-            <label>
-              Movimento
-              <select
-                aria-label="Movimento da interface"
-                value={preferences.motion}
-                onChange={(e) =>
-                  setPreferences((p) => ({
-                    ...p,
-                    motion: e.target.value as "system" | "reduced",
-                  }))
-                }
-              >
-                <option value="system">Preferência do aparelho</option>
-                <option value="reduced">Reduzir efeitos</option>
-              </select>
-            </label>
-            <label>
-              Tamanho dos controles
-              <select
-                aria-label="Tamanho dos controles"
-                value={preferences.controls}
-                onChange={(e) =>
-                  setPreferences((p) => ({
-                    ...p,
-                    controls: e.target.value as "standard" | "large",
-                  }))
-                }
-              >
-                <option value="standard">Padrão</option>
-                <option value="large">Ampliados</option>
-              </select>
-            </label>
-          </div>
-          <p>
-            As opções valem para todos os jogos. Reduzir efeitos mantém os
-            movimentos necessários para jogar; controles ampliados aumentam os
-            principais alvos de toque sem alterar os tabuleiros.
-          </p>
-        </details>
         {!storageOk && (
           <p className="storage-notice" role="status">
             O navegador bloqueou o armazenamento. Seu progresso fica disponível
@@ -685,11 +420,13 @@ export default function App() {
             className={`player ${focusMode ? "focus-game" : ""}`}
           >
             <div className="player-toolbar">
-              <a className="button" href="#/">
+              <a className="button" href={catalogView.current.returnPage === "favoritos" ? "#/favoritos" : "#/"}>
                 <ArrowLeft size={19} />
                 Voltar aos jogos
               </a>
-              <div>
+              <details className="player-utilities" onToggle={(e) => { if (e.currentTarget.open) window.dispatchEvent(new Event("pg-arcade-pause")); }}>
+                <summary>Opções da partida</summary>
+                <div>
                 <button
                   aria-pressed={progress.favorites.includes(game.id)}
                   onClick={() => favorite(game.id)}
@@ -720,19 +457,40 @@ export default function App() {
                     {fullscreen ? "Sair" : "Tela cheia"}
                   </span>
                 </button>
+                <a className="button" href="#conforto" onClick={(e) => { e.preventDefault(); const el=document.getElementById("conforto") as HTMLDetailsElement; el.open=true; el.scrollIntoView({block:"start"}); el.querySelector("summary")?.focus(); }}>Ajustar conforto</a>
+                <button onClick={askRestart} aria-keyshortcuts="Alt+Shift+R">Reiniciar com confirmação</button>
+                </div>
+              </details>
+            </div>
+            <div className="player-coverline">
+              <GameCover id={game.id} name={game.name} category={game.category} compact />
+              <div>
+                <div className="player-kicker" aria-hidden="true">
+                  <span>{game.category}</span>
+                  <span>PG Arcade</span>
+                </div>
+                <h1 ref={heading} tabIndex={-1}>{game.name}</h1>
+                <p className="player-description">{game.description}</p>
               </div>
             </div>
-            <div className="player-kicker" aria-hidden="true">
-              <span>{game.category}</span>
-              <span>PG Arcade</span>
+            <div className="player-gameplay-orientation" data-gameplay-orientation>
+              <strong>Como jogar {game.name}</strong>
+              <span>{gameHelp[game.id].split(". ")[0]}</span>
+              <small data-player-record>{progress.records[game.id] ? `Sua melhor marca: ${progress.records[game.id]} ${recordUnits[game.id] ?? "pontos"}` : "Primeira partida — faça sua marca"}</small>
+              <button
+                type="button"
+                className="gameplay-control-toggle"
+                aria-pressed={preferences.controls === "large"}
+                onClick={() => setPreferences(p => ({
+                  ...p,
+                  controls: p.controls === "large" ? "standard" : "large",
+                }))}
+              >
+                {preferences.controls === "large" ? "Controles padrão" : "Ampliar controles"}
+              </button>
             </div>
-            <h1 ref={heading} tabIndex={-1}>
-              {game.name}
-            </h1>
-            <p className="player-description">{game.description}</p>
-            <p className="feedback" role="status">
-              {message}
-            </p>
+            {message && <p className="feedback" role="status">{message}</p>}
+
             <div className="experience-tools">
               <button onClick={focusBoard} aria-keyshortcuts="Alt+Shift+B">
                 Ir para o tabuleiro
@@ -754,9 +512,7 @@ export default function App() {
               >
                 {focusMode ? "Sair do modo foco" : "Modo foco"}
               </button>
-              <button onClick={askRestart} aria-keyshortcuts="Alt+Shift+R">
-                Reiniciar jogo
-              </button>
+
               <details
                 ref={quickHelp}
                 key={game.id}
@@ -815,8 +571,8 @@ export default function App() {
                 </button>
               </div>
             </dialog>
-            <GameError>
-            <Suspense fallback={<p className="empty" role="status">Carregando sessão…</p>}>
+            <GameError key={`${game.id}-${session}`}>
+            <Suspense fallback={<p className="empty" role="status">Preparando partida…</p>}>
             <SessionChallenge key={`${game.id}-${session}`}>
               <Suspense
                 fallback={
@@ -954,68 +710,34 @@ export default function App() {
           </section>
         ) : (
           <>
-            <section className="hero">
+            {page === "catalogo" && <section className="hero">
               <div>
-                <div className="hero-eyebrow" aria-hidden="true">
-                  <span>PG Arcade</span>
-                  <span>{games.length} jogos</span>
-                </div>
-                <h1 ref={heading} tabIndex={-1}>
-                  {page === "favoritos" ? (
-                    "Suas próximas jogadas."
-                  ) : (
-                    <>
-                      Uma pausa.
-                      <br />
-                      Uma nova jogada.
-                    </>
-                  )}
-                </h1>
-                <p>
-                  {page === "favoritos"
-                    ? "Os jogos que você quer ter sempre por perto."
-                    : `${games.length} jogos. Novos modos, dificuldades e desafios para jogar no seu ritmo.`}
-                </p>
-                <a
-                  href="#catalogo"
-                  className="button primary"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    document.getElementById("catalogo")?.scrollIntoView({
-                      behavior: reducedMotion ? "instant" : "smooth",
-                    });
-                  }}
-                >
-                  {page === "favoritos" ? "Ver favoritos" : "Explorar jogos"}
-                  <ArrowRight size={19} />
-                </a>
-                {progress.last && page === "catalogo" && (
-                  <a className="last-game" href={`#/jogar/${progress.last}`}>
-                    Jogar novamente:{" "}
-                    {games.find((g) => g.id === progress.last)?.name}
-                    <ArrowRight size={15} />
-                  </a>
-                )}
+                <h1 ref={heading} tabIndex={-1}>Escolha. Jogue.<br/>Faça uma pausa.</h1>
+                <p>{games.length} jogos no navegador, sem cadastro. Comece com um clássico ou encontre seu próximo desafio.</p>
+                <a href="#catalogo" className="button primary" onClick={(event) => { event.preventDefault(); document.getElementById("catalogo")?.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth" }); }}>Explorar jogos <ArrowRight size={19}/></a>
+                {progress.last && <a className="last-game" href={`#/jogar/${progress.last}`} onClick={() => rememberCatalog(progress.last!)}>Iniciar nova partida: {games.find(g => g.id === progress.last)?.name}<ArrowRight size={15}/></a>}
               </div>
-              <img
-                src={`${import.meta.env.BASE_URL}assets/arcade-hero.webp`}
-                alt=""
-                width="1707"
-                height="924"
-                fetchPriority="high"
-              />
-            </section>
+              <img src={`${import.meta.env.BASE_URL}assets/arcade-hero.webp`} alt="" width="1707" height="924" fetchPriority="high"/>
+            </section>}
+            {page === "catalogo" && !query && category === "Todos" && mode === "Todos" && <div className="discovery">
+              <section aria-labelledby="start-picks"><div className="section-title"><h2 id="start-picks">Por onde começar</h2><p>Seis maneiras diferentes de jogar.</p></div><div className="curated-grid">{curated.map(g => renderCard(g, true))}</div></section>
+              {visited.length > 0 && <section aria-labelledby="recent-picks"><div className="section-title"><h2 id="recent-picks">Volte a um jogo</h2><p>Nova partida. Visitas e recordes ficam neste navegador.</p></div><div className="personal-grid">{visited.map(g => renderCard(g, true))}</div></section>}
+              {saved.length > 0 && <section aria-labelledby="saved-picks"><div className="section-title"><h2 id="saved-picks">Seus favoritos</h2><a href="#/favoritos">Ver todos</a></div><div className="personal-grid">{saved.map(g => renderCard(g, true))}</div></section>}
+            </div>}
+            {page === "favoritos" && <a className="button favorites-jump" href="#catalogo" onClick={(e) => { e.preventDefault(); document.getElementById("catalogo")?.scrollIntoView({block:"start"}); }}>Ver favoritos</a>}
             <section id="catalogo" className="catalog">
               <div className="catalog-heading">
-                <h2>
+                <h2 ref={page === "favoritos" ? heading : undefined} tabIndex={page === "favoritos" ? -1 : undefined}>
                   {page === "favoritos"
                     ? "Seus favoritos"
-                    : "Escolha sua próxima jogada"}
+                    : "Explore os 100 jogos"}
                 </h2>
                 <label className="search">
                   <Search size={18} />
                   <input
                     aria-label="Buscar jogo"
+                    ref={searchInput}
+                    onKeyDown={(event) => { if (event.key === "Escape") { setQuery(""); event.currentTarget.blur(); } }}
                     placeholder="Buscar jogo"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
@@ -1023,7 +745,7 @@ export default function App() {
                 </label>
               </div>
               <div className="filters" aria-label="Categorias">
-                {["Todos", ...new Set(games.map((g) => g.category))].map(
+                {["Todos", ...new Set(games.map((g) => categoryGroup(g.category)))].map(
                   (c) => (
                     <button
                       aria-pressed={category === c}
@@ -1037,6 +759,7 @@ export default function App() {
                 )}
               </div>
               <div className="catalog-tools">
+                <label>Modo <select aria-label="Filtrar por modo" value={mode} onChange={(e) => setMode(e.target.value)}><option>Todos</option><option value="Solo">Somente solo</option><option>Dupla local</option></select></label>
                 <label>
                   Ordenar{" "}
                   <select
@@ -1050,45 +773,21 @@ export default function App() {
                   </select>
                 </label>
                 <span role="status">{visible.length} jogos encontrados</span>
+                {(query || category !== "Todos" || mode !== "Todos") && <button onClick={() => {setQuery(""); setCategory("Todos"); setMode("Todos");}}>Limpar filtros</button>}
                 <button
                   disabled={!visible.length}
                   onClick={() => {
-                    location.hash = `/jogar/${visible[Math.floor(Math.random() * visible.length)].id}`;
+                    const id = visible[Math.floor(Math.random() * visible.length)].id;
+                    rememberCatalog(id);
+                    location.hash = `/jogar/${id}`;
                   }}
                 >
                   Jogo surpresa
                 </button>
               </div>
               <div className="game-grid">
-                {sorted.map((g) => (
-                  <article className="game-card" key={g.id} data-game-category={g.category}>
-                    <a
-                      className="game-link"
-                      href={`#/jogar/${g.id}`}
-                      aria-label={`Jogar ${g.name}`}
-                    >
-                      <MemoPreview id={g.id} />
-                      <span className="game-category">{g.category}</span>
-                      <h3>{g.name}</h3>
-                      <p>{g.description}</p>
-                    </a>
-                    <button
-                      className="favorite"
-                      onClick={() => favorite(g.id)}
-                      aria-label={`${progress.favorites.includes(g.id) ? "Remover" : "Adicionar"} ${g.name} ${progress.favorites.includes(g.id) ? "dos" : "aos"} favoritos`}
-                      aria-pressed={progress.favorites.includes(g.id)}
-                    >
-                      <Heart
-                        size={19}
-                        fill={
-                          progress.favorites.includes(g.id)
-                            ? "currentColor"
-                            : "none"
-                        }
-                      />
-                    </button>
-                  </article>
-                ))}
+                {sorted.map(g => renderCard(g))}
+
               </div>
               {!visible.length && (
                 <div className="empty">
@@ -1106,6 +805,7 @@ export default function App() {
                     onClick={() => {
                       setQuery("");
                       setCategory("Todos");
+                      setMode("Todos");
                       location.hash = "/";
                     }}
                   >
@@ -1116,6 +816,68 @@ export default function App() {
             </section>
           </>
         )}
+        <details
+          id="conforto"
+          className="play-preferences"
+          onToggle={(event) => {
+            if (event.currentTarget.open && game)
+              window.dispatchEvent(new Event("pg-arcade-pause"));
+          }}
+        >
+          <summary>Conforto visual</summary>
+          <div className="preference-options">
+            <label>
+              <input
+                type="checkbox"
+                checked={preferences.contrast}
+                onChange={(e) =>
+                  setPreferences((p) => ({
+                    ...p,
+                    contrast: e.target.checked,
+                  }))
+                }
+              />
+              Alto contraste
+            </label>
+            <label>
+              Movimento
+              <select
+                aria-label="Movimento da interface"
+                value={preferences.motion}
+                onChange={(e) =>
+                  setPreferences((p) => ({
+                    ...p,
+                    motion: e.target.value as "system" | "reduced",
+                  }))
+                }
+              >
+                <option value="system">Preferência do aparelho</option>
+                <option value="reduced">Reduzir efeitos</option>
+              </select>
+            </label>
+            <label>
+              Tamanho dos controles
+              <select
+                aria-label="Tamanho dos controles"
+                value={preferences.controls}
+                onChange={(e) =>
+                  setPreferences((p) => ({
+                    ...p,
+                    controls: e.target.value as "standard" | "large",
+                  }))
+                }
+              >
+                <option value="standard">Padrão</option>
+                <option value="large">Ampliados</option>
+              </select>
+            </label>
+          </div>
+          <p>
+            As opções valem para todos os jogos. Reduzir efeitos mantém os
+            movimentos necessários para jogar; controles ampliados aumentam os
+            principais alvos de toque sem alterar os tabuleiros.
+          </p>
+        </details>
       </main>
       <footer>
         <a href="#/">PG Arcade</a>

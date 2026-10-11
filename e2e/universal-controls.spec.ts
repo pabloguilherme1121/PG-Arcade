@@ -7,7 +7,7 @@ test("all hundred games provide keyboard help and safe restart without losing re
   await page.addInitScript(() => localStorage.setItem("pg-arcade-progress-v1", JSON.stringify({ records: { snake: 70 }, favorites: ["snake"] })));
   for (const game of games) {
     await page.goto(`./#/jogar/${game.id}`);
-    await expect(page.locator(".player > h1")).toHaveText(game.name);
+    await expect(page.locator(".player h1")).toHaveText(game.name);
     await expect(page.locator("[data-arcade-arena]").first()).toBeVisible();
     await page.getByRole("button", { name: "Ir para o tabuleiro", exact: true }).focus();
     await page.keyboard.press("Alt+Shift+h");
@@ -22,7 +22,7 @@ test("all hundred games provide keyboard help and safe restart without losing re
       { message: `${game.id}: keyboard shortcut must focus the game arena`, timeout: 2000 },
     ).toBe(true);
     // Word games deliberately ignore shortcuts while the answer field has focus.
-    await page.getByRole("button", { name: "Reiniciar jogo", exact: true }).focus();
+    await page.getByRole("button", { name: "Ir para o tabuleiro", exact: true }).focus();
     await page.keyboard.press("Alt+Shift+r");
     await expect(page.getByRole("dialog")).toBeVisible();
     await page.getByRole("button", { name: "Continuar esta partida", exact: true }).click();

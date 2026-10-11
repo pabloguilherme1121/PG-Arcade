@@ -15,7 +15,7 @@ for (const [id, name] of criticalGames) {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(`./#/jogar/${id}`);
 
-    await expect(page.locator(".player > h1")).toHaveText(name);
+    await expect(page.locator(".player h1")).toHaveText(name);
     await expect(page.locator("[data-arcade-arena]").first()).toBeVisible();
 
     const audit = await new AxeBuilder({ page })

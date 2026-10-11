@@ -68,10 +68,16 @@ test("desktop immersive canvas uses the available stage without horizontal overf
   await page.addInitScript(() => { Element.prototype.requestFullscreen = () => Promise.reject(Error("viewport")); });
   for (const id of ["breakout", "rhythm"]) {
     await page.goto(`./#/jogar/${id}`);
+    if (await page.locator(".player-utilities:not([open]) summary").count()) {
+    await page.locator(".player-utilities summary").click();
+  }
     await page.getByRole("button", { name: "Tela cheia", exact: true }).click();
     await expect(page.locator(".player")).toHaveAttribute("data-immersive", "true");
     await expect.poll(() => page.locator("canvas").evaluate((element) => element.getBoundingClientRect().width)).toBeGreaterThanOrEqual(560);
-    expect(await page.locator("canvas").evaluate((element) => element.getBoundingClientRect().bottom)).toBeLessThanOrEqual(900);
+    // CSS subpixel rounding may exceed the viewport edge by a fraction of a pixel.
+    expect(await page.locator("canvas").evaluate((element) =>
+      element.getBoundingClientRect().bottom - window.innerHeight
+    )).toBeLessThanOrEqual(1);
     expect(await page.locator(".player").evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
     await expect(page.getByRole("button", { name: "Sair da tela cheia", exact: true })).toBeVisible();
   }
