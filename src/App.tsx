@@ -34,6 +34,7 @@ import {
   type ExpandedId,
 } from "./lib/expandedCatalog";
 import { gameHelp, recordUnits } from "./lib/gameHelp";
+import { discoveryFilters,filterByMode,modeTags,modeLabel,recommendGames,type DiscoveryFilter } from "./lib/smartDiscovery";
 import GameCover from "./GameCover";
 import {
   readProgress,
@@ -174,6 +175,7 @@ export default function App() {
   const [sort, setSort] = useState("destaques");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("Todos");
+  const [modeFilter, setModeFilter] = useState<DiscoveryFilter>("todos");
   const [message, setMessage] = useState("");
   const arena = useRef<HTMLDivElement>(null);
   const { active: fullscreen, viewport, toggle: toggleFullscreen } = useImmersivePlayer(arena, page);
@@ -311,6 +313,7 @@ export default function App() {
   }, [page]);
   const game = games.find((g) => g.id === page);
   const Player = game ? players[game.id] : null;
+  const activeModes = game ? modeTags(game).filter(tag=>tag!=="classico") : [];
   const normalizedQuery = useMemo(
     () =>
       query
@@ -321,29 +324,30 @@ export default function App() {
     [query],
   );
   const visible = useMemo(
-    () =>
-      games.filter(
-        (g) =>
-          (page !== "favoritos" || progress.favorites.includes(g.id)) &&
-          (category === "Todos" || g.category === category) &&
-          g.name
-            .toLocaleLowerCase("pt-BR")
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .includes(normalizedQuery),
-      ),
-    [page, progress.favorites, category, normalizedQuery],
+    () => filterByMode(
+      games.filter((g) =>
+        (page !== "favoritos" || progress.favorites.includes(g.id)) &&
+        (category === "Todos" || g.category === category) &&
+        g.name
+          .toLocaleLowerCase("pt-BR")
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g,"")
+          .includes(normalizedQuery),
+      ), modeFilter, progress.visits, progress.favorites,
+    ),
+    [page,progress.favorites,progress.visits,category,modeFilter,normalizedQuery],
   );
   const sorted = useMemo(
-    () =>
-      [...visible].sort((a, b) =>
-        sort === "nome"
-          ? a.name.localeCompare(b.name, "pt-BR")
-          : sort === "visitados"
-            ? (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)
+    () => sort==="recomendados"
+      ? recommendGames(visible,progress)
+      : [...visible].sort((a,b) =>
+        sort==="nome"
+          ? a.name.localeCompare(b.name,"pt-BR")
+          : sort==="visitados"
+            ? (progress.visits[b.id]||0)-(progress.visits[a.id]||0)
             : 0,
       ),
-    [visible, sort, progress.visits],
+    [visible,sort,progress],
   );
   return (
     <div className={`${focusMode && game ? "app-focus" : ""} ${fullscreen && game ? "app-immersive" : ""}`}>
@@ -516,6 +520,13 @@ export default function App() {
                 <h1 ref={heading} tabIndex={-1}>{game.name}</h1>
                 <p className="player-description">{game.description}</p>
               </div>
+            </div>
+            <div className="player-mode-ribbon" data-player-modes aria-label="Estilos e modos disponíveis">
+              <strong>Estilos e modos</strong>
+              {(activeModes.length?activeModes:["classico" as const]).map(tag=>(
+                <span key={tag} data-mode={tag}>{modeLabel(tag)}</span>
+              ))}
+              <small>Ajuste as opções disponíveis dentro do jogo.</small>
             </div>
             <div className="player-gameplay-orientation" data-gameplay-orientation>
               <strong>Como jogar {game.name}</strong>
@@ -841,6 +852,22 @@ export default function App() {
                   ),
                 )}
               </div>
+              <div className="smart-mode-discovery" aria-label="Encontre seu modo de jogar">
+                <div className="smart-mode-header">
+                  <strong>Seu estilo de jogo</strong>
+                  <span>Explore modos reais ou continue descobrindo. As sugestões usam apenas o histórico neste navegador.</span>
+                </div>
+                <div className="smart-mode-chips" role="group" aria-label="Filtros por modo">
+                  {discoveryFilters.map(filter=>(
+                    <button key={filter.id} type="button"
+                      aria-pressed={modeFilter===filter.id}
+                      className={modeFilter===filter.id?"selected":""}
+                      onClick={()=>setModeFilter(filter.id)}>
+                      {filter.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
               <div className="catalog-tools">
                 <label>
                   Ordenar{" "}
@@ -852,9 +879,13 @@ export default function App() {
                     <option value="destaques">Destaques</option>
                     <option value="nome">Nome A–Z</option>
                     <option value="visitados">Mais jogados por você</option>
+                    <option value="recomendados">Para você (neste aparelho)</option>
                   </select>
                 </label>
                 <span role="status">{visible.length} jogos encontrados</span>
+                <button type="button" className="clear-smart-filters" onClick={()=>{
+                  setQuery("");setCategory("Todos");setModeFilter("todos");setSort("destaques");
+                }}>Zerar filtros</button>
                 <button
                   disabled={!visible.length}
                   onClick={() => {
@@ -874,6 +905,13 @@ export default function App() {
                     >
                       <GameCover id={g.id} name={g.name} category={g.category} />
                       <span className="game-category">{g.category}</span>
+                      <div className="card-mode-tags" aria-label="Estilos e modos disponíveis">
+                        {(modeTags(g).filter(tag=>tag!=="classico").slice(0,2).length
+                          ? modeTags(g).filter(tag=>tag!=="classico").slice(0,2)
+                          : ["classico" as const]).map(tag=>(
+                          <span key={tag} data-game-mode={tag}>{modeLabel(tag)}</span>
+                        ))}
+                      </div>
                       <h3>{g.name}</h3>
                       <p>{g.description}</p>
                     </a>
@@ -911,6 +949,8 @@ export default function App() {
                     onClick={() => {
                       setQuery("");
                       setCategory("Todos");
+                      setModeFilter("todos");
+                      setSort("destaques");
                       location.hash = "/";
                     }}
                   >
