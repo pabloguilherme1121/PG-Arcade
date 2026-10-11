@@ -17,7 +17,7 @@ import { useReducedMotion } from "../useReducedMotion";
 import { useResponsiveCanvas } from "./useResponsiveCanvas";
 import { paintBlock, paintRock } from "./canvasMaterials";
 import { identifyTouchGesture, shouldQueueCanvasTapAction } from "../lib/touchCanvas";
-import { renderBetween } from "../lib/renderInterpolation";
+import { actionPresentation } from "../lib/actionPresentation";
 import "./actionCollection.css";
 import "./gameplay.css";
 const artwork = (() => {
@@ -353,7 +353,7 @@ export default function ActionCollection({
         accumulator -= 1 / 60;
       }
       const ctx = canvas.current?.getContext("2d");
-      if (ctx) paint(ctx, reducedMotion || state.current.done ? state.current : renderBetween(previousState,state.current,accumulator*60), reducedMotion);
+      if (ctx) paint(ctx, reducedMotion || state.current.done ? state.current : actionPresentation(previousState,state.current,accumulator*60), reducedMotion);
       if (now - lastHud > 100) {
         setHud(state.current);
         lastHud = now;
