@@ -16,8 +16,24 @@ async function drag(page:Page,from:Locator,to:Locator,browserName:string,cancel=
     await client.send('Input.dispatchTouchEvent',{type:cancel?'touchCancel':'touchEnd',touchPoints:[]});
     await client.detach();
   } else {
-    await page.mouse.move(start.x,start.y);await page.mouse.down();await page.mouse.move(end.x,end.y,{steps:4});
-    if(cancel) await from.locator('..').dispatchEvent('pointercancel',{pointerId:1});
+    // Firefox/WebKit use a real mouse pointer here. Capture its actual ID:
+    // Firefox does not guarantee that a mouse pointer is numbered 1.
+    if (cancel) {
+      await page.evaluate(() => document.addEventListener('pointerdown', event => {
+        document.documentElement.dataset.gesturePointerId = String(event.pointerId);
+      }, { once: true, capture: true }));
+    }
+    await page.mouse.move(start.x,start.y);
+    await page.mouse.down();
+    await page.mouse.move(end.x,end.y,{steps:4});
+    if (cancel) {
+      const id = await page.locator('html').getAttribute('data-gesture-pointer-id');
+      expect(id).not.toBeNull();
+      // Send cancel to the captured button, not to an unrelated container.
+      await from.dispatchEvent('pointercancel', {
+        bubbles: true, pointerId: Number(id), pointerType: 'mouse', isPrimary: true,
+      });
+    }
     await page.mouse.up();
   }
 }
