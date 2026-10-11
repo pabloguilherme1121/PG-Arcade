@@ -146,115 +146,23 @@ html[data-arcade-motion="reduced"] .game-card {transition:none; transform:none;}
   .game-card:hover {transform:none;}
 }
 
-/* Personalised modes use local progress only. No timers or continuous effects. */
-.smart-mode-discovery {
-  min-width:0;
-  margin:12px 0 16px;
-  border:1px solid #4e6a85;
-  border-radius:15px;
-  padding:12px;
-  background:linear-gradient(135deg,#20344b,#142133 72%);
-  box-shadow:inset 0 1px #ffffff1a,0 8px 20px #0003;
-}
-.smart-mode-header {
-  display:flex;
-  gap:4px 15px;
-  align-items:baseline;
-  flex-wrap:wrap;
-  margin-bottom:11px;
-}
-.smart-mode-header strong {
-  font-size:15px;
-  color:#d9ffa6;
-}
-.smart-mode-header span {
-  flex:1 1 230px;
-  font-size:12px;
-  color:#d1e1f4;
-}
-.smart-mode-chips {
-  display:flex;
-  flex-wrap:wrap;
-  gap:7px;
-  min-width:0;
-}
-.smart-mode-chips button {
-  min-width:0;
-  min-height:44px;
-  padding:8px 12px;
-  color:#ecf5ff;
-  background:#243a53;
-  border:1px solid #7597ae;
-  border-radius:999px;
-  font-size:clamp(11px,2.8vw,13px);
-  font-weight:650;
-  transition:border-color .16s,background-color .16s,transform .16s;
-}
-.smart-mode-chips button:hover { border-color:#c4e4fc; }
-.smart-mode-chips button[aria-pressed="true"] {
-  border-color:#d7ff9f;
-  background:#456344;
-  color:#f8ffe4;
-  box-shadow:inset 0 1px #ffffff35;
-}
-.clear-smart-filters {
-  min-height:44px;
-  border:1px solid #869cac;
-  background:#1b3041;
-}
-.card-mode-tags,.player-mode-ribbon {
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  gap:6px;
-  min-width:0;
-}
-.card-mode-tags { padding:5px 0 0; }
-.card-mode-tags span {
-  font-size:11px;
-  font-weight:700;
-  border:1px solid #69859a;
-  border-radius:7px;
-  padding:4px 7px;
-  background:#283e50;
-  color:#e8f4fd;
-}
-.player-mode-ribbon {
-  padding:10px 12px;
-  margin:5px 0 10px;
-  border:1px solid #68849b;
-  border-radius:11px;
-  background:linear-gradient(120deg,#233b52,#17283e);
-}
-.player-mode-ribbon strong {
-  color:#d8ff9b;
-  font-size:12px;
-  letter-spacing:.02em;
-}
-.player-mode-ribbon span {
-  padding:6px 10px;
-  border-radius:99px;
-  background:#324d5b;
-  border:1px solid #abcad8;
-  color:#f8fdff;
-  font-weight:750;
-  font-size:12px;
-}
-.player-mode-ribbon small {
-  flex:1 1 180px;
-  color:#d0e0ef;
-  font-size:12px;
-}
-@media(hover:hover) and (prefers-reduced-motion:no-preference) {
-  .smart-mode-chips button:hover { transform:translateY(-2px); }
-}
-@media(max-width:540px) {
-  .smart-mode-discovery {padding:10px;}
-  .smart-mode-chips {gap:6px;}
-  .smart-mode-chips button {padding:7px 10px;}
-}
-@media(prefers-reduced-motion:reduce) {
-  .smart-mode-chips button {transition:none;transform:none;}
-}
-html[data-arcade-motion="reduced"] .smart-mode-chips button {transition:none;transform:none;}
-html[data-arcade-contrast="true"] :is(.smart-mode-discovery,.smart-mode-chips button,.player-mode-ribbon,.card-mode-tags span) {border-color:#fff;}
+/* Modos pessoais: filtros rápidos, contraste e interação touch, sem rastreio. */
+.smart-mode-discovery{margin:12px 0;padding:12px;min-width:0;border:1px solid #6485a1;border-radius:14px;background:linear-gradient(135deg,#20384f,#142238)}
+.smart-mode-header{display:flex;flex-wrap:wrap;gap:5px 12px;margin-bottom:10px}
+.smart-mode-header strong{color:#dcffab}
+.smart-mode-header span{flex:1 1 200px;color:#d5e4f2;font-size:12px}
+.smart-mode-chips{display:flex;flex-wrap:wrap;gap:6px;min-width:0}
+.smart-mode-chips button{min-height:44px;min-width:0;padding:7px 11px;border:1px solid #819bad;border-radius:99px;background:#263e54;color:#f0f9ff;font-size:12px;font-weight:700;transition:background-color .16s,border-color .16s}
+.smart-mode-chips button[aria-pressed="true"]{background:#405f47;border-color:#ddffab;color:#fff}
+.clear-smart-filters{min-height:44px;border-color:#90a8b5}
+.card-mode-tags,.player-mode-ribbon{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-width:0}
+.card-mode-tags{padding-top:5px}
+.card-mode-tags span{padding:4px 7px;font-size:11px;border:1px solid #7898ae;border-radius:7px;background:#2c4458;color:#f0f7ff}
+.player-mode-ribbon{padding:10px;margin:5px 0 10px;border:1px solid #7497b1;border-radius:10px;background:#1d334a}
+.player-mode-ribbon strong{font-size:12px;color:#e0ffad}
+.player-mode-ribbon span{padding:6px 10px;border:1px solid #bbd5db;border-radius:99px;background:#355269;font-size:12px;font-weight:700}
+.player-mode-ribbon small{flex:1 1 170px;color:#d8e4f2}
+@media(max-width:540px){.smart-mode-discovery{padding:9px}.smart-mode-chips button{padding:7px 9px}}
+@media(prefers-reduced-motion:reduce){.smart-mode-chips button{transition:none}}
+html[data-arcade-motion="reduced"] .smart-mode-chips button{transition:none}
+html[data-arcade-contrast="true"] :is(.smart-mode-discovery,.smart-mode-chips button,.player-mode-ribbon,.card-mode-tags span){border-color:#fff}
