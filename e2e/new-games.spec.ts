@@ -206,8 +206,11 @@ for (const game of newGames)
   });
 
 test("eight queens saves a genuine victory, undo cannot award it twice, and reload preserves record", async ({
-  page,
+  page, browserName,
 }) => {
+  // Safari/WebKit can spend extra time laying out the 8x8 board on CI.
+  // Keep the real win, undo and reload assertions; extend only this slow flow.
+  if (browserName === "webkit") test.slow();
   await page.goto("./#/jogar/queens");
   const game = page.locator('[data-new-game="queens"]');
   for (const [r, c] of [0, 4, 7, 5, 2, 6, 1, 3].entries())

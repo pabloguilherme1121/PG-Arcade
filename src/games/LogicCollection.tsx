@@ -16,6 +16,7 @@ import {
   fleet,
 } from "../lib/logicCollection";
 import "./logicCollection.css";
+import { useBoardGesture } from './useBoardGesture';
 type Props = { gameId: string; record: number; onRecord: (n: number) => void };
 type Settings = {
   difficulty: number;
@@ -34,6 +35,7 @@ function Grid({
   onMove?: (delta: number) => void;
 }) {
   const [focus, setFocus] = useState(0);
+  const swipe=useBoardGesture((_from,_to,gesture)=>onMove?.({left:-1,right:1,up:-size,down:size}[gesture as 'left'|'right'|'up'|'down']),!!onMove);
   function keys(e: KeyboardEvent<HTMLDivElement>) {
     if (e.altKey || e.ctrlKey || e.metaKey || e.isDefaultPrevented()) return;
     const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
@@ -73,7 +75,10 @@ function Grid({
   return (
     <div
       className="lc-grid"
+      {...swipe}
       data-expanded-board
+      role="group"
+      aria-label={onMove ? 'Tabuleiro: deslize para mover ou use as setas e os controles de direção.' : undefined}
       tabIndex={0}
       style={{ "--lc-size": size } as CSSProperties}
       onKeyDown={keys}

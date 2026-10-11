@@ -1,5 +1,10 @@
-const CACHE = "pg-arcade-2026-10-07-v5";
+const CACHE = "pg-arcade-2026-10-11-v6";
 const ROOT = new URL("./", self.registration.scope).href;
+// Catalog artwork is deliberately isolated from runtime game code. Browsing all
+// covers must never evict a lazily loaded game required for offline play.
+const COVER_CACHE = "pg-arcade-covers-2026-10-11-v1";
+const COVER_PATH = new URL("covers/", ROOT).pathname;
+const MAX_COVER_ENTRIES = 100;
 const MAX_RUNTIME_ENTRIES = 120;
 const pendingShells = new Set();
 let shellGeneration = 0;
@@ -77,6 +82,22 @@ async function cacheRuntimeResponse(request, response) {
   await trimRuntimeCache(cache);
 }
 
+// Catalog artwork has its own bounded cache, separate from HTML, JS and CSS.
+async function trimCoverCache(cache) {
+  const requests = await cache.keys();
+  if (requests.length <= MAX_COVER_ENTRIES) return;
+  await Promise.all(
+    requests.slice(0, requests.length - MAX_COVER_ENTRIES)
+      .map(request => cache.delete(request)),
+  );
+}
+
+async function cacheCoverResponse(request, response) {
+  const cache = await caches.open(COVER_CACHE);
+  await cache.put(request, response);
+  await trimCoverCache(cache);
+}
+
 self.addEventListener("install", (event) => {
   event.waitUntil(installShell());
 });
@@ -88,7 +109,8 @@ self.addEventListener("activate", (event) => {
       .then((keys) =>
         Promise.all(
           keys
-            .filter((key) => key.startsWith("pg-arcade-") && key !== CACHE)
+            .filter((key) =>
+              key.startsWith("pg-arcade-") && key !== CACHE && key !== COVER_CACHE)
             .map((key) => caches.delete(key)),
         ),
       )
@@ -100,6 +122,23 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
   if (request.method !== "GET" || !url.href.startsWith(ROOT)) return;
+
+  if (url.pathname.startsWith(COVER_PATH) && url.pathname.endsWith(".svg")) {
+    event.respondWith(
+      caches.open(COVER_CACHE).then(async cache => {
+        const cached = await cache.match(request);
+        if (cached) return cached;
+        const response = await fetch(request);
+        if (response.ok) {
+          event.waitUntil(
+            cacheCoverResponse(request, response.clone()).catch(() => undefined),
+          );
+        }
+        return response;
+      }),
+    );
+    return;
+  }
 
   if (request.mode === "navigate") {
     event.respondWith(

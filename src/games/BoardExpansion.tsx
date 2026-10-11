@@ -19,6 +19,7 @@ import {
 import { newGames, type BoardId } from "../lib/newCatalog";
 import { useAutoPause } from "./useAutoPause";
 import "./newGames.css";
+import { useBoardGesture } from './useBoardGesture';
 type Props = { gameId: BoardId; record: number; onRecord: (n: number) => void };
 const pipeChars: Record<number, string> = {
   3: "┌",
@@ -75,6 +76,11 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
   const n = state.size,
     numeric = ["latin", "sky", "futoshiki", "magic", "takuzu"].includes(gameId),
     sort = ["colorsort", "watersort"].includes(gameId);
+  const swipe=useBoardGesture((from,_to,gesture)=>{
+    if(from<0 || state.cells[from]<=0 || paused || state.status!=='playing') return;
+    const selected=boardClick(state,from);
+    update(slideVehicle(selected,{left:-1,right:1,up:-n,down:n}[gesture as 'left'|'right'|'up'|'down']));
+  },gameId==='slideblock' && !paused && state.status==='playing',undefined,(index)=>update(boardClick(state,index)));
   const path = gameId === "laser" ? laserPath(state.cells, n) : null;
   function cellText(i: number, v: number): string {
     if (gameId === "pipes") return pipeChars[v] || "·";
@@ -279,6 +285,7 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
           ) : (
             <div
               className={`new-grid grid-${gameId}`}
+              {...swipe}
               role="group"
               aria-label={`Tabuleiro de ${meta.name}`}
               style={{ "--new-size": n } as CSSProperties}
@@ -287,6 +294,7 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
                 <button
                   key={i}
                   data-index={i}
+                  data-drag-index={i}
                   data-value={v}
                   tabIndex={
                     i ===
@@ -327,6 +335,8 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
         <aside className="new-instructions">
           <h2>Como jogar</h2>
           <p>{meta.help}</p>
+          {['gomoku','hex','ataxx'].includes(gameId) && <p className="new-tip">Peças verdes: você (X). Peças azuis: adversário (O).</p>}
+          {gameId==='slideblock' && <p className="new-tip">Deslize sobre um veículo para movê-lo uma casa. Toque para selecionar ou use as setas.</p>}
           {gameId === "sky" && (
             <div className="clue-panel">
               <p>Topo: {state.aux.slice(0, 4).join(" · ")}</p>

@@ -10,6 +10,7 @@ import { newGames, type NewGameId } from "../lib/newCatalog";
 import { quizAward } from "../lib/quizScoring";
 import { useAutoPause } from "./useAutoPause";
 import "./newGames.css";
+import { useBoardGesture } from './useBoardGesture';
 export default function QuizExpansion({
   gameId,
   record,
@@ -37,6 +38,7 @@ export default function QuizExpansion({
     lock = useRef(false),
     q = question(gameId, difficulty, seed, round),
     meta = newGames.find((g) => g.id === gameId)!;
+  const [dragPath,setDragPath]=useState<number[]>([]);
   const special = ["hangman", "wordsearch"].includes(gameId),
     done = special ? answered : round === 9 && answered;
   const pause = useCallback(() => setPaused(true), []);
@@ -125,7 +127,11 @@ export default function QuizExpansion({
       setStart(i);
       return;
     }
-    const result = selectedWord(q.grid, start, i);
+    selectSegment(start,i);
+  }
+  function selectSegment(from:number,to:number) {
+    if(paused || answered || from<0 || to<0) return;
+    const result = selectedWord(q.grid, from, to);
     setStart(-1);
     const word = q.words.includes(result.word)
       ? result.word
@@ -150,6 +156,7 @@ export default function QuizExpansion({
     setMessage("Escolha sua resposta.");
     lock.current = false;
   }
+  const swipe=useBoardGesture((from,to)=>selectSegment(from,to),!paused && !answered,(from,to)=>setDragPath(from<0?[]:selectedWord(q.grid,from,to).path),selectCell);
   return (
     <section className="new-game quiz-expansion" data-new-game={gameId}>
       <div className="new-options">
@@ -244,16 +251,18 @@ export default function QuizExpansion({
               ) : gameId === "wordsearch" ? (
                 <div
                   className="wordsearch-grid"
+                  {...swipe}
                   role="group"
-                  aria-label="Grade de letras"
+                  aria-label="Grade de letras: arraste sobre uma palavra ou toque na primeira e na última letra."
                 >
                   {q.grid.map((x, i) => (
                     <button
                       key={i}
+                      data-drag-index={i}
                       className={
                         marks.includes(i)
                           ? "found"
-                          : start === i
+                          : start === i || dragPath.includes(i)
                             ? "selected"
                             : ""
                       }
@@ -365,7 +374,8 @@ export default function QuizExpansion({
         <aside className="new-instructions">
           <h2>Como jogar</h2>
           <p>{meta.help}</p>
-          <p className="clue-panel">{q.hint}</p>
+          {gameId==='wordsearch' && <p>Arraste da primeira até a última letra para marcar uma palavra. Você também pode tocar nas duas pontas.</p>}
+          {q.hint && <p className="clue-panel">{q.hint}</p>}
           <div className="new-actions">
             <button onClick={() => setPaused((p) => !p)}>
               {paused ? "Continuar" : "Pausar"}

@@ -13,6 +13,8 @@ import { revealPlayfield } from "./revealPlayfield";
 import { useResponsiveCanvas } from "./useResponsiveCanvas";
 import { paintAtmosphere, paintBlock, paintOrb, paintRoadCar, paintFrog, paintRock } from "./canvasMaterials";
 import { identifyTouchGesture } from "../lib/touchCanvas";
+import { renderBetween } from "../lib/renderInterpolation";
+import { useReducedMotion } from "../useReducedMotion";
 import "./newGames.css";
 import "./gameplay.css";
 export function paintMotion(c: CanvasRenderingContext2D, s: MotionState) {
@@ -203,6 +205,7 @@ export default function MotionExpansion({
   record: number;
   onRecord: (n: number) => void;
 }) {
+  const reducedMotion = useReducedMotion();
   const [difficulty, setDifficulty] = useState(1),
     [seed, setSeed] = useState(1),
     [hud, setHud] = useState(() => newMotion(gameId));
@@ -250,6 +253,7 @@ export default function MotionExpansion({
       last = performance.now(),
       accumulator = 0,
       renderTime = 0;
+    let previousState=state.current;
     const animate = (now: number) => {
       const elapsed = Math.min((now - last) / 1000, 0.15);
       last = now;
@@ -268,6 +272,7 @@ export default function MotionExpansion({
                 ? pending.current.lane
                 : input.current.lane,
           };
+          previousState=state.current;
           state.current = motionStep(state.current, keys, 1 / 60);
           pending.current = emptyInput();
           accumulator -= 1 / 60;
@@ -277,19 +282,19 @@ export default function MotionExpansion({
         }
       } else accumulator = 0;
       const context = canvas.current?.getContext("2d");
-      if (context) paintMotion(context, state.current);
+      if (context) paintMotion(context, reducedMotion || state.current.status !== "running" ? state.current : renderBetween(previousState,state.current,accumulator*60));
       if (now - renderTime > 90) {
         setHud(state.current);
         renderTime = now;
       }
-      frame = requestAnimationFrame(animate);
+      if (state.current.status === "running") frame = requestAnimationFrame(animate);
     };
     frame = requestAnimationFrame(animate);
     return () => {
       cancelAnimationFrame(frame);
       input.current = emptyInput();
     };
-  }, [hud.status]);
+  }, [hud.status,reducedMotion]);
   function reset(d = difficulty, next = seed) {
     setDifficulty(d);
     setSeed(next);

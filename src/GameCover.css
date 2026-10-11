@@ -1,4 +1,21 @@
 /* Lightweight shared artwork for all 100 catalog entries. */
+.mode-count {display:inline-grid;place-items:center;min-width:22px;margin-left:5px;padding:2px 5px;border-radius:99px;background:#08152266;font-size:11px;font-variant-numeric:tabular-nums;}
+.game-cover .cover-mechanic {
+  position: absolute;
+  inset: 9% 6% 16%;
+  width: 88%;
+  height: 75%;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 6px 16px #0005;
+  transition: transform 180ms ease;
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  html:not([data-arcade-motion="reduced"]) .game-card:hover .cover-mechanic {transform: scale(1.04);}
+}
+@media (prefers-reduced-motion: reduce) {
+  .game-cover .cover-mechanic {transition: none;}
+}
 .preview.game-cover {
   display: block;
   width: 100%;
