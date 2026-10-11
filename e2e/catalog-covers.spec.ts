@@ -14,6 +14,8 @@ for (const width of [320,390,1280]) {
     expect(new Set(ids).size).toBe(games.length);
     const fingerprints=await covers.evaluateAll(nodes=>nodes.map(node=>node.getAttribute("data-cover-fingerprint")));
     expect(new Set(fingerprints).size).toBe(games.length);
+    const gradients=await page.locator("[data-game-cover] linearGradient").evaluateAll(nodes=>nodes.map(node=>node.id));
+    expect(new Set(gradients).size).toBe(gradients.length);
     await expect(cards.first().locator(".game-cover svg")).toBeVisible();
     await expect(page.getByRole("link",{name:"Jogar Xadrez"})).toBeVisible();
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);

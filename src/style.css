@@ -2573,48 +2573,6 @@ html[data-arcade-contrast="true"] .experience-tools {
 [data-game-category="Casuais"] { --game-accent: #f1a8ff; }
 [data-game-category="Memória"] { --game-accent: #ffd479; }
 
-.hero-eyebrow,
-.player-kicker {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: fit-content;
-  margin-bottom: 16px;
-  color: #d8dee8;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.hero-eyebrow span,
-.player-kicker span {
-  display: inline-flex;
-  align-items: center;
-  min-height: 26px;
-  padding: 5px 9px;
-  border: 1px solid rgba(137, 151, 170, 0.32);
-  border-radius: 999px;
-  background: rgba(8, 12, 18, 0.46);
-}
-
-.hero-eyebrow span:first-child {
-  color: var(--lime);
-  border-color: rgba(201, 246, 90, 0.28);
-  background: rgba(201, 246, 90, 0.07);
-}
-
-.player-kicker {
-  justify-content: center;
-  margin: 24px auto 0;
-}
-
-.player-kicker span:first-child {
-  color: var(--game-accent);
-  border-color: color-mix(in srgb, var(--game-accent) 35%, transparent);
-  background: color-mix(in srgb, var(--game-accent) 9%, transparent);
-}
-
 .game-card::before {
   content: "";
   position: absolute;
@@ -2658,25 +2616,6 @@ html[data-arcade-contrast="true"] .experience-tools {
 }
 
 @media (max-width: 700px) {
-  .hero-eyebrow {
-    margin-bottom: 13px;
-  }
-
-  .hero-eyebrow,
-  .player-kicker {
-    gap: 6px;
-    font-size: 9px;
-  }
-
-  .hero-eyebrow span,
-  .player-kicker span {
-    min-height: 23px;
-    padding: 4px 7px;
-  }
-
-  .player-kicker {
-    margin-top: 20px;
-  }
 
   .game-card::before {
     left: 14px;

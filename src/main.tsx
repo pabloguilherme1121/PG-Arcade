@@ -1,10 +1,10 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
-import "@fontsource-variable/inter";
-import "@fontsource-variable/space-grotesk";
+
+import "./fonts.css";
 import "./style.css";
 import "./premium.css";
-import "./studio.css";
+import "./discovery.css";
 
 createRoot(document.getElementById("root")!).render(<App />);
 

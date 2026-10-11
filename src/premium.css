@@ -142,16 +142,6 @@ nav a[aria-current]::after {
   z-index: 1;
 }
 
-.hero-eyebrow,
-.player-kicker {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.hero-eyebrow span,
-.player-kicker span,
 .game-category {
   border: 1px solid rgba(255,255,255,.10);
   border-radius: 999px;
@@ -162,18 +152,6 @@ nav a[aria-current]::after {
   letter-spacing: .09em;
   line-height: 1;
   text-transform: uppercase;
-}
-
-.hero-eyebrow span,
-.player-kicker span {
-  padding: 8px 10px;
-}
-
-.hero-eyebrow span:last-child,
-.player-kicker span:first-child {
-  color: var(--pg-accent);
-  border-color: rgba(201,246,90,.18);
-  background: rgba(201,246,90,.07);
 }
 
 .hero h1,
@@ -414,12 +392,6 @@ nav a[aria-current]::after {
 .player-toolbar > div {
   flex-wrap: wrap;
   justify-content: flex-end;
-}
-
-.player-kicker {
-  display: flex;
-  justify-content: center;
-  margin-top: 28px;
 }
 
 .player h1 {
@@ -664,10 +636,6 @@ footer {
 
   .player-toolbar > div {
     gap: 7px;
-  }
-
-  .player-kicker {
-    margin-top: 20px;
   }
 
   .player h1 {
