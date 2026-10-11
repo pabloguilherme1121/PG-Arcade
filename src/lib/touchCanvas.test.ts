@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { identifyTouchGesture, calculateCanvasPixels } from "./touchCanvas";
+import { identifyTouchGesture, calculateCanvasPixels, shouldQueueCanvasTapAction } from "./touchCanvas";
 
 describe("mobile touch gestures", () => {
   it("distinguishes taps from directional swipes without a screen-edge wrap", () => {
@@ -35,5 +35,19 @@ describe("high-density canvas render budget", () => {
   it("falls back safely for invalid ratios and tiny widths", () => {
     expect(calculateCanvasPixels(0,480,360,NaN)).toEqual({width:1,height:1});
     expect(calculateCanvasPixels(320,0,360,3)).toEqual({width:1,height:1});
+  });
+});
+
+describe("touch press-and-hold contract", () => {
+  it("does not fire another action when a held command is released", () => {
+    for (const game of ["runner", "voo", "jetpack"]) {
+      expect(shouldQueueCanvasTapAction(game, true)).toBe(false);
+    }
+  });
+  it("retains discrete canvas tap actions only for games with an action button", () => {
+    expect(shouldQueueCanvasTapAction("invasores", true)).toBe(true);
+    expect(shouldQueueCanvasTapAction("asteroides", true)).toBe(true);
+    expect(shouldQueueCanvasTapAction("breakout", false)).toBe(false);
+    expect(shouldQueueCanvasTapAction("pong", false)).toBe(false);
   });
 });
