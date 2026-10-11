@@ -180,13 +180,13 @@ export default function App() {
   const [query, setQuery] = useState(initialView.query);
   const [category, setCategory] = useState(initialView.category);
   const [mode, setMode] = useState(initialView.mode);
-  const [modeFilter, setModeFilter] = useState<DiscoveryFilter>("todos");
-  catalogView.current = { ...catalogView.current, query, category, sort, mode };
+  const [modeFilter, setModeFilter] = useState<DiscoveryFilter>(initialView.modeFilter);
+  catalogView.current = { ...catalogView.current, query, category, sort, mode, modeFilter };
   const rememberCatalog = (id: GameId) => {
     catalogView.current = { ...catalogView.current, scroll: window.scrollY, returnPage: page, focusId: id };
     saveCatalogView(catalogView.current);
   };
-  useEffect(() => { saveCatalogView(catalogView.current); }, [query, category, sort, mode]);
+  useEffect(() => { saveCatalogView(catalogView.current); }, [query, category, sort, mode, modeFilter]);
   const [message, setMessage] = useState("");
   const arena = useRef<HTMLDivElement>(null);
   const { active: fullscreen, viewport, toggle: toggleFullscreen } = useImmersivePlayer(arena, page);
