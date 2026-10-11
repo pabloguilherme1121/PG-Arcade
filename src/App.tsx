@@ -332,12 +332,17 @@ export default function App() {
   const activeModes = game ? modeTags(game).filter(tag => tag !== "classico") : [];
   useEffect(() => { document.title = `${game ? game.name : page === "favoritos" ? "Seus favoritos" : page === "progresso" ? "Meu progresso" : "100 jogos no navegador"} — PG Arcade`; }, [game, page]);
   const normalizedQuery = useMemo(() => searchText(query), [query]);
-  const visible = useMemo(() => filterByMode(games.filter(g =>
+  const matchingGames = useMemo(() => games.filter(g =>
     (page !== "favoritos" || progress.favorites.includes(g.id)) &&
     (category === "Todos" || categoryGroup(g.category) === category) &&
     (mode === "Todos" || (mode === "Dupla local" ? gameMode(g.id).includes("dupla") : gameMode(g.id) === "Solo")) &&
-    matchesGame(g, normalizedQuery)), modeFilter, progress.visits, progress.favorites),
-    [page, progress.favorites, progress.visits, category, mode, modeFilter, normalizedQuery]);
+    matchesGame(g, normalizedQuery)),
+    [page, progress.favorites, category, mode, normalizedQuery]);
+  const visible = useMemo(() => filterByMode(matchingGames, modeFilter, progress.visits, progress.favorites),
+    [matchingGames, modeFilter, progress.visits, progress.favorites]);
+  const modeCounts = useMemo(() => Object.fromEntries(discoveryFilters.map(filter =>
+    [filter.id, filterByMode(matchingGames, filter.id, progress.visits, progress.favorites).length])),
+    [matchingGames, progress.visits, progress.favorites]);
   const curated = recommended.map(id => games.find(g => g.id === id)!);
   const visited = games.filter(g => progress.visits[g.id]).sort((a,b) => (b.id === progress.last ? 1 : 0) - (a.id === progress.last ? 1 : 0) || (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)).slice(0,4);
   const saved = games.filter(g => progress.favorites.includes(g.id)).slice(0,4);
@@ -730,6 +735,7 @@ export default function App() {
           <>
             {page === "catalogo" && <section className="hero">
               <div>
+                <span className="hero-eyebrow">PG ARCADE / SUA PRÓXIMA PARTIDA</span>
                 <h1 ref={heading} tabIndex={-1}>Escolha. Jogue.<br/>Faça uma pausa.</h1>
                 <p>{games.length} jogos no navegador, sem cadastro. Comece com um clássico ou encontre seu próximo desafio.</p>
                 <a href="#catalogo" className="button primary" onClick={(event) => { event.preventDefault(); document.getElementById("catalogo")?.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth" }); }}>Explorar jogos <ArrowRight size={19}/></a>
@@ -738,6 +744,18 @@ export default function App() {
               <img src={`${import.meta.env.BASE_URL}assets/arcade-hero.webp`} alt="" width="1707" height="924" fetchPriority="high"/>
             </section>}
             {page === "catalogo" && !query && category === "Todos" && mode === "Todos" && <div className="discovery">
+              <section className="experience-selection" aria-labelledby="experience-title">
+                <div className="section-title"><h2 id="experience-title">Qual é o seu ritmo?</h2><p>Encontre uma partida para este momento.</p></div>
+                <div className="experience-grid">{([
+                  ['rapido','01','Um desafio rápido','Reflexos e partidas curtas.'],
+                  ['sem-pressa','02','Tempo para pensar','Tabuleiros e quebra-cabeças no seu ritmo.'],
+                  ['dupla','03','Um duelo a dois','Divida este aparelho e jogue em dupla.'],
+                ] as const).map(([filter,number,title,description]) => <button type="button" key={filter} data-experience={filter} aria-pressed={modeFilter===filter} onClick={() => {
+                  setQuery('');setCategory('Todos');setMode('Todos');setModeFilter(filter);
+                  document.getElementById('catalogo')?.scrollIntoView({behavior:reducedMotion?'instant':'smooth'});
+                  document.querySelector<HTMLInputElement>('#catalogo input')?.focus({preventScroll:true});
+                }}><span className="experience-number" aria-hidden="true">{number}</span><strong>{title}</strong><span>{description}</span><span className="experience-action">Explorar <ArrowRight size={16} aria-hidden="true"/></span></button>)}</div>
+              </section>
               <section aria-labelledby="start-picks"><div className="section-title"><h2 id="start-picks">Por onde começar</h2><p>Seis maneiras diferentes de jogar.</p></div><div className="curated-grid">{curated.map(g => renderCard(g, true))}</div></section>
               {visited.length > 0 && <section aria-labelledby="recent-picks"><div className="section-title"><h2 id="recent-picks">Volte a um jogo</h2><p>Nova partida. Visitas e recordes ficam neste navegador.</p></div><div className="personal-grid">{visited.map(g => renderCard(g, true))}</div></section>}
               {saved.length > 0 && <section aria-labelledby="saved-picks"><div className="section-title"><h2 id="saved-picks">Seus favoritos</h2><a href="#/favoritos">Ver todos</a></div><div className="personal-grid">{saved.map(g => renderCard(g, true))}</div></section>}
@@ -786,11 +804,7 @@ export default function App() {
                     <button key={filter.id} type="button"
                       aria-pressed={modeFilter === filter.id}
                       className={modeFilter === filter.id ? "selected" : ""}
-                      onClick={() => setModeFilter(filter.id)}>{filter.label} <span className="mode-count" aria-hidden="true">{filterByMode(games.filter(g =>
-                        (page !== "favoritos" || progress.favorites.includes(g.id)) &&
-                        (category === "Todos" || categoryGroup(g.category) === category) &&
-                        (mode === "Todos" || (mode === "Dupla local" ? gameMode(g.id).includes("dupla") : gameMode(g.id) === "Solo")) &&
-                        matchesGame(g, normalizedQuery)), filter.id, progress.visits, progress.favorites).length}</span></button>
+                      onClick={() => setModeFilter(filter.id)}>{filter.label} <span className="mode-count" aria-hidden="true">{modeCounts[filter.id]}</span></button>
                   ))}
                 </div>
               </div>
