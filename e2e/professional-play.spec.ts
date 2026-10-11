@@ -174,8 +174,13 @@ test("visual preferences persist across games and still work with storage blocke
     Storage.prototype.setItem = () => { throw Error("blocked"); };
   });
   await page.reload();
-  await page.getByText("Conforto visual", { exact: true }).click();
-  await page.getByLabel("Alto contraste", { exact: true }).check();
+  const comfort = page.locator("#conforto");
+  // A restored <details> may already be open: clicking its summary would close it.
+  if (!(await comfort.evaluate((element: HTMLDetailsElement) => element.open))) {
+    await comfort.locator("summary").click();
+  }
+  await expect(comfort).toHaveAttribute("open", "");
+  await comfort.getByLabel("Alto contraste", { exact: true }).check();
   await expect(page.locator("html")).toHaveAttribute("data-arcade-contrast", "true");
 });
 

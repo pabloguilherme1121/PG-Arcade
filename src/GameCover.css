@@ -145,3 +145,77 @@ html[data-arcade-motion="reduced"] .game-card {transition:none; transform:none;}
   .game-card {transition:none;}
   .game-card:hover {transform:none;}
 }
+
+/* Modos pessoais: filtros rápidos, contraste e interação touch, sem rastreio. */
+.smart-mode-discovery{margin:12px 0;padding:12px;min-width:0;border:1px solid #6485a1;border-radius:14px;background:#1d3247}
+.smart-mode-header{display:flex;flex-wrap:wrap;gap:5px 12px;margin-bottom:10px}
+.smart-mode-header strong{color:#dcffab}
+.smart-mode-header span{flex:1 1 200px;color:#d5e4f2;font-size:12px}
+.smart-mode-chips{display:flex;flex-wrap:nowrap;gap:8px;min-width:0;max-width:100%;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scroll-padding-inline:8px;padding:3px 3px 10px;scrollbar-width:thin;scrollbar-color:#789db4 transparent}
+.smart-mode-chips button{flex:0 0 auto;scroll-snap-align:start;min-height:44px;padding:7px 11px;border:1px solid #819bad;border-radius:99px;background:#263e54;color:#f0f9ff;font-size:12px;font-weight:700}
+.smart-mode-chips button[aria-pressed="true"]{background:#405f47;border-color:#ddffab;color:#fff}
+.card-mode-tags,.player-mode-ribbon{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-width:0}
+.card-mode-tags span{padding:4px 7px;font-size:11px;border:1px solid #7898ae;border-radius:7px;background:#2c4458;color:#f0f7ff}
+.player-mode-ribbon{padding:10px;margin:5px 0 10px;border:1px solid #7497b1;border-radius:10px;background:#1d334a}
+.player-mode-ribbon strong{font-size:12px;color:#e0ffad}
+.player-mode-ribbon span{padding:6px 10px;border:1px solid #bbd5db;border-radius:99px;background:#355269;font-size:12px;font-weight:700}
+html[data-arcade-contrast="true"] :is(.smart-mode-discovery,.smart-mode-chips button,.player-mode-ribbon,.card-mode-tags span){border-color:#fff}
+
+/* Refinamento mobile: chips navegáveis sem alargar a página, estados claros e foco real. */
+.smart-mode-discovery{
+  background:linear-gradient(145deg,#1b3045 0%,#20394b 62%,#243e46 100%);
+  box-shadow:inset 0 1px 0 #ffffff18,0 12px 26px #0002;
+}
+.smart-mode-chips button{
+  box-shadow:inset 0 1px 0 #ffffff16;
+  transition:background-color 140ms ease,border-color 140ms ease,box-shadow 140ms ease;
+}
+.smart-mode-chips button[aria-pressed="true"]{
+  box-shadow:inset 0 1px 0 #ffffff35,0 0 0 1px #d7ff9f55;
+}
+.smart-mode-chips button:focus-visible,
+.clear-smart-filters:focus-visible{
+  outline:3px solid #d7ff9f;
+  outline-offset:2px;
+}
+@media (hover:hover) {
+  .smart-mode-chips button:not([aria-pressed="true"]):hover{
+    background:#345571;border-color:#d6ebf8;
+  }
+}
+/* Preserve above-the-fold gameplay on narrow mobile screens. */
+@media (max-width: 600px) {
+  .player-mode-ribbon {
+    flex-wrap: nowrap;
+    gap: 6px;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 29px;
+    margin: 2px 0 3px;
+    padding: 3px 7px;
+    border-radius: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+  }
+  .player-mode-ribbon strong {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-size: 11px;
+  }
+  .player-mode-ribbon span {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-size: 11px;
+    line-height: 1.2;
+    padding: 3px 6px;
+  }
+  .player-mode-ribbon small { display: none; }
+}
+/* A fita de modos é informativa, não deve reduzir a arena em modo imersivo. */
+.player[data-immersive="true"] .player-mode-ribbon{display:none}
+@media (prefers-reduced-motion:reduce){
+  .smart-mode-chips button{transition:none}
+}
+html[data-arcade-motion="reduced"] .smart-mode-chips button{transition:none}
