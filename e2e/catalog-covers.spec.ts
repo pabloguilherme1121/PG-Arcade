@@ -29,8 +29,11 @@ for (const width of [320,390,1280]) {
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   });
 }
-test("Busca pelo teclado e ajuda acessível sem interferir nos controles do jogo", async ({page})=>{
+test("Busca pelo teclado e ajuda acessível sem interferir nos controles do jogo", async ({page,browserName})=>{
+  // This flow also snapshots the complete SVG catalog in Firefox before opening a game.
+  if (browserName === "firefox") test.setTimeout(60_000);
   await page.goto("./");
+  await expect(page.getByRole("textbox",{name:"Buscar jogo"})).toBeVisible();
   await page.keyboard.press("/");
   await expect(page.getByRole("textbox",{name:"Buscar jogo"})).toBeFocused();
   await page.keyboard.type("memoria");
@@ -38,8 +41,10 @@ test("Busca pelo teclado e ajuda acessível sem interferir nos controles do jogo
   await page.keyboard.press("Escape");
   await expect(page.getByRole("textbox",{name:"Buscar jogo"})).toHaveValue("");
   await page.goto("./#/jogar/snake");
+  await expect(page.locator(".snake-board")).toBeVisible();
   const help=page.locator(".experience-tools details");
-  await help.locator("summary").click();
+  await help.locator("summary").focus();
+  await page.keyboard.press("Enter");
   await expect(help).toHaveAttribute("open","");
   await page.keyboard.press("Escape");
   await expect(help).not.toHaveAttribute("open","");
