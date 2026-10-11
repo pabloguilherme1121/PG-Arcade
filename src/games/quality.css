@@ -25,5 +25,5 @@
 html[data-arcade-contrast="true"] :is(.session-mode-cards button,[data-arcade-arena] button) {border-color:#fff;}
 html[data-arcade-motion="reduced"] [data-arcade-arena] button {transition:none;transform:none!important;}
 @media(prefers-reduced-motion:reduce) {[data-arcade-arena] button {transition:none;transform:none!important;}}
-@media(max-width:540px) {.session-mode-cards button {padding:10px 8px;min-height:64px;}.session-mode-cards span {display:none;}.session-mode-cards strong {font-size:13px;}}
+@media(max-width:540px) {.session-mode-cards {margin:0;gap:6px;}.session-mode-cards button {padding:6px 8px;min-height:44px;align-items:center;justify-content:center;text-align:center;}.session-mode-cards span {display:none;}.session-mode-cards strong {font-size:13px;}}
 .player[data-immersive="true"] .session-mode-cards {display:none;}
