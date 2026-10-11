@@ -240,3 +240,43 @@
     backdrop-filter: blur(4px);
   }
 }
+
+
+/* Direct touch steering, readable held states and lightweight cinematic glass. */
+.action-canvas-wrap canvas {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: crosshair;
+}
+.action-controls button[data-held="true"] {
+  border-color: #e8ffb2;
+  background: linear-gradient(160deg,#547965,#274e4b);
+  box-shadow: inset 0 3px 8px #0008, 0 0 0 2px #c9f65a44;
+}
+@media (pointer: coarse) {
+  .action-controls button { min-height: 56px; }
+  .action-canvas-wrap canvas { cursor: default; }
+}
+html[data-arcade-contrast="true"] .action-controls button[data-held="true"] { outline: 2px solid #fff; }
+@media (prefers-reduced-motion: reduce) {
+  .action-controls button { transition: none; }
+}
+
+/* HUD legível e botões táteis com feedback consistente, sem custo de animação contínua. */
+.action-hud{
+  border:1px solid #607f91;
+  background:linear-gradient(135deg,#152c3e,#203d48);
+  box-shadow:inset 0 1px 0 #ffffff14,0 7px 18px #0002;
+}
+.action-controls button:focus-visible,
+.action-footer button:focus-visible,
+.action-settings select:focus-visible{
+  outline:3px solid #d7ffa0;
+  outline-offset:2px;
+}
+.action-controls button[data-held="true"]{filter:saturate(1.15);transform:translateY(1px)}
+@media (prefers-reduced-motion:reduce){
+  .action-controls button[data-held="true"]{transform:none}
+}
+html[data-arcade-motion="reduced"] .action-controls button[data-held="true"]{transform:none}
