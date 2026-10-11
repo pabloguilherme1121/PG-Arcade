@@ -332,12 +332,17 @@ export default function App() {
   const activeModes = game ? modeTags(game).filter(tag => tag !== "classico") : [];
   useEffect(() => { document.title = `${game ? game.name : page === "favoritos" ? "Seus favoritos" : page === "progresso" ? "Meu progresso" : "100 jogos no navegador"} — PG Arcade`; }, [game, page]);
   const normalizedQuery = useMemo(() => searchText(query), [query]);
-  const visible = useMemo(() => filterByMode(games.filter(g =>
+  const matchingGames = useMemo(() => games.filter(g =>
     (page !== "favoritos" || progress.favorites.includes(g.id)) &&
     (category === "Todos" || categoryGroup(g.category) === category) &&
     (mode === "Todos" || (mode === "Dupla local" ? gameMode(g.id).includes("dupla") : gameMode(g.id) === "Solo")) &&
-    matchesGame(g, normalizedQuery)), modeFilter, progress.visits, progress.favorites),
-    [page, progress.favorites, progress.visits, category, mode, modeFilter, normalizedQuery]);
+    matchesGame(g, normalizedQuery)),
+    [page, progress.favorites, category, mode, normalizedQuery]);
+  const visible = useMemo(() => filterByMode(matchingGames, modeFilter, progress.visits, progress.favorites),
+    [matchingGames, modeFilter, progress.visits, progress.favorites]);
+  const modeCounts = useMemo(() => Object.fromEntries(discoveryFilters.map(filter =>
+    [filter.id, filterByMode(matchingGames, filter.id, progress.visits, progress.favorites).length])),
+    [matchingGames, progress.visits, progress.favorites]);
   const curated = recommended.map(id => games.find(g => g.id === id)!);
   const visited = games.filter(g => progress.visits[g.id]).sort((a,b) => (b.id === progress.last ? 1 : 0) - (a.id === progress.last ? 1 : 0) || (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)).slice(0,4);
   const saved = games.filter(g => progress.favorites.includes(g.id)).slice(0,4);
@@ -799,11 +804,7 @@ export default function App() {
                     <button key={filter.id} type="button"
                       aria-pressed={modeFilter === filter.id}
                       className={modeFilter === filter.id ? "selected" : ""}
-                      onClick={() => setModeFilter(filter.id)}>{filter.label} <span className="mode-count" aria-hidden="true">{filterByMode(games.filter(g =>
-                        (page !== "favoritos" || progress.favorites.includes(g.id)) &&
-                        (category === "Todos" || categoryGroup(g.category) === category) &&
-                        (mode === "Todos" || (mode === "Dupla local" ? gameMode(g.id).includes("dupla") : gameMode(g.id) === "Solo")) &&
-                        matchesGame(g, normalizedQuery)), filter.id, progress.visits, progress.favorites).length}</span></button>
+                      onClick={() => setModeFilter(filter.id)}>{filter.label} <span className="mode-count" aria-hidden="true">{modeCounts[filter.id]}</span></button>
                   ))}
                 </div>
               </div>

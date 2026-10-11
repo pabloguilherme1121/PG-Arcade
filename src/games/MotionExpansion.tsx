@@ -15,6 +15,7 @@ import { paintAtmosphere, paintBlock, paintOrb, paintRoadCar, paintFrog, paintRo
 import { identifyTouchGesture } from "../lib/touchCanvas";
 import { renderBetween } from "../lib/renderInterpolation";
 import { useReducedMotion } from "../useReducedMotion";
+import { createCanvasFeedback } from './canvasFeedback';
 import "./newGames.css";
 import "./gameplay.css";
 export function paintMotion(c: CanvasRenderingContext2D, s: MotionState) {
@@ -254,6 +255,7 @@ export default function MotionExpansion({
       accumulator = 0,
       renderTime = 0;
     let previousState=state.current;
+    const feedback=createCanvasFeedback(state.current);
     const animate = (now: number) => {
       const elapsed = Math.min((now - last) / 1000, 0.15);
       last = now;
@@ -283,6 +285,7 @@ export default function MotionExpansion({
       } else accumulator = 0;
       const context = canvas.current?.getContext("2d");
       if (context) paintMotion(context, reducedMotion || state.current.status !== "running" ? state.current : renderBetween(previousState,state.current,accumulator*60));
+      if (context) feedback(context,state.current,380,reducedMotion);
       if (now - renderTime > 90) {
         setHud(state.current);
         renderTime = now;

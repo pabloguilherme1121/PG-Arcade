@@ -18,6 +18,7 @@ import { useResponsiveCanvas } from "./useResponsiveCanvas";
 import { paintBlock, paintRock } from "./canvasMaterials";
 import { identifyTouchGesture, shouldQueueCanvasTapAction } from "../lib/touchCanvas";
 import { actionPresentation } from "../lib/actionPresentation";
+import { createCanvasFeedback } from './canvasFeedback';
 import "./actionCollection.css";
 import "./gameplay.css";
 const artwork = (() => {
@@ -338,6 +339,7 @@ export default function ActionCollection({
       accumulator = 0,
       lastHud = 0;
     let previousState=state.current;
+    const feedback=createCanvasFeedback(state.current);
     const run = (now: number) => {
       if (!previous) previous = now;
       accumulator += Math.min((now - previous) / 1000, 0.08);
@@ -354,6 +356,7 @@ export default function ActionCollection({
       }
       const ctx = canvas.current?.getContext("2d");
       if (ctx) paint(ctx, reducedMotion || state.current.done ? state.current : actionPresentation(previousState,state.current,accumulator*60), reducedMotion);
+      if (ctx) feedback(ctx,state.current,360,reducedMotion);
       if (now - lastHud > 100) {
         setHud(state.current);
         lastHud = now;
