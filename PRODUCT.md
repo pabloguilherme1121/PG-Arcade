@@ -6,7 +6,7 @@ Escolher uma mecânica reconhecível e começar uma partida no navegador, especi
 
 ## Jornada
 
-1. Seleção inicial curta, com objetivo e representação específica da mecânica.
+1. Seleção inicial curta, com objetivo e capa específica do jogo.
 2. Quando há dados locais, “Volte a um jogo” apresenta a última entrada visitada e outras mais visitadas. O armazenamento anterior registra contagem e último jogo, não datas: a interface não promete uma linha do tempo completa.
 3. Favoritos disponíveis na home e em sua rota própria.
 4. Catálogo completo com busca por palavras, acentos e espaços tolerantes; categoria, modo e ordenação combináveis; contagem e recuperação do estado vazio. Carros e Corrida ficam sob “Carros e corrida”, sem mudar categorias ou IDs internos.
@@ -21,7 +21,7 @@ Escolher uma mecânica reconhecível e começar uma partida no navegador, especi
 - Nenhuma duração aproximada, ranking global, sincronização, conta ou multiplayer online foi acrescentado.
 - Recordes, favoritos, backup JSON e preferências mantêm os formatos anteriores. Não há migração destrutiva.
 - Regras, física e pontuação permanecem nos motores existentes. Cada ID continua apontando ao mesmo componente/carregamento sob demanda.
-- URLs hash e base path do GitHub Pages são preservados. Assets usam `BASE_URL`.
+- URLs hash e base path do GitHub Pages são preservados. Assets externos usam `BASE_URL`; capas SVG são inline.
 - Offline conserva o contrato existente: shell e recursos já usados/preparados, sem prometer disponibilidade de todas as coleções no primeiro acesso.
 
 ## Correções e evidência
@@ -29,7 +29,7 @@ Escolher uma mecânica reconhecível e começar uma partida no navegador, especi
 | Achado | Mudança | Verificação |
 | --- | --- | --- |
 | 50 SVGs com dimensão nula na versão publicada | Container de preview deixa de ser grid com padding conflitante; SVG recebe dimensões e proporção explícitas | Regressão de dimensões nos 100 cards em 320/360/390/430/768/1024/1440 px |
-| Prévia genérica não revela a mecânica | 50 cenas específicas de tabuleiro, pergunta e movimento; 28 SVGs autorais específicos da primeira expansão | Snapshots de tabuleiros/perguntas derivados dos motores; arquivos locais e fallback textual |
+| Prévia genérica não revela a mecânica | 100 capas SVG determinísticas com objetivo escrito no card e orientação de gameplay | Capas exclusivas, gradientes sem IDs duplicados e objetivos disponíveis mesmo com requisições de preview bloqueadas |
 | Arena precedida por camadas de utilidades | Barra curta e opções secundárias, preferências após o conteúdo principal | Teste de teclado/visibilidade de utilidades e amostra de arena |
 | Ajuda solo cita adversário | Texto de desfazer depende de jogo estratégico/duelo | Regressão em Maré de Cores e Resta Um |
 | Busca perde resultados com espaços repetidos | Busca normalizada por termos em nome, descrição e categoria | Testes unitários e E2E com “CORES maré” |

@@ -45,10 +45,14 @@ test("restoring records does not invent explored games", async ({ page }) => {
   await expect(page.locator(".progress-grid strong").first()).toHaveText("1 de 100");
 });
 
-test("exploring respects the in-app reduced motion preference", async ({ page }) => {
+test("exploring respects the in-app reduced motion preference", async ({ page, browserName }) => {
+  // Preserve full tracing of the SVG catalog while checking the scroll preference.
+  if (browserName === "firefox") test.setTimeout(60_000);
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("./");
-  await page.getByText("Conforto visual", { exact: true }).click();
+  await page.locator(".play-preferences summary").focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".play-preferences")).toHaveAttribute("open", "");
   await page.getByLabel("Movimento da interface").selectOption("reduced");
   await expect(page.locator("html")).toHaveAttribute("data-arcade-motion", "reduced");
   await page.evaluate(() => {
@@ -63,7 +67,9 @@ test("exploring respects the in-app reduced motion preference", async ({ page })
   await expect(page.locator("#catalogo")).toHaveAttribute("data-requested-scroll", "instant");
 });
 
-test("favorite changes persist once per action", async ({ page }) => {
+test("favorite changes persist once per action", async ({ page, browserName }) => {
+  // Firefox traces snapshot the 100 SVG covers before and after the reload.
+  if (browserName === "firefox") test.setTimeout(60_000);
   await page.goto("./");
   await expect(page.locator(".game-card")).toHaveCount(100);
   await page.evaluate(() => {

@@ -203,7 +203,9 @@ test("fishing pauses on interruption, resumes and rewards controlled reeling", a
   page,
 }) => {
   await start(page, "pesca");
-  await page.clock.install();
+  const time = new Date("2026-10-11T12:00:00Z");
+  await page.clock.install({ time: new Date(time.getTime() - 60_000) });
+  await page.clock.pauseAt(time);
   await page.getByRole("button", { name: "Lançar linha", exact: true }).click();
   await page.evaluate(() => window.dispatchEvent(new Event("pg-arcade-pause")));
   await expect(
@@ -218,11 +220,15 @@ test("fishing pauses on interruption, resumes and rewards controlled reeling", a
     .click();
   await page.clock.runFor(2700);
   await page.getByRole("button", { name: "Fisgar", exact: true }).click();
-  for (let i = 0; i < 8; i++) {
+  // Reel progress depends on tension; eight pulses can leave a small distance.
+  // Freeze wall time and allow at most nine controlled pulls to finish the catch.
+  const nextRound = page.getByRole("button", { name: "Próxima rodada", exact: true });
+  for (let i = 0; i < 9; i++) {
+    if (await nextRound.isVisible()) break;
     await page
       .getByRole("button", { name: "Recolher linha", exact: true })
       .click();
-    if (i < 7) await page.clock.runFor(750);
+    if (!(await nextRound.isVisible())) await page.clock.runFor(750);
   }
   await expect(page.locator(".fishing-scene [role=status]")).toHaveText(
     "Peixe capturado!",

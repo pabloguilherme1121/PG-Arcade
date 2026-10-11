@@ -292,7 +292,7 @@ test("visual shell keeps clear premium hierarchy across catalog and player on mo
   expect(visualContract.previewRadius).toBeGreaterThanOrEqual(12);
 
   await page.goto("./#/jogar/snake");
-  await expect(page.locator(".player > h1")).toHaveText("Snake");
+  await expect(page.locator(".player h1")).toHaveText("Snake");
   await expect(page.locator(".experience-tools")).toBeVisible();
   await expect(page.getByRole("button", {name:"Copiar link do jogo"})).toBeHidden();
   const arenaTop = await page.locator("[data-arcade-arena]").evaluate(el => el.getBoundingClientRect().top);

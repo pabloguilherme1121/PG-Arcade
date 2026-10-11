@@ -50,7 +50,7 @@ for (const game of newGames)
     await page.goto(`./#/jogar/${game.id}`);
     const arena = page.locator(`[data-new-game="${game.id}"]`);
     await expect(arena).toBeVisible();
-    await expect(page.locator(".player > h1")).toHaveText(game.name);
+    await expect(page.locator(".player h1")).toHaveText(game.name);
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,

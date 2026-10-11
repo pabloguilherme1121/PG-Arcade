@@ -2,7 +2,7 @@
 
 ## Direção
 
-Uma sala de jogos precisa, com lima para ação e seleção, superfícies escuras de leitura estável e pequenas cenas que explicam cada mecânica. A expressão lúdica vem da vitrine e do jogo; a estrutura comum fica compacta. Não há animação contínua de cards ou efeitos que ocultem a partida.
+Uma sala de jogos precisa, com lima para ação e seleção, superfícies escuras de leitura estável e capas que identificam cada jogo e objetivos escritos. A expressão lúdica vem da vitrine e do jogo; a estrutura comum fica compacta. Não há animação contínua de cards ou efeitos que ocultem a partida.
 
 ## Tokens e composição
 
@@ -28,17 +28,17 @@ Uma sala de jogos precisa, com lima para ação e seleção, superfícies escura
 
 O header passa a ocupar seu espaço normal. Âncoras têm scroll margin, foco não fica atrás de cabeçalhos. Browser surfaces recebem seleção lima, caret, scrollbar e sublinhado consistentes. Alto contraste e redução de movimento continuam locais e acessíveis.
 
-## Origem das prévias
+## Capas do catálogo
 
-`GamePreview.tsx` desenha as 50 entradas da segunda expansão. `previewSnapshots.ts` contém demonstrações estáticas derivadas de `newBoard(id,1,1)` e `question(id,1,1,0)`. As ilustrações de Rainhas, Cinco em Linha, trilha e circuito acrescentam posições didáticas para mostrar o objetivo, e não representam partidas salvas. Ações em movimento recebem cenas gráficas específicas sem animação.
+`GameCover.tsx` e `coverArt.ts` geram 100 capas SVG determinísticas a partir dos IDs do catálogo. Elas são usadas nos cards, nas recomendações e no cabeçalho da partida, sem buscar chunks ou imagens externas. Cada instância recebe um ID próprio de gradiente; a arte e sua impressão digital continuam estáveis por jogo. O objetivo permanece em texto junto à capa e na orientação de gameplay.
 
-`public/previews/*.svg` contém 28 diagramas vetoriais autorais da primeira expansão, feitos para representar seus controles e objetivos: discos de Hanói, pistas de código, raquete/blocos, cartas, dados, trajeto de arremesso, tensão de pesca etc. Esses assets usam dimensões fixas 240×150 e não incluem mídia remota ou licença de terceiros. Imagens externas ao JSX têm fallback textual com o objetivo se falharem. Os 22 clássicos conservam suas prévias próprias e a arte existente.
+As demonstrações de `GamePreview.tsx`, `previewSnapshots.ts` e `public/previews/*.svg` da reformulação anterior foram substituídas no catálogo pelas capas completas. Esses arquivos permanecem disponíveis como material de referência e não entram no bundle inicial.
 
 ## Manutenção e desempenho
 
 `discovery.css` concentra a nova composição. Seletores antigos exclusivamente ligados a eyebrows e kicker removidos do JSX foram eliminados das camadas anteriores. `fonts.css` inclui apenas os subsets Latin e Latin Extended das fontes já licenciadas/instaladas, suficientes para português e copy matemática; evita distribuir subsets não usados.
 
-As prévias não importam os motores no bundle inicial. Componentes de jogo continuam lazy. Os SVGs externos são leves e carregam sob demanda com tamanho reservado. Orçamento obrigatório permanece 400 KiB raw / 120 KiB gzip para JS+CSS inicial; não foi ampliado para acomodar a reformulação.
+As capas não importam os motores nem exigem requisições de preview. Componentes de jogo continuam lazy. Os SVGs inline têm dimensões e proporção reservadas. Orçamento obrigatório permanece 400 KiB raw / 120 KiB gzip para JS+CSS inicial; não foi ampliado para acomodar a reformulação.
 
 ## Estados
 

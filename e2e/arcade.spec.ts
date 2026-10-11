@@ -3,7 +3,11 @@ import { games } from "../src/lib/catalog";
 import { matchesGame } from "../src/lib/discovery";
 test("catalog search, categories, favorites and direct links persist", async ({
   page,
+  browserName,
 }) => {
+  // Firefox/WebKit DOM snapshots of all 100 SVG covers add overhead across route changes.
+  // Keep tracing and the per-assertion deadlines; budget only this complete flow.
+  if (browserName !== "chromium") test.setTimeout(60_000);
   await page.goto("./");
   await expect(page.locator(".game-card")).toHaveCount(games.length);
   expect(
@@ -134,7 +138,7 @@ for (const width of [320, 390, 1280])
     await expect(page.locator(".game-card")).toHaveCount(games.length);
     for (const { id, name } of games) {
       await page.goto(`./#/jogar/${id}`);
-      await expect(page.locator(".player > h1")).toHaveText(name);
+      await expect(page.locator(".player h1")).toHaveText(name);
       await expect(page.locator("[data-arcade-arena]").first()).toBeVisible({ timeout: 15000 });
       await expect(page.getByText("Carregando", { exact: false })).toHaveCount(
         0,

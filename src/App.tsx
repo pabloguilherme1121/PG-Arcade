@@ -8,7 +8,6 @@ import {
   useCallback,
   useRef,
   useMemo,
-  memo,
   type ReactNode,
   type ComponentType,
 } from "react";
@@ -27,16 +26,15 @@ import {
 import { games, isGameId, type GameId } from "./lib/catalog";
 import {
   newGames,
-  isNewGameId,
   type NewGameId,
   type BoardId,
 } from "./lib/newCatalog";
 import {
   expandedGames,
-  isExpandedId,
   type ExpandedId,
 } from "./lib/expandedCatalog";
 import { gameHelp, recordUnits } from "./lib/gameHelp";
+import GameCover from "./GameCover";
 import {
   readProgress,
   saveProgress,
@@ -50,16 +48,6 @@ import { useReducedMotion } from "./useReducedMotion";
 import { useImmersivePlayer } from "./lib/useImmersivePlayer";
 import "./features/portfolio/components/PortfolioArcade.css";
 const SessionChallenge = lazy(() => import("./games/SessionChallenge"));
-function PreviewPlaceholder({ id }: { id: NewGameId }) {
-  return <div className="preview mechanic-preview" data-preview-game={id} aria-hidden="true">
-    <svg width="240" height="150" viewBox="0 0 240 150" focusable="false">
-      <rect width="240" height="150" fill="#11232d" />
-      <path d="M36 75h168" stroke="#c9f65a" strokeWidth="6" />
-      <circle cx="120" cy="75" r="18" fill="#79b8ff" />
-    </svg>
-  </div>;
-}
-const GamePreview = lazy(() => import("./GamePreview").catch(() => ({ default: PreviewPlaceholder })));
 type PlayerProps = { record: number; onRecord: (n: number) => void };
 const collectionPlayers = Object.fromEntries(
   expandedGames.map((g) => [
@@ -152,166 +140,7 @@ function route() {
         ? "progresso"
         : "catalogo";
 }
-function Preview({ id }: { id: GameId }) {
-  if (isNewGameId(id)) return (
-    <Suspense fallback={<PreviewPlaceholder id={id} />}>
-      <GamePreview id={id} />
-    </Suspense>
-  );
-  if (isExpandedId(id)) return <div className="preview illustrated-preview" aria-hidden="true"><img src={`${import.meta.env.BASE_URL}previews/${id}.svg`} alt="" width="240" height="150" loading="lazy" onError={(e) => { e.currentTarget.hidden=true; e.currentTarget.nextElementSibling?.removeAttribute("hidden"); }}/><span hidden>{games.find(g => g.id === id)?.description}</span></div>;
-  if (id === "sequencia" || id === "palavra")
-    return (
-      <div
-        className={`preview puzzle-preview preview-${id}`}
-        aria-hidden="true"
-      >
-        {(id === "sequencia"
-          ? ["1", "2", "3", "4"]
-          : ["J", "O", "G", "O", "S"]
-        ).map((v, i) => (
-          <span key={i} className={`pad-${i}`}>
-            {v}
-          </span>
-        ))}
-      </div>
-    );
-  if (
-    [
-      "corrida",
-      "estacionamento",
-      "rally",
-      "coleta",
-      "orbital",
-      "tiro",
-      "estrelas",
-    ].includes(id)
-  )
-    return (
-      <div
-        className={`preview art-preview ${["orbital", "tiro", "estrelas"].includes(id) ? "art-space" : "art-road"}`}
-        aria-hidden="true"
-      >
-        <img
-          src={`${import.meta.env.BASE_URL}art/${["orbital", "tiro", "estrelas"].includes(id) ? "ship" : "car"}.webp`}
-          alt=""
-          loading="lazy"
-        />
-      </div>
-    );
-  if (id === "minas" || id === "reflexo")
-    return (
-      <div className={`preview logic-preview preview-${id}`} aria-hidden="true">
-        {id === "minas" ? (
-          <>
-            <span>1</span>
-            <span>2</span>
-            <span>⚑</span>
-            <span>1</span>
-            <span>3</span>
-            <span>2</span>
-          </>
-        ) : (
-          <strong>AGORA!</strong>
-        )}
-      </div>
-    );
-  if (id === "luzes")
-    return (
-      <div className="preview action-preview preview-luzes" aria-hidden="true">
-        <span>☀</span>
-        <i />
-        <i />
-        <i />
-      </div>
-    );
-  if (id === "liga4" || id === "puzzle")
-    return (
-      <div className={`preview new-preview ${id}`} aria-hidden="true">
-        {Array.from({ length: id === "liga4" ? 28 : 9 }, (_, i) => (
-          <span key={i}>{id === "puzzle" ? (i < 8 ? i + 1 : "") : ""}</span>
-        ))}
-      </div>
-    );
-  if (id === "2048")
-    return (
-      <div className="preview p2048" aria-hidden="true">
-        {[2, 4, 8, 16, 4, 8, 32, 64, 2, 16, 128, 256, 4, 8, 32, 512].map(
-          (n, i) => (
-            <span key={i} className={`tile-${n}`}>
-              {n}
-            </span>
-          ),
-        )}
-      </div>
-    );
-  if (id === "snake")
-    return (
-      <div className="preview psnake" aria-hidden="true">
-        <div className="mini-snake">
-          {Array.from({ length: 7 }, (_, i) => (
-            <i key={i} />
-          ))}
-        </div>
-        <span className="mini-fruit" />
-      </div>
-    );
-  if (id === "memoria")
-    return (
-      <div className="preview pmemory" aria-hidden="true">
-        <span>✦</span>
-        <span>?</span>
-        <span>✦</span>
-        <span>?</span>
-        <span>?</span>
-        <span>♡</span>
-      </div>
-    );
-  if (id === "xadrez" || id === "damas")
-    return (
-      <div className={`preview pboard ${id}`} aria-hidden="true">
-        {Array.from({ length: 32 }, (_, i) => (
-          <span
-            key={i}
-            className={(Math.floor(i / 8) + i) % 2 ? "dark" : "light"}
-          >
-            {id === "xadrez" && i === 12
-              ? "♞"
-              : id === "xadrez" && i === 20
-                ? "♙"
-                : id === "damas" && [9, 11, 13, 18, 20, 22].includes(i)
-                  ? "●"
-                  : ""}
-          </span>
-        ))}
-      </div>
-    );
-  if (id === "futebol")
-    return (
-      <div className="preview pfootball" aria-hidden="true">
-        <div className="goal" />
-        <span>⚽</span>
-      </div>
-    );
-  if (id === "domino")
-    return (
-      <div className="preview pdomino" aria-hidden="true">
-        {[4, 2, 6].map((n, i) => (
-          <div key={i}>
-            <span>{n}</span>
-            <span>{6 - n}</span>
-          </div>
-        ))}
-      </div>
-    );
-  return (
-    <div className="preview pvelha" aria-hidden="true">
-      {["×", "○", "", "", "×", "○", "○", "", "×"].map((s, i) => (
-        <span key={i}>{s}</span>
-      ))}
-    </div>
-  );
-}
-const MemoPreview = memo(Preview);
+
 
 export default function App() {
   const reducedMotion = useReducedMotion();
@@ -322,6 +151,7 @@ export default function App() {
   const [session, setSession] = useState(0);
   const restartDialog = useRef<HTMLDialogElement>(null);
   const quickHelp = useRef<HTMLDetailsElement>(null);
+  const searchInput = useRef<HTMLInputElement>(null);
   function focusBoard() {
     const arenaElement = arena.current?.querySelector<HTMLElement>(
       "[data-arcade-arena]",
@@ -363,6 +193,11 @@ export default function App() {
   useEffect(() => {
     if (!isGameId(page)) return;
     const shortcuts = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && quickHelp.current?.open && !restartDialog.current?.open) {
+        quickHelp.current.open = false;
+        quickHelp.current.querySelector("summary")?.focus();
+        return;
+      }
       if (
         !event.altKey ||
         !event.shiftKey ||
@@ -478,6 +313,18 @@ export default function App() {
       "Cópia de progresso preparada. Guarde o arquivo para restaurar em outro navegador.",
     );
   }
+  useEffect(() => {
+    if (isGameId(page) || page === "progresso") return;
+    const onShortcut = (event: KeyboardEvent) => {
+      if (event.key !== "/" || event.altKey || event.ctrlKey || event.metaKey || event.isComposing) return;
+      const target = event.target;
+      if (target instanceof HTMLElement && target.closest('input,textarea,select,[contenteditable="true"]')) return;
+      event.preventDefault();
+      searchInput.current?.focus();
+    };
+    window.addEventListener("keydown", onShortcut);
+    return () => window.removeEventListener("keydown", onShortcut);
+  }, [page]);
   const game = games.find((g) => g.id === page);
   const Player = game ? players[game.id] : null;
   useEffect(() => { document.title = `${game ? game.name : page === "favoritos" ? "Seus favoritos" : page === "progresso" ? "Meu progresso" : "100 jogos no navegador"} — PG Arcade`; }, [game, page]);
@@ -493,7 +340,7 @@ export default function App() {
   function renderCard(g: typeof games[number], contextual = false) {
     return <article className={contextual ? "curated-card" : "game-card"} key={g.id} data-game-category={g.category} data-catalog-game={contextual ? undefined : g.id}>
       <a className="game-link" href={`#/jogar/${g.id}`} aria-label={`${contextual ? "Começar com" : "Jogar"} ${g.name}`} onClick={() => rememberCatalog(g.id)}>
-        <MemoPreview id={g.id}/><span className="game-category">{categoryGroup(g.category)}</span><h3>{g.name}</h3><p>{g.description}</p>
+        <GameCover id={g.id} name={g.name} category={g.category} /><span className="game-category">{categoryGroup(g.category)}</span><h3>{g.name}</h3><p>{g.description}</p>
         <span className="game-metadata">{gameMode(g.id)} · Teclado e toque</span>
       </a>
       <button className="favorite" onClick={() => favorite(g.id)} aria-label={`${contextual ? "Seleção: " : ""}${progress.favorites.includes(g.id) ? "Remover" : "Adicionar"} ${g.name} ${progress.favorites.includes(g.id) ? "dos" : "aos"} favoritos`} aria-pressed={progress.favorites.includes(g.id)}><Heart size={19} fill={progress.favorites.includes(g.id) ? "currentColor" : "none"}/></button>
@@ -615,11 +462,35 @@ export default function App() {
                 </div>
               </details>
             </div>
-            <h1 ref={heading} tabIndex={-1}>
-              {game.name}
-            </h1>
-            <p className="player-description">{game.description}</p>
+            <div className="player-coverline">
+              <GameCover id={game.id} name={game.name} category={game.category} compact />
+              <div>
+                <div className="player-kicker" aria-hidden="true">
+                  <span>{game.category}</span>
+                  <span>PG Arcade</span>
+                </div>
+                <h1 ref={heading} tabIndex={-1}>{game.name}</h1>
+                <p className="player-description">{game.description}</p>
+              </div>
+            </div>
+            <div className="player-gameplay-orientation" data-gameplay-orientation>
+              <strong>Como jogar {game.name}</strong>
+              <span>{gameHelp[game.id].split(". ")[0]}</span>
+              <small data-player-record>{progress.records[game.id] ? `Sua melhor marca: ${progress.records[game.id]} ${recordUnits[game.id] ?? "pontos"}` : "Primeira partida — faça sua marca"}</small>
+              <button
+                type="button"
+                className="gameplay-control-toggle"
+                aria-pressed={preferences.controls === "large"}
+                onClick={() => setPreferences(p => ({
+                  ...p,
+                  controls: p.controls === "large" ? "standard" : "large",
+                }))}
+              >
+                {preferences.controls === "large" ? "Controles padrão" : "Ampliar controles"}
+              </button>
+            </div>
             {message && <p className="feedback" role="status">{message}</p>}
+
             <div className="experience-tools">
               <button onClick={focusBoard} aria-keyshortcuts="Alt+Shift+B">
                 Ir para o tabuleiro
@@ -865,6 +736,8 @@ export default function App() {
                   <Search size={18} />
                   <input
                     aria-label="Buscar jogo"
+                    ref={searchInput}
+                    onKeyDown={(event) => { if (event.key === "Escape") { setQuery(""); event.currentTarget.blur(); } }}
                     placeholder="Buscar jogo"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
@@ -914,6 +787,7 @@ export default function App() {
               </div>
               <div className="game-grid">
                 {sorted.map(g => renderCard(g))}
+
               </div>
               {!visible.length && (
                 <div className="empty">
