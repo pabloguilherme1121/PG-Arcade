@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { calculateCanvasPixels } from "../src/lib/touchCanvas";
 import AxeBuilder from "@axe-core/playwright";
 import { games } from "../src/lib/catalog";
 
@@ -96,10 +97,28 @@ test("canvas buffers follow retina pixels and resizing preserves running physics
     await page.goto(`./#/jogar/${id}`);
     const canvas = page.locator("canvas");
     await expect(canvas).toBeVisible();
-    await expect.poll(() => canvas.evaluate((element) => Math.abs(element.width - Math.round(element.getBoundingClientRect().width * 2)))).toBeLessThanOrEqual(1);
+    await expect.poll(async () => {
+      const dimensions = await canvas.evaluate((element) => ({
+        cssWidth: element.getBoundingClientRect().width,
+        bufferWidth: element.width,
+        bufferHeight: element.height,
+      }));
+      const expected = calculateCanvasPixels(dimensions.cssWidth, 480, id === "breakout" ? 360 : 380, 2);
+      expect(dimensions.bufferWidth * dimensions.bufferHeight).toBeLessThanOrEqual(1_500_000);
+      return Math.abs(dimensions.bufferWidth - expected.width);
+    }).toBeLessThanOrEqual(1);
     await page.getByRole("button", { name: "Começar", exact: true }).click();
     await page.setViewportSize({ width: 390, height: 844 });
-    await expect.poll(() => canvas.evaluate((element) => Math.abs(element.width - Math.round(element.getBoundingClientRect().width * 2)))).toBeLessThanOrEqual(1);
+    await expect.poll(async () => {
+      const dimensions = await canvas.evaluate((element) => ({
+        cssWidth: element.getBoundingClientRect().width,
+        bufferWidth: element.width,
+        bufferHeight: element.height,
+      }));
+      const expected = calculateCanvasPixels(dimensions.cssWidth, 480, id === "breakout" ? 360 : 380, 2);
+      expect(dimensions.bufferWidth * dimensions.bufferHeight).toBeLessThanOrEqual(1_500_000);
+      return Math.abs(dimensions.bufferWidth - expected.width);
+    }).toBeLessThanOrEqual(1);
     await expect(page.getByRole("button", { name: "Pausar", exact: true })).toBeEnabled();
     expect(await canvas.evaluate((element) => {
       const c = element.getContext("2d")!;
