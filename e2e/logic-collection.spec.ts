@@ -16,8 +16,11 @@ async function won(page: Page) {
   await expect(page.locator(".lc-stats")).toContainText("Pontos 100");
 }
 test("Sudoku accepts a completed board and records the victory", async ({
-  page,
+  page, browserName,
 }) => {
+  // Each cell and number is exercised through real UI interaction.
+  // Allow constrained WebKit runners to finish without reducing coverage.
+  if (browserName === "webkit") test.slow();
   await open(page, "sudoku");
   const values = sudokuSolution(4, 1),
     cells = page.locator(".lc-grid button");
