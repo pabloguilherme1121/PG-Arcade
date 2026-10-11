@@ -14,6 +14,8 @@ test.describe("descoberta premium mobile", () => {
       await expect(featured.locator("img")).toHaveAttribute("src", /\/covers\/[a-z0-9-]+\.svg$/);
       await expect(featured.getByRole("link", { name: /Jogar sugestão:/ })).toBeVisible();
       await expect(featured.locator("[data-spotlight-mode]")).not.toHaveCount(0);
+      await expect(featured.getByRole("group", { name: "Modos disponíveis" })).toBeVisible();
+      await expect(page.getByRole("region", { name: "Encontre seu modo de jogar" })).toBeVisible();
 
       const playedFilter = page.getByRole("button", { name: "Já joguei", exact: true });
       await playedFilter.tap();
