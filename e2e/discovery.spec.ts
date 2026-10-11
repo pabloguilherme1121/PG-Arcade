@@ -14,18 +14,24 @@ test("catalog covers and objectives remain usable without optional preview reque
   await expect(page.locator(".game-card p")).toContainText("Transfira os discos");
   expect(pageErrors).toEqual([]);
 });
-test("all catalog previews have visible contents across responsive widths", async ({ page }) => {
+test("all catalog previews have visible contents across responsive widths", async ({ page, browserName }) => {
+  // Firefox trace snapshots of the SVG catalog can outlast the default 5s poll.
+  if (browserName === "firefox") test.setTimeout(120_000);
+  await page.goto("./");
+  await expect(page.locator(".game-card")).toHaveCount(100);
   for (const width of [320,360,390,430,768,1024,1440]) {
     await page.setViewportSize({width,height:900});
-    await page.goto("./");
-    await expect(page.locator(".game-card")).toHaveCount(100);
-    await expect.poll(() => page.locator(".game-card .preview").evaluateAll(previews => previews.filter(p => {
-      const rect=p.getBoundingClientRect();
-      const svg=p.querySelector("svg");
-      const svgRect=svg?.getBoundingClientRect();
-      return rect.width<20 || rect.height<20 || (svgRect && (svgRect.width<20 || svgRect.height<20)) || !p.children.length;
-    }).length), { message: `visible previews at ${width}px` }).toBe(0);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await expect.poll(() => page.locator(".game-card .preview").evaluateAll(previews => ({
+      count: previews.length,
+      invalid: previews.filter(p => {
+        const rect=p.getBoundingClientRect();
+        const svg=p.querySelector("svg");
+        const svgRect=svg?.getBoundingClientRect();
+        return rect.width<20 || rect.height<20 || !svgRect || svgRect.width<20 || svgRect.height<20 || !p.children.length;
+      }).length,
+      overflow: document.documentElement.scrollWidth > innerWidth,
+    })), { message: `visible previews at ${width}px`, timeout: browserName === "firefox" ? 15_000 : 5_000 })
+      .toEqual({ count: 100, invalid: 0, overflow: false });
   }
 });
 test("combined filters and catalog position survive a game and reload", async ({page}) => {
