@@ -1,5 +1,6 @@
 import "../studio.css";
 import './quality.css';
+import './gamefeel.css';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { formatSessionTime, sessionSeconds, type SessionLevel, type SessionMode } from "../lib/sessionChallenge";
 import { useAutoPause } from "./useAutoPause";
