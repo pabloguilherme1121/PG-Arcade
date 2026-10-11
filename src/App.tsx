@@ -34,6 +34,7 @@ import {
   type ExpandedId,
 } from "./lib/expandedCatalog";
 import { gameHelp, recordUnits } from "./lib/gameHelp";
+import { discoveryFilters, filterByMode, modeTags, modeLabel, recommendGames, type DiscoveryFilter } from "./lib/smartDiscovery";
 import GameCover from "./GameCover";
 import {
   readProgress,
@@ -179,6 +180,7 @@ export default function App() {
   const [query, setQuery] = useState(initialView.query);
   const [category, setCategory] = useState(initialView.category);
   const [mode, setMode] = useState(initialView.mode);
+  const [modeFilter, setModeFilter] = useState<DiscoveryFilter>("todos");
   catalogView.current = { ...catalogView.current, query, category, sort, mode };
   const rememberCatalog = (id: GameId) => {
     catalogView.current = { ...catalogView.current, scroll: window.scrollY, returnPage: page, focusId: id };
@@ -327,27 +329,35 @@ export default function App() {
   }, [page]);
   const game = games.find((g) => g.id === page);
   const Player = game ? players[game.id] : null;
+  const activeModes = game ? modeTags(game).filter(tag => tag !== "classico") : [];
   useEffect(() => { document.title = `${game ? game.name : page === "favoritos" ? "Seus favoritos" : page === "progresso" ? "Meu progresso" : "100 jogos no navegador"} — PG Arcade`; }, [game, page]);
   const normalizedQuery = useMemo(() => searchText(query), [query]);
-  const visible = useMemo(() => games.filter(g =>
+  const visible = useMemo(() => filterByMode(games.filter(g =>
     (page !== "favoritos" || progress.favorites.includes(g.id)) &&
     (category === "Todos" || categoryGroup(g.category) === category) &&
     (mode === "Todos" || (mode === "Dupla local" ? gameMode(g.id).includes("dupla") : gameMode(g.id) === "Solo")) &&
-    matchesGame(g, normalizedQuery)), [page, progress.favorites, category, mode, normalizedQuery]);
+    matchesGame(g, normalizedQuery)), modeFilter, progress.visits, progress.favorites),
+    [page, progress.favorites, progress.visits, category, mode, modeFilter, normalizedQuery]);
   const curated = recommended.map(id => games.find(g => g.id === id)!);
   const visited = games.filter(g => progress.visits[g.id]).sort((a,b) => (b.id === progress.last ? 1 : 0) - (a.id === progress.last ? 1 : 0) || (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)).slice(0,4);
   const saved = games.filter(g => progress.favorites.includes(g.id)).slice(0,4);
   function renderCard(g: typeof games[number], contextual = false) {
     return <article className={contextual ? "curated-card" : "game-card"} key={g.id} data-game-category={g.category} data-catalog-game={contextual ? undefined : g.id}>
       <a className="game-link" href={`#/jogar/${g.id}`} aria-label={`${contextual ? "Começar com" : "Jogar"} ${g.name}`} onClick={() => rememberCatalog(g.id)}>
-        <GameCover id={g.id} name={g.name} category={g.category} /><span className="game-category">{categoryGroup(g.category)}</span><h3>{g.name}</h3><p>{g.description}</p>
+        <GameCover id={g.id} name={g.name} category={g.category} /><span className="game-category">{categoryGroup(g.category)}</span>
+        <div className="card-mode-tags" aria-label="Estilos e modos disponíveis">
+          {(modeTags(g).filter(tag => tag !== "classico").slice(0, 2).length
+            ? modeTags(g).filter(tag => tag !== "classico").slice(0, 2)
+            : ["classico" as const]).map(tag => <span key={tag} data-game-mode={tag}>{modeLabel(tag)}</span>)}
+        </div>
+        <h3>{g.name}</h3><p>{g.description}</p>
         <span className="game-metadata">{gameMode(g.id)} · Teclado e toque</span>
       </a>
       <button className="favorite" onClick={() => favorite(g.id)} aria-label={`${contextual ? "Seleção: " : ""}${progress.favorites.includes(g.id) ? "Remover" : "Adicionar"} ${g.name} ${progress.favorites.includes(g.id) ? "dos" : "aos"} favoritos`} aria-pressed={progress.favorites.includes(g.id)}><Heart size={19} fill={progress.favorites.includes(g.id) ? "currentColor" : "none"}/></button>
     </article>;
   }
   const sorted = useMemo(
-    () =>
+    () => sort === "recomendados" ? recommendGames(visible, progress) :
       [...visible].sort((a, b) =>
         sort === "nome"
           ? a.name.localeCompare(b.name, "pt-BR")
@@ -355,7 +365,7 @@ export default function App() {
             ? (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)
             : 0,
       ),
-    [visible, sort, progress.visits],
+    [visible, sort, progress],
   );
   return (
     <div className={`${focusMode && game ? "app-focus" : ""} ${fullscreen && game ? "app-immersive" : ""}`}>
@@ -472,6 +482,12 @@ export default function App() {
                 <h1 ref={heading} tabIndex={-1}>{game.name}</h1>
                 <p className="player-description">{game.description}</p>
               </div>
+            </div>
+            <div className="player-mode-ribbon" data-player-modes aria-label="Estilos e modos disponíveis">
+              <strong>Estilos e modos</strong>
+              {(activeModes.length ? activeModes : ["classico" as const]).map(tag =>
+                <span key={tag} data-mode={tag}>{modeLabel(tag)}</span>)}
+              <small>Ajuste as opções disponíveis dentro do jogo.</small>
             </div>
             <div className="player-gameplay-orientation" data-gameplay-orientation>
               <strong>Como jogar {game.name}</strong>
@@ -758,6 +774,20 @@ export default function App() {
                   ),
                 )}
               </div>
+              <div className="smart-mode-discovery" aria-label="Encontre seu modo de jogar">
+                <div className="smart-mode-header">
+                  <strong>Seu estilo de jogo</strong>
+                  <span>Explore modos reais ou continue descobrindo. As sugestões usam apenas o histórico neste navegador.</span>
+                </div>
+                <div className="smart-mode-chips" role="group" aria-label="Filtros por modo">
+                  {discoveryFilters.map(filter => (
+                    <button key={filter.id} type="button"
+                      aria-pressed={modeFilter === filter.id}
+                      className={modeFilter === filter.id ? "selected" : ""}
+                      onClick={() => setModeFilter(filter.id)}>{filter.label}</button>
+                  ))}
+                </div>
+              </div>
               <div className="catalog-tools">
                 <label>Modo <select aria-label="Filtrar por modo" value={mode} onChange={(e) => setMode(e.target.value)}><option>Todos</option><option value="Solo">Somente solo</option><option>Dupla local</option></select></label>
                 <label>
@@ -770,10 +800,11 @@ export default function App() {
                     <option value="destaques">Destaques</option>
                     <option value="nome">Nome A–Z</option>
                     <option value="visitados">Mais jogados por você</option>
+                    <option value="recomendados">Para você (neste aparelho)</option>
                   </select>
                 </label>
                 <span role="status">{visible.length} jogos encontrados</span>
-                {(query || category !== "Todos" || mode !== "Todos") && <button onClick={() => {setQuery(""); setCategory("Todos"); setMode("Todos");}}>Limpar filtros</button>}
+                <button type="button" className="clear-smart-filters" onClick={() => { setQuery(""); setCategory("Todos"); setMode("Todos"); setModeFilter("todos"); setSort("destaques"); }}>Zerar filtros</button>
                 <button
                   disabled={!visible.length}
                   onClick={() => {
@@ -806,6 +837,8 @@ export default function App() {
                       setQuery("");
                       setCategory("Todos");
                       setMode("Todos");
+                      setModeFilter("todos");
+                      setSort("destaques");
                       location.hash = "/";
                     }}
                   >
