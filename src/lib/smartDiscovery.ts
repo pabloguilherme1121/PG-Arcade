@@ -3,11 +3,17 @@ import { newGames } from "./newCatalog";
 import { expandedGames } from "./expandedCatalog";
 
 export type GameModeTag = "classico"|"rapido"|"sem-pressa"|"dupla"|"bot"|"treino"|"sobrevivencia";
-export type DiscoveryFilter = GameModeTag|"todos"|"nao-jogados"|"favoritos";
+export type DiscoveryFilter = GameModeTag|"todos"|"nao-jogados"|"favoritos"|"deslizar";
 type GameInfo = {id: GameId;name:string;category:string;description:string};
 type DiscoveryHistory = {favorites:readonly string[];visits:Partial<Record<GameId,number>>;last:GameId|null};
 
 const duels = new Set<GameId>(["damas","domino","liga4","velha","xadrez"]);
+const swipeGames=new Set<GameId>([
+  ...newGames.filter(g=>g.family==='motion' && !['rhythm','balloons'].includes(g.id)).map(g=>g.id),
+  ...expandedGames.filter(g=>g.family==='action').map(g=>g.id),
+  'snake','2048','wordsearch','slideblock','labirinto','sokoban','match3',
+]);
+export const supportsSwipe=(id:GameId)=>swipeGames.has(id);
 const quick = new Set<GameId>(["reflexo","estrelas","tiro","rally","corrida"]);
 const survival = new Set<GameId>(["rally","coleta","orbital","runner","voo","jetpack","esquiva","drift","invasores","asteroides","breakout","pong","pouso"]);
 const training = new Set<GameId>(["vinteum","dados","boliche","basquete","golfe","arco","pesca","match3"]);
@@ -31,6 +37,7 @@ export const discoveryFilters: readonly {id:DiscoveryFilter;label:string}[] = [
   {id:"sobrevivencia",label:"Sobrevivência"},
   {id:"nao-jogados",label:"Ainda não joguei"},
   {id:"favoritos",label:"Meus favoritos"},
+  {id:"deslizar",label:"Deslizar na tela"},
 ];
 export const modeLabel = (tag:GameModeTag) => modeNames[tag];
 
@@ -50,6 +57,7 @@ export function filterByMode<T extends GameInfo>(
   if(selected==="todos") return [...games];
   if(selected==="nao-jogados") return games.filter(g=>!(visits[g.id]||0));
   if(selected==="favoritos") return games.filter(g=>favorites.includes(g.id));
+  if(selected==="deslizar") return games.filter(g=>supportsSwipe(g.id));
   return games.filter(g=>modeTags(g).includes(selected));
 }
 

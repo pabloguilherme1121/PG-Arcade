@@ -1,4 +1,5 @@
 import "../studio.css";
+import './quality.css';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { formatSessionTime, sessionSeconds, type SessionLevel, type SessionMode } from "../lib/sessionChallenge";
 import { useAutoPause } from "./useAutoPause";
@@ -62,6 +63,16 @@ export default function SessionChallenge({ children }: { children: ReactNode }) 
   const blocked = mode !== "free" && phase !== "running";
   return (
     <div className="session-challenge" data-session-mode={mode} data-session-phase={phase}>
+      <div className="session-mode-cards" role="group" aria-label="Escolha seu ritmo de partida">
+        {([
+          ['free','Livre','Explore e pratique no seu ritmo.'],
+          ['sprint','Sprint','Uma sessão curta contra o relógio.'],
+          ['marathon','Maratona','Mais tempo para construir sua melhor marca.'],
+        ] as const).map(([value,title,description])=><button key={value} type="button" aria-pressed={mode===value}
+          disabled={phase==='running' || phase==='paused'} onClick={()=>{if(value!==mode) configure(value,level);}}>
+          <strong>{title}</strong><span>{description}</span>
+        </button>)}
+      </div>
       <div className="session-options" ref={controls}>
         <label>Modo de sessão
           <select aria-label="Modo de sessão" value={mode} disabled={phase === "running" || phase === "paused"} onChange={(e) => configure(e.target.value as SessionMode, level)}>

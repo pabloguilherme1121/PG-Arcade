@@ -9,6 +9,10 @@ for (const width of [320,390,1280]) {
     const cards=page.locator(".game-card");
     const covers=page.locator(".game-card [data-game-cover]");
     await expect(cards).toHaveCount(games.length);
+    for (const game of games) {
+      const artwork=await page.request.get(`covers/${game.id}.svg`);
+      expect(artwork.ok(),game.id).toBe(true);
+    }
     await expect(covers).toHaveCount(games.length);
     const ids=await covers.evaluateAll(nodes=>nodes.map(node=>node.getAttribute("data-game-cover")));
     expect(new Set(ids).size).toBe(games.length);
@@ -17,6 +21,9 @@ for (const width of [320,390,1280]) {
     const gradients=await page.locator("[data-game-cover] linearGradient").evaluateAll(nodes=>nodes.map(node=>node.id));
     expect(new Set(gradients).size).toBe(gradients.length);
     await expect(cards.first().locator(".game-cover svg")).toBeVisible();
+    await expect(cards.first().locator(".cover-mechanic")).toBeVisible();
+    await cards.first().scrollIntoViewIfNeeded();
+    await expect.poll(()=>cards.first().locator('.cover-mechanic').evaluate(img=>(img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
     await expect(page.getByRole("link",{name:"Jogar Xadrez"})).toBeVisible();
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
     await page.getByRole("link",{name:"Jogar Xadrez"}).click();

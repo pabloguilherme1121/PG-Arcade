@@ -17,6 +17,7 @@ import { useReducedMotion } from "../useReducedMotion";
 import { useResponsiveCanvas } from "./useResponsiveCanvas";
 import { paintBlock, paintRock } from "./canvasMaterials";
 import { identifyTouchGesture, shouldQueueCanvasTapAction } from "../lib/touchCanvas";
+import { renderBetween } from "../lib/renderInterpolation";
 import "./actionCollection.css";
 import "./gameplay.css";
 const artwork = (() => {
@@ -336,6 +337,7 @@ export default function ActionCollection({
       previous = 0,
       accumulator = 0,
       lastHud = 0;
+    let previousState=state.current;
     const run = (now: number) => {
       if (!previous) previous = now;
       accumulator += Math.min((now - previous) / 1000, 0.08);
@@ -346,11 +348,12 @@ export default function ActionCollection({
           currentInput[key] = true;
         });
         pending.current.clear();
+        previousState=state.current;
         state.current = stepAction(state.current, currentInput, 1 / 60);
         accumulator -= 1 / 60;
       }
       const ctx = canvas.current?.getContext("2d");
-      if (ctx) paint(ctx, state.current, reducedMotion);
+      if (ctx) paint(ctx, reducedMotion || state.current.done ? state.current : renderBetween(previousState,state.current,accumulator*60), reducedMotion);
       if (now - lastHud > 100) {
         setHud(state.current);
         lastHud = now;

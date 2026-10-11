@@ -606,6 +606,8 @@ export default function App() {
                       : ""
                   }
                   data-arcade-arena
+                  data-game-id={game.id}
+                  data-game-category={game.category}
                   role="region"
                   aria-label={`${game.name}: área principal do jogo`}
                   tabIndex={-1}
@@ -784,7 +786,11 @@ export default function App() {
                     <button key={filter.id} type="button"
                       aria-pressed={modeFilter === filter.id}
                       className={modeFilter === filter.id ? "selected" : ""}
-                      onClick={() => setModeFilter(filter.id)}>{filter.label}</button>
+                      onClick={() => setModeFilter(filter.id)}>{filter.label} <span className="mode-count" aria-hidden="true">{filterByMode(games.filter(g =>
+                        (page !== "favoritos" || progress.favorites.includes(g.id)) &&
+                        (category === "Todos" || categoryGroup(g.category) === category) &&
+                        (mode === "Todos" || (mode === "Dupla local" ? gameMode(g.id).includes("dupla") : gameMode(g.id) === "Solo")) &&
+                        matchesGame(g, normalizedQuery)), filter.id, progress.visits, progress.favorites).length}</span></button>
                   ))}
                 </div>
               </div>

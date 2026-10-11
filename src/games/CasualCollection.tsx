@@ -24,6 +24,7 @@ import {
   moveGridCursor,
 } from "../lib/casualCollection";
 import "./casualCollection.css";
+import { useBoardGesture } from './useBoardGesture';
 type Options = { difficulty: number; mode: string };
 type PlayProps = {
   options: Options;
@@ -336,7 +337,11 @@ function Jewels({ options, onRound }: PlayProps) {
       setSelected(null);
       return;
     }
-    const swapped = swapJewels(board, selected, i);
+    swap(selected,i);
+  }
+  function swap(from:number,to:number) {
+    if(!moves) return;
+    const swapped = swapJewels(board, from, to);
     setSelected(null);
     if (!swapped) {
       setMessage("Troca inválida: forme três joias em linha.");
@@ -353,13 +358,19 @@ function Jewels({ options, onRound }: PlayProps) {
     }
     setMessage(`${result.chains} cascata(s), +${result.score} pontos.`);
   }
+  const swipe=useBoardGesture((from,_to,gesture)=>{
+    if(from<0) return;
+    const to=moveGridCursor(from,{left:'ArrowLeft',right:'ArrowRight',up:'ArrowUp',down:'ArrowDown'}[gesture as 'left'|'right'|'up'|'down'],6,36);
+    if(to!==from) {setCursor(to);swap(from,to);}
+  },moves>0,undefined,choose);
   return (
     <div>
       <div
         className="jewel-board"
+        {...swipe}
         data-expanded-board
         tabIndex={0}
-        aria-label="Tabuleiro de joias. Use setas e Enter."
+        aria-label="Tabuleiro de joias. Deslize uma joia para uma casa vizinha, toque em duas joias ou use setas e Enter."
         onKeyDown={(e) => {
           if (e.target !== e.currentTarget) return;
           if (
@@ -379,6 +390,7 @@ function Jewels({ options, onRound }: PlayProps) {
             key={i}
             className={`${selected === i ? "selected" : ""} ${cursor === i ? "cursor" : ""}`}
             aria-label={`Joia ${i + 1}, tipo ${v + 1}`}
+            data-drag-index={i}
             aria-pressed={selected === i}
             disabled={!moves}
             onClick={() => {

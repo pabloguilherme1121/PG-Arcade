@@ -3,6 +3,12 @@ import { games } from "./catalog";
 import { modeTags, filterByMode, recommendGames, modeLabel } from "./smartDiscovery";
 
 describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
+  it('only offers swipes for engines with direct gesture handlers',()=>{
+    const supported=filterByMode(games,'deslizar',{},[]).map(g=>g.id);
+    for(const id of ['snake','2048','wordsearch','slideblock','labirinto','sokoban','match3','runner','ski']) expect(supported).toContain(id);
+    for(const id of ['xadrez','rhythm','balloons','arithmetic','sudoku']) expect(supported).not.toContain(id);
+    expect(new Set(supported).size).toBe(supported.length);
+  });
   it("tem classificação determinística para os 100 jogos sem inventar modos",()=>{
     expect(games).toHaveLength(100);
     for(const game of games){
