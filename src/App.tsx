@@ -332,12 +332,19 @@ export default function App() {
   const activeModes = game ? modeTags(game).filter(tag => tag !== "classico") : [];
   useEffect(() => { document.title = `${game ? game.name : page === "favoritos" ? "Seus favoritos" : page === "progresso" ? "Meu progresso" : "100 jogos no navegador"} — PG Arcade`; }, [game, page]);
   const normalizedQuery = useMemo(() => searchText(query), [query]);
-  const visible = useMemo(() => filterByMode(games.filter(g =>
+  // Reuse the base candidates for chip counts and recommendations, rather than
+  // rescanning names and categories for each mode button on every update.
+  const candidates = useMemo(() => games.filter(g =>
     (page !== "favoritos" || progress.favorites.includes(g.id)) &&
     (category === "Todos" || categoryGroup(g.category) === category) &&
     (mode === "Todos" || (mode === "Dupla local" ? gameMode(g.id).includes("dupla") : gameMode(g.id) === "Solo")) &&
-    matchesGame(g, normalizedQuery)), modeFilter, progress.visits, progress.favorites),
-    [page, progress.favorites, progress.visits, category, mode, modeFilter, normalizedQuery]);
+    matchesGame(g, normalizedQuery)),
+    [page, progress.favorites, category, mode, normalizedQuery]);
+  const visible = useMemo(() =>
+    filterByMode(candidates, modeFilter, progress.visits, progress.favorites),
+    [candidates, modeFilter, progress.visits, progress.favorites]);
+  const spotlight = useMemo(() =>
+    recommendGames(visible, progress)[0] ?? null, [visible, progress]);
   const curated = recommended.map(id => games.find(g => g.id === id)!);
   const visited = games.filter(g => progress.visits[g.id]).sort((a,b) => (b.id === progress.last ? 1 : 0) - (a.id === progress.last ? 1 : 0) || (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)).slice(0,4);
   const saved = games.filter(g => progress.favorites.includes(g.id)).slice(0,4);
@@ -786,13 +793,35 @@ export default function App() {
                     <button key={filter.id} type="button"
                       aria-pressed={modeFilter === filter.id}
                       className={modeFilter === filter.id ? "selected" : ""}
-                      onClick={() => setModeFilter(filter.id)}>{filter.label} <span className="mode-count" aria-hidden="true">{filterByMode(games.filter(g =>
-                        (page !== "favoritos" || progress.favorites.includes(g.id)) &&
-                        (category === "Todos" || categoryGroup(g.category) === category) &&
-                        (mode === "Todos" || (mode === "Dupla local" ? gameMode(g.id).includes("dupla") : gameMode(g.id) === "Solo")) &&
-                        matchesGame(g, normalizedQuery)), filter.id, progress.visits, progress.favorites).length}</span></button>
+                      onClick={() => setModeFilter(filter.id)}>{filter.label} <span className="mode-count" aria-hidden="true">{filterByMode(candidates, filter.id, progress.visits, progress.favorites).length}</span></button>
                   ))}
                 </div>
+                {spotlight && (
+                  <aside className="smart-spotlight" data-smart-spotlight aria-label="Próximo jogo sugerido">
+                    <div className="smart-spotlight-art" aria-hidden="true">
+                      <img
+                        src={`${import.meta.env.BASE_URL}covers/${spotlight.id}.svg`}
+                        alt="" width="240" height="150" loading="lazy" decoding="async"
+                      />
+                    </div>
+                    <div className="smart-spotlight-copy">
+                      <span className="smart-spotlight-eyebrow">Sua próxima partida</span>
+                      <h3>{spotlight.name}</h3>
+                      <p>{spotlight.description}</p>
+                      <div className="smart-spotlight-modes" aria-label="Modos disponíveis">
+                        {(modeTags(spotlight).filter(tag => tag !== "classico").slice(0, 2).length
+                          ? modeTags(spotlight).filter(tag => tag !== "classico").slice(0, 2)
+                          : ["classico" as const]).map(tag => (
+                          <span key={tag} data-spotlight-mode={tag}>{modeLabel(tag)}</span>
+                        ))}
+                      </div>
+                      <a className="smart-spotlight-play" href={`#/jogar/${spotlight.id}`}
+                        onClick={() => rememberCatalog(spotlight.id)}>
+                        Jogar sugestão: {spotlight.name} <ArrowRight size={17} aria-hidden="true"/>
+                      </a>
+                    </div>
+                  </aside>
+                )}
               </div>
               <div className="catalog-tools">
                 <label>Modo <select aria-label="Filtrar por modo" value={mode} onChange={(e) => setMode(e.target.value)}><option>Todos</option><option value="Solo">Somente solo</option><option>Dupla local</option></select></label>
