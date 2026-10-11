@@ -3,7 +3,7 @@ import { newGames } from "./newCatalog";
 import { expandedGames } from "./expandedCatalog";
 
 export type GameModeTag = "classico"|"rapido"|"sem-pressa"|"dupla"|"bot"|"treino"|"sobrevivencia";
-export type DiscoveryFilter = GameModeTag|"todos"|"nao-jogados"|"favoritos"|"deslizar";
+export type DiscoveryFilter = GameModeTag|"todos"|"nao-jogados"|"jogados"|"favoritos"|"deslizar";
 type GameInfo = {id: GameId;name:string;category:string;description:string};
 type DiscoveryHistory = {favorites:readonly string[];visits:Partial<Record<GameId,number>>;last:GameId|null};
 
@@ -36,6 +36,7 @@ export const discoveryFilters: readonly {id:DiscoveryFilter;label:string}[] = [
   {id:"treino",label:"Treino"},
   {id:"sobrevivencia",label:"Sobrevivência"},
   {id:"nao-jogados",label:"Ainda não joguei"},
+  {id:"jogados",label:"Já joguei"},
   {id:"favoritos",label:"Meus favoritos"},
   {id:"deslizar",label:"Deslizar na tela"},
 ];
@@ -56,6 +57,7 @@ export function filterByMode<T extends GameInfo>(
 ):T[] {
   if(selected==="todos") return [...games];
   if(selected==="nao-jogados") return games.filter(g=>!(visits[g.id]||0));
+  if(selected==="jogados") return games.filter(g=>(visits[g.id]||0)>0);
   if(selected==="favoritos") return games.filter(g=>favorites.includes(g.id));
   if(selected==="deslizar") return games.filter(g=>supportsSwipe(g.id));
   return games.filter(g=>modeTags(g).includes(selected));
