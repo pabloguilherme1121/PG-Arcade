@@ -77,6 +77,7 @@ function Grid({
       className="lc-grid"
       {...swipe}
       data-expanded-board
+      role="group"
       aria-label={onMove ? 'Tabuleiro: deslize para mover ou use as setas e os controles de direção.' : undefined}
       tabIndex={0}
       style={{ "--lc-size": size } as CSSProperties}
