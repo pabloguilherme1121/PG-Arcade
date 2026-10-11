@@ -43,3 +43,32 @@ test("Destaques dos modos da arena mantêm ajuda e controls visíveis",async({pa
   await expect(page.getByRole("button",{name:"Ir para o tabuleiro"})).toBeVisible();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
+
+test("chips percorrem a tela pequena sem overflow da página", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 740 });
+  await page.goto("./");
+  const chips = page.locator(".smart-mode-chips");
+  await expect(chips).toBeVisible();
+  await expect.poll(() => chips.evaluate(element => element.scrollWidth > element.clientWidth)).toBe(true);
+  await page.getByRole("button", { name: "Sobrevivência", exact: true }).focus();
+  await expect(page.getByRole("button", { name: "Sobrevivência", exact: true })).toBeFocused();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test("faixa de modos não ocupa a área do canvas imersivo", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.addInitScript(() => {
+    Element.prototype.requestFullscreen = () => Promise.reject(Error("viewport"));
+  });
+  await page.goto("./#/jogar/breakout");
+  await expect(page.locator("[data-player-modes]")).toBeVisible();
+  if (await page.locator(".player-utilities:not([open]) summary").count()) {
+    await page.locator(".player-utilities summary").click();
+  }
+  await page.getByRole("button", { name: "Tela cheia", exact: true }).click();
+  await expect(page.locator(".player")).toHaveAttribute("data-immersive", "true");
+  await expect(page.locator("[data-player-modes]")).toBeHidden();
+  await expect.poll(() => page.locator("canvas").evaluate(
+    element => element.getBoundingClientRect().bottom - innerHeight
+  )).toBeLessThanOrEqual(1);
+});
