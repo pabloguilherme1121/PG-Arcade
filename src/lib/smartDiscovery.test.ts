@@ -38,6 +38,14 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
     expect(filterByMode(games,"dupla",visited,favorites)).toHaveLength(5);
     expect(filterByMode(games,"todos",visited,favorites)).toHaveLength(100);
   });
+  it("distingue jogos já experimentados de não jogados, sem confundir recordes com visitas",()=>{
+    const visits={xadrez:2,domino:0,liga4:1};
+    const played=filterByMode(games,"jogados",visits,["domino"]);
+    expect(played.map(g=>g.id)).toEqual(games.filter(g=>g.id==="xadrez"||g.id==="liga4").map(g=>g.id));
+    expect(filterByMode(games,"nao-jogados",visits,[])).toHaveLength(98);
+    expect(filterByMode(games,"jogados",{},["xadrez"])).toHaveLength(0);
+    expect(visits).toEqual({xadrez:2,domino:0,liga4:1});
+  });
   it("prioriza preferências locais com desempate previsível e sem mutações",()=>{
     const input=[...games];
     const result=recommendGames(input,{favorites:["damas"],visits:{damas:3,xadrez:2},last:"xadrez"});
