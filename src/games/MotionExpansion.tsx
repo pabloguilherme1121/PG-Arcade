@@ -12,6 +12,7 @@ import { useAutoPause } from "./useAutoPause";
 import { revealPlayfield } from "./revealPlayfield";
 import { useResponsiveCanvas } from "./useResponsiveCanvas";
 import { paintAtmosphere, paintBlock, paintOrb, paintRoadCar, paintFrog, paintRock } from "./canvasMaterials";
+import { identifyTouchGesture } from "../lib/touchCanvas";
 import "./newGames.css";
 import "./gameplay.css";
 export function paintMotion(c: CanvasRenderingContext2D, s: MotionState) {
@@ -210,13 +211,17 @@ export default function MotionExpansion({
     pending = useRef(emptyInput()),
     canvas = useRef<HTMLCanvasElement>(null),
     recordCallback = useRef(onRecord),
-    awarded = useRef(false);
+    awarded = useRef(false),
+    pointerStart = useRef<{id:number;x:number;y:number} | null>(null),
+    pointerDirection = useRef<"left" | "right" | "up" | "down" | null>(null);
   recordCallback.current = onRecord;
   useResponsiveCanvas(canvas, 480, 380, (context) => paintMotion(context, state.current));
   const meta = newGames.find((g) => g.id === gameId)!;
   const pause = useCallback(() => {
     input.current = emptyInput();
     pending.current = emptyInput();
+    pointerStart.current = null;
+    pointerDirection.current = null;
     if (state.current.status === "running") {
       state.current = {
         ...state.current,
@@ -441,6 +446,7 @@ export default function MotionExpansion({
         <div className="motion-stage">
           <canvas
             ref={canvas}
+            data-touch-ready="true"
             width={480}
             height={380}
             tabIndex={0}
@@ -466,6 +472,11 @@ export default function MotionExpansion({
                 pause();
             }}
             onPointerDown={(e) => {
+              if (e.pointerType !== "mouse" && hud.status === "running" && !pointerStart.current) {
+                pointerStart.current = {id:e.pointerId,x:e.clientX,y:e.clientY};
+                e.currentTarget.setPointerCapture(e.pointerId);
+              }
+              if (hud.status !== "running") return;
               if (gameId === "balloons") {
                 const r = e.currentTarget.getBoundingClientRect();
                 state.current = motionTarget(
@@ -482,6 +493,47 @@ export default function MotionExpansion({
                 );
               }
               e.currentTarget.focus({ preventScroll: true });
+            }}
+            onPointerMove={(e) => {
+              const start=pointerStart.current;
+              if (!start || start.id !== e.pointerId || hud.status !== "running"
+                || ["rhythm","balloons"].includes(gameId)) return;
+              const gesture=identifyTouchGesture(start.x,start.y,e.clientX,e.clientY);
+              const direction=gesture !== "tap" ? gesture : null;
+              if (pointerDirection.current && pointerDirection.current !== direction)
+                input.current[pointerDirection.current]=false;
+              if(direction) input.current[direction]=true;
+              pointerDirection.current=direction;
+            }}
+            onPointerUp={(e) => {
+              const start=pointerStart.current;
+              if (!start || start.id !== e.pointerId) return;
+              pointerStart.current=null;
+              if(pointerDirection.current) input.current[pointerDirection.current]=false;
+              pointerDirection.current=null;
+              if (hud.status !== "running") return;
+              const gesture=identifyTouchGesture(start.x,start.y,e.clientX,e.clientY);
+              if(!gesture) return;
+              e.currentTarget.dataset.touchLastGesture=gesture;
+              if (["balloons","rhythm"].includes(gameId)) return;
+              if (gesture==="tap") {
+                if (["stack","rope","turret","ricochet"].includes(gameId))
+                  pending.current.action=true;
+              } else pending.current[gesture]=true;
+            }}
+            onPointerCancel={(e) => {
+              if (pointerStart.current?.id === e.pointerId) {
+                pointerStart.current=null;
+                if(pointerDirection.current) input.current[pointerDirection.current]=false;
+                pointerDirection.current=null;
+              }
+            }}
+            onLostPointerCapture={(e) => {
+              if (pointerStart.current?.id === e.pointerId) {
+                pointerStart.current=null;
+                if(pointerDirection.current) input.current[pointerDirection.current]=false;
+                pointerDirection.current=null;
+              }
             }}
           />
           {hud.status !== "running" && (

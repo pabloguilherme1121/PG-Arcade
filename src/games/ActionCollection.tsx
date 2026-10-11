@@ -16,6 +16,7 @@ import { revealPlayfield } from "./revealPlayfield";
 import { useReducedMotion } from "../useReducedMotion";
 import { useResponsiveCanvas } from "./useResponsiveCanvas";
 import { paintBlock, paintRock } from "./canvasMaterials";
+import { identifyTouchGesture, shouldQueueCanvasTapAction } from "../lib/touchCanvas";
 import "./actionCollection.css";
 import "./gameplay.css";
 const artwork = (() => {
@@ -298,13 +299,17 @@ export default function ActionCollection({
     input = useRef<ActionInput>({ ...idleInput }),
     canvas = useRef<HTMLCanvasElement>(null),
     saved = useRef(false),
-    onRecordRef = useRef(onRecord);
+    onRecordRef = useRef(onRecord),
+    pointerStart = useRef<{id:number;x:number;y:number} | null>(null),
+    pointerDirection = useRef<"left" | "right" | "up" | "down" | null>(null);
   onRecordRef.current = onRecord;
   useResponsiveCanvas(canvas, 480, 360, (context) => paint(context, state.current, reducedMotion));
   const pending = useRef(new Set<keyof ActionInput>());
   const pause = useCallback(() => {
     input.current = { ...idleInput };
     pending.current.clear();
+    pointerStart.current = null;
+    pointerDirection.current = null;
     setStatus((p) => (p === "running" ? "paused" : p));
   }, []);
   useAutoPause(pause);
@@ -315,6 +320,9 @@ export default function ActionCollection({
     setStatus("ready");
     saved.current = false;
     input.current = { ...idleInput };
+    pending.current.clear();
+    pointerStart.current = null;
+    pointerDirection.current = null;
   }, [id, difficulty, mode]);
   useEffect(() => {
     if (status === "running") return;
@@ -374,6 +382,8 @@ export default function ActionCollection({
     saved.current = false;
     input.current = { ...idleInput };
     pending.current.clear();
+    pointerStart.current = null;
+    pointerDirection.current = null;
     setStatus("running");
     canvas.current?.focus();
     revealPlayfield(canvas.current);
@@ -533,16 +543,70 @@ export default function ActionCollection({
           data-expanded-board
           data-player-x={hud.x}
           data-player-y={hud.y}
+          data-touch-ready="true"
           tabIndex={0}
           ref={canvas}
           width={480}
           height={360}
           aria-label={`${definition.name}: área de jogo. ${definition.help}`}
+          onPointerDown={(e) => {
+            if (e.pointerType === "mouse" || status !== "running" || pointerStart.current) return;
+            pointerStart.current = {id:e.pointerId,x:e.clientX,y:e.clientY};
+            e.currentTarget.setPointerCapture(e.pointerId);
+            if (["runner","voo","jetpack"].includes(id)) {
+              input.current.action = true;
+              pending.current.add("action");
+            }
+          }}
+          onPointerMove={(e) => {
+            const start = pointerStart.current;
+            if (!start || start.id !== e.pointerId || status !== "running") return;
+            const gesture = identifyTouchGesture(start.x,start.y,e.clientX,e.clientY);
+            const direction = gesture !== "tap" ? gesture : null;
+            if (pointerDirection.current && pointerDirection.current !== direction)
+              input.current[pointerDirection.current] = false;
+            if (direction) input.current[direction] = true;
+            pointerDirection.current = direction;
+          }}
+          onPointerUp={(e) => {
+            const start = pointerStart.current;
+            if (!start || start.id !== e.pointerId) return;
+            pointerStart.current = null;
+            input.current.action = false;
+            if (pointerDirection.current) input.current[pointerDirection.current] = false;
+            pointerDirection.current = null;
+            const gesture = identifyTouchGesture(start.x,start.y,e.clientX,e.clientY);
+            if (!gesture) return;
+            e.currentTarget.dataset.touchLastGesture = gesture;
+            if (gesture === "tap") {
+              if (shouldQueueCanvasTapAction(id, controls.some(([field]) => field === "action"))) {
+                pending.current.add("action");
+              }
+            } else pending.current.add(gesture);
+          }}
+          onPointerCancel={(e) => {
+            if (pointerStart.current?.id !== e.pointerId) return;
+            pointerStart.current = null;
+            input.current.action = false;
+            if (["runner", "voo", "jetpack"].includes(id)) pending.current.delete("action");
+            if (pointerDirection.current) input.current[pointerDirection.current] = false;
+            pointerDirection.current = null;
+          }}
+          onLostPointerCapture={(e) => {
+            if (pointerStart.current?.id !== e.pointerId) return;
+            pointerStart.current = null;
+            input.current.action = false;
+            if (["runner", "voo", "jetpack"].includes(id)) pending.current.delete("action");
+            if (pointerDirection.current) input.current[pointerDirection.current] = false;
+            pointerDirection.current = null;
+          }}
           onKeyDown={(e) => key(e, true)}
           onKeyUp={(e) => key(e, false)}
           onBlur={() => {
             input.current = { ...idleInput };
             pending.current.clear();
+            pointerStart.current = null;
+            pointerDirection.current = null;
           }}
         />
         {status !== "running" && (
@@ -657,6 +721,11 @@ export default function ActionCollection({
       </div>
       </div>
       <p className="action-help">
+        {["runner", "voo", "jetpack"].includes(id)
+          ? "No celular, pressione e segure na arena para controlar o movimento; solte o dedo para encerrar o comando."
+          : controls.some(([field]) => field === "action")
+            ? "No celular, deslize na arena para direcionar e toque para executar a ação disponível."
+            : "No celular, deslize na arena para movimentar. Os controles abaixo também funcionam por toque."}
         Fácil: ritmo estável para aprender. Normal e Difícil aumentam a pressão gradualmente.
         Mestre reduz a margem de erro; Especialista usa a curva mais intensa, ainda com limite de velocidade para manter a partida jogável.
       </p>
