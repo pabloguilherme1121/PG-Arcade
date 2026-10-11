@@ -147,22 +147,16 @@ html[data-arcade-motion="reduced"] .game-card {transition:none; transform:none;}
 }
 
 /* Modos pessoais: filtros rápidos, contraste e interação touch, sem rastreio. */
-.smart-mode-discovery{margin:12px 0;padding:12px;min-width:0;border:1px solid #6485a1;border-radius:14px;background:linear-gradient(135deg,#20384f,#142238)}
+.smart-mode-discovery{margin:12px 0;padding:12px;min-width:0;border:1px solid #6485a1;border-radius:14px;background:#1d3247}
 .smart-mode-header{display:flex;flex-wrap:wrap;gap:5px 12px;margin-bottom:10px}
 .smart-mode-header strong{color:#dcffab}
 .smart-mode-header span{flex:1 1 200px;color:#d5e4f2;font-size:12px}
 .smart-mode-chips{display:flex;flex-wrap:wrap;gap:6px;min-width:0}
-.smart-mode-chips button{min-height:44px;min-width:0;padding:7px 11px;border:1px solid #819bad;border-radius:99px;background:#263e54;color:#f0f9ff;font-size:12px;font-weight:700;transition:background-color .16s,border-color .16s}
+.smart-mode-chips button{min-height:44px;padding:7px 11px;border:1px solid #819bad;border-radius:99px;background:#263e54;color:#f0f9ff;font-size:12px;font-weight:700}
 .smart-mode-chips button[aria-pressed="true"]{background:#405f47;border-color:#ddffab;color:#fff}
-.clear-smart-filters{min-height:44px;border-color:#90a8b5}
 .card-mode-tags,.player-mode-ribbon{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-width:0}
-.card-mode-tags{padding-top:5px}
 .card-mode-tags span{padding:4px 7px;font-size:11px;border:1px solid #7898ae;border-radius:7px;background:#2c4458;color:#f0f7ff}
 .player-mode-ribbon{padding:10px;margin:5px 0 10px;border:1px solid #7497b1;border-radius:10px;background:#1d334a}
 .player-mode-ribbon strong{font-size:12px;color:#e0ffad}
 .player-mode-ribbon span{padding:6px 10px;border:1px solid #bbd5db;border-radius:99px;background:#355269;font-size:12px;font-weight:700}
-.player-mode-ribbon small{flex:1 1 170px;color:#d8e4f2}
-@media(max-width:540px){.smart-mode-discovery{padding:9px}.smart-mode-chips button{padding:7px 9px}}
-@media(prefers-reduced-motion:reduce){.smart-mode-chips button{transition:none}}
-html[data-arcade-motion="reduced"] .smart-mode-chips button{transition:none}
 html[data-arcade-contrast="true"] :is(.smart-mode-discovery,.smart-mode-chips button,.player-mode-ribbon,.card-mode-tags span){border-color:#fff}
