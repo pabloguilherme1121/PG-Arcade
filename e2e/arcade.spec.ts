@@ -1,15 +1,20 @@
 import { test, expect } from "@playwright/test";
 import { games } from "../src/lib/catalog";
+import { matchesGame } from "../src/lib/discovery";
 test("catalog search, categories, favorites and direct links persist", async ({
   page,
+  browserName,
 }) => {
+  // Firefox/WebKit DOM snapshots of all 100 SVG covers add overhead across route changes.
+  // Keep tracing and the per-assertion deadlines; budget only this complete flow.
+  if (browserName !== "chromium") test.setTimeout(60_000);
   await page.goto("./");
   await expect(page.locator(".game-card")).toHaveCount(games.length);
   expect(
     (await page.locator(".favorite svg").first().boundingBox())!.width,
   ).toBeGreaterThanOrEqual(16);
   await page
-    .getByRole("button", { name: "Adicionar Snake aos favoritos" })
+    .getByRole("button", { name: "Adicionar Snake aos favoritos", exact: true })
     .click();
   await page.getByRole("link", { name: "Favoritos", exact: true }).click();
   await expect(page.locator(".game-card")).toHaveCount(1);
@@ -22,7 +27,9 @@ test("catalog search, categories, favorites and direct links persist", async ({
   ).toBeVisible();
   await page.getByRole("link", { name: "Jogos", exact: true }).click();
   await page.getByLabel("Buscar jogo").fill("memória");
-  await expect(page.locator(".game-card")).toHaveCount(2);
+  const memoryGames = games.filter(g => matchesGame(g, "memória"));
+  expect(memoryGames.map(g => g.id).sort()).toEqual(["estimate", "memoria", "memorypath"]);
+  await expect(page.locator(".game-card")).toHaveCount(memoryGames.length);
   await page.getByLabel("Buscar jogo").fill("");
   await page.getByRole("button", { name: "Reflexos", exact: true }).click();
   await expect(page.locator(".game-card")).toHaveCount(games.filter(g => g.category === "Reflexos").length);

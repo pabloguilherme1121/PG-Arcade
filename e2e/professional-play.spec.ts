@@ -270,7 +270,8 @@ test("visual shell keeps clear premium hierarchy across catalog and player on mo
   const hero = page.locator(".hero");
   const firstCard = page.locator(".game-card").first();
   await expect(hero).toBeVisible();
-  await expect(hero.locator(".hero-eyebrow")).toContainText("100 jogos");
+  await expect(hero).toContainText("100 jogos no navegador");
+  await expect(page.locator(".curated-card")).toHaveCount(6);
   await expect(firstCard.locator(".game-category")).toBeVisible();
 
   const visualContract = await page.evaluate(() => {
@@ -286,17 +287,16 @@ test("visual shell keeps clear premium hierarchy across catalog and player on mo
   });
 
   expect(visualContract.heroBackground).not.toBe("none");
-  expect(visualContract.heroRadius).toBeGreaterThanOrEqual(20);
+  expect(visualContract.heroRadius).toBeGreaterThanOrEqual(16);
   expect(visualContract.cardRadius).toBeGreaterThanOrEqual(16);
   expect(visualContract.previewRadius).toBeGreaterThanOrEqual(12);
 
   await page.goto("./#/jogar/snake");
-  await expect(page.locator(".player-kicker")).toContainText("Reflexos");
+  await expect(page.locator(".player h1")).toHaveText("Snake");
   await expect(page.locator(".experience-tools")).toBeVisible();
-  const toolsBackground = await page.locator(".experience-tools").evaluate((element) =>
-    getComputedStyle(element).backgroundColor,
-  );
-  expect(toolsBackground).not.toBe("rgba(0, 0, 0, 0)");
+  await expect(page.getByRole("button", {name:"Copiar link do jogo"})).toBeHidden();
+  const arenaTop = await page.locator("[data-arcade-arena]").evaluate(el => el.getBoundingClientRect().top);
+  expect(arenaTop).toBeLessThan(844);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 

@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useId } from "react";
 import { coverArtFor } from "./lib/coverArt";
 import "./GameCover.css";
 
@@ -7,7 +7,8 @@ type CoverProps = { id: string; name: string; category: string; compact?: boolea
 /** Lightweight, game-specific vector cover. No runtime fetches, fonts or canvas. */
 function GameCover({ id, name, category, compact = false }: CoverProps) {
   const art = coverArtFor({ id, name, category });
-  const gradient = `cover-gradient-${id}`;
+  const instance = useId();
+  const gradient = `cover-gradient-${id}-${instance}`;
   return (
     <div className={`preview game-cover${compact ? " game-cover-compact" : ""}`}
       data-game-cover={id} data-cover-fingerprint={art.fingerprint} aria-hidden="true">
