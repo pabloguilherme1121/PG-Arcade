@@ -16,7 +16,7 @@ import { revealPlayfield } from "./revealPlayfield";
 import { useReducedMotion } from "../useReducedMotion";
 import { useResponsiveCanvas } from "./useResponsiveCanvas";
 import { paintBlock, paintRock } from "./canvasMaterials";
-import { identifyTouchGesture } from "../lib/touchCanvas";
+import { identifyTouchGesture, shouldQueueCanvasTapAction } from "../lib/touchCanvas";
 import "./actionCollection.css";
 import "./gameplay.css";
 const artwork = (() => {
@@ -320,6 +320,9 @@ export default function ActionCollection({
     setStatus("ready");
     saved.current = false;
     input.current = { ...idleInput };
+    pending.current.clear();
+    pointerStart.current = null;
+    pointerDirection.current = null;
   }, [id, difficulty, mode]);
   useEffect(() => {
     if (status === "running") return;
@@ -379,6 +382,8 @@ export default function ActionCollection({
     saved.current = false;
     input.current = { ...idleInput };
     pending.current.clear();
+    pointerStart.current = null;
+    pointerDirection.current = null;
     setStatus("running");
     canvas.current?.focus();
     revealPlayfield(canvas.current);
@@ -574,13 +579,16 @@ export default function ActionCollection({
             if (!gesture) return;
             e.currentTarget.dataset.touchLastGesture = gesture;
             if (gesture === "tap") {
-              if (controls.some(([field]) => field === "action")) pending.current.add("action");
+              if (shouldQueueCanvasTapAction(id, controls.some(([field]) => field === "action"))) {
+                pending.current.add("action");
+              }
             } else pending.current.add(gesture);
           }}
           onPointerCancel={(e) => {
             if (pointerStart.current?.id !== e.pointerId) return;
             pointerStart.current = null;
             input.current.action = false;
+            if (["runner", "voo", "jetpack"].includes(id)) pending.current.delete("action");
             if (pointerDirection.current) input.current[pointerDirection.current] = false;
             pointerDirection.current = null;
           }}
@@ -588,6 +596,7 @@ export default function ActionCollection({
             if (pointerStart.current?.id !== e.pointerId) return;
             pointerStart.current = null;
             input.current.action = false;
+            if (["runner", "voo", "jetpack"].includes(id)) pending.current.delete("action");
             if (pointerDirection.current) input.current[pointerDirection.current] = false;
             pointerDirection.current = null;
           }}
@@ -596,6 +605,8 @@ export default function ActionCollection({
           onBlur={() => {
             input.current = { ...idleInput };
             pending.current.clear();
+            pointerStart.current = null;
+            pointerDirection.current = null;
           }}
         />
         {status !== "running" && (
@@ -710,9 +721,11 @@ export default function ActionCollection({
       </div>
       </div>
       <p className="action-help">
-        No celular, deslize na arena para movimentar e toque para agir quando o jogo oferecer ação.
-        Em Corrida de Obstáculos, Voo entre Torres e Jetpack, mantenha o dedo pressionado
-        para ativar o comando principal e solte para encerrar.
+        {["runner", "voo", "jetpack"].includes(id)
+          ? "No celular, pressione e segure na arena para controlar o movimento; solte o dedo para encerrar o comando."
+          : controls.some(([field]) => field === "action")
+            ? "No celular, deslize na arena para direcionar e toque para executar a ação disponível."
+            : "No celular, deslize na arena para movimentar. Os controles abaixo também funcionam por toque."}
         Fácil: ritmo estável para aprender. Normal e Difícil aumentam a pressão gradualmente.
         Mestre reduz a margem de erro; Especialista usa a curva mais intensa, ainda com limite de velocidade para manter a partida jogável.
       </p>
