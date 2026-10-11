@@ -31,9 +31,12 @@ test("touch boards keep lightweight feedback and respect reduced motion", async 
   await page.goto("./#/jogar/flood");
   const cell = page.locator(".new-grid button:enabled").first();
   await expect(cell).toBeVisible();
-  expect(await cell.evaluate(el => getComputedStyle(el).touchAction)).toBe("manipulation");
+  const initialColor = await cell.getAttribute("data-value");
+  const nextColor = page.locator(`.new-grid button:enabled:not([data-value="${initialColor}"])`).first();
+  await expect(nextColor).toBeVisible();
+  expect(await nextColor.evaluate(el => getComputedStyle(el).touchAction)).toBe("manipulation");
   await page.emulateMedia({ reducedMotion: "reduce" });
-  expect(await cell.evaluate(el => getComputedStyle(el).transitionDuration)).toMatch(/^0s(?:, 0s)*$/);
-  await cell.tap();
+  expect(await nextColor.evaluate(el => getComputedStyle(el).transitionDuration)).toMatch(/^0s(?:, 0s)*$/);
+  await nextColor.tap();
   await expect(page.locator(".new-hud strong").first()).not.toHaveText("0");
 });
