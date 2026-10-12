@@ -101,3 +101,20 @@ html[data-arcade-contrast="true"] .player :is(.snake-premium-hud > div, .snake-b
     display: none;
   }
 }
+
+/* Static, accessible state cues: no flashing, even when motion is enabled. */
+.player .snake-board[data-play-status="paused"] {
+  border-color: #f0cb81;
+  box-shadow: 0 12px 26px #0007, inset 0 0 0 2px #82602c;
+}
+.player .snake-board[data-play-status="over"] {
+  border-color: #f5a39a;
+  box-shadow: 0 12px 26px #0007, inset 0 0 0 2px #854440;
+}
+.player .snake-board[data-play-status="won"] {
+  border-color: #d5ffa4;
+  box-shadow: 0 12px 26px #0007, inset 0 0 0 2px #46713b;
+}
+html[data-arcade-contrast="true"] .player .snake-board[data-play-status] {
+  border-color: #fff;
+}
