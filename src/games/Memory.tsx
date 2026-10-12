@@ -109,7 +109,7 @@ export default function Memory({
         </div>
         <div className="memory-stats" aria-label="Progresso na memória">
           <div><span>Pares</span><strong data-memory-pairs>{matched.length}/{pairs}</strong></div>
-          <div><span>Sequência</span><strong data-memory-streak>{streak}</strong></div>
+          <div data-memory-streak-tier={streak >= 3 ? "combo" : streak > 0 ? "building" : "none"}><span>Sequência</span><strong data-memory-streak>{streak}</strong></div>
           <div><span>Precisão</span><strong data-memory-accuracy>{accuracy}%</strong></div>
         </div>
         <div className="memory-progress" role="progressbar" aria-label="Pares encontrados"
