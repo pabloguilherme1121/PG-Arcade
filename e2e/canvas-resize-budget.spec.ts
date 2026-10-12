@@ -1,9 +1,10 @@
 import { expect, test } from "@playwright/test";
 
-test("canvas redraws only when its physical resolution changes", async ({ page }) => {
+for (const gameId of ["runner", "turret"] as const) {
+test(`${gameId} canvas redraws only when its physical resolution changes`, async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("./#/jogar/runner");
-  const canvas = page.locator("canvas[data-expanded-board]");
+  await page.goto(`./#/jogar/${gameId}`);
+  const canvas = page.locator("canvas[data-touch-ready]").first();
   await expect(canvas).toBeVisible();
   await page.waitForTimeout(120); // let the initial ResizeObserver callback complete
 
@@ -46,3 +47,4 @@ test("canvas redraws only when its physical resolution changes", async ({ page }
     (window as unknown as { __arcadeRepaints: () => number }).__arcadeRepaints()
   )).toBe(0);
 });
+}
