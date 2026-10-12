@@ -54,7 +54,7 @@ html[data-arcade-contrast="true"] :is(.session-checkpoint,.session-progress){bac
 .session-selected-mode { display:none; }
 @media (max-width:540px) {
   .session-selected-mode {
-    display:block; margin:0 0 8px; padding:7px 10px; min-height:30px;
+    display:none; margin:0; padding:0;
     border-left:3px solid #c9f65a; border-radius:5px;
     background:#1b302c; color:#f0ffdf; font-size:12px; line-height:1.4;
   }
