@@ -6,21 +6,21 @@ test("compact touch sessions explain the selected game mode without hiding the a
   const modes = page.locator(".session-mode-cards");
   const explanation = page.locator(".session-selected-mode");
   await expect(modes).toBeVisible();
-  await expect(explanation).toBeVisible();
-  await expect(explanation).toContainText("Explore e pratique");
-  await modes.getByRole("button", { name: "Sprint" }).click();
-  await expect(explanation).toContainText("sessão curta");
-  await modes.getByRole("button", { name: "Maratona" }).click();
-  await expect(explanation).toContainText("Mais tempo");
+  await expect(explanation).toBeHidden();
+  await expect(modes.getByRole("button", { name: /Livre: Explore e pratique/ })).toHaveAttribute("aria-pressed", "true");
+  await modes.getByRole("button", { name: /Sprint:/ }).click();
+  await expect(modes.getByRole("button", { name: /Sprint: Uma sessão curta/ })).toHaveAttribute("aria-pressed", "true");
+  await modes.getByRole("button", { name: /Maratona:/ }).click();
+  await expect(modes.getByRole("button", { name: /Maratona: Mais tempo/ })).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator(".action-canvas-wrap")).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(explanation).toBeVisible();
+  await expect(explanation).toBeHidden();
   await expect(modes.getByRole("button", { name: "Maratona" })).toHaveAttribute("aria-pressed", "true");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
 
   await page.setViewportSize({ width: 1024, height: 800 });
   await expect(explanation).toBeHidden();
-  await expect(modes.getByRole("button", { name: /Maratona/ })).toBeVisible();
+  await expect(modes.getByRole("button", { name: /Maratona:/ })).toBeVisible();
 });
