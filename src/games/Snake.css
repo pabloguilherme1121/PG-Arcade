@@ -118,3 +118,16 @@ html[data-arcade-contrast="true"] .player :is(.snake-premium-hud > div, .snake-b
 html[data-arcade-contrast="true"] .player .snake-board[data-play-status] {
   border-color: #fff;
 }
+
+/* A single composited food cue, disabled on pause and for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-arcade-motion="reduced"]) .player
+  .snake-board[data-play-status="running"] .snake-food {
+    animation: snake-food-breathe 1.6s ease-in-out infinite;
+    transform-origin: center;
+  }
+}
+@keyframes snake-food-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
