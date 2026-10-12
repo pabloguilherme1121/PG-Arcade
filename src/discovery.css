@@ -32,8 +32,6 @@ summary { cursor:pointer; }
 .game-metadata { display:block; padding-top:12px; margin-top:auto; font-size:12px; color:#d3dfc2; line-height:1.5; }
 .preview { min-width:0; overflow:hidden; height:160px; box-shadow:none; }
 .preview::after { display:none; }
-.mechanic-preview, .expanded-preview { display:block; padding:0; height:auto; aspect-ratio:8/5; background:#11232d; }
-.mechanic-preview > svg, .expanded-preview > svg { display:block; width:100%; height:100%; min-width:1px; min-height:1px; }
 .preview svg text { font-family:"Inter Variable",sans-serif; font-weight:600; }
 .game-card:hover .preview, .curated-card:hover .preview { transform:none; }
 .catalog { padding-top:24px; border-top:1px solid #32414a; }
@@ -60,7 +58,6 @@ summary { cursor:pointer; }
   .curated-card h3 { font-size:18px; }
   .curated-card p { font-size:13px; }
   .curated-card .preview { height:118px; }
-  .curated-card .mechanic-preview { height:auto; }
   .catalog-heading { align-items:start; }
   .catalog-tools { gap:12px; }
   .player-toolbar { flex-wrap:wrap; }
@@ -76,7 +73,6 @@ summary { cursor:pointer; }
   .hero h1 { font-size:36px; }
   .curated-grid, .personal-grid { grid-template-columns:1fr; }
   .curated-card .preview { height:150px; }
-  .curated-card .mechanic-preview { height:auto; }
   .player-toolbar { align-items:stretch; }
   .player-toolbar > * { width:100%; }
 }
@@ -85,10 +81,6 @@ html[data-arcade-motion="reduced"] .curated-card { animation:none; transition:no
 html[data-arcade-contrast="true"] .curated-card, html[data-arcade-contrast="true"] .player { background:#000; border-color:#fff; }
 html[data-arcade-contrast="true"] .game-metadata, html[data-arcade-contrast="true"] .section-title p, html[data-arcade-contrast="true"] .curated-card p { color:#fff; }
 
-.illustrated-preview { display:block; padding:0; height:auto; aspect-ratio:8/5; background:#11232d; }
-.illustrated-preview img { display:block; width:100%; height:100%; object-fit:contain; }
-.illustrated-preview img[hidden], .illustrated-preview span[hidden] { display:none; }
-.illustrated-preview span { padding:24px; color:#c9f65a; font-size:16px; line-height:1.5; }
 
 /* Editorial rhythm and direct, factual routes into the catalog. */
 .hero-eyebrow{display:block;color:#d8f8b6;font-size:11px;font-weight:700;letter-spacing:.16em;margin-bottom:18px}
