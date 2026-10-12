@@ -75,3 +75,52 @@ html[data-arcade-contrast="true"] :is(.session-checkpoint,.session-progress){bac
 html[data-arcade-contrast="true"] .session-selected-mode {
   background:#000; color:#fff; border-color:#fff;
 }
+
+/* Consolidated paint-only material and touch feedback from #83. */
+.player [data-arcade-arena] :is(
+  .scores > div,
+  .new-hud > span,
+  .action-hud > span,
+  .lc-stats
+) {
+  background-image: linear-gradient(157deg, #ffffff12 0%, #ffffff00 42%, #040b1859 100%);
+  box-shadow: inset 0 1px 0 #ffffff24, inset 0 -1px 0 #0004, 0 4px 10px #0003;
+  font-variant-numeric: tabular-nums;
+}
+.player [data-arcade-arena] :is(
+  .scores strong,
+  .new-hud strong,
+  .action-hud strong
+) {
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 0 #0006;
+}
+.player [data-arcade-arena] :is(.new-status, .action-status, .lc-success) {
+  box-shadow: inset 0 1px 0 #ffffff1a, 0 5px 14px #0003;
+}
+/* Touchable board targets: provide a short response without delaying moves. */
+.player [data-arcade-arena] :is(.new-grid, .lc-grid, .sliding-board, .lights-board) button:enabled {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 90ms ease-out, border-color 120ms ease-out, background-color 120ms ease-out;
+}
+.player [data-arcade-arena] :is(.new-grid, .lc-grid, .sliding-board, .lights-board) button:enabled:active {
+  transform: scale(.965);
+}
+.player [data-arcade-arena] :is(.new-grid, .lc-grid, .sliding-board, .lights-board) button:enabled:focus-visible {
+  outline: 3px solid #f0ffbb;
+  outline-offset: -3px;
+}
+html[data-arcade-contrast="true"] .player [data-arcade-arena] :is(.new-grid, .lc-grid, .sliding-board, .lights-board) button:enabled:focus-visible {
+  outline-color: #fff;
+}
+@media (prefers-reduced-motion: reduce) {
+  .player [data-arcade-arena] :is(.new-grid, .lc-grid, .sliding-board, .lights-board) button {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+html[data-arcade-motion="reduced"] .player [data-arcade-arena] :is(.new-grid, .lc-grid, .sliding-board, .lights-board) button {
+  transition: none !important;
+  transform: none !important;
+}
