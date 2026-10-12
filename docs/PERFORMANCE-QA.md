@@ -12,7 +12,7 @@ npx playwright install chromium
 npm run build
 npm run preview -- --port 5173
 # Em outro terminal:
-node scripts/benchmark-arcade.mjs --base-url=http://127.0.0.1:5173/PG-Arcade/ --samples=5 --cpu=4 --output=artifacts/arcade-performance.json
+node scripts/benchmark-arcade.mjs --base-url=http://127.0.0.1:5173/ --samples=5 --cpu=4 --output=artifacts/arcade-performance.json
 ```
 
 Os seis jogos de referência são o conjunto padrão: `snake`, `2048`, `memoria`, `xadrez`, `corrida` e `futebol`. Para o catálogo inteiro, use `--all --samples=5`. Para reduzir escopo: `--games=snake,2048`. A página precisa estar servida com o base path correto; ajuste `--base-url` conforme seu `vite.config`.
