@@ -40,6 +40,7 @@ import {
   saveProgress,
   type Progress,
 } from "./lib/progress";
+import { recordDailyVisit } from "./lib/dailyProgress";
 import { readPreferences, applyPreferences } from "./lib/preferences";
 
 import { searchText, matchesGame, categoryGroup, recommended, gameMode, readCatalogView, saveCatalogView } from "./lib/discovery";
@@ -252,12 +253,14 @@ export default function App() {
     return () => window.removeEventListener("hashchange", change);
   }, []);
   useEffect(() => {
-    if (isGameId(page))
+    if (isGameId(page)) {
+      recordDailyVisit(page);
       update((p) => ({
         ...p,
         last: page,
         visits: { ...p.visits, [page]: (p.visits[page] || 0) + 1 },
       }));
+    }
     if (lastRoute.current !== page) {
       heading.current?.focus();
       if (isGameId(lastRoute.current) && (page === "catalogo" || page === "favoritos")) {
