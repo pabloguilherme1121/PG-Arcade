@@ -57,3 +57,20 @@ html[data-arcade-contrast="true"] .race-lane-guide > span[data-active="true"] {
     transition: background-color 130ms ease, border-color 130ms ease, box-shadow 130ms ease;
   }
 }
+
+/* Compact gauge integrated into the existing speed badge; no extra HUD height. */
+.game-layout:has(.race-board) .race-speedometer[role="meter"] {
+  padding-bottom: 6px;
+  background:
+    linear-gradient(90deg, #c9f65a var(--speed-progress, 0%), #47614a var(--speed-progress, 0%))
+      left bottom / 100% 3px no-repeat,
+    rgba(201, 246, 90, .07);
+}
+html[data-arcade-contrast="true"] .race-speedometer[role="meter"] {
+  border-color: #fff;
+  color: #fff;
+  background:
+    linear-gradient(90deg, #fff var(--speed-progress, 0%), #555 var(--speed-progress, 0%))
+      left bottom / 100% 3px no-repeat,
+    #000;
+}
