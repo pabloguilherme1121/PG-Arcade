@@ -1,5 +1,8 @@
 import { test, expect } from "@playwright/test";
 
+// This spec exercises locator.tap(); desktop browser projects need an explicit touch context.
+test.use({ hasTouch: true });
+
 test("the original, board and logic families share readable material HUD styling on touch", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 844 });
   for (const [id, selector] of [
