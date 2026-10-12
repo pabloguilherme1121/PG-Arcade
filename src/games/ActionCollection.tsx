@@ -679,8 +679,12 @@ export default function ActionCollection({
               pending.current.delete(key);
             }}
             onLostPointerCapture={(e) => {
+              // Pointer-up already cleared "held": keep its one-frame tap pulse.
+              // An unexpected capture loss must cancel the pending pulse.
+              const interrupted = e.currentTarget.dataset.held === "true";
               delete e.currentTarget.dataset.held;
               input.current[key] = false;
+              if (interrupted) pending.current.delete(key);
             }}
             onKeyDown={(e) => {
               if (e.key === " " || e.key === "Enter") {
