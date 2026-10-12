@@ -4,6 +4,11 @@ import "./GameCover.css";
 
 type CoverProps = { id: string; name: string; category: string; compact?: boolean; priority?: boolean };
 
+// A single compound path preserves all seven diagonal ornaments without seven DOM nodes per cover.
+const coverStripes = Array.from({ length: 7 }, (_, i) =>
+  `M${i * 68 - 42} -10L${i * 68 + 44} 250`,
+).join(" ");
+
 /** Local mechanic artwork loads on demand without loading a game engine. */
 function GameCover({ id, name, category, compact = false, priority = false }: CoverProps) {
   const art = coverArtFor({ id, name, category });
@@ -23,8 +28,7 @@ function GameCover({ id, name, category, compact = false, priority = false }: Co
         <circle cx={320-art.offset} cy="57" r="116" fill={art.secondary} opacity=".10" />
         <circle cx="52" cy="224" r="134" fill={art.accent} opacity=".12" />
         <g stroke={art.secondary} fill="none" opacity=".18" strokeWidth="1.5">
-          {Array.from({ length: 7 }, (_, i) =>
-            <path key={i} d={`M${i*68-42} -10L${i*68+44} 250`} />)}
+          <path d={coverStripes} />
         </g>
         <path d="M23 26H79M23 26V58" stroke={art.secondary} strokeWidth="4" strokeLinecap="round" />
         <text x="24" y="207" fill="#F7F9FE" fontSize="15" letterSpacing="3" fontWeight="800" fontFamily="system-ui, sans-serif">PG ARCADE</text>
