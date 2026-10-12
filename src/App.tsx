@@ -40,7 +40,6 @@ import {
   saveProgress,
   type Progress,
 } from "./lib/progress";
-import { recordDailyVisit } from "./lib/dailyProgress";
 import { readPreferences, applyPreferences } from "./lib/preferences";
 
 import { searchText, matchesGame, categoryGroup, recommended, gameMode, readCatalogView, saveCatalogView } from "./lib/discovery";
@@ -254,7 +253,10 @@ export default function App() {
   }, []);
   useEffect(() => {
     if (isGameId(page)) {
-      recordDailyVisit(page);
+      // Keep daily stats lazy: the 100-game catalog has a strict initial bundle budget.
+      void import("./lib/dailyProgress").then(({ recordDailyVisit }) => {
+        recordDailyVisit(page);
+      }).catch(() => { /* Offline without this optional chunk must not break gameplay. */ });
       update((p) => ({
         ...p,
         last: page,
