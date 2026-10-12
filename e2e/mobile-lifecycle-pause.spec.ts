@@ -26,3 +26,21 @@ for (const game of [
     await expect(overlay.getByRole("button", { name: "Continuar" })).toBeEnabled();
   });
 }
+
+test("timed session and inner game both pause when PWA goes into the background", async ({ page }) => {
+  await page.goto("./#/jogar/runner");
+  const session = page.locator(".session-challenge");
+  await page.getByRole("combobox", { name: "Modo de sessão" }).selectOption("sprint");
+  await page.getByRole("button", { name: "Iniciar desafio de tempo" }).click();
+  await page.locator(".action-collection-overlay").getByRole("button", { name: "Começar" }).click();
+  await expect(session).toHaveAttribute("data-session-phase", "running");
+
+  await page.evaluate(() => window.dispatchEvent(new Event("pagehide")));
+  await expect(session).toHaveAttribute("data-session-phase", "paused");
+  await expect(page.locator(".action-collection-overlay")).toBeVisible();
+
+  await page.getByRole("button", { name: "Retomar sessão" }).click();
+  await page.locator(".action-collection-overlay").getByRole("button", { name: "Continuar" }).click();
+  await expect(session).toHaveAttribute("data-session-phase", "running");
+  await expect(page.locator(".action-collection-overlay")).toBeHidden();
+});
