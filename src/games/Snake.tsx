@@ -102,11 +102,9 @@ export default function Snake({
     return () => clearInterval(id);
   }, [status, delay, mode]);
   const pause = useCallback(() => {
-    // A queued turn and unfinished swipe belong to the interrupted frame.
-    // Do not apply them unexpectedly when the game is resumed.
-    queued.current = [];
+    // A confirmed direction stays queued through pause (existing game contract).
+    // Only an unfinished swipe is cancelled so its eventual touchend cannot steer.
     touch.current = null;
-    setQueuedPreview([]);
     setStatus((s) => (s === "running" ? "paused" : s));
   }, []);
   // Includes blur, hidden, pagehide and freeze when mobile PWA enters BFCache.
