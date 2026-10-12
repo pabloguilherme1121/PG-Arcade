@@ -23,4 +23,8 @@ test("daily progress counts actual visits, persists across reload, and preserves
   await expect(page.getByLabel("Atividade de hoje")).toContainText("Hoje: 2 visitas em 1 jogo.");
   const legacy = await page.evaluate(() => JSON.parse(localStorage.getItem("pg-arcade-progress-v1") || "null"));
   expect(legacy?.visits?.snake).toBe(2);
+  await page.goto("./#/");
+  await page.getByRole("button", { name: /^Já joguei/ }).click();
+  await expect(page.locator(".game-card")).toHaveCount(1);
+  await expect(page.getByRole("link", { name: "Jogar Snake", exact: true })).toBeVisible();
 });
