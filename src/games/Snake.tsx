@@ -206,7 +206,9 @@ export default function Snake({
                 {status === "ready"
                   ? "Pegue a fruta e cuide das curvas."
                   : status === "paused"
-                    ? "Continue quando quiser."
+                    ? queuedPreview.length
+                      ? `${queuedPreview.length} ${queuedPreview.length === 1 ? "curva" : "curvas"} pendente${queuedPreview.length === 1 ? "" : "s"}: ${queuedPreview.map(d => arrows[d]).join(" ")}. Serão executadas ao continuar.`
+                      : "Continue quando quiser."
                     : `${score} pontos nesta partida.`}
               </span>
             </div>
