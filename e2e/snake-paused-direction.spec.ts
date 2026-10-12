@@ -17,6 +17,7 @@ test("Snake preserves confirmed turns across mobile pause and cancels unfinished
   await expect(board).toHaveAttribute("data-play-status", "paused");
   // A fully committed turn must survive a pause; no unexpected input loss.
   await expect(page.locator("[data-snake-queued]")).toHaveText("↑");
+  await expect(board.locator(".board-overlay")).toContainText("1 curva");
   await page.getByRole("button", { name: "Continuar", exact: true }).click();
   await expect(board).toHaveAttribute("data-play-status", "running");
   await expect.poll(() => board.getAttribute("data-facing")).toBe("up");
