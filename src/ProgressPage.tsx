@@ -31,7 +31,7 @@ export default function ProgressPage({progress, heading, update}:Props) {
             <p className="muted">
               Suas visitas e recordes ficam neste navegador. Sem cadastro.
             </p>
-            <p className="muted" aria-label="Atividade de hoje">Hoje: {today.visitsToday} visitas em {today.uniqueGamesToday} jogos. Sequência atual: {today.currentStreak} dias. Apenas dias registrados neste navegador são considerados.</p>
+            <p className="muted" aria-label="Atividade de hoje">Hoje: {today.visitsToday} {today.visitsToday === 1 ? "visita" : "visitas"} em {today.uniqueGamesToday} {today.uniqueGamesToday === 1 ? "jogo" : "jogos"}. Sequência atual: {today.currentStreak} {today.currentStreak === 1 ? "dia" : "dias"}. Apenas dias registrados neste navegador são considerados.</p>
             <div className="progress-journey"><span>Seu caminho pelo catálogo</span><progress value={Object.keys(progress.visits).length} max={games.length} aria-label="Jogos explorados no catálogo" /><span>{games.length - Object.keys(progress.visits).length} jogos para descobrir</span></div>
             <div className="progress-grid">
               <div>
