@@ -39,10 +39,14 @@ export default function QuizExpansion({
     q = question(gameId, difficulty, seed, round),
     meta = newGames.find((g) => g.id === gameId)!;
   const [dragPath,setDragPath]=useState<number[]>([]);
+  const [picked,setPicked]=useState(''), [exactAnswers,setExactAnswers]=useState(0), [lastPoints,setLastPoints]=useState(0);
+  const nextAction=useRef<HTMLButtonElement>(null), prompt=useRef<HTMLHeadingElement>(null);
   const special = ["hangman", "wordsearch"].includes(gameId),
     done = special ? answered : round === 9 && answered;
   const pause = useCallback(() => setPaused(true), []);
   useAutoPause(pause);
+  useEffect(()=>{if(answered && !special) nextAction.current?.focus({preventScroll:true});},[answered,special]);
+  useEffect(()=>{if(round>0) prompt.current?.focus({preventScroll:true});},[round]);
   useEffect(() => {
     if (done && !awarded.current) {
       awarded.current = true;
@@ -64,6 +68,7 @@ export default function QuizExpansion({
     setStart(-1);
     setMarks([]);
     setHidden(false);
+    setPicked('');setExactAnswers(0);setLastPoints(0);
     awarded.current = false;
     lock.current = false;
   }
@@ -92,6 +97,8 @@ export default function QuizExpansion({
         ? Math.max(0, 100 - Math.abs(Number(value) - Number(q.answer)) * 12)
         : quizAward(difficulty, streak, correct);
     setScore((s) => s + (Number.isFinite(points) ? points : 0));
+    setPicked(value);setLastPoints(Number.isFinite(points)?points:0);
+    if(correct) setExactAnswers(n=>n+1);
     setStreak((current) => (correct ? current + 1 : 0));
     setAnswered(true);
     setMessage(
@@ -149,6 +156,7 @@ export default function QuizExpansion({
     } else setMessage("Esse segmento não contém uma palavra da lista.");
   }
   function advance() {
+    setPicked('');setLastPoints(0);
     setRound((r) => r + 1);
     setAnswered(false);
     setInput("");
@@ -196,6 +204,10 @@ export default function QuizExpansion({
           </strong>
         </span>
       </div>
+      {!special && <div className="quiz-progress" role="progressbar" aria-label="Rodadas respondidas" aria-valuemin={0} aria-valuemax={10} aria-valuenow={round+Number(answered)}>
+        <span>{round+Number(answered)} de 10 respondidas</span><span>{exactAnswers} {exactAnswers===1?'resposta exata':'respostas exatas'}</span>
+        <div aria-hidden="true">{Array.from({length:10},(_,i)=><i key={i} data-complete={i<round+Number(answered)} data-current={i===round && !answered}/>)}</div>
+      </div>}
       <div role="status" className="new-status">
         {paused ? "Partida pausada" : message}
       </div>
@@ -209,6 +221,7 @@ export default function QuizExpansion({
           ) : (
             <>
               <h2
+                ref={prompt} tabIndex={-1}
                 className={`quiz-prompt ${gameId === "stroop" ? "stroop" : ""}`}
                 style={
                   gameId === "stroop"
@@ -304,9 +317,12 @@ export default function QuizExpansion({
                         <button
                           key={choice}
                           disabled={answered}
+                          data-answer-result={answered ? choice.toUpperCase()===q.answer.toUpperCase() ? 'correct' : choice===picked ? 'wrong' : 'neutral' : undefined}
                           onClick={() => answer(choice)}
                         >
                           {choice}
+                          {answered && choice.toUpperCase()===q.answer.toUpperCase() && <span className="answer-marker" aria-hidden="true">✓</span>}
+                          {answered && choice===picked && choice.toUpperCase()!==q.answer.toUpperCase() && <span className="answer-marker" aria-hidden="true">×</span>}
                         </button>
                       ))}
                     </div>
@@ -352,15 +368,18 @@ export default function QuizExpansion({
                 </>
               )}
               {answered && !done && (
-                <button className="primary" onClick={advance}>
+                <button ref={nextAction} className="primary" onClick={advance}>
                   Próxima rodada
                 </button>
               )}
+              {answered && !special && <p className="quiz-award">+{lastPoints} pontos nesta rodada · {exactAnswers} {exactAnswers===1?'resposta exata':'respostas exatas'}</p>}
               {done && (
                 <div className="quiz-result">
                   <h2>Sessão concluída</h2>
                   <p>{score} pontos</p>
+                  {!special && <p>{exactAnswers} de 10 respostas exatas · {exactAnswers*10}% de acertos</p>}
                   <button
+                    ref={nextAction}
                     className="primary"
                     onClick={() => reset(difficulty, seed + 1)}
                   >

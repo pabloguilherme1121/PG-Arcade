@@ -32,8 +32,6 @@ summary { cursor:pointer; }
 .game-metadata { display:block; padding-top:12px; margin-top:auto; font-size:12px; color:#d3dfc2; line-height:1.5; }
 .preview { min-width:0; overflow:hidden; height:160px; box-shadow:none; }
 .preview::after { display:none; }
-.mechanic-preview, .expanded-preview { display:block; padding:0; height:auto; aspect-ratio:8/5; background:#11232d; }
-.mechanic-preview > svg, .expanded-preview > svg { display:block; width:100%; height:100%; min-width:1px; min-height:1px; }
 .preview svg text { font-family:"Inter Variable",sans-serif; font-weight:600; }
 .game-card:hover .preview, .curated-card:hover .preview { transform:none; }
 .catalog { padding-top:24px; border-top:1px solid #32414a; }
@@ -60,7 +58,6 @@ summary { cursor:pointer; }
   .curated-card h3 { font-size:18px; }
   .curated-card p { font-size:13px; }
   .curated-card .preview { height:118px; }
-  .curated-card .mechanic-preview { height:auto; }
   .catalog-heading { align-items:start; }
   .catalog-tools { gap:12px; }
   .player-toolbar { flex-wrap:wrap; }
@@ -76,7 +73,6 @@ summary { cursor:pointer; }
   .hero h1 { font-size:36px; }
   .curated-grid, .personal-grid { grid-template-columns:1fr; }
   .curated-card .preview { height:150px; }
-  .curated-card .mechanic-preview { height:auto; }
   .player-toolbar { align-items:stretch; }
   .player-toolbar > * { width:100%; }
 }
@@ -85,7 +81,22 @@ html[data-arcade-motion="reduced"] .curated-card { animation:none; transition:no
 html[data-arcade-contrast="true"] .curated-card, html[data-arcade-contrast="true"] .player { background:#000; border-color:#fff; }
 html[data-arcade-contrast="true"] .game-metadata, html[data-arcade-contrast="true"] .section-title p, html[data-arcade-contrast="true"] .curated-card p { color:#fff; }
 
-.illustrated-preview { display:block; padding:0; height:auto; aspect-ratio:8/5; background:#11232d; }
-.illustrated-preview img { display:block; width:100%; height:100%; object-fit:contain; }
-.illustrated-preview img[hidden], .illustrated-preview span[hidden] { display:none; }
-.illustrated-preview span { padding:24px; color:#c9f65a; font-size:16px; line-height:1.5; }
+
+/* Editorial rhythm and direct, factual routes into the catalog. */
+.hero-eyebrow{display:block;color:#d8f8b6;font-size:11px;font-weight:700;letter-spacing:.16em;margin-bottom:18px}
+.experience-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.experience-grid button{position:relative;display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:12px;min-width:0;padding:22px;border:1px solid #526273;border-radius:18px;color:#edf5fb;background:linear-gradient(145deg,#223042,#111c28);transition:border-color 160ms ease,transform 160ms ease}
+.experience-grid button:nth-child(2){background:linear-gradient(145deg,#29382a,#141f1c)}
+.experience-grid button:nth-child(3){background:linear-gradient(145deg,#343048,#191d2c)}
+.experience-number{font:500 12px var(--font-display);color:#bbcadd;letter-spacing:.12em}
+.experience-grid strong{font:600 clamp(18px,2vw,24px) var(--font-display);letter-spacing:-.03em;line-height:1.2}
+.experience-grid button>span:not(.experience-number){font-size:13px;line-height:1.6;color:#d0dce8}
+.experience-grid .experience-action{display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:12px;color:#e6ffc7!important;font-weight:600}
+.experience-grid button[aria-pressed="true"]{border-color:#c9f65a;box-shadow:inset 0 0 0 1px #c9f65a}
+.curated-card .game-cover{border:1px solid #63788c;box-shadow:0 8px 16px #0004}
+.curated-card{background:linear-gradient(150deg,#202d3c,#131e29);border-color:#4c6072}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){html:not([data-arcade-motion="reduced"]) .experience-grid button:hover{transform:translateY(-3px);border-color:#b6ced8}}
+@media(max-width:600px){.experience-grid{gap:8px;grid-template-columns:1fr}.experience-grid button{display:grid;grid-template-columns:26px minmax(0,1fr);gap:4px 10px;padding:14px}.experience-number{grid-row:1/4}.experience-grid button>span:not(.experience-number),.experience-grid strong{grid-column:2}.experience-grid .experience-action{padding-top:4px}.hero-eyebrow{font-size:10px;margin-bottom:12px}}
+html[data-arcade-motion="reduced"] .experience-grid button{transition:none}
+html[data-arcade-contrast="true"] .experience-grid button{background:#000;border-color:#fff}
+@media(prefers-reduced-motion:reduce){.experience-grid button{transition:none}}

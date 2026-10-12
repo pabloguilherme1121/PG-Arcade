@@ -17,7 +17,8 @@ import { useReducedMotion } from "../useReducedMotion";
 import { useResponsiveCanvas } from "./useResponsiveCanvas";
 import { paintBlock, paintRock } from "./canvasMaterials";
 import { identifyTouchGesture, shouldQueueCanvasTapAction } from "../lib/touchCanvas";
-import { renderBetween } from "../lib/renderInterpolation";
+import { actionPresentation } from "../lib/actionPresentation";
+import { createCanvasFeedback } from './canvasFeedback';
 import "./actionCollection.css";
 import "./gameplay.css";
 const artwork = (() => {
@@ -301,7 +302,7 @@ export default function ActionCollection({
     canvas = useRef<HTMLCanvasElement>(null),
     saved = useRef(false),
     onRecordRef = useRef(onRecord),
-    pointerStart = useRef<{id:number;x:number;y:number} | null>(null),
+    pointerStart = useRef<{id:number;x:number;y:number;sampled:string|null} | null>(null),
     pointerDirection = useRef<"left" | "right" | "up" | "down" | null>(null);
   onRecordRef.current = onRecord;
   useResponsiveCanvas(canvas, 480, 360, (context) => paint(context, state.current, reducedMotion));
@@ -338,6 +339,7 @@ export default function ActionCollection({
       accumulator = 0,
       lastHud = 0;
     let previousState=state.current;
+    const feedback=createCanvasFeedback(state.current);
     const run = (now: number) => {
       if (!previous) previous = now;
       accumulator += Math.min((now - previous) / 1000, 0.08);
@@ -350,10 +352,12 @@ export default function ActionCollection({
         pending.current.clear();
         previousState=state.current;
         state.current = stepAction(state.current, currentInput, 1 / 60);
+        if(pointerStart.current && pointerDirection.current) pointerStart.current.sampled=pointerDirection.current;
         accumulator -= 1 / 60;
       }
       const ctx = canvas.current?.getContext("2d");
-      if (ctx) paint(ctx, reducedMotion || state.current.done ? state.current : renderBetween(previousState,state.current,accumulator*60), reducedMotion);
+      if (ctx) paint(ctx, reducedMotion || state.current.done ? state.current : actionPresentation(previousState,state.current,accumulator*60), reducedMotion);
+      if (ctx) feedback(ctx,state.current,360,reducedMotion);
       if (now - lastHud > 100) {
         setHud(state.current);
         lastHud = now;
@@ -511,7 +515,7 @@ export default function ActionCollection({
         <span>
           Pontos <strong>{hud.score}</strong>
         </span>
-        <span>
+        <span data-critical-lives={hud.lives <= 2}>
           Vidas <strong>{hud.lives}</strong>
         </span>
         <span>
@@ -554,7 +558,7 @@ export default function ActionCollection({
           aria-label={`${definition.name}: área de jogo. ${definition.help}`}
           onPointerDown={(e) => {
             if (e.pointerType === "mouse" || status !== "running" || pointerStart.current) return;
-            pointerStart.current = {id:e.pointerId,x:e.clientX,y:e.clientY};
+            pointerStart.current = {id:e.pointerId,x:e.clientX,y:e.clientY,sampled:null};
             e.currentTarget.setPointerCapture(e.pointerId);
             if (["runner","voo","jetpack"].includes(id)) {
               input.current.action = true;
@@ -585,7 +589,7 @@ export default function ActionCollection({
               if (shouldQueueCanvasTapAction(id, controls.some(([field]) => field === "action"))) {
                 pending.current.add("action");
               }
-            } else pending.current.add(gesture);
+            } else if(gesture!==start.sampled) pending.current.add(gesture);
           }}
           onPointerCancel={(e) => {
             if (pointerStart.current?.id !== e.pointerId) return;
@@ -675,8 +679,12 @@ export default function ActionCollection({
               pending.current.delete(key);
             }}
             onLostPointerCapture={(e) => {
+              // Pointer-up already cleared "held": keep its one-frame tap pulse.
+              // An unexpected capture loss must cancel the pending pulse.
+              const interrupted = e.currentTarget.dataset.held === "true";
               delete e.currentTarget.dataset.held;
               input.current[key] = false;
+              if (interrupted) pending.current.delete(key);
             }}
             onKeyDown={(e) => {
               if (e.key === " " || e.key === "Enter") {
@@ -691,8 +699,11 @@ export default function ActionCollection({
               input.current[key] = false;
             }}
             onBlur={(e) => {
+              // Do not replay interrupted input after the player leaves this control.
+              const interrupted = e.currentTarget.dataset.held === "true";
               delete e.currentTarget.dataset.held;
               input.current[key] = false;
+              if (interrupted) pending.current.delete(key);
             }}
           >
             {label}

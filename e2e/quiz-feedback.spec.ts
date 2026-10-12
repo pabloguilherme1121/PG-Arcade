@@ -1,0 +1,24 @@
+import {test,expect} from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+import {question} from '../src/lib/quizExpansion';
+test('quiz feedback distinguishes a mistake, tracks real accuracy and resets cleanly',async({page})=>{
+  await page.goto('./#/jogar/fractions');
+  const arena=page.locator('[data-new-game="fractions"]');
+  const q=question('fractions',1,1,0), wrong=q.choices.find(c=>c!==q.answer)!;
+  await arena.getByRole('button',{name:wrong,exact:true}).click();
+  await expect(arena.locator('[data-answer-result="wrong"]')).toHaveText(`${wrong}×`);
+  await expect(arena.locator('[data-answer-result="correct"]')).toHaveText(`${q.answer}✓`);
+  await expect(arena.getByRole('progressbar',{name:'Rodadas respondidas'})).toHaveAttribute('aria-valuenow','1');
+  await expect(arena.getByRole('button',{name:'Próxima rodada'})).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(arena.locator('.quiz-prompt')).toBeFocused();
+  const next=question('fractions',1,1,1);
+  await arena.getByRole('button',{name:next.answer,exact:true}).click();
+  await expect(arena.locator('.quiz-progress')).toContainText('1 resposta exata');
+  await expect(arena.getByRole('progressbar')).toHaveAttribute('aria-valuenow','2');
+  expect((await new AxeBuilder({page}).include('[data-new-game="fractions"]').analyze()).violations).toEqual([]);
+  await arena.getByRole('button',{name:'Reiniciar',exact:true}).click();
+  await expect(arena.getByRole('progressbar')).toHaveAttribute('aria-valuenow','0');
+  await expect(arena.locator('[data-answer-result]')).toHaveCount(0);
+  await expect(arena.locator('.quiz-progress')).toContainText('0 respostas exatas');
+});

@@ -280,3 +280,18 @@ html[data-arcade-contrast="true"] .action-controls button[data-held="true"] { ou
   .action-controls button[data-held="true"]{transform:none}
 }
 html[data-arcade-motion="reduced"] .action-controls button[data-held="true"]{transform:none}
+
+/* Strong static danger cue for low lives; no flicker or animation in gameplay. */
+.action-hud [data-critical-lives="true"] {
+  border: 1px solid #e8a68b;
+  border-radius: 8px;
+  padding: 4px 7px;
+  background: #472d2d;
+  color: #ffe5d9;
+}
+.action-hud [data-critical-lives="true"] strong { color: #fff0dc; }
+html[data-arcade-contrast="true"] .action-hud [data-critical-lives="true"] {
+  border-color: #fff;
+  background: #000;
+  color: #fff;
+}

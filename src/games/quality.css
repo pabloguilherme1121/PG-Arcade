@@ -27,3 +27,39 @@ html[data-arcade-motion="reduced"] [data-arcade-arena] button {transition:none;t
 @media(prefers-reduced-motion:reduce) {[data-arcade-arena] button {transition:none;transform:none!important;}}
 @media(max-width:540px) {.session-mode-cards {margin:0;gap:6px;}.session-mode-cards button {padding:6px 8px;min-height:44px;align-items:center;justify-content:center;text-align:center;}.session-mode-cards span {display:none;}.session-mode-cards strong {font-size:13px;}.session-challenge .session-options {margin-bottom:4px;}}
 .player[data-immersive="true"] .session-mode-cards {display:none;}
+
+/* Clear score hierarchy and durable board materials, without decorative loops. */
+[data-arcade-arena] :is(.new-hud,.action-hud,.lc-stats,.scores){border:1px solid #566c7c;border-radius:12px;background:linear-gradient(125deg,#233342,#12212c);box-shadow:inset 0 1px #ffffff18}
+[data-arcade-arena] :is(.new-hud,.action-hud,.lc-stats,.scores) strong{color:#e8ffd0;text-shadow:0 1px 2px #0005}
+[data-arcade-arena] :is(.new-grid,.lc-grid,.jewel-board,.wordsearch-grid){border-radius:14px;padding:6px}
+[data-arcade-arena] :is(.new-grid,.wordsearch-grid,.sort-board) .selected{outline:2px solid #e8ffbb;outline-offset:-3px;box-shadow:inset 0 0 0 4px #b7e97930}
+[data-arcade-arena] :is(.new-grid,.lc-grid,.wordsearch-grid) button:focus-visible{outline:3px solid #f4ffd5;outline-offset:1px;position:relative;z-index:1}
+html[data-arcade-contrast="true"] [data-arcade-arena] :is(.new-hud,.action-hud,.lc-stats,.scores){background:#000;border-color:#fff}
+
+.session-progress{padding:10px 12px;margin:6px 0;border:1px solid #506878;border-radius:12px;background:#142530;font-variant-numeric:tabular-nums}
+.session-progress>div{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:#cddde6}
+.session-progress strong{color:#e1ffb8}.session-progress>div>span:last-child{margin-left:auto}
+.session-progress progress{display:block;width:100%;height:5px;margin-top:10px;appearance:none;border:0;border-radius:99px;background:#344752;overflow:hidden}
+.session-progress progress::-webkit-progress-bar{background:#344752}.session-progress progress::-webkit-progress-value{background:#c9f65a}.session-progress progress::-moz-progress-bar{background:#c9f65a}
+.session-checkpoint{display:flex;align-items:center;gap:12px;padding:16px;margin:10px 0;border:1px solid #85a6bd;border-radius:14px;background:linear-gradient(135deg,#213b4c,#15252f)}
+.session-checkpoint>div{flex:1;min-width:0}.session-checkpoint strong{font:600 18px var(--font-display);color:#f0f8fd}.session-checkpoint p{margin:6px 0 0;color:#d1e0ea;font-size:13px;line-height:1.5}
+.session-checkpoint button{flex-shrink:0;background:#c9f65a;color:#172016;border-color:#d5ff89;font-weight:700}
+[data-session-urgent="true"] .session-clock{border-color:#ffd09c;color:#ffe1b9;background:#4a3020}
+[data-session-urgent="true"] progress::-webkit-progress-value{background:#ffbd7e}[data-session-urgent="true"] progress::-moz-progress-bar{background:#ffbd7e}
+.session-final-warning{display:block;margin-top:8px;color:#ffe1b9;font-size:12px}
+@media(max-width:540px){.session-checkpoint{padding:12px;align-items:stretch;flex-direction:column}.session-checkpoint strong{font-size:16px}.session-checkpoint button{align-self:flex-start}.session-progress{padding:8px 10px}}
+html[data-arcade-contrast="true"] :is(.session-checkpoint,.session-progress){background:#000;border-color:#fff}
+
+/* The selected mode stays understandable on phones without expanding all three cards. */
+.session-selected-mode { display:none; }
+@media (max-width:540px) {
+  .session-selected-mode {
+    display:none; margin:0; padding:0;
+    border-left:3px solid #c9f65a; border-radius:5px;
+    background:#1b302c; color:#f0ffdf; font-size:12px; line-height:1.4;
+  }
+}
+.player[data-immersive="true"] .session-selected-mode {display:none}
+html[data-arcade-contrast="true"] .session-selected-mode {
+  background:#000; color:#fff; border-color:#fff;
+}

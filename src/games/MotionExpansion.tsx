@@ -15,6 +15,7 @@ import { paintAtmosphere, paintBlock, paintOrb, paintRoadCar, paintFrog, paintRo
 import { identifyTouchGesture } from "../lib/touchCanvas";
 import { renderBetween } from "../lib/renderInterpolation";
 import { useReducedMotion } from "../useReducedMotion";
+import { createCanvasFeedback } from './canvasFeedback';
 import "./newGames.css";
 import "./gameplay.css";
 export function paintMotion(c: CanvasRenderingContext2D, s: MotionState) {
@@ -215,7 +216,7 @@ export default function MotionExpansion({
     canvas = useRef<HTMLCanvasElement>(null),
     recordCallback = useRef(onRecord),
     awarded = useRef(false),
-    pointerStart = useRef<{id:number;x:number;y:number} | null>(null),
+    pointerStart = useRef<{id:number;x:number;y:number;sampled:string|null} | null>(null),
     pointerDirection = useRef<"left" | "right" | "up" | "down" | null>(null);
   recordCallback.current = onRecord;
   useResponsiveCanvas(canvas, 480, 380, (context) => paintMotion(context, state.current));
@@ -254,6 +255,7 @@ export default function MotionExpansion({
       accumulator = 0,
       renderTime = 0;
     let previousState=state.current;
+    const feedback=createCanvasFeedback(state.current);
     const animate = (now: number) => {
       const elapsed = Math.min((now - last) / 1000, 0.15);
       last = now;
@@ -274,6 +276,7 @@ export default function MotionExpansion({
           };
           previousState=state.current;
           state.current = motionStep(state.current, keys, 1 / 60);
+          if(pointerStart.current && pointerDirection.current) pointerStart.current.sampled=pointerDirection.current;
           pending.current = emptyInput();
           accumulator -= 1 / 60;
         }
@@ -283,6 +286,7 @@ export default function MotionExpansion({
       } else accumulator = 0;
       const context = canvas.current?.getContext("2d");
       if (context) paintMotion(context, reducedMotion || state.current.status !== "running" ? state.current : renderBetween(previousState,state.current,accumulator*60));
+      if (context) feedback(context,state.current,380,reducedMotion);
       if (now - renderTime > 90) {
         setHud(state.current);
         renderTime = now;
@@ -376,8 +380,13 @@ export default function MotionExpansion({
           }
         }}
         onLostPointerCapture={(e) => {
+          // Preserve a completed tap's queued action, but drop aborted presses.
+          const interrupted = e.currentTarget.dataset.held === "true";
           delete e.currentTarget.dataset.held;
-          if (field !== "lane") input.current[field] = false;
+          if (field !== "lane") {
+            input.current[field] = false;
+            if (interrupted) pending.current[field] = false;
+          }
         }}
         onKeyDown={(e) => {
           if (e.key === " " || e.key === "Enter") {
@@ -397,8 +406,13 @@ export default function MotionExpansion({
           }
         }}
         onBlur={(e) => {
+          // Losing focus during a held key/touch must also cancel its queued pulse.
+          const interrupted = e.currentTarget.dataset.held === "true";
           delete e.currentTarget.dataset.held;
-          if (field !== "lane") input.current[field] = false;
+          if (field !== "lane") {
+            input.current[field] = false;
+            if (interrupted) pending.current[field] = false;
+          }
         }}
       >
         {label}
@@ -478,7 +492,7 @@ export default function MotionExpansion({
             }}
             onPointerDown={(e) => {
               if (e.pointerType !== "mouse" && hud.status === "running" && !pointerStart.current) {
-                pointerStart.current = {id:e.pointerId,x:e.clientX,y:e.clientY};
+                pointerStart.current = {id:e.pointerId,x:e.clientX,y:e.clientY,sampled:null};
                 e.currentTarget.setPointerCapture(e.pointerId);
               }
               if (hud.status !== "running") return;
@@ -524,11 +538,14 @@ export default function MotionExpansion({
               if (gesture==="tap") {
                 if (["stack","rope","turret","ricochet"].includes(gameId))
                   pending.current.action=true;
-              } else pending.current[gesture]=true;
+              } else if(gesture!==start.sampled) pending.current[gesture]=true;
             }}
             onPointerCancel={(e) => {
               if (pointerStart.current?.id === e.pointerId) {
                 pointerStart.current=null;
+                // On an interrupted rhythm press, cancel the lane queued on pointer down.
+                // Completed taps set pointerStart to null on pointer up and keep their pulse.
+                if (gameId === "rhythm") pending.current.lane = -1;
                 if(pointerDirection.current) input.current[pointerDirection.current]=false;
                 pointerDirection.current=null;
               }
@@ -536,6 +553,9 @@ export default function MotionExpansion({
             onLostPointerCapture={(e) => {
               if (pointerStart.current?.id === e.pointerId) {
                 pointerStart.current=null;
+                // On an interrupted rhythm press, cancel the lane queued on pointer down.
+                // Completed taps set pointerStart to null on pointer up and keep their pulse.
+                if (gameId === "rhythm") pending.current.lane = -1;
                 if(pointerDirection.current) input.current[pointerDirection.current]=false;
                 pointerDirection.current=null;
               }

@@ -1,10 +1,16 @@
 import { games, type GameId } from "./catalog";
+import { gameHelp } from './gameHelp';
 import { discoveryFilters, modeTags, modeLabel, supportsSwipe, type DiscoveryFilter } from "./smartDiscovery";
 
 /** Names and descriptions are searched as words, ignoring accents and excess spaces. */
 export const searchText = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR").trim().replace(/\s+/g, " ");
+const searchIndex = new WeakMap<typeof games[number], string>();
 export const matchesGame = (game: typeof games[number], query: string) => {
-  const text = searchText(`${game.name} ${game.description} ${game.category} ${modeTags(game).map(modeLabel).join(" ")} ${gameMode(game.id)} ${supportsSwipe(game.id)?'deslizar gestos':''}`);
+  let text = searchIndex.get(game);
+  if (text === undefined) {
+    text = searchText(`${game.name} ${game.description} ${gameHelp[game.id]} ${game.category} ${modeTags(game).map(modeLabel).join(" ")} ${gameMode(game.id)} ${supportsSwipe(game.id)?'deslizar gestos':''}`);
+    searchIndex.set(game, text);
+  }
   return searchText(query).split(" ").every(word => text.includes(word));
 };
 export const categoryGroup = (category: string) => ["Corrida", "Carros"].includes(category) ? "Carros e corrida" : category;
