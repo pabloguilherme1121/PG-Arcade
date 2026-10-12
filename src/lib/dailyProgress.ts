@@ -82,3 +82,30 @@ export function summarizeDailyActivity(activity: DailyActivity, now = new Date()
   }
   return { visitsToday, uniqueGamesToday: Object.keys(counts).length, currentStreak };
 }
+
+/** Combine independently saved calendars without re-counting the same visit after repeated imports. */
+export function mergeDailyActivity(current: DailyActivity, incoming: unknown): DailyActivity {
+  const base = normalizeDailyActivity(current);
+  const restored = normalizeDailyActivity(incoming);
+  for (const [day, visits] of Object.entries(restored.days)) {
+    const merged = { ...(base.days[day] ?? {}) };
+    for (const [id, count] of Object.entries(visits)) {
+      if (isGameId(id) && typeof count === "number") {
+        merged[id] = Math.max(merged[id] ?? 0, count);
+      }
+    }
+    base.days[day] = merged;
+  }
+  return normalizeDailyActivity(base);
+}
+
+export function restoreDailyActivity(imported: unknown, store?: DailyStore): boolean {
+  try {
+    const target = store ?? localStorage;
+    const merged = mergeDailyActivity(readDailyActivity(target), imported);
+    target.setItem(dailyStorageKey, JSON.stringify(merged));
+    return true;
+  } catch {
+    return false;
+  }
+}
