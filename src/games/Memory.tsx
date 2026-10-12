@@ -62,7 +62,7 @@ export default function Memory({
       setMatched((m) => [...m, cards[a]]);
       setStreak((value) => value + 1);
       setOpen([]);
-      setMessage("Par encontrado! Continue a sequência.");
+      setMessage(`Par encontrado! ${streak + 1} ${streak === 0 ? "par seguido" : "pares seguidos"}.`);
     } else {
       setStreak(0);
       setMessage("Não foi desta vez. Memorize as cartas.");
@@ -73,7 +73,7 @@ export default function Memory({
         observeLeft.current = Math.max(0, deadline - performance.now());
       };
     }
-  }, [open, cards, paused, pairs, matched, moves, onRecord]);
+  }, [open, cards, paused, pairs, matched, moves, onRecord, streak]);
   function flip(i: number) {
     if (
       open.length === 2 ||
