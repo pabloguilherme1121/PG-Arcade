@@ -515,7 +515,7 @@ export default function ActionCollection({
         <span>
           Pontos <strong>{hud.score}</strong>
         </span>
-        <span>
+        <span data-critical-lives={hud.lives <= 2}>
           Vidas <strong>{hud.lives}</strong>
         </span>
         <span>
