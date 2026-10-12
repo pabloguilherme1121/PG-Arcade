@@ -699,8 +699,11 @@ export default function ActionCollection({
               input.current[key] = false;
             }}
             onBlur={(e) => {
+              // Do not replay interrupted input after the player leaves this control.
+              const interrupted = e.currentTarget.dataset.held === "true";
               delete e.currentTarget.dataset.held;
               input.current[key] = false;
+              if (interrupted) pending.current.delete(key);
             }}
           >
             {label}
