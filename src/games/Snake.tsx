@@ -102,6 +102,11 @@ export default function Snake({
     return () => clearInterval(id);
   }, [status, delay, mode]);
   const pause = useCallback(() => {
+    // A queued turn and unfinished swipe belong to the interrupted frame.
+    // Do not apply them unexpectedly when the game is resumed.
+    queued.current = [];
+    touch.current = null;
+    setQueuedPreview([]);
     setStatus((s) => (s === "running" ? "paused" : s));
   }, []);
   // Includes blur, hidden, pagehide and freeze when mobile PWA enters BFCache.
@@ -138,13 +143,8 @@ export default function Snake({
             }
             if (e.code === "Space") {
               e.preventDefault();
-              setStatus((s) =>
-                s === "running"
-                  ? "paused"
-                  : s === "ready" || s === "paused"
-                    ? "running"
-                    : s,
-              );
+              if (status === "running") pause();
+              else setStatus((s) => (s === "ready" || s === "paused" ? "running" : s));
             }
           }}
           onTouchStart={(e) => {
@@ -230,8 +230,11 @@ export default function Snake({
             className="primary"
             disabled={status === "over" || status === "won"}
             onClick={() => {
-              setStatus(status === "running" ? "paused" : "running");
-              if (status !== "running") revealPlayfield(board.current);
+              if (status === "running") pause();
+              else {
+                setStatus("running");
+                revealPlayfield(board.current);
+              }
             }}
           >
             {status === "running" ? <Pause size={18} /> : <Play size={18} />}{" "}
