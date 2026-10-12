@@ -474,3 +474,11 @@ html[data-arcade-contrast="true"] .motion-controls button[data-held="true"] { ou
   .motion-controls button[data-held="true"]{transform:none}
 }
 html[data-arcade-motion="reduced"] .motion-controls button[data-held="true"]{transform:none}
+
+.quiz-progress{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;margin:10px 0 14px;font-size:12px;color:#d4e4ec;font-variant-numeric:tabular-nums}
+.quiz-progress>div{display:flex;width:100%;gap:5px}.quiz-progress i{flex:1;height:5px;border-radius:99px;background:#425768}.quiz-progress [data-complete="true"]{background:#c9f65a}.quiz-progress [data-current="true"]{background:#90c8ec}
+.quiz-choices button{position:relative}.quiz-choices button[data-answer-result="correct"]{background:linear-gradient(135deg,#315540,#193a2d);color:#eeffd8;border-color:#bfeb85;opacity:1;box-shadow:inset 0 0 0 2px #b6e97635}
+.quiz-choices button[data-answer-result="wrong"]{background:#452d34;color:#ffe5e5;border-color:#efa9ac;opacity:1}.quiz-choices button[data-answer-result="neutral"]{opacity:.55}
+.answer-marker{display:inline-block;margin-left:8px;font-size:18px;font-weight:800}.quiz-award{padding:10px 12px;border-radius:10px;background:#203b30;color:#e4ffc7;font-size:13px;font-variant-numeric:tabular-nums}
+.quiz-result{border:1px solid #8fb17b;background:linear-gradient(135deg,#263f36,#172d2b);border-radius:16px;padding:20px}.quiz-result h2{color:#e0ffba}.quiz-result p{font-variant-numeric:tabular-nums}
+html[data-arcade-contrast="true"] .quiz-choices button[data-answer-result]{opacity:1;border-color:#fff}
