@@ -1,0 +1,11 @@
+
+.progress-journey {display:grid;gap:10px;margin:24px 0;padding:20px;border:1px solid #526373;border-radius:14px;background:#14232c;color:#d8e5e9;font-size:14px;}
+.progress-journey progress {width:100%;height:9px;accent-color:#c9f65a;}
+.progress-record-heading {display:flex;gap:16px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-top:32px;}
+.progress-record-heading h2 {margin:0;}
+.progress-record-heading>div {display:flex;gap:8px;flex-wrap:wrap;}
+.progress-record-heading button {padding:10px 14px;border:1px solid #667888;border-radius:10px;background:#172532;color:#e9f2f5;}
+.progress-record-heading button[aria-pressed="true"] {border-color:#c9f65a;background:#30402d;color:#f3ffd6;}
+.progress-empty {padding:20px;border:1px dashed #819464;border-radius:14px;}
+.progress-empty a {display:inline-flex;min-height:44px;gap:12px;align-items:center;color:#edffd2;}
+html[data-arcade-contrast="true"] :is(.progress-journey,.progress-record-heading button) {background:#000;color:#fff;border-color:#fff;}

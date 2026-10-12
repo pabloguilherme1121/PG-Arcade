@@ -1,4 +1,4 @@
-import type { GameId } from "./catalog";
+import { games as catalog, type GameId } from "./catalog";
 import { newGames } from "./newCatalog";
 import { expandedGames } from "./expandedCatalog";
 
@@ -67,7 +67,7 @@ export function recommendGames<T extends GameInfo>(
 ):T[] {
   if(!history.favorites.length && !history.last && !Object.keys(history.visits).length)
     return [...games];
-  const previous=games.find(g=>g.id===history.last);
+  const previous=catalog.find(g=>g.id===history.last);
   const scored=games.map((g,index)=>{
     const visits=history.visits[g.id]||0;
     const score=(history.favorites.includes(g.id)?100:0)

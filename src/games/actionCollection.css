@@ -295,3 +295,6 @@ html[data-arcade-contrast="true"] .action-hud [data-critical-lives="true"] {
   background: #000;
   color: #fff;
 }
+
+.action-collection-overlay:has(.arena-feedback) { padding: 0; gap: 0; }
+.action-collection-overlay .arena-feedback button { margin: 0; }

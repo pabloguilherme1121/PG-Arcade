@@ -19,7 +19,6 @@ import {
   ArrowLeft,
   Maximize,
   Minimize,
-  Trophy,
   ExternalLink,
   Link as LinkIcon,
 } from "lucide-react";
@@ -39,7 +38,6 @@ import GameCover from "./GameCover";
 import {
   readProgress,
   saveProgress,
-  mergeProgress,
   type Progress,
 } from "./lib/progress";
 import { readPreferences, applyPreferences } from "./lib/preferences";
@@ -48,6 +46,7 @@ import { searchText, matchesGame, categoryGroup, recommended, gameMode, readCata
 import { useReducedMotion } from "./useReducedMotion";
 import { useImmersivePlayer } from "./lib/useImmersivePlayer";
 import "./features/portfolio/components/PortfolioArcade.css";
+const ProgressPage = lazy(() => import("./ProgressPage"));
 const SessionChallenge = lazy(() => import("./games/SessionChallenge"));
 type PlayerProps = { record: number; onRecord: (n: number) => void };
 const collectionPlayers = Object.fromEntries(
@@ -151,6 +150,7 @@ export default function App() {
   useEffect(() => applyPreferences(preferences), [preferences]);
   const [session, setSession] = useState(0);
   const restartDialog = useRef<HTMLDialogElement>(null);
+  const restartTrigger = useRef<HTMLButtonElement>(null);
   const quickHelp = useRef<HTMLDetailsElement>(null);
   const searchInput = useRef<HTMLInputElement>(null);
   function focusBoard() {
@@ -300,21 +300,6 @@ export default function App() {
       );
     }
   }
-  function exportProgress() {
-    const url = URL.createObjectURL(
-      new Blob([JSON.stringify(progress, null, 2)], {
-        type: "application/json",
-      }),
-    );
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "pg-arcade-progresso.json";
-    link.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    setMessage(
-      "Cópia de progresso preparada. Guarde o arquivo para restaurar em outro navegador.",
-    );
-  }
   useEffect(() => {
     if (isGameId(page) || page === "progresso") return;
     const onShortcut = (event: KeyboardEvent) => {
@@ -411,7 +396,7 @@ export default function App() {
         </nav>
         <a
           className="portfolio-link"
-          href="https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1"
+          href="https://pabloguilherme1121.github.io/PG-portfolio/#projetos"
           target="_blank"
           rel="noreferrer"
         >
@@ -473,7 +458,7 @@ export default function App() {
                   </span>
                 </button>
                 <a className="button" href="#conforto" onClick={(e) => { e.preventDefault(); const el=document.getElementById("conforto") as HTMLDetailsElement; el.open=true; el.scrollIntoView({block:"start"}); el.querySelector("summary")?.focus(); }}>Ajustar conforto</a>
-                <button onClick={askRestart} aria-keyshortcuts="Alt+Shift+R">Reiniciar com confirmação</button>
+                <button ref={restartTrigger} onClick={askRestart} aria-keyshortcuts="Alt+Shift+R">Reiniciar com confirmação</button>
                 </div>
               </details>
             </div>
@@ -559,6 +544,7 @@ export default function App() {
             </div>
             <dialog
               ref={restartDialog}
+              onClose={() => restartTrigger.current?.focus({preventScroll:true})}
               className="restart-dialog"
               aria-labelledby="restart-title"
               onClick={(e) => {
@@ -628,109 +614,9 @@ export default function App() {
             </GameError>
           </div>
         ) : page === "progresso" ? (
-          <section className="progress-section">
-            <h1 ref={heading} tabIndex={-1}>
-              Meu progresso
-            </h1>
-            <p className="muted">
-              Suas visitas e recordes ficam neste navegador. Sem cadastro.
-            </p>
-            <div className="progress-grid">
-              <div>
-                <Trophy />
-                <h2>Jogos explorados</h2>
-                <strong>
-                  {Object.keys(progress.visits).length} de {games.length}
-                </strong>
-              </div>
-              <div>
-                <Heart />
-                <h2>Favoritos</h2>
-                <strong>{progress.favorites.length}</strong>
-              </div>
-            </div>
-            <h2>Seus recordes</h2>
-            <div className="progress-backup">
-              <p className="feedback" role="status">
-                {message}
-              </p>
-              <h3>Leve seu progresso com você</h3>
-              <p>
-                Salve uma cópia dos favoritos e recordes. Restaurar combina os
-                dados e preserva os melhores resultados. Nenhum arquivo é
-                enviado a servidores.
-              </p>
-              <button onClick={exportProgress}>
-                Salvar cópia do progresso
-              </button>
-              <label>
-                Restaurar cópia
-                <input
-                  type="file"
-                  accept=".json,application/json"
-                  aria-label="Restaurar cópia do progresso"
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    e.target.value = "";
-                    if (!file) return;
-                    try {
-                      if (file.size > 100000) throw Error();
-                      const data: unknown = JSON.parse(await file.text());
-                      if (
-                        !data ||
-                        typeof data !== "object" ||
-                        Array.isArray(data) ||
-                        !("favorites" in data) ||
-                        !("records" in data)
-                      )
-                        throw Error();
-                      update((p) => mergeProgress(p, data));
-                      setMessage(
-                        "Progresso restaurado. Seus melhores recordes foram preservados.",
-                      );
-                    } catch {
-                      setMessage(
-                        "Não foi possível restaurar. Escolha uma cópia JSON do PG Arcade de até 100 KB.",
-                      );
-                    }
-                  }}
-                />
-              </label>
-            </div>
-            <div className="record-list">
-              {games
-                .filter((g) => !!recordUnits[g.id])
-                .map((g) => (
-                  <a href={`#/jogar/${g.id}`} key={g.id}>
-                    <span>{g.name}</span>
-                    <strong>
-                      {progress.records[g.id]
-                        ? `${progress.records[g.id]} ${recordUnits[g.id]}`
-                        : "Ainda sem recorde"}
-                    </strong>
-                    <ArrowRight size={18} />
-                  </a>
-                ))}
-            </div>
-            <h2>Jogos visitados</h2>
-            <p className="muted">
-              Cada abertura de um jogo conta como uma visita.
-            </p>
-            <div className="record-list">
-              {games
-                .filter((g) => progress.visits[g.id])
-                .map((g) => (
-                  <a href={`#/jogar/${g.id}`} key={g.id}>
-                    <span>{g.name}</span>
-                    <span>{progress.visits[g.id]} visitas</span>
-                    <ArrowRight size={18} />
-                  </a>
-                ))}
-              {!Object.keys(progress.visits).length && (
-                <p>Escolha um jogo para começar.</p>
-              )}
-            </div>
-          </section>
+          <Suspense fallback={<section className="progress-section"><h1 ref={heading} tabIndex={-1}>Meu progresso</h1><p role="status">Preparando seu progresso…</p></section>}>
+            <ProgressPage progress={progress} update={update} heading={heading}/>
+          </Suspense>
         ) : (
           <>
             {page === "catalogo" && <section className="hero">
@@ -743,14 +629,14 @@ export default function App() {
               </div>
               <img src={`${import.meta.env.BASE_URL}assets/arcade-hero.webp`} alt="" width="1707" height="924" fetchPriority="high"/>
             </section>}
-            {page === "catalogo" && !query && category === "Todos" && mode === "Todos" && <div className="discovery">
+            {page === "catalogo" && !query && category === "Todos" && mode === "Todos" && modeFilter === "todos" && <div className="discovery">
               <section className="experience-selection" aria-labelledby="experience-title">
                 <div className="section-title"><h2 id="experience-title">Qual é o seu ritmo?</h2><p>Encontre uma partida para este momento.</p></div>
                 <div className="experience-grid">{([
                   ['rapido','01','Um desafio rápido','Reflexos e partidas curtas.'],
                   ['sem-pressa','02','Tempo para pensar','Tabuleiros e quebra-cabeças no seu ritmo.'],
                   ['dupla','03','Um duelo a dois','Divida este aparelho e jogue em dupla.'],
-                ] as const).map(([filter,number,title,description]) => <button type="button" key={filter} data-experience={filter} aria-pressed={modeFilter===filter} onClick={() => {
+                ] as const).map(([filter,number,title,description]) => <button type="button" key={filter} data-experience={filter} aria-pressed={false} onClick={() => {
                   setQuery('');setCategory('Todos');setMode('Todos');setModeFilter(filter);
                   document.getElementById('catalogo')?.scrollIntoView({behavior:reducedMotion?'instant':'smooth'});
                   document.querySelector<HTMLInputElement>('#catalogo input')?.focus({preventScroll:true});
@@ -836,6 +722,13 @@ export default function App() {
                   Jogo surpresa
                 </button>
               </div>
+              {(query || category !== "Todos" || mode !== "Todos" || modeFilter !== "todos") && <div className="active-catalog-filters" role="group" aria-label="Filtros ativos">
+                <span>Você está explorando</span>
+                {query && <button onClick={()=>setQuery("")} aria-label={`Remover busca: ${query}`}>“{query}” <span aria-hidden="true">×</span></button>}
+                {category !== "Todos" && <button onClick={()=>setCategory("Todos")} aria-label={`Remover categoria: ${category}`}>{category} <span aria-hidden="true">×</span></button>}
+                {mode !== "Todos" && <button onClick={()=>setMode("Todos")} aria-label={`Remover modo: ${mode}`}>{mode === "Solo" ? "Somente solo" : mode} <span aria-hidden="true">×</span></button>}
+                {modeFilter !== "todos" && <button onClick={()=>setModeFilter("todos")} aria-label={`Remover estilo: ${discoveryFilters.find(f=>f.id===modeFilter)?.label}`}>{discoveryFilters.find(f=>f.id===modeFilter)?.label} <span aria-hidden="true">×</span></button>}
+              </div>}
               <div className="game-grid">
                 {sorted.map((g, index) => renderCard(g, false, index < 4))}
 

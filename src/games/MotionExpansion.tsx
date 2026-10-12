@@ -16,6 +16,8 @@ import { identifyTouchGesture } from "../lib/touchCanvas";
 import { renderBetween } from "../lib/renderInterpolation";
 import { useReducedMotion } from "../useReducedMotion";
 import { createCanvasFeedback } from './canvasFeedback';
+import { ArenaFeedback, ArenaProgress } from "./ArenaFeedback";
+import { motionGoal, motionHints } from "./arenaPresentation";
 import "./newGames.css";
 import "./gameplay.css";
 export function paintMotion(c: CanvasRenderingContext2D, s: MotionState) {
@@ -221,6 +223,7 @@ export default function MotionExpansion({
   recordCallback.current = onRecord;
   useResponsiveCanvas(canvas, 480, 380, (context) => paintMotion(context, state.current));
   const meta = newGames.find((g) => g.id === gameId)!;
+  const goal = motionGoal(hud);
   const pause = useCallback(() => {
     input.current = emptyInput();
     pending.current = emptyInput();
@@ -443,7 +446,7 @@ export default function MotionExpansion({
         <span>
           Pontos <strong>{hud.score}</strong>
         </span>
-        <span>
+        <span data-critical-lives={hud.lives <= 1}>
           Vidas <strong>{hud.lives}</strong>
         </span>
         {["rhythm", "balloons"].includes(gameId) && (
@@ -458,6 +461,7 @@ export default function MotionExpansion({
           Recorde <strong>{record}</strong>
         </span>
       </div>
+      <ArenaProgress label={goal.label} value={goal.value} target={goal.target} unit={goal.unit} detail={gameId === "ricochet" ? `${hud.shots} disparos restantes` : undefined} />
       <div role="status" className="new-status">
         {hud.status === "paused" ? "Partida pausada" : hud.message}
       </div>
@@ -563,27 +567,22 @@ export default function MotionExpansion({
           />
           {hud.status !== "running" && (
             <div className="motion-overlay">
-              <p>
-                {hud.status === "ready"
+              <ArenaFeedback
+                phase={hud.status === "won" || hud.status === "lost" ? "done" : hud.status}
+                context={meta.name}
+                title={hud.status === "ready"
                   ? "Prepare os controles"
                   : hud.status === "paused"
                     ? "Pausado"
                     : hud.status === "won"
                       ? "Desafio concluído!"
                       : "Fim da tentativa"}
-              </p>
-              {["ready", "paused"].includes(hud.status) ? (
-                <button className="primary" onClick={start}>
-                  {hud.status === "ready" ? "Começar" : "Continuar"}
-                </button>
-              ) : (
-                <button
-                  className="primary"
-                  onClick={() => reset(difficulty, seed + 1)}
-                >
-                  Jogar novamente
-                </button>
-              )}
+                objective={hud.status === "lost" ? hud.message : hud.status === "won" ? `Objetivo alcançado: ${goal.target} ${goal.unit}.` : goal.objective}
+                hint={motionHints[gameId]}
+                score={hud.score} time={hud.time} lives={hud.lives}
+                action={hud.status === "ready" ? "Começar" : hud.status === "paused" ? "Continuar" : "Jogar novamente"}
+                onAction={["ready", "paused"].includes(hud.status) ? start : () => reset(difficulty, seed + 1)}
+              />
             </div>
           )}
           <div className="motion-inputs">
