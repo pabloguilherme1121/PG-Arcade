@@ -538,6 +538,9 @@ export default function MotionExpansion({
             onPointerCancel={(e) => {
               if (pointerStart.current?.id === e.pointerId) {
                 pointerStart.current=null;
+                // On an interrupted rhythm press, cancel the lane queued on pointer down.
+                // Completed taps set pointerStart to null on pointer up and keep their pulse.
+                if (gameId === "rhythm") pending.current.lane = -1;
                 if(pointerDirection.current) input.current[pointerDirection.current]=false;
                 pointerDirection.current=null;
               }
@@ -545,6 +548,9 @@ export default function MotionExpansion({
             onLostPointerCapture={(e) => {
               if (pointerStart.current?.id === e.pointerId) {
                 pointerStart.current=null;
+                // On an interrupted rhythm press, cancel the lane queued on pointer down.
+                // Completed taps set pointerStart to null on pointer up and keep their pulse.
+                if (gameId === "rhythm") pending.current.lane = -1;
                 if(pointerDirection.current) input.current[pointerDirection.current]=false;
                 pointerDirection.current=null;
               }
