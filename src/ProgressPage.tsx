@@ -3,6 +3,7 @@ import { ArrowRight, Heart, Trophy } from "lucide-react";
 import { games } from "./lib/catalog";
 import { recordUnits } from "./lib/gameHelp";
 import { mergeProgress, type Progress } from "./lib/progress";
+import { readDailyActivity, summarizeDailyActivity } from "./lib/dailyProgress";
 import "./ProgressPage.css";
 
 type Props = {
@@ -21,6 +22,7 @@ export default function ProgressPage({progress, heading, update}:Props) {
   setMessage("Cópia de progresso preparada. Guarde o arquivo para restaurar em outro navegador.");
  }
  const recordCount=games.filter(g=>progress.records[g.id]).length;
+ const today = summarizeDailyActivity(readDailyActivity());
  return (
           <section className="progress-section">
             <h1 ref={heading} tabIndex={-1}>
@@ -29,6 +31,7 @@ export default function ProgressPage({progress, heading, update}:Props) {
             <p className="muted">
               Suas visitas e recordes ficam neste navegador. Sem cadastro.
             </p>
+            <p className="muted" aria-label="Atividade de hoje">Hoje: {today.visitsToday} visitas em {today.uniqueGamesToday} jogos. Sequência atual: {today.currentStreak} dias. Apenas dias registrados neste navegador são considerados.</p>
             <div className="progress-journey"><span>Seu caminho pelo catálogo</span><progress value={Object.keys(progress.visits).length} max={games.length} aria-label="Jogos explorados no catálogo" /><span>{games.length - Object.keys(progress.visits).length} jogos para descobrir</span></div>
             <div className="progress-grid">
               <div>
