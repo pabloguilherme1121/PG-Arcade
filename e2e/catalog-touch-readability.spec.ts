@@ -12,10 +12,12 @@ test.describe("catalog touch readability", () => {
       const metrics = await cards.evaluateAll((elements) => elements.map(card => {
         const category = card.querySelector<HTMLElement>(".game-category")!;
         const description = card.querySelector<HTMLElement>("p")!;
+        const modeTags = Array.from(card.querySelectorAll<HTMLElement>(".card-mode-tags span"));
         const favorite = card.querySelector<HTMLElement>(".favorite")!;
         const rect = favorite.getBoundingClientRect();
         return {
           categoryFont: parseFloat(getComputedStyle(category).fontSize),
+          modeFonts: modeTags.map(tag => parseFloat(getComputedStyle(tag).fontSize)),
           descriptionFont: parseFloat(getComputedStyle(description).fontSize),
           categoryFits: category.scrollWidth <= category.clientWidth + 1,
           favoriteWidth: rect.width,
@@ -23,6 +25,7 @@ test.describe("catalog touch readability", () => {
         };
       }));
       expect(metrics.every(card => card.categoryFont >= 12 && card.descriptionFont >= 12), `text readability at ${width}px`).toBe(true);
+      expect(metrics.every(card => card.modeFonts.every(size => size >= 12)), `mode label readability at ${width}px`).toBe(true);
       expect(metrics.every(card => card.categoryFits), `category wrapping at ${width}px`).toBe(true);
       expect(metrics.every(card => card.favoriteWidth >= 44 && card.favoriteHeight >= 44), `touch targets at ${width}px`).toBe(true);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `horizontal overflow at ${width}px`).toBe(true);
