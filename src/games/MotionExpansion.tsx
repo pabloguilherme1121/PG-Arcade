@@ -406,8 +406,13 @@ export default function MotionExpansion({
           }
         }}
         onBlur={(e) => {
+          // Losing focus during a held key/touch must also cancel its queued pulse.
+          const interrupted = e.currentTarget.dataset.held === "true";
           delete e.currentTarget.dataset.held;
-          if (field !== "lane") input.current[field] = false;
+          if (field !== "lane") {
+            input.current[field] = false;
+            if (interrupted) pending.current[field] = false;
+          }
         }}
       >
         {label}
