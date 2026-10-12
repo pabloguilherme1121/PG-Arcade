@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Pause, Play, RotateCcw } from "lucide-react";
 import {
   queueSnakeDirection,
@@ -13,6 +13,7 @@ import {
 import Controls from "./Controls";
 import { revealPlayfield } from "./revealPlayfield";
 import { snakeTickDelay } from "../lib/snakePacing";
+import { useAutoPause } from "./useAutoPause";
 import "./gameplay.css";
 import "./Snake.css";
 const arrows: Record<Direction, string> = { up: "↑", down: "↓", left: "←", right: "→" };
@@ -100,20 +101,11 @@ export default function Snake({
     }, delay);
     return () => clearInterval(id);
   }, [status, delay, mode]);
-  useEffect(() => {
-    const pause = () => {
-      if (document.hidden) setStatus((s) => (s === "running" ? "paused" : s));
-    };
-    const blur = () => setStatus((s) => (s === "running" ? "paused" : s));
-    document.addEventListener("visibilitychange", pause);
-    window.addEventListener("blur", blur);
-    window.addEventListener("pg-arcade-pause", blur);
-    return () => {
-      document.removeEventListener("visibilitychange", pause);
-      window.removeEventListener("blur", blur);
-      window.removeEventListener("pg-arcade-pause", blur);
-    };
+  const pause = useCallback(() => {
+    setStatus((s) => (s === "running" ? "paused" : s));
   }, []);
+  // Includes blur, hidden, pagehide and freeze when mobile PWA enters BFCache.
+  useAutoPause(pause);
   return (
     <div className="game-layout">
       <div className="board-column">
@@ -133,6 +125,7 @@ export default function Snake({
         <div
           className="snake-board"
           data-facing={current.current}
+          data-play-status={status}
           ref={board}
           tabIndex={0}
           role="group"
