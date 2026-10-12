@@ -17,6 +17,9 @@ test("Memória highlights consecutive pairs without changing scoring or touch ta
     await page.locator(`[data-memory-index="${positions[0]}"]`).click();
     await page.locator(`[data-memory-index="${positions[1]}"]`).click();
     await expect(streak).toHaveText(String(pair + 1));
+    await expect(page.locator(".game-status")).toContainText(
+      `${pair + 1} ${pair === 0 ? "par seguido" : "pares seguidos"}`,
+    );
     await expect(summary).toHaveAttribute("data-memory-streak-tier", pair >= 2 ? "combo" : "building");
     await expect(page.locator("[data-memory-pairs]")).toHaveText(`${pair+1}/4`);
   }
