@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import { test, expect } from "@playwright/test";
 
 test("daily progress counts actual visits, persists across reload, and preserves legacy totals", async ({ page }) => {
@@ -27,4 +28,29 @@ test("daily progress counts actual visits, persists across reload, and preserves
   await page.getByRole("button", { name: /^Já joguei/ }).click();
   await expect(page.locator(".game-card")).toHaveCount(1);
   await expect(page.getByRole("link", { name: "Jogar Snake", exact: true })).toBeVisible();
+});
+
+test("backup preserves dated visits and old records when restored into a fresh local calendar", async ({ page }) => {
+  await page.goto("./#/jogar/2048");
+  await expect(page.locator(".board2048")).toBeVisible();
+  await page.goto("./#/progresso");
+  await expect(page.getByLabel("Atividade de hoje")).toContainText("Hoje: 1 visita em 1 jogo.");
+  const downloadEvent = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Salvar cópia do progresso" }).click();
+  const download = await downloadEvent;
+  const copy = JSON.parse(await readFile(await download.path(), "utf8"));
+  expect(copy.dailyActivity?.version).toBe(1);
+  expect(Object.values(copy.dailyActivity.days).some((visits: unknown) =>
+    !!visits && typeof visits === "object" && "2048" in visits && visits["2048"] === 1
+  )).toBe(true);
+
+  await page.evaluate(() => localStorage.removeItem("pg-arcade-daily-v1"));
+  await page.reload();
+  await expect(page.getByLabel("Atividade de hoje")).toContainText("Hoje: 0 visitas em 0 jogos.");
+  await page.getByLabel("Restaurar cópia do progresso").setInputFiles({
+    name: "backup.json", mimeType: "application/json", buffer: Buffer.from(JSON.stringify(copy)),
+  });
+  await expect(page.getByLabel("Atividade de hoje")).toContainText("Hoje: 1 visita em 1 jogo.");
+  const legacy = await page.evaluate(() => JSON.parse(localStorage.getItem("pg-arcade-progress-v1") ?? "null"));
+  expect(legacy?.visits?.["2048"]).toBe(1);
 });
