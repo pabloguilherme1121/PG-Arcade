@@ -852,6 +852,9 @@ export default function App() {
                       ? "Toque no coração de um jogo para salvá-lo."
                       : "Tente outro nome ou categoria."}
                   </p>
+                  {query && games.some(g => matchesGame(g, normalizedQuery)) && <button onClick={() => {
+                    setCategory('Todos');setMode('Todos');setModeFilter('todos');location.hash='/';
+                  }}>Buscar “{query}” em todos os jogos</button>}
                   <button
                     onClick={() => {
                       setQuery("");
