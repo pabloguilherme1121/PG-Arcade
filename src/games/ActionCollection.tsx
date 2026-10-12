@@ -302,7 +302,7 @@ export default function ActionCollection({
     canvas = useRef<HTMLCanvasElement>(null),
     saved = useRef(false),
     onRecordRef = useRef(onRecord),
-    pointerStart = useRef<{id:number;x:number;y:number} | null>(null),
+    pointerStart = useRef<{id:number;x:number;y:number;sampled:string|null} | null>(null),
     pointerDirection = useRef<"left" | "right" | "up" | "down" | null>(null);
   onRecordRef.current = onRecord;
   useResponsiveCanvas(canvas, 480, 360, (context) => paint(context, state.current, reducedMotion));
@@ -352,6 +352,7 @@ export default function ActionCollection({
         pending.current.clear();
         previousState=state.current;
         state.current = stepAction(state.current, currentInput, 1 / 60);
+        if(pointerStart.current && pointerDirection.current) pointerStart.current.sampled=pointerDirection.current;
         accumulator -= 1 / 60;
       }
       const ctx = canvas.current?.getContext("2d");
@@ -557,7 +558,7 @@ export default function ActionCollection({
           aria-label={`${definition.name}: área de jogo. ${definition.help}`}
           onPointerDown={(e) => {
             if (e.pointerType === "mouse" || status !== "running" || pointerStart.current) return;
-            pointerStart.current = {id:e.pointerId,x:e.clientX,y:e.clientY};
+            pointerStart.current = {id:e.pointerId,x:e.clientX,y:e.clientY,sampled:null};
             e.currentTarget.setPointerCapture(e.pointerId);
             if (["runner","voo","jetpack"].includes(id)) {
               input.current.action = true;
@@ -588,7 +589,7 @@ export default function ActionCollection({
               if (shouldQueueCanvasTapAction(id, controls.some(([field]) => field === "action"))) {
                 pending.current.add("action");
               }
-            } else pending.current.add(gesture);
+            } else if(gesture!==start.sampled) pending.current.add(gesture);
           }}
           onPointerCancel={(e) => {
             if (pointerStart.current?.id !== e.pointerId) return;

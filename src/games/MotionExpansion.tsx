@@ -216,7 +216,7 @@ export default function MotionExpansion({
     canvas = useRef<HTMLCanvasElement>(null),
     recordCallback = useRef(onRecord),
     awarded = useRef(false),
-    pointerStart = useRef<{id:number;x:number;y:number} | null>(null),
+    pointerStart = useRef<{id:number;x:number;y:number;sampled:string|null} | null>(null),
     pointerDirection = useRef<"left" | "right" | "up" | "down" | null>(null);
   recordCallback.current = onRecord;
   useResponsiveCanvas(canvas, 480, 380, (context) => paintMotion(context, state.current));
@@ -276,6 +276,7 @@ export default function MotionExpansion({
           };
           previousState=state.current;
           state.current = motionStep(state.current, keys, 1 / 60);
+          if(pointerStart.current && pointerDirection.current) pointerStart.current.sampled=pointerDirection.current;
           pending.current = emptyInput();
           accumulator -= 1 / 60;
         }
@@ -481,7 +482,7 @@ export default function MotionExpansion({
             }}
             onPointerDown={(e) => {
               if (e.pointerType !== "mouse" && hud.status === "running" && !pointerStart.current) {
-                pointerStart.current = {id:e.pointerId,x:e.clientX,y:e.clientY};
+                pointerStart.current = {id:e.pointerId,x:e.clientX,y:e.clientY,sampled:null};
                 e.currentTarget.setPointerCapture(e.pointerId);
               }
               if (hud.status !== "running") return;
@@ -527,7 +528,7 @@ export default function MotionExpansion({
               if (gesture==="tap") {
                 if (["stack","rope","turret","ricochet"].includes(gameId))
                   pending.current.action=true;
-              } else pending.current[gesture]=true;
+              } else if(gesture!==start.sampled) pending.current[gesture]=true;
             }}
             onPointerCancel={(e) => {
               if (pointerStart.current?.id === e.pointerId) {
