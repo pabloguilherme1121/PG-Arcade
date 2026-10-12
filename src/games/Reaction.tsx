@@ -20,6 +20,7 @@ export default function Reaction({
   const [responseTimes, setResponseTimes] = useState<number[]>([]);
   const [lastTime, setLastTime] = useState<number | null>(null);
   const [falseStarts, setFalseStarts] = useState(0);
+  const [resultTone, setResultTone] = useState<"none" | "early" | "valid">("none");
   const { best, average } = reactionSummary(responseTimes);
   const scoringWindow = difficulty === "easy" ? 1400 : difficulty === "hard" ? 600 : 1000;
   const pause = useCallback(
@@ -40,12 +41,14 @@ export default function Reaction({
   }, [phase, difficulty]);
   function tap() {
     if (phase === "ready" || phase === "result" || phase === "paused") {
+      setResultTone("none");
       setPhase("wait");
       return;
     }
     if (phase !== "wait" && phase !== "go") return;
     const elapsed = phase === "go" ? Math.max(0, Math.round(performance.now() - signal.current)) : null;
     const earned = elapsed !== null ? reactionPoints(elapsed, scoringWindow) : 0;
+    setResultTone(elapsed === null ? "early" : "valid");
     if (elapsed !== null) {
       setLastTime(elapsed);
       setResponseTimes((times) => [...times, elapsed]);
@@ -97,6 +100,7 @@ export default function Reaction({
         </div>
         <button
           className={`reaction-board reaction-${phase}`}
+          data-reaction-result={resultTone}
           onClick={tap}
           disabled={phase === "done"}
           aria-label={
@@ -140,6 +144,7 @@ export default function Reaction({
               setResponseTimes([]);
               setLastTime(null);
               setFalseStarts(0);
+              setResultTone("none");
               setMessage("Espere o sinal verde antes de tocar.");
             }}
           >
