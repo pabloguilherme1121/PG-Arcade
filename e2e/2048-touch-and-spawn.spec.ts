@@ -1,7 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("2048 ignores interrupted multi-touch gestures but accepts a later single-finger swipe", async ({ page, browserName }) => {
-  test.skip(browserName === "firefox", "Firefox desktop does not expose the Touch constructor for synthetic gestures; keyboard tests and Chromium/WebKit cover this gesture.");
+test("2048 ignores interrupted multi-touch gestures but accepts a later single-finger swipe", async ({ page }) => {
   await page.addInitScript(() => { Math.random = () => 0; });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("./#/jogar/2048");
@@ -10,10 +9,13 @@ test("2048 ignores interrupted multi-touch gestures but accepts a later single-f
   await expect(moves).toHaveText("0");
 
   await board.evaluate(element => {
-    const touch = (id: number, x: number) => new Touch({ identifier: id, target: element, clientX: x, clientY: 250 });
-    const send = (name: string, active: Touch[], changed: Touch[]) => element.dispatchEvent(
-      new TouchEvent(name, { bubbles: true, cancelable: true, touches: active, targetTouches: active, changedTouches: changed })
-    );
+    // Constructor-free events exercise React's actual touch handlers in all browsers.
+    const touch = (id: number, x: number) => ({identifier:id,target:element,clientX:x,clientY:250});
+    const send = (name: string, active: ReturnType<typeof touch>[], changed: ReturnType<typeof touch>[]) => {
+      const event=new Event(name,{bubbles:true,cancelable:true});
+      Object.defineProperties(event,{touches:{value:active},targetTouches:{value:active},changedTouches:{value:changed}});
+      element.dispatchEvent(event);
+    };
     const first = touch(11, 120);
     const second = touch(12, 200);
     send("touchstart", [first], [first]);
@@ -24,10 +26,13 @@ test("2048 ignores interrupted multi-touch gestures but accepts a later single-f
   });
   await expect(moves).toHaveText("0");
   await board.evaluate(element => {
-    const a = new Touch({ identifier: 25, target: element, clientX: 120, clientY: 250 });
-    const b = new Touch({ identifier: 25, target: element, clientX: 315, clientY: 250 });
-    element.dispatchEvent(new TouchEvent("touchstart", { bubbles: true, touches: [a], targetTouches: [a], changedTouches: [a] }));
-    element.dispatchEvent(new TouchEvent("touchend", { bubbles: true, touches: [], targetTouches: [], changedTouches: [b] }));
+    const a={identifier:25,target:element,clientX:120,clientY:250};
+    const b={...a,clientX:315};
+    for(const [type,active,changed] of [["touchstart",[a],[a]],["touchend",[],[b]]] as const) {
+      const event=new Event(type,{bubbles:true,cancelable:true});
+      Object.defineProperties(event,{touches:{value:active},targetTouches:{value:active},changedTouches:{value:changed}});
+      element.dispatchEvent(event);
+    }
   });
   await expect(moves).toHaveText("1");
   await expect(board.locator(".tile-new")).toHaveCount(1);
