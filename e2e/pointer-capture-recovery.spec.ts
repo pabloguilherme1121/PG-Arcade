@@ -19,7 +19,11 @@ test("lost pointer capture cancels queued action without breaking short taps", a
   });
 
   await page.goto("./#/jogar/turret");
-  await page.clock.install();
+  const frozen = new Date("2026-10-12T12:00:00Z");
+  await page.clock.install({ time: frozen });
+  // Freeze the physics clock during pointer event setup so a frame cannot
+  // consume a press before its simulated cancellation.
+  await page.clock.pauseAt(new Date(frozen.getTime() + 1000));
   await page.getByRole("button", { name: "Começar", exact: true }).click();
   await page.clock.runFor(100);
 
