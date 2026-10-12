@@ -132,3 +132,14 @@ html[data-arcade-contrast="true"] .player .game2048-progress-track {
     padding-inline: 4px;
   }
 }
+
+/* One-time new-tile cue after a valid move, limited to the spawned cell. */
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-arcade-motion="reduced"]) .player .board2048 .tile-new {
+    animation: arcade-2048-spawn 170ms ease-out both;
+  }
+}
+@keyframes arcade-2048-spawn {
+  from { transform: scale(.84); }
+  to { transform: scale(1); }
+}
