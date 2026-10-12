@@ -55,4 +55,13 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
     expect(result[0].category).toBe(games.find(g=>g.id==="xadrez")!.category);
     expect(new Set(result.map(g=>g.id))).toEqual(new Set(candidates.map(g=>g.id)));
   });
+
+  it("filters already played games using actual local visits rather than favorites or records", () => {
+    const visits = { xadrez: 2, domino: 0, liga4: 1 };
+    const played = filterByMode(games, "jogados", visits, ["domino"]);
+    expect(played.map(game => game.id)).toEqual(games.filter(game => game.id === "xadrez" || game.id === "liga4").map(game => game.id));
+    expect(filterByMode(games, "nao-jogados", visits, [])).toHaveLength(98);
+    expect(filterByMode(games, "jogados", {}, ["xadrez"])).toHaveLength(0);
+    expect(visits).toEqual({ xadrez: 2, domino: 0, liga4: 1 });
+  });
 });
