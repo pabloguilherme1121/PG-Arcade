@@ -63,6 +63,9 @@ export default function Racing({
     state.ticks,
   );
   const speedKmh = Math.round(currentVelocity * 36);
+  // Derived only from the existing race engine; presentation does not alter speed.
+  const maxSpeedKmh = Math.ceil(raceVelocity(speed + 0.9, 600) * 36);
+  const speedProgress = Math.min(100, Math.max(0, Math.round(speedKmh / maxSpeedKmh * 100)));
   function steer(delta: number): boolean {
     if (status !== "running") return false;
     const next = steerRace(engine.current, delta);
@@ -89,7 +92,17 @@ export default function Racing({
         </div>
         <p className="race-lives">
           <span role="status">{state.lives} vidas</span>
-          <span className="race-speedometer" data-race-speed>
+          <span
+            className="race-speedometer"
+            data-race-speed
+            role="meter"
+            aria-label="Velocidade da corrida"
+            aria-valuemin={0}
+            aria-valuemax={maxSpeedKmh}
+            aria-valuenow={speedKmh}
+            aria-valuetext={`${speedKmh} quilômetros por hora`}
+            style={{ "--speed-progress": `${speedProgress}%` } as CSSProperties}
+          >
             {speedKmh} km/h
           </span>
           <span data-race-current-lane>Faixa {state.lane + 1} de 3</span>
