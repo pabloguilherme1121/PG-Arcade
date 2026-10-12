@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { emptyDailyActivity, normalizeDailyActivity, addDailyVisit, summarizeDailyActivity,
-  readDailyActivity, recordDailyVisit, dailyStorageKey } from "./dailyProgress";
+  readDailyActivity, recordDailyVisit, mergeDailyActivity, restoreDailyActivity, dailyStorageKey } from "./dailyProgress";
 
 it("starts without inventing days from old aggregate visits", () => {
   expect(normalizeDailyActivity({ visits: { snake: 100 }, records: { snake: 70 } }))
@@ -48,4 +48,35 @@ it("computes streak across local midnight and safely resets after a gap", () => 
   const activity = addDailyVisit(addDailyVisit(addDailyVisit(emptyDailyActivity(), "2048", d0), "snake", d1), "memoria", d2);
   expect(summarizeDailyActivity(activity, d2).currentStreak).toBe(3);
   expect(summarizeDailyActivity(activity, new Date(2026, 9, 14)).currentStreak).toBe(0);
+});
+
+it("restores a dated backup without discarding newer local visits or creating false days", () => {
+  const current = normalizeDailyActivity({ version: 1, days: {
+    "2026-10-12": { snake: 4 }, "2026-10-11": { memoria: 2 }
+  } });
+  const imported = { version: 1, days: {
+    "2026-10-12": { snake: 2, "2048": 3 }, "2026-10-10": { xadrez: 1 },
+    "invalid": { snake: 100 }
+  } };
+  expect(mergeDailyActivity(current, imported).days).toEqual({
+    "2026-10-12": { snake: 4, "2048": 3 },
+    "2026-10-11": { memoria: 2 },
+    "2026-10-10": { xadrez: 1 }
+  });
+  expect(current.days["2026-10-12"]).toEqual({ snake: 4 });
+  expect(mergeDailyActivity(current, { visits: { snake: 100 } })).toEqual(current);
+});
+it("merges dated backup into the separate local key and survives blocked storage", () => {
+  const memory = new Map<string, string>();
+  const store = { getItem: (key: string) => memory.get(key) ?? null,
+    setItem: (key: string, value: string) => { memory.set(key, value); } };
+  recordDailyVisit("snake", new Date(2026, 9, 12), store);
+  expect(restoreDailyActivity({ version: 1, days: { "2026-10-11": { xadrez: 1 } } }, store)).toBe(true);
+  expect(readDailyActivity(store).days).toEqual({
+    "2026-10-12": { snake: 1 }, "2026-10-11": { xadrez: 1 }
+  });
+  expect([...memory.keys()]).toEqual([dailyStorageKey]);
+  const blocked = { getItem: (_: string): string | null => { throw Error("blocked"); },
+    setItem: (_: string, __: string): void => { throw Error("blocked"); } };
+  expect(restoreDailyActivity({ version: 1, days: {} }, blocked)).toBe(false);
 });
