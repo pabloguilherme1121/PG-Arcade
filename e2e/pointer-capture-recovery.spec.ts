@@ -36,20 +36,27 @@ test("lost pointer capture cancels queued action without breaking short taps", a
   await action.hover();
   await page.mouse.down();
   await expect(action).toHaveAttribute("data-held", "true");
-  // Releasing real capture is essential: manually dispatching lostpointercapture
-  // leaves native capture active and mouseup can still synthesize a click.
+  // Deliver an actual PointerEvent for lostpointercapture deterministically.
+  // After releasing native capture, browsers differ in when they queue this
+  // event under Playwright's frozen clock (Firefox/WebKit may defer it).
+  // Explicit delivery exercises the real React cancellation handler without
+  // depending on that scheduling. Releasing native capture also ensures that
+  // the later mouseup outside cannot activate the button.
   const released = await action.evaluate(element => {
     const pointerId = Number((element as HTMLElement).dataset.testPointerId);
     if (!element.hasPointerCapture(pointerId)) return false;
     element.releasePointerCapture(pointerId);
+    element.dispatchEvent(new PointerEvent("lostpointercapture", {
+      bubbles: true,
+      pointerId,
+      pointerType: "mouse",
+      isPrimary: true,
+    }));
     return true;
   });
   expect(released).toBe(true);
-  // A released capture is processed at the next pointer event by browsers:
-  // moving outside the control flushes lostpointercapture before the mouseup.
-  // Merely advancing fake timers does not dispatch this native pointer event.
-  await page.mouse.move(0, 0);
   await expect(action).not.toHaveAttribute("data-held", "true");
+  await page.mouse.move(0, 0);
   await page.mouse.up();
   await page.clock.runFor(100);
   const pulses = () => page.evaluate(() =>
