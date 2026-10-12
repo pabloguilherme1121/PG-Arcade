@@ -380,8 +380,13 @@ export default function MotionExpansion({
           }
         }}
         onLostPointerCapture={(e) => {
+          // Preserve a completed tap's queued action, but drop aborted presses.
+          const interrupted = e.currentTarget.dataset.held === "true";
           delete e.currentTarget.dataset.held;
-          if (field !== "lane") input.current[field] = false;
+          if (field !== "lane") {
+            input.current[field] = false;
+            if (interrupted) pending.current[field] = false;
+          }
         }}
         onKeyDown={(e) => {
           if (e.key === " " || e.key === "Enter") {
