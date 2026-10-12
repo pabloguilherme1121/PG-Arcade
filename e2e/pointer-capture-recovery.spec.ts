@@ -45,6 +45,9 @@ test("lost pointer capture cancels queued action without breaking short taps", a
     return true;
   });
   expect(released).toBe(true);
+  // The browser queues lostpointercapture for the next event-loop turn.
+  // Advance the frozen clock minimally to flush it before checking UI state.
+  await page.clock.runFor(1);
   await expect(action).not.toHaveAttribute("data-held", "true");
   await page.mouse.move(0, 0);
   await page.mouse.up();
