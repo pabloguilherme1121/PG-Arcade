@@ -166,7 +166,7 @@ export default function App() {
       ) ||
       arenaElement;
     target?.focus({ preventScroll: true });
-    target?.scrollIntoView({ block: "center", behavior: "instant" });
+    (target?.closest<HTMLElement>("[data-chess-board],.football-pitch") || target)?.scrollIntoView({ block: "center", behavior: "instant" });
   }
   function askRestart() {
     window.dispatchEvent(new Event("pg-arcade-pause"));
