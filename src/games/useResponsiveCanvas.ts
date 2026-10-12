@@ -15,6 +15,8 @@ export function useResponsiveCanvas(
     if (!element) return;
     const context = element.getContext("2d");
     if (!context) return;
+    let lastPixels = 0;
+    let lastRows = 0;
     const resize = () => {
       const bounds = element.getBoundingClientRect();
       if (bounds.width <= 0) return;
@@ -22,6 +24,12 @@ export function useResponsiveCanvas(
       const {width:pixels,height:rows} = calculateCanvasPixels(
         bounds.width,width,height,window.devicePixelRatio || 1,
       );
+      // A window resize and ResizeObserver can report the same physical size.
+      // Do not repaint an unchanged backing buffer twice on mobile.
+      if (lastPixels === pixels && lastRows === rows
+        && element.width === pixels && element.height === rows) return;
+      lastPixels = pixels;
+      lastRows = rows;
       if (element.width !== pixels || element.height !== rows) {
         element.width = pixels;
         element.height = rows;
