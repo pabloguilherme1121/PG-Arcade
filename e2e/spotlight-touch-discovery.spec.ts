@@ -5,7 +5,9 @@ test.describe("descoberta premium mobile", () => {
   test.use({ hasTouch: true });
 
   for (const width of [320, 390]) {
-    test(`sugestão responde a modos, visitas e toque em ${width}px`, async ({ page }) => {
+    test(`sugestão responde a modos, visitas e toque em ${width}px`, async ({ page, browserName }) => {
+      // Firefox traces the full 100-cover catalog; preserve assertions without the 30s global budget.
+      if (browserName === "firefox") test.slow();
       await page.setViewportSize({ width, height: 844 });
       await page.goto("./");
 
