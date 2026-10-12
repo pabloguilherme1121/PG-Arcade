@@ -25,14 +25,18 @@ export default function Game2048({
   const undoLimit = difficulty === "easy" ? 3 : difficulty === "normal" ? 1 : 0;
   const bestTile = Math.max(...state.board);
   const level = Math.min(11, Math.log2(bestTile || 1));
-  const touch = useRef<[number, number] | null>(null);
+  const touch = useRef<{ id: number; x: number; y: number } | null>(null);
+  const [lastSpawn, setLastSpawn] = useState<number | null>(null);
   const [announcement, setAnnouncement] = useState("");
   function move(direction: Direction) {
     const result = slide2048(state.board, direction);
     if (!result.changed) return;
     const score = state.score + result.score;
     setHistory((current) => undoLimit ? [...current, state].slice(-undoLimit) : []);
-    setState({ board: spawn2048(result.board, Math.random, twoChance), score, moves: state.moves + 1 });
+    const spawned = spawn2048(result.board, Math.random, twoChance);
+    const newIndex = spawned.findIndex((n, i) => result.board[i] === 0 && n !== 0);
+    setLastSpawn(newIndex >= 0 ? newIndex : null);
+    setState({ board: spawned, score, moves: state.moves + 1 });
     onRecord(score);
     setAnnouncement(
       result.score
@@ -51,6 +55,7 @@ export default function Game2048({
             setDifficulty(next);
             setState({ board: new2048(next === "easy" ? 0.98 : next === "hard" ? 0.7 : 0.9), score: 0, moves: 0 });
             setHistory([]);
+            setLastSpawn(null);
             setAnnouncement("Nova partida iniciada.");
           }}>
             <option value="easy">Fácil · mais peças 2</option>
@@ -84,23 +89,31 @@ export default function Game2048({
             }
           }}
           onTouchStart={(e) => {
+            const point = e.touches[0];
             touch.current = e.touches.length === 1
-              ? [e.touches[0].clientX, e.touches[0].clientY]
+              ? { id: point.identifier, x: point.clientX, y: point.clientY }
               : null;
+          }}
+          onTouchMove={(e) => {
+            if (touch.current && (e.touches.length !== 1 || e.touches[0].identifier !== touch.current.id))
+              touch.current = null;
           }}
           onTouchCancel={() => { touch.current = null; }}
           onTouchEnd={(e) => {
-            if (!touch.current) return;
-            const dx = e.changedTouches[0].clientX - touch.current[0],
-              dy = e.changedTouches[0].clientY - touch.current[1];
+            const origin = touch.current;
             touch.current = null;
-            const d = directionFromSwipe(dx, dy);
+            // A pinch, another finger still down, or a different finger ending
+            // must never count as a deliberate direction on the game board.
+            if (!origin || e.touches.length !== 0 || e.changedTouches.length !== 1) return;
+            const end = e.changedTouches[0];
+            if (end.identifier !== origin.id) return;
+            const d = directionFromSwipe(end.clientX - origin.x, end.clientY - origin.y);
             if (d) move(d);
           }}
         >
           {state.board.map((n, i) => (
             <div
-              className={`tile tile-${n}`}
+              className={`tile tile-${n} ${i === lastSpawn ? "tile-new" : ""}`}
               role="img"
               key={i}
               aria-label={`Casa ${i + 1}: ${n || "vazia"}`}
@@ -127,6 +140,7 @@ export default function Game2048({
               const previous = history.at(-1);
               if (!previous) return;
               setState(previous);
+              setLastSpawn(null);
               setHistory((current) => current.slice(0, -1));
               setAnnouncement("Última jogada desfeita.");
             }}
@@ -139,6 +153,7 @@ export default function Game2048({
             onClick={() => {
               setState({ board: new2048(twoChance), score: 0, moves: 0 });
               setHistory([]);
+              setLastSpawn(null);
               setAnnouncement("Nova partida iniciada.");
             }}
           >

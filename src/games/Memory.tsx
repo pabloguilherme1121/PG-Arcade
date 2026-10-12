@@ -62,7 +62,7 @@ export default function Memory({
       setMatched((m) => [...m, cards[a]]);
       setStreak((value) => value + 1);
       setOpen([]);
-      setMessage("Par encontrado! Continue a sequência.");
+      setMessage(`Par encontrado! ${streak + 1} ${streak === 0 ? "par seguido" : "pares seguidos"}.`);
     } else {
       setStreak(0);
       setMessage("Não foi desta vez. Memorize as cartas.");
@@ -73,7 +73,7 @@ export default function Memory({
         observeLeft.current = Math.max(0, deadline - performance.now());
       };
     }
-  }, [open, cards, paused, pairs, matched, moves, onRecord]);
+  }, [open, cards, paused, pairs, matched, moves, onRecord, streak]);
   function flip(i: number) {
     if (
       open.length === 2 ||
@@ -109,7 +109,7 @@ export default function Memory({
         </div>
         <div className="memory-stats" aria-label="Progresso na memória">
           <div><span>Pares</span><strong data-memory-pairs>{matched.length}/{pairs}</strong></div>
-          <div><span>Sequência</span><strong data-memory-streak>{streak}</strong></div>
+          <div data-memory-streak-tier={streak >= 3 ? "combo" : streak > 0 ? "building" : "none"}><span>Sequência</span><strong data-memory-streak>{streak}</strong></div>
           <div><span>Precisão</span><strong data-memory-accuracy>{accuracy}%</strong></div>
         </div>
         <div className="memory-progress" role="progressbar" aria-label="Pares encontrados"

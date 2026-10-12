@@ -19,6 +19,8 @@ import { paintBlock, paintRock } from "./canvasMaterials";
 import { identifyTouchGesture, shouldQueueCanvasTapAction } from "../lib/touchCanvas";
 import { actionPresentation } from "../lib/actionPresentation";
 import { createCanvasFeedback } from './canvasFeedback';
+import { ArenaFeedback, ArenaProgress } from "./ArenaFeedback";
+import { actionHints, actionOutcome, actionTarget } from "./arenaPresentation";
 import "./actionCollection.css";
 import "./gameplay.css";
 const artwork = (() => {
@@ -422,16 +424,7 @@ export default function ActionCollection({
     if (e.key === "Escape" && pressed) pause();
   }
   const definition = actionCollectionGames.find((g) => g.id === id)!;
-  const target =
-    id === "pong"
-      ? 500
-      : id === "pouso"
-        ? 1000
-        : id === "esquiva"
-          ? 900
-          : id === "drift"
-            ? 900
-            : 600;
+  const target = actionTarget(id);
   const controls: Array<[keyof ActionInput, string]> =
     id === "pong"
       ? [
@@ -528,6 +521,7 @@ export default function ActionCollection({
           Recorde <strong>{Math.max(record, hud.score)}</strong>
         </span>
       </div>
+      {mode === "mission" && <ArenaProgress label="Meta da missão" value={hud.score} target={target} unit="pontos" detail={`${Math.max(0, Math.ceil(180 - hud.time))} s restantes`} />}
       {["pouso", "jetpack"].includes(id) && (
         <p className="action-telemetry">
           Combustível: {Math.round(hud.fuel)}% · Velocidade vertical:{" "}
@@ -618,27 +612,26 @@ export default function ActionCollection({
         />
         {status !== "running" && (
           <div className="action-collection-overlay">
-            <strong>
-              {status === "ready"
+            <ArenaFeedback
+              phase={status}
+              context={mode === "mission" ? "Missão · 3 minutos" : "Resistência · sem limite"}
+              title={status === "ready"
                 ? "Prepare-se"
                 : status === "paused"
                   ? "Jogo pausado"
                   : hud.won
                     ? "Missão completa"
                     : "Partida encerrada"}
-            </strong>
-            <p>
-              {status === "done"
-                ? `${hud.score} pontos conquistados`
-                : definition.help}
-            </p>
-            <button onClick={start}>
-              {status === "paused"
+              objective={status === "done" ? actionOutcome(hud) : mode === "mission" ? `Conquiste ${target} pontos em até 180 segundos.` : "Resista enquanto tiver vidas. Sem limite de tempo."}
+              hint={actionHints[id]}
+              score={hud.score} time={hud.time} lives={hud.lives}
+              action={status === "paused"
                 ? "Continuar"
                 : status === "done"
                   ? "Jogar novamente"
                   : "Começar"}
-            </button>
+              onAction={start}
+            />
           </div>
         )}
       </div>

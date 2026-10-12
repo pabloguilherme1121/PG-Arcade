@@ -47,4 +47,12 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
     expect(input).toEqual(games);
     expect(recommendGames(input,{favorites:[],visits:{},last:null})).toEqual(games);
   });
+  it("keeps the previous category when unplayed candidates exclude the last game",()=>{
+    const history={favorites:[],visits:{xadrez:2},last:"xadrez" as const};
+    const candidates=filterByMode(games,"nao-jogados",history.visits,history.favorites);
+    expect(candidates.some(g=>g.id==="xadrez")).toBe(false);
+    const result=recommendGames(candidates,history);
+    expect(result[0].category).toBe(games.find(g=>g.id==="xadrez")!.category);
+    expect(new Set(result.map(g=>g.id))).toEqual(new Set(candidates.map(g=>g.id)));
+  });
 });

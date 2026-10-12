@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Pause, Play, RotateCcw } from "lucide-react";
 import {
   queueSnakeDirection,
@@ -13,6 +13,7 @@ import {
 import Controls from "./Controls";
 import { revealPlayfield } from "./revealPlayfield";
 import { snakeTickDelay } from "../lib/snakePacing";
+import { useAutoPause } from "./useAutoPause";
 import "./gameplay.css";
 import "./Snake.css";
 const arrows: Record<Direction, string> = { up: "↑", down: "↓", left: "←", right: "→" };
@@ -100,20 +101,14 @@ export default function Snake({
     }, delay);
     return () => clearInterval(id);
   }, [status, delay, mode]);
-  useEffect(() => {
-    const pause = () => {
-      if (document.hidden) setStatus((s) => (s === "running" ? "paused" : s));
-    };
-    const blur = () => setStatus((s) => (s === "running" ? "paused" : s));
-    document.addEventListener("visibilitychange", pause);
-    window.addEventListener("blur", blur);
-    window.addEventListener("pg-arcade-pause", blur);
-    return () => {
-      document.removeEventListener("visibilitychange", pause);
-      window.removeEventListener("blur", blur);
-      window.removeEventListener("pg-arcade-pause", blur);
-    };
+  const pause = useCallback(() => {
+    // A confirmed direction stays queued through pause (existing game contract).
+    // Only an unfinished swipe is cancelled so its eventual touchend cannot steer.
+    touch.current = null;
+    setStatus((s) => (s === "running" ? "paused" : s));
   }, []);
+  // Includes blur, hidden, pagehide and freeze when mobile PWA enters BFCache.
+  useAutoPause(pause);
   return (
     <div className="game-layout">
       <div className="board-column">
@@ -133,6 +128,7 @@ export default function Snake({
         <div
           className="snake-board"
           data-facing={current.current}
+          data-play-status={status}
           ref={board}
           tabIndex={0}
           role="group"
@@ -145,13 +141,8 @@ export default function Snake({
             }
             if (e.code === "Space") {
               e.preventDefault();
-              setStatus((s) =>
-                s === "running"
-                  ? "paused"
-                  : s === "ready" || s === "paused"
-                    ? "running"
-                    : s,
-              );
+              if (status === "running") pause();
+              else setStatus((s) => (s === "ready" || s === "paused" ? "running" : s));
             }
           }}
           onTouchStart={(e) => {
@@ -215,7 +206,9 @@ export default function Snake({
                 {status === "ready"
                   ? "Pegue a fruta e cuide das curvas."
                   : status === "paused"
-                    ? "Continue quando quiser."
+                    ? queuedPreview.length
+                      ? `${queuedPreview.length} ${queuedPreview.length === 1 ? "curva" : "curvas"} pendente${queuedPreview.length === 1 ? "" : "s"}: ${queuedPreview.map(d => arrows[d]).join(" ")}. Serão executadas ao continuar.`
+                      : "Continue quando quiser."
                     : `${score} pontos nesta partida.`}
               </span>
             </div>
@@ -237,8 +230,11 @@ export default function Snake({
             className="primary"
             disabled={status === "over" || status === "won"}
             onClick={() => {
-              setStatus(status === "running" ? "paused" : "running");
-              if (status !== "running") revealPlayfield(board.current);
+              if (status === "running") pause();
+              else {
+                setStatus("running");
+                revealPlayfield(board.current);
+              }
             }}
           >
             {status === "running" ? <Pause size={18} /> : <Play size={18} />}{" "}
