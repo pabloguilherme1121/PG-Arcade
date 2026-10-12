@@ -28,3 +28,8 @@ html[data-arcade-contrast="true"] .arena-progress { border-color: #fff; }
   .arena-result dd { font-size: 1rem; }
   .arena-feedback button { padding-block: 8px; }
 }
+/* In immersive play the objective shares one row instead of consuming canvas height. */
+.player[data-immersive="true"] .arena-progress { display:flex;align-items:center;gap:12px;margin:4px 0;padding:4px 8px; }
+.player[data-immersive="true"] .arena-progress>div { flex:1;min-width:0;margin:0; }
+.player[data-immersive="true"] .arena-progress small { display:none; }
+.player[data-immersive="true"] .arena-progress progress { width:90px;flex-shrink:0; }
