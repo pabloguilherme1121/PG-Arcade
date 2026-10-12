@@ -3,12 +3,15 @@ import { expect, test } from "@playwright/test";
 test.describe("catalog touch readability", () => {
   test.use({ hasTouch: true });
 
-  test("all game cards retain readable labels and reachable favorites on narrow screens", async ({ page }) => {
+  test("all game cards retain readable labels and reachable favorites on narrow screens", async ({ page, browserName }) => {
+    // Firefox needs longer when laying out 100 SVG covers at three viewport widths.
+    if (browserName === "firefox") test.setTimeout(120_000);
+    await page.setViewportSize({ width: 320, height: 800 });
     await page.goto("./");
     const cards = page.locator(".game-grid .game-card");
     await expect(cards).toHaveCount(100);
     for (const width of [320, 390, 430]) {
-      await page.setViewportSize({ width, height: 800 });
+      if (width !== 320) await page.setViewportSize({ width, height: 800 });
       const metrics = await cards.evaluateAll((elements) => elements.map(card => {
         const category = card.querySelector<HTMLElement>(".game-category")!;
         const description = card.querySelector<HTMLElement>("p")!;
