@@ -2682,3 +2682,27 @@ html[data-arcade-contrast="true"] .experience-tools {
     transform: none;
   }
 }
+
+/* Mode identity stays readable and distinctive in the two-column touch catalog. */
+.game-grid .card-mode-tags span {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 700;
+}
+.game-grid .card-mode-tags [data-game-mode="dupla"] {
+  background: #334336;
+  color: #eeffd9;
+  border-color: #a6cf86;
+}
+.game-grid .card-mode-tags [data-game-mode="bot"] {
+  background: #343d55;
+  color: #f2f0ff;
+  border-color: #b3abd9;
+}
+html[data-arcade-contrast="true"] .game-grid .card-mode-tags span {
+  border-color: #ffffff;
+  color: #ffffff;
+  background: #111111;
+}
