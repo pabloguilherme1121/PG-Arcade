@@ -21,6 +21,10 @@ const root = new URL(option("base-url", "http://127.0.0.1:5173/"));
 root.hash = "";
 const output = option("output", "artifacts/arcade-performance.json");
 const defaults = ["snake", "2048", "memoria", "xadrez", "corrida", "futebol"];
+const referenceFields = {
+  snake: ".snake-board", "2048": ".board2048", memoria: ".memory-board",
+  xadrez: "[data-chess-board]", corrida: ".race-board", futebol: ".football-pitch",
+};
 
 function percentile(numbers, percentage) {
   if (!numbers.length) return null;
@@ -56,7 +60,9 @@ async function sample(browser, id) {
     const address = new URL(root);
     address.hash = "/jogar/" + id;
     await page.goto(address.href, { waitUntil: "domcontentloaded", timeout: 30000 });
-    await page.locator("[data-arcade-arena]").waitFor({ state: "visible", timeout: 30000 });
+    const arena = page.locator(`[data-arcade-arena][data-game-id="${id}"]`);
+    await arena.waitFor({ state: "visible", timeout: 30000 });
+    if (referenceFields[id]) await arena.locator(referenceFields[id]).waitFor({ state: "visible", timeout: 15000 });
     await page.waitForFunction(() => !!document.querySelector("[data-arcade-arena] button, [data-arcade-arena] canvas, [data-arcade-arena] input, [data-arcade-arena] [role='gridcell']"), null, { timeout: 15000 });
     const data = await page.evaluate(() => {
       const entries = performance.getEntriesByType("resource");
@@ -75,6 +81,7 @@ async function sample(browser, id) {
         overflowX: document.documentElement.scrollWidth > innerWidth + 1,
       };
     });
+    if (pageErrors.length) throw new Error("Invalid sample for " + id + ": " + pageErrors.join("; "));
     return { id, ...data, errors: pageErrors };
   } finally {
     await context.close();
@@ -111,7 +118,7 @@ async function run() {
     ]))]));
     const report = {
       metadata: { timestamp: new Date().toISOString(), baseURL: root.href,
-        browser: "chromium", profile: cpu === 1 ? "unthrottled-desktop" : "emulated-cpu-" + cpu + "x",
+        browser: "chromium", browserVersion: browser.version(), profile: cpu === 1 ? "unthrottled-desktop" : "emulated-cpu-" + cpu + "x",
         warning: "CPU throttling is not a physical mid-range Android measurement.",
         viewport: { width, height }, samples, cache: "new-context-per-sample; service-worker-blocked" },
       catalog, perGame, rows,
