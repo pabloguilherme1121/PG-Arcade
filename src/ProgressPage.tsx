@@ -3,6 +3,7 @@ import { ArrowRight, Heart, Trophy } from "lucide-react";
 import { games } from "./lib/catalog";
 import { recordUnits } from "./lib/gameHelp";
 import { mergeProgress, type Progress } from "./lib/progress";
+import { readDailyActivity, restoreDailyActivity, summarizeDailyActivity } from "./lib/dailyProgress";
 import "./ProgressPage.css";
 
 type Props = {
@@ -15,12 +16,13 @@ export default function ProgressPage({progress, heading, update}:Props) {
  const [recordView,setRecordView]=useState("todos");
  useEffect(()=>{ heading.current?.focus({preventScroll:true}); },[heading]);
  function exportProgress() {
-  const url=URL.createObjectURL(new Blob([JSON.stringify(progress,null,2)],{type:"application/json"}));
+  const url=URL.createObjectURL(new Blob([JSON.stringify({...progress,dailyActivity:readDailyActivity()},null,2)],{type:"application/json"}));
   const link=document.createElement("a");link.href=url;link.download="pg-arcade-progresso.json";link.click();
   setTimeout(()=>URL.revokeObjectURL(url),1000);
   setMessage("Cópia de progresso preparada. Guarde o arquivo para restaurar em outro navegador.");
  }
  const recordCount=games.filter(g=>progress.records[g.id]).length;
+ const today = summarizeDailyActivity(readDailyActivity());
  return (
           <section className="progress-section">
             <h1 ref={heading} tabIndex={-1}>
@@ -29,6 +31,7 @@ export default function ProgressPage({progress, heading, update}:Props) {
             <p className="muted">
               Suas visitas e recordes ficam neste navegador. Sem cadastro.
             </p>
+            <p className="muted" aria-label="Atividade de hoje">Hoje: {today.visitsToday} {today.visitsToday === 1 ? "visita" : "visitas"} em {today.uniqueGamesToday} {today.uniqueGamesToday === 1 ? "jogo" : "jogos"}. Sequência atual: {today.currentStreak} {today.currentStreak === 1 ? "dia" : "dias"}. Apenas dias registrados neste navegador são considerados.</p>
             <div className="progress-journey"><span>Seu caminho pelo catálogo</span><progress value={Object.keys(progress.visits).length} max={games.length} aria-label="Jogos explorados no catálogo" /><span>{games.length - Object.keys(progress.visits).length} jogos para descobrir</span></div>
             <div className="progress-grid">
               <div>
@@ -54,7 +57,7 @@ export default function ProgressPage({progress, heading, update}:Props) {
               </p>
               <h3>Leve seu progresso com você</h3>
               <p>
-                Salve uma cópia dos favoritos e recordes. Restaurar combina os
+                Salve uma cópia dos favoritos, recordes e atividade diária. Restaurar combina os
                 dados e preserva os melhores resultados. Nenhum arquivo é
                 enviado a servidores.
               </p>
@@ -72,7 +75,7 @@ export default function ProgressPage({progress, heading, update}:Props) {
                     e.target.value = "";
                     if (!file) return;
                     try {
-                      if (file.size > 100000) throw Error();
+                      if (file.size > 512000) throw Error();
                       const data: unknown = JSON.parse(await file.text());
                       if (
                         !data ||
@@ -83,12 +86,16 @@ export default function ProgressPage({progress, heading, update}:Props) {
                       )
                         throw Error();
                       update((p) => mergeProgress(p, data));
+                      const hasDaily = "dailyActivity" in data;
+                      const dailySaved = !hasDaily || restoreDailyActivity(data.dailyActivity);
                       setMessage(
-                        "Progresso restaurado. Seus melhores recordes foram preservados.",
+                        dailySaved
+                          ? "Progresso restaurado. Seus melhores recordes foram preservados."
+                          : "Recordes restaurados. A atividade diária não pôde ser salva neste navegador.",
                       );
                     } catch {
                       setMessage(
-                        "Não foi possível restaurar. Escolha uma cópia JSON do PG Arcade de até 100 KB.",
+                        "Não foi possível restaurar. Escolha uma cópia JSON do PG Arcade de até 500 KB.",
                       );
                     }
                   }}

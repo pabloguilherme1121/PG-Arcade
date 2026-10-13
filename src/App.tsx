@@ -252,12 +252,17 @@ export default function App() {
     return () => window.removeEventListener("hashchange", change);
   }, []);
   useEffect(() => {
-    if (isGameId(page))
+    if (isGameId(page)) {
+      // Keep daily stats lazy: the 100-game catalog has a strict initial bundle budget.
+      void import("./lib/dailyProgress").then(({ recordDailyVisit }) => {
+        recordDailyVisit(page);
+      }).catch(() => { /* Offline without this optional chunk must not break gameplay. */ });
       update((p) => ({
         ...p,
         last: page,
         visits: { ...p.visits, [page]: (p.visits[page] || 0) + 1 },
       }));
+    }
     if (lastRoute.current !== page) {
       heading.current?.focus();
       if (isGameId(lastRoute.current) && (page === "catalogo" || page === "favoritos")) {
