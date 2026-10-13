@@ -3,6 +3,7 @@
   "editor.insertSpaces": true,
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
+  "js/ts.experimental.useTsgo": true,
   "js/ts.tsdk.path": "node_modules/typescript",
   "js/ts.tsdk.promptToUseWorkspaceVersion": true,
   "typescript.updateImportsOnFileMove.enabled": "always",
