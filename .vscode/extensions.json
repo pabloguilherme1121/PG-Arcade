@@ -3,6 +3,7 @@
     "bradlc.vscode-tailwindcss",
     "ms-playwright.playwright",
     "GitHub.vscode-pull-request-github",
-    "eamodio.gitlens"
+    "eamodio.gitlens",
+    "TypeScriptTeam.native-preview"
   ]
 }
