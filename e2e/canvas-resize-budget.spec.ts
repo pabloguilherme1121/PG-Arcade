@@ -27,6 +27,7 @@ test(`${gameId} canvas redraws only when its physical resolution changes`, async
   await page.evaluate(() => {
     for (let i = 0; i < 6; i++) window.dispatchEvent(new Event("resize"));
   });
+  await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => resolve())));
   expect(await page.evaluate(() =>
     (window as unknown as { __arcadeRepaints: () => number }).__arcadeRepaints()
   )).toBe(0);
@@ -43,8 +44,30 @@ test(`${gameId} canvas redraws only when its physical resolution changes`, async
 
   await page.evaluate(() => (window as unknown as { __arcadeResetRepaints: () => void }).__arcadeResetRepaints());
   await page.evaluate(() => window.dispatchEvent(new Event("resize")));
+  await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => resolve())));
   expect(await page.evaluate(() =>
     (window as unknown as { __arcadeRepaints: () => number }).__arcadeRepaints()
   )).toBe(0);
+});
+
+test(`${gameId} batches a burst of resize signals into one layout read`, async ({ page }) => {
+  await page.goto(`./#/jogar/${gameId}`);
+  const canvas = page.locator("canvas[data-touch-ready]").first();
+  await expect(canvas).toBeVisible();
+  const reads = await canvas.evaluate(async element => {
+    // Flush initial observation before measuring the browser-chrome resize burst.
+    await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+    const original = element.getBoundingClientRect;
+    let reads = 0;
+    element.getBoundingClientRect = function () { reads++; return original.call(this); };
+    try {
+      for (let i = 0; i < 20; i++) window.dispatchEvent(new Event("resize"));
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      return reads;
+    } finally {
+      element.getBoundingClientRect = original;
+    }
+  });
+  expect(reads).toBe(1);
 });
 }

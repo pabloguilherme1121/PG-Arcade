@@ -17,6 +17,7 @@ export function useResponsiveCanvas(
     if (!context) return;
     let lastPixels = 0;
     let lastRows = 0;
+    let frame: number | null = null;
     const resize = () => {
       const bounds = element.getBoundingClientRect();
       if (bounds.width <= 0) return;
@@ -39,10 +40,23 @@ export function useResponsiveCanvas(
       context.imageSmoothingQuality = "high";
       draw.current(context);
     };
-    const observer = new ResizeObserver(resize);
+    // Rotation and browser chrome can emit several resize signals in one frame.
+    // Read layout once, after it settles, rather than once per signal.
+    const scheduleResize = () => {
+      if (frame !== null) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = null;
+        resize();
+      });
+    };
+    const observer = new ResizeObserver(scheduleResize);
     observer.observe(element);
-    window.addEventListener("resize", resize);
+    window.addEventListener("resize", scheduleResize);
     resize();
-    return () => { observer.disconnect(); window.removeEventListener("resize", resize); };
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", scheduleResize);
+      if (frame !== null) window.cancelAnimationFrame(frame);
+    };
   }, [canvas, width, height]);
 }

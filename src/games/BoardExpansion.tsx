@@ -49,6 +49,7 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
     [paused, setPaused] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [focused, setFocused] = useState(0);
+  const [changed, setChanged] = useState<number[]>([]);
   const board = useRef<HTMLDivElement>(null),
     awarded = useRef(false);
   const meta = newGames.find((g) => g.id === gameId)!;
@@ -65,11 +66,14 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
     setSeed(next);
     setState(newBoard(gameId, d, next));
     setHistory([]);
+    setChanged([]);
+    setFocused(0);
     setPaused(false);
     awarded.current = false;
   }
   function update(next: BoardState) {
     if (next === state) return;
+    setChanged(next.cells.flatMap((value, index) => value !== state.cells[index] ? [index] : []));
     setHistory((h) => [...h.slice(-199), state]);
     setState(next);
   }
@@ -150,16 +154,16 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
         update(slideVehicle(state, d));
         return;
       }
-      const target = index + d;
-      if (
-        target < 0 ||
-        target >= state.cells.length ||
-        (Math.abs(d) === 1 && Math.floor(target / n) !== Math.floor(index / n))
-      )
-        return;
-      board.current
-        ?.querySelector<HTMLButtonElement>(`[data-index="${target}"]`)
-        ?.focus();
+      let target = index + d;
+      while (target >= 0 && target < state.cells.length) {
+        if (Math.abs(d) === 1 && Math.floor(target / n) !== Math.floor(index / n)) break;
+        const cell = board.current?.querySelector<HTMLButtonElement>(`[data-index="${target}"]`);
+        if (cell && !cell.disabled) {
+          cell.focus();
+          break;
+        }
+        target += d;
+      }
     }
     if (numeric && /^[0-9]$/.test(e.key)) {
       e.preventDefault();
@@ -296,6 +300,7 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
                   data-index={i}
                   data-drag-index={i}
                   data-value={v}
+                  data-last-move={changed.includes(i) || undefined}
                   tabIndex={
                     i ===
                     (state.cells[focused] === -1
@@ -334,6 +339,7 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
         </div>
         <aside className="new-instructions">
           <h2>Como jogar</h2>
+          {changed.length > 0 && <p className="board-move-feedback">Última ação: {changed.length} {changed.length === 1 ? "casa alterada" : "casas alteradas"}. As marcas nos cantos indicam o que mudou.</p>}
           <p>{meta.help}</p>
           {['gomoku','hex','ataxx'].includes(gameId) && <p className="new-tip">Peças verdes: você (X). Peças azuis: adversário (O).</p>}
           {gameId==='slideblock' && <p className="new-tip">Deslize sobre um veículo para movê-lo uma casa. Toque para selecionar ou use as setas.</p>}
@@ -425,7 +431,9 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
             <button
               disabled={!history.length || paused}
               onClick={() => {
-                setState(history.at(-1)!);
+                const previous = history.at(-1)!;
+                setChanged(previous.cells.flatMap((value, index) => value !== state.cells[index] ? [index] : []));
+                setState(previous);
                 setHistory((h) => h.slice(0, -1));
               }}
             >
