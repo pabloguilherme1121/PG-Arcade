@@ -4,7 +4,7 @@ import { test, expect } from "@playwright/test";
 test("Snake buffers rapid WASD corners in order", async ({ page }) => {
   await page.goto("./#/jogar/snake");
   const frozen = new Date("2026-10-05T12:00:00Z");
-  await page.clock.install({ time: frozen });
+  await page.clock.install({ time: new Date(frozen.getTime() - 60_000) });
   await page.clock.pauseAt(frozen);
   const board = page.locator(".snake-board");
   const cells = page.locator(".snake-board > span");
@@ -27,7 +27,7 @@ test("Snake buffers rapid WASD corners in order", async ({ page }) => {
 test("Racing prevents instant double lane changes while steering settles", async ({ page }) => {
   await page.goto("./#/jogar/corrida");
   const frozen = new Date("2026-10-07T12:00:00Z");
-  await page.clock.install({ time: frozen });
+  await page.clock.install({ time: new Date(frozen.getTime() - 60_000) });
   await page.clock.pauseAt(frozen);
   await page.getByRole("button", { name: "Largar", exact: true }).click();
   const board = page.locator(".race-board");
@@ -144,7 +144,7 @@ test("Liga 4 bot plays, undo restores the human turn, and pause cancels pending 
   await page.getByRole("button", { name: "Desfazer jogada", exact: true }).click();
   await expect(page.locator(".disc-1,.disc-2")).toHaveCount(0);
   const frozenTime = new Date("2026-10-04T12:00:00Z");
-  await page.clock.install({ time: frozenTime });
+  await page.clock.install({ time: new Date(frozenTime.getTime() - 60_000) });
   await page.clock.pauseAt(frozenTime);
   await page.getByRole("button", { name: "Jogar na coluna 1", exact: true }).click();
   await page.evaluate(() => window.dispatchEvent(new Event("pg-arcade-pause")));
