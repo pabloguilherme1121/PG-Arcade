@@ -49,13 +49,26 @@ export function useResponsiveCanvas(
         resize();
       });
     };
+    const restore = () => {
+      // Context restoration resets drawing state even when dimensions are unchanged.
+      // Restore the world transform synchronously: an already queued game frame
+      // may run before our resize frame and must not cache gradients at identity.
+      context.setTransform(element.width / width, 0, 0, element.height / height, 0, 0);
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = "high";
+      lastPixels = 0;
+      lastRows = 0;
+      scheduleResize();
+    };
     const observer = new ResizeObserver(scheduleResize);
     observer.observe(element);
     window.addEventListener("resize", scheduleResize);
+    element.addEventListener("contextrestored", restore);
     resize();
     return () => {
       observer.disconnect();
       window.removeEventListener("resize", scheduleResize);
+      element.removeEventListener("contextrestored", restore);
       if (frame !== null) window.cancelAnimationFrame(frame);
     };
   }, [canvas, width, height]);

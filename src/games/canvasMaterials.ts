@@ -1,3 +1,5 @@
+import { motionCanvasMaterials } from "./motionCanvasMaterials";
+
 /** Lightweight vector materials remain sharp at every display resolution. */
 export function paintOrb(c: CanvasRenderingContext2D, x: number, y: number, radius: number, color: string) {
   if (radius <= 0) return;
@@ -41,11 +43,8 @@ export function paintAtmosphere(c: CanvasRenderingContext2D, height: number, sno
     for (let i = 0; i < 48; i++) c.fillRect((i * 139) % 480, (i * 83) % height, 2, 2);
     return;
   }
-  const haze = c.createRadialGradient(340, 70, 8, 290, 120, 300);
-  haze.addColorStop(0, "#628dc426");
-  haze.addColorStop(.5, "#61479712");
-  haze.addColorStop(1, "#101d2b00");
-  c.fillStyle = haze;
+  const { haze } = motionCanvasMaterials(c);
+  c.fillStyle = haze!;
   c.fillRect(0, 0, 480, height);
   for (let i = 0; i < 56; i++) {
     c.fillStyle = i % 3 === 0 ? "#d6e7ff88" : "#aac9ef38";

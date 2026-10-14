@@ -12,6 +12,7 @@ import { useAutoPause } from "./useAutoPause";
 import { revealPlayfield } from "./revealPlayfield";
 import { useResponsiveCanvas } from "./useResponsiveCanvas";
 import { paintAtmosphere, paintBlock, paintOrb, paintRoadCar, paintFrog, paintRock } from "./canvasMaterials";
+import { motionCanvasMaterials } from "./motionCanvasMaterials";
 import { identifyTouchGesture } from "../lib/touchCanvas";
 import { renderBetween } from "../lib/renderInterpolation";
 import { useReducedMotion } from "../useReducedMotion";
@@ -23,10 +24,8 @@ import "./newGames.css";
 import "./gameplay.css";
 export function paintMotion(c: CanvasRenderingContext2D, s: MotionState) {
   c.clearRect(0, 0, 480, 380);
-  const bg = c.createLinearGradient(0, 0, 0, 380);
-  bg.addColorStop(0, s.id === "ski" ? "#c7dfed" : "#0c172a");
-  bg.addColorStop(1, s.id === "ski" ? "#f0f5f8" : "#1a2d3e");
-  c.fillStyle = bg;
+  const materials = motionCanvasMaterials(c, s.id === "ski");
+  c.fillStyle = materials.background;
   c.fillRect(0, 0, 480, 380);
   paintAtmosphere(c, 380, s.id === "ski");
   const circle = (x: number, y: number, r: number, color: string) => {
@@ -194,10 +193,7 @@ export function paintMotion(c: CanvasRenderingContext2D, s: MotionState) {
   if (s.id === "crossroad") {
     paintFrog(c,s.x,s.y);
   }
-  const edge = c.createRadialGradient(240, 190, 130, 240, 190, 360);
-  edge.addColorStop(0, "#00000000");
-  edge.addColorStop(1, s.id === "ski" ? "#54788b22" : "#00000060");
-  c.fillStyle = edge;
+  c.fillStyle = materials.edge;
   c.fillRect(0, 0, 480, 380);
 }
 export default function MotionExpansion({
