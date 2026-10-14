@@ -32,7 +32,7 @@ import {
   expandedGames,
   type ExpandedId,
 } from "./lib/expandedCatalog";
-import { gameHelp, recordUnits } from "./lib/gameHelp";
+
 import { discoveryFilters, filterByMode, modeTags, modeLabel, recommendGames, type DiscoveryFilter } from "./lib/smartDiscovery";
 import GameCover from "./GameCover";
 import {
@@ -147,6 +147,16 @@ function route() {
 export default function App() {
   const reducedMotion = useReducedMotion();
   const [page, setPage] = useState(route);
+  const [guides, setGuides] = useState<typeof import("./lib/gameHelp") | null>(null);
+  // Detailed help belongs to the player, not the cold-start 101-game catalog.
+  useEffect(() => {
+    if (!isGameId(page) || guides) return;
+    let live = true;
+    void import("./lib/gameHelp").then(module => {
+      if (live) setGuides(module);
+    }).catch(() => undefined);
+    return () => { live = false; };
+  }, [page, guides]);
   const [focusMode, setFocusMode] = useState(false);
   const [preferences, setPreferences] = useState(readPreferences);
   useEffect(() => applyPreferences(preferences), [preferences]);
@@ -488,8 +498,8 @@ export default function App() {
             </div>
             <div className="player-gameplay-orientation" data-gameplay-orientation>
               <strong>Como jogar {game.name}</strong>
-              <span>{gameHelp[game.id].split(". ")[0]}</span>
-              <small data-player-record>{progress.records[game.id] ? `Sua melhor marca: ${progress.records[game.id]} ${recordUnits[game.id] ?? "pontos"}` : "Primeira partida — faça sua marca"}</small>
+              <span>{(guides?.gameHelp[game.id] ?? game.description).split(". ")[0]}</span>
+              <small data-player-record>{progress.records[game.id] ? `Sua melhor marca: ${progress.records[game.id]} ${guides?.recordUnits[game.id] ?? "pontos"}` : "Primeira partida — faça sua marca"}</small>
               <button
                 type="button"
                 className="gameplay-control-toggle"
@@ -537,7 +547,7 @@ export default function App() {
                 <summary aria-keyshortcuts="Alt+Shift+H">
                   Ajuda rápida e controles
                 </summary>
-                <p>{gameHelp[game.id]}</p>
+                <p>{guides?.gameHelp[game.id] ?? "Carregando instruções completas…"} </p>
                 <p>
                   Atalhos globais: Alt + Shift + B leva ao tabuleiro; Alt +
                   Shift + H abre a ajuda; Alt + Shift + R pede confirmação para
