@@ -47,7 +47,7 @@ import { useReducedMotion } from "./useReducedMotion";
 import { useImmersivePlayer } from "./lib/useImmersivePlayer";
 import "./features/portfolio/components/PortfolioArcade.css";
 const ProgressPage = lazy(() => import("./ProgressPage"));
-const CatalogSpotlight = lazy(() => import("./CatalogSpotlight"));
+const CatalogSpotlight = lazy(() => import("./CatalogSpotlight").catch(() => ({default: () => null})));
 const SessionChallenge = lazy(() => import("./games/SessionChallenge"));
 type PlayerProps = { record: number; onRecord: (n: number) => void };
 const collectionPlayers = Object.fromEntries(
@@ -700,7 +700,6 @@ export default function App() {
                   ))}
                 </div>
               </div>
-              <Suspense fallback={null}><CatalogSpotlight candidates={visible} progress={progress} remember={rememberCatalog}/></Suspense>
               <div className="catalog-tools">
                 <label>Modo <select aria-label="Filtrar por modo" value={mode} onChange={(e) => setMode(e.target.value)}><option>Todos</option><option value="Solo">Somente solo</option><option>Dupla local</option></select></label>
                 <label>
@@ -740,6 +739,7 @@ export default function App() {
                 {sorted.map((g, index) => renderCard(g, false, index < 4))}
 
               </div>
+              <Suspense fallback={null}><CatalogSpotlight candidates={visible} progress={progress} remember={rememberCatalog}/></Suspense>
               {!visible.length && (
                 <div className="empty">
                   <h3>
