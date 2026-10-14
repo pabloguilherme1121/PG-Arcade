@@ -18,6 +18,7 @@ export default function BlockPuzzle({ record, onRecord }: {
   const [game, setGame] = useState<BlockPuzzleState>(() => newBlockPuzzle(1, Date.now()));
   const [selected, setSelected] = useState(0);
   const [previous, setPrevious] = useState<BlockPuzzleState | null>(null);
+  const [focusCell, setFocusCell] = useState(0);
   const [message, setMessage] = useState("Selecione uma peça e uma casa inicial livre.");
   const boardRef = useRef<HTMLDivElement>(null);
 
@@ -26,6 +27,7 @@ export default function BlockPuzzle({ record, onRecord }: {
     setGame(newBlockPuzzle(level, Date.now()));
     setPrevious(null);
     setSelected(0);
+    setFocusCell(0);
     setMessage("Nova partida. Posicione as peças para formar linhas e colunas.");
   }
   function place(anchor: number) {
@@ -92,6 +94,7 @@ export default function BlockPuzzle({ record, onRecord }: {
             <button type="button" key={index} data-cell={index}
               className={occupied ? "is-filled" : ""}
               aria-label={`Linha ${Math.floor(index / 8) + 1}, coluna ${index % 8 + 1}, ${occupied ? "ocupada" : "livre"}`}
+              tabIndex={focusCell === index ? 0 : -1} onFocus={() => setFocusCell(index)}
               disabled={game.status === "lost"} onClick={() => place(index)} />)}
         </div>
         <div className="blocks-tray" role="group" aria-label="Escolha uma peça">
