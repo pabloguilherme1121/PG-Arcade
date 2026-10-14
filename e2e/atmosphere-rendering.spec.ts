@@ -99,11 +99,14 @@ for (const density of [1, 1.25, 2]) {
         await page.setViewportSize({ width: 844, height: 390 });
         await expect.poll(async () => (await results()).some(r => r.width !== first.width)).toBe(true);
         const beforeRestore = (await results()).length;
-        await page.locator(".motion-expansion canvas").evaluate(element => {
+        const restoredImmediately = await page.locator(".motion-expansion canvas").evaluate(element => {
           const canvas = element as HTMLCanvasElement;
           canvas.width = canvas.width; // simulate the drawing-state reset of GPU restoration
           canvas.dispatchEvent(new Event("contextrestored"));
+          const matrix = canvas.getContext("2d")!.getTransform();
+          return Math.abs(matrix.a - canvas.width / 480) < .0001 && Math.abs(matrix.d - canvas.height / 380) < .0001;
         });
+        expect(restoredImmediately).toBe(true);
         await expect.poll(async () => (await results()).length).toBeGreaterThan(beforeRestore);
         await expect.poll(() => page.locator(".motion-expansion canvas").evaluate(element => {
           const canvas = element as HTMLCanvasElement, matrix = canvas.getContext("2d")!.getTransform();

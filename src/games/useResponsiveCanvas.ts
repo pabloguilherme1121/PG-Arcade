@@ -51,6 +51,11 @@ export function useResponsiveCanvas(
     };
     const restore = () => {
       // Context restoration resets drawing state even when dimensions are unchanged.
+      // Restore the world transform synchronously: an already queued game frame
+      // may run before our resize frame and must not cache gradients at identity.
+      context.setTransform(element.width / width, 0, 0, element.height / height, 0, 0);
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = "high";
       lastPixels = 0;
       lastRows = 0;
       scheduleResize();
