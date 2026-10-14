@@ -83,6 +83,7 @@ const players = {
     ]),
   ) as unknown as Record<NewGameId, ComponentType<PlayerProps>>),
   ...collectionPlayers,
+  blocos: lazy(() => import("./games/BlockPuzzle")),
   sequencia: lazy(() => import("./games/ColorSequence")),
   palavra: lazy(() => import("./games/SecretWord")),
   rally: lazy(() => import("./games/Rally")),

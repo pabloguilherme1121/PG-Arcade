@@ -2,7 +2,7 @@
 
 ## Proposta
 
-Escolher uma mecânica reconhecível e começar uma partida no navegador, especialmente no celular. O catálogo conserva 100 jogos, sem cadastro. A primeira tela apresenta seis entradas variadas: Snake, Maré de Cores, Liga 4, Basquete, Palavra Secreta e Pulso Musical. A escolha é editorial, sem inventar popularidade, duração ou dificuldade relativa.
+Escolher uma mecânica reconhecível e começar uma partida no navegador, especialmente no celular. O catálogo conserva 101 jogos, sem cadastro. A primeira tela apresenta seis entradas variadas: Snake, Maré de Cores, Liga 4, Basquete, Palavra Secreta e Pulso Musical. A escolha é editorial, sem inventar popularidade, duração ou dificuldade relativa.
 
 ## Jornada
 

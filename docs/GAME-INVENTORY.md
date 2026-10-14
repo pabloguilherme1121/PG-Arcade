@@ -1,4 +1,4 @@
-# Inventário dos 100 jogos
+# Inventário dos 101 jogos
 
 Inventário extraído do catálogo, gameHelp e unidades de recorde em 8 de outubro de 2026. Regras e controles abaixo descrevem a implementação; este documento não certifica uma partida completa de cada jogo. A cobertura profunda permanece nos testes de motores e famílias.
 
@@ -6,6 +6,7 @@ Todos mantêm visitas e favoritos locais. Nenhum restaura automaticamente a part
 
 | ID | Nome | Família | Modo disponível | Dificuldade | Recorde | Regras e controles específicos |
 | --- | --- | --- | --- | --- | --- | --- |
+| `blocos` | Blocos Infinito | puzzle | Solo | Fácil / Normal / Difícil | pontos; maior resultado vence | Escolha uma peça, toque na casa de origem e complete linhas ou colunas. Três peças novas surgem após usar as anteriores. Sem espaço para as peças restantes, a partida termina. |
 | `flood` | Maré de Cores | board | Solo | Iniciante / Normal / Avançado | pontos; maior resultado vence | Escolha uma cor para expandir a região do canto superior esquerdo. Cubra o tabuleiro em até 24 movimentos. |
 | `same` | Colapso de Cristais | board | Solo | Iniciante / Normal / Avançado | pontos; maior resultado vence | Remova grupos de pelo menos dois cristais iguais. Eles caem e as colunas vazias se fecham. Limpe toda a grade. |
 | `peg` | Resta Um | board | Solo | Iniciante / Normal / Avançado | pontos; maior resultado vence | Selecione uma peça e uma casa vazia a duas casas de distância. Salte outra peça para removê-la. Deixe uma única peça. |

@@ -51,7 +51,7 @@ describe("Blocos Infinito: regras determinísticas e sem jogadas fantasmas", () 
     const base = newBlockPuzzle();
     const board = Array.from({ length: 64 }, (_, i) => (Math.floor(i / 8) + i % 8) % 2);
     const game = { ...base, board, pieces: [single, square, null] as (BlockShape | null)[] };
-    const next = placeBlock(game, 0, 1);
+    const next = placeBlock(game, 0, 0);
     expect(next.status).toBe("lost");
     expect(placeBlock(next, 1, 0)).toBe(next);
   });

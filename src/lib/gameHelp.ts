@@ -58,6 +58,7 @@ const expandedHelp: Record<ExpandedId, string> = {
 export const gameHelp: Record<GameId, string> = {
   ...Object.fromEntries(newGames.map(g => [g.id, g.help])) as Record<typeof newGames[number]["id"],string>,
   ...expandedHelp,
+  blocos: "Escolha uma das três peças e toque na casa de origem. Preencha linhas ou colunas para limpá-las. Setas movem o foco e Enter posiciona. Ao usar as três peças, outras aparecem. A partida termina quando nenhuma restante cabe.",
   sequencia:
     "Observe a sequência e repita com as teclas 1 a 4 no tabuleiro ou toque nos botões. Cada nível adiciona uma cor. Pausar e continuar repete o padrão sem penalidade.",
   palavra:
@@ -105,6 +106,7 @@ export const gameHelp: Record<GameId, string> = {
 export const recordUnits: Partial<Record<GameId, "pontos" | "jogadas">> = {
   ...Object.fromEntries(newGames.map(g => [g.id, "pontos" as const])),
   ...Object.fromEntries(expandedGames.map((g) => [g.id, "pontos" as const])),
+  blocos: "pontos",
   sequencia: "pontos",
   palavra: "pontos",
   rally: "pontos",

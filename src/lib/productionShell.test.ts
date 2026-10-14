@@ -6,7 +6,7 @@ const read = (path: string) => readFileSync(path, "utf8");
 describe("production shell", () => {
   it("publishes accurate SEO and installable-app metadata", () => {
     const html = read("index.html");
-    expect(html).toContain("100 jogos");
+    expect(html).toContain("101 jogos");
     expect(html).toContain('rel="canonical"');
     expect(html).toContain('rel="manifest"');
     expect(html).toContain('property="og:title"');
