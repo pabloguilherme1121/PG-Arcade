@@ -18,6 +18,7 @@ import { useReducedMotion } from "../useReducedMotion";
 import { createCanvasFeedback } from './canvasFeedback';
 import { ArenaFeedback, ArenaProgress } from "./ArenaFeedback";
 import { motionGoal, motionHints } from "./arenaPresentation";
+import { motionTuning } from "../lib/gameplayTuning";
 import "./newGames.css";
 import "./gameplay.css";
 export function paintMotion(c: CanvasRenderingContext2D, s: MotionState) {
@@ -429,6 +430,7 @@ export default function MotionExpansion({
           Dificuldade
           <select
             aria-label="Dificuldade"
+            aria-describedby="motion-difficulty-details"
             value={difficulty}
             disabled={hud.status === "running" || hud.status === "paused"}
             onChange={(e) => reset(Number(e.target.value))}
@@ -619,12 +621,13 @@ export default function MotionExpansion({
         <aside className="new-instructions">
           <h2>Como jogar</h2>
           <p>{meta.help}</p>
-          <p className="new-tip">
+          <p className="new-tip" id="motion-difficulty-details">
             {difficulty === 0
               ? "Iniciante: ritmo mais legível, maior tolerância e mais tempo de recuperação."
               : difficulty === 2
                 ? "Avançado: ritmo mais rápido, janelas menores e pontuação de precisão valorizada."
                 : "Normal: velocidade, tolerância e recuperação equilibradas."}
+            {` Ritmo: ${Math.round(motionTuning(difficulty).speed * 100)}% · recuperação: ${motionTuning(difficulty).invulnerability.toLocaleString("pt-BR")} s.`}
           </p>
           {gameId === "ricochet" && <p>Disparos restantes: {hud.shots}</p>}
           <p className="new-tip">

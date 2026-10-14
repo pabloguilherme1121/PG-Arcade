@@ -6,7 +6,7 @@ test("memory pauses a mismatch on blur and resumes only its remaining observatio
   await page.goto("./#/jogar/memoria");
   await expect(page.locator(".memory-card")).toHaveCount(16);
   const time = new Date("2026-10-09T12:00:00Z");
-  await page.clock.install({ time });
+  await page.clock.install({ time: new Date(time.getTime() - 60_000) });
   await page.clock.pauseAt(time);
   await page.locator(".memory-card").nth(0).click();
   await page.locator(".memory-card").nth(1).click();
@@ -32,7 +32,7 @@ for (const pairs of [4, 12]) {
     await page.getByLabel("Dificuldade da memória").selectOption(String(pairs));
     await page.getByLabel("Tempo para observar cartas diferentes").selectOption("500");
     const time = new Date("2026-10-09T12:00:00Z");
-    await page.clock.install({ time });
+    await page.clock.install({ time: new Date(time.getTime() - 60_000) });
     await page.clock.pauseAt(time);
     const cards = page.locator(".memory-card");
     await expect(cards).toHaveCount(pairs * 2);

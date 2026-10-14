@@ -2,6 +2,11 @@ import { describe, expect, it } from "vitest";
 import { motionTuning, rhythmHitQuality } from "./gameplayTuning";
 
 describe("motion difficulty tuning", () => {
+  it("keeps invalid difficulty on the normal profile and clamps numeric input", () => {
+    for (const value of [NaN, Infinity, -Infinity]) expect(motionTuning(value)).toEqual(motionTuning(1));
+    expect(motionTuning(-10)).toEqual(motionTuning(0));
+    expect(motionTuning(10)).toEqual(motionTuning(2));
+  });
   it("builds a readable three-step difficulty curve without changing control semantics", () => {
     expect(motionTuning(0)).toMatchObject({
       speed: 0.9,

@@ -2,7 +2,9 @@ import {expect,test} from '@playwright/test';
 
 async function freeze(page: import('@playwright/test').Page) {
   const time=new Date('2026-10-10T12:00:00Z');
-  await page.clock.install({time});await page.clock.pauseAt(time);
+  // Leave a full test-timeout of headroom for the install/pause protocol calls.
+  // These games are still ready, so advancing setup time cannot play a round.
+  await page.clock.install({time:new Date(time.getTime()-60_000)});await page.clock.pauseAt(time);
 }
 
 test('short target pauses preserve fractional round time',async({page})=>{

@@ -47,6 +47,7 @@ import { useReducedMotion } from "./useReducedMotion";
 import { useImmersivePlayer } from "./lib/useImmersivePlayer";
 import "./features/portfolio/components/PortfolioArcade.css";
 const ProgressPage = lazy(() => import("./ProgressPage"));
+const CatalogSpotlight = lazy(() => import("./CatalogSpotlight").catch(() => ({default: () => null})));
 const SessionChallenge = lazy(() => import("./games/SessionChallenge"));
 type PlayerProps = { record: number; onRecord: (n: number) => void };
 const collectionPlayers = Object.fromEntries(
@@ -340,7 +341,7 @@ export default function App() {
     return <article className={contextual ? "curated-card" : "game-card"} key={g.id} data-game-category={g.category} data-catalog-game={contextual ? undefined : g.id}>
       <a className="game-link" href={`#/jogar/${g.id}`} aria-label={`${contextual ? "Começar com" : "Jogar"} ${g.name}`} onClick={() => rememberCatalog(g.id)}>
         <GameCover id={g.id} name={g.name} category={g.category} priority={priority} /><span className="game-category">{categoryGroup(g.category)}</span>
-        <div className="card-mode-tags" aria-label="Estilos e modos disponíveis">
+        <div className="card-mode-tags" role="group" aria-label="Estilos e modos disponíveis">
           {(modeTags(g).filter(tag => tag !== "classico").slice(0, 2).length
             ? modeTags(g).filter(tag => tag !== "classico").slice(0, 2)
             : ["classico" as const]).map(tag => <span key={tag} data-game-mode={tag}>{modeLabel(tag)}</span>)}
@@ -478,7 +479,7 @@ export default function App() {
                 <p className="player-description">{game.description}</p>
               </div>
             </div>
-            <div className="player-mode-ribbon" data-player-modes aria-label="Estilos e modos disponíveis">
+            <div className="player-mode-ribbon" role="group" data-player-modes aria-label="Estilos e modos disponíveis">
               <strong>Estilos e modos</strong>
               {(activeModes.length ? activeModes : ["classico" as const]).map(tag =>
                 <span key={tag} data-mode={tag}>{modeLabel(tag)}</span>)}
@@ -671,7 +672,7 @@ export default function App() {
                   />
                 </label>
               </div>
-              <div className="filters" aria-label="Categorias">
+              <div className="filters" role="group" aria-label="Categorias">
                 {["Todos", ...new Set(games.map((g) => categoryGroup(g.category)))].map(
                   (c) => (
                     <button
@@ -685,7 +686,7 @@ export default function App() {
                   ),
                 )}
               </div>
-              <div className="smart-mode-discovery" aria-label="Encontre seu modo de jogar">
+              <div className="smart-mode-discovery" role="region" aria-label="Encontre seu modo de jogar">
                 <div className="smart-mode-header">
                   <strong>Seu estilo de jogo</strong>
                   <span>Explore modos reais ou continue descobrindo. As sugestões usam apenas o histórico neste navegador.</span>
@@ -738,6 +739,7 @@ export default function App() {
                 {sorted.map((g, index) => renderCard(g, false, index < 4))}
 
               </div>
+              <Suspense fallback={null}><CatalogSpotlight candidates={visible} progress={progress} remember={rememberCatalog}/></Suspense>
               {!visible.length && (
                 <div className="empty">
                   <h3>

@@ -124,3 +124,29 @@ html[data-arcade-motion="reduced"] .player [data-arcade-arena] :is(.sliding-boar
   transition: none !important;
   transform: none !important;
 }
+/* Shared premium mode interaction for every game, without changing rules. */
+.session-mode-cards button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 140ms ease, background-color 140ms ease,
+    box-shadow 140ms ease, transform 120ms ease;
+}
+.session-mode-cards button:focus-visible {
+  outline: 3px solid #f4ffd1;
+  outline-offset: 2px;
+}
+.session-mode-cards button:enabled:active {transform: scale(.975)}
+@media (hover:hover) and (prefers-reduced-motion:no-preference) {
+  html:not([data-arcade-motion="reduced"]) .session-mode-cards button:enabled:hover {
+    border-color:#e0fcb7;
+    box-shadow:inset 0 2px #c9f65a,0 5px 14px #0005;
+    transform:translateY(-2px);
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .session-mode-cards button {transition:none!important;transform:none!important}
+}
+html[data-arcade-motion="reduced"] .session-mode-cards button {
+  transition:none!important;
+  transform:none!important;
+}
