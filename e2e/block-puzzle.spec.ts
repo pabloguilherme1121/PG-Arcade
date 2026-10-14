@@ -19,6 +19,7 @@ test("Blocos Infinito accepts keyboard arrows and recovers after undo", async ({
   await page.goto("./#/jogar/blocos");
   const first = page.getByRole("button", { name: "Linha 1, coluna 1, livre" });
   await first.focus();
+  await expect(page.locator('[data-blocks-board] button[tabindex="0"]')).toHaveCount(1);
   await page.keyboard.press("ArrowRight");
   await expect(page.locator('[data-blocks-board] [data-cell="1"]')).toBeFocused();
   await page.keyboard.press("Enter");
