@@ -28,7 +28,7 @@ test("Blocos Infinito accepts keyboard arrows and recovers after undo", async ({
   await expect(page.locator("[data-blocks-score]")).toHaveText("0");
 });
 
-test("game-specific help loads lazily without losing keyboard accessibility", async ({ page }) => {
+test("game-specific help remains keyboard-accessible on the player route", async ({ page }) => {
   await page.goto("./#/jogar/blocos");
   const help = page.locator(".experience-tools details");
   await help.locator("summary").click();
