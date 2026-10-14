@@ -31,7 +31,7 @@ const profiles: readonly MotionTuning[] = [
 ];
 
 export function motionTuning(difficulty: number): MotionTuning {
-  const index = Math.max(0, Math.min(2, Math.round(difficulty)));
+  const index = Number.isFinite(difficulty) ? Math.max(0, Math.min(2, Math.round(difficulty))) : 1;
   return profiles[index];
 }
 

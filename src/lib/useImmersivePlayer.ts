@@ -10,6 +10,16 @@ export function useImmersivePlayer(player: RefObject<HTMLDivElement | null>, rou
   const active = native || viewport;
 
   useEffect(() => {
+    if (!native) return;
+    let cancelled = false;
+    let release: (() => void) | undefined;
+    void import("./landscapeOrientation").then(({ preferLandscape }) => {
+      if (!cancelled) release = preferLandscape();
+    }).catch(() => undefined);
+    return () => { cancelled = true; release?.(); };
+  }, [native]);
+
+  useEffect(() => {
     const change = () => setNative(document.fullscreenElement === player.current && !!player.current);
     document.addEventListener("fullscreenchange", change);
     return () => document.removeEventListener("fullscreenchange", change);
