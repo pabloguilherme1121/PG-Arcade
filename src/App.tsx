@@ -341,7 +341,7 @@ export default function App() {
     return <article className={contextual ? "curated-card" : "game-card"} key={g.id} data-game-category={g.category} data-catalog-game={contextual ? undefined : g.id}>
       <a className="game-link" href={`#/jogar/${g.id}`} aria-label={`${contextual ? "Começar com" : "Jogar"} ${g.name}`} onClick={() => rememberCatalog(g.id)}>
         <GameCover id={g.id} name={g.name} category={g.category} priority={priority} /><span className="game-category">{categoryGroup(g.category)}</span>
-        <div className="card-mode-tags" aria-label="Estilos e modos disponíveis">
+        <div className="card-mode-tags" role="group" aria-label="Estilos e modos disponíveis">
           {(modeTags(g).filter(tag => tag !== "classico").slice(0, 2).length
             ? modeTags(g).filter(tag => tag !== "classico").slice(0, 2)
             : ["classico" as const]).map(tag => <span key={tag} data-game-mode={tag}>{modeLabel(tag)}</span>)}
@@ -479,7 +479,7 @@ export default function App() {
                 <p className="player-description">{game.description}</p>
               </div>
             </div>
-            <div className="player-mode-ribbon" data-player-modes aria-label="Estilos e modos disponíveis">
+            <div className="player-mode-ribbon" role="group" data-player-modes aria-label="Estilos e modos disponíveis">
               <strong>Estilos e modos</strong>
               {(activeModes.length ? activeModes : ["classico" as const]).map(tag =>
                 <span key={tag} data-mode={tag}>{modeLabel(tag)}</span>)}
@@ -672,7 +672,7 @@ export default function App() {
                   />
                 </label>
               </div>
-              <div className="filters" aria-label="Categorias">
+              <div className="filters" role="group" aria-label="Categorias">
                 {["Todos", ...new Set(games.map((g) => categoryGroup(g.category)))].map(
                   (c) => (
                     <button
