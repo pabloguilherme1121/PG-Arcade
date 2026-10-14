@@ -47,6 +47,7 @@ import { useReducedMotion } from "./useReducedMotion";
 import { useImmersivePlayer } from "./lib/useImmersivePlayer";
 import "./features/portfolio/components/PortfolioArcade.css";
 const ProgressPage = lazy(() => import("./ProgressPage"));
+const CatalogSpotlight = lazy(() => import("./CatalogSpotlight"));
 const SessionChallenge = lazy(() => import("./games/SessionChallenge"));
 type PlayerProps = { record: number; onRecord: (n: number) => void };
 const collectionPlayers = Object.fromEntries(
@@ -685,7 +686,7 @@ export default function App() {
                   ),
                 )}
               </div>
-              <div className="smart-mode-discovery" aria-label="Encontre seu modo de jogar">
+              <div className="smart-mode-discovery" role="region" aria-label="Encontre seu modo de jogar">
                 <div className="smart-mode-header">
                   <strong>Seu estilo de jogo</strong>
                   <span>Explore modos reais ou continue descobrindo. As sugestões usam apenas o histórico neste navegador.</span>
@@ -699,6 +700,7 @@ export default function App() {
                   ))}
                 </div>
               </div>
+              <Suspense fallback={null}><CatalogSpotlight candidates={visible} progress={progress} remember={rememberCatalog}/></Suspense>
               <div className="catalog-tools">
                 <label>Modo <select aria-label="Filtrar por modo" value={mode} onChange={(e) => setMode(e.target.value)}><option>Todos</option><option value="Solo">Somente solo</option><option>Dupla local</option></select></label>
                 <label>
