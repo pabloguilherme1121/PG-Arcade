@@ -84,7 +84,7 @@ export function placeBlock(state: BlockPuzzleState, index: number, anchor: numbe
   const pieces = state.pieces.slice();
   pieces[index] = null;
   let seed = state.seed;
-  if (pieces.every(piece => piece === null)) {
+  if (!pieces.some(Boolean)) {
     const next = drawPieces(seed, state.difficulty);
     pieces.splice(0, pieces.length, ...next.pieces);
     seed = next.seed;
