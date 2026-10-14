@@ -49,13 +49,21 @@ export function useResponsiveCanvas(
         resize();
       });
     };
+    const restore = () => {
+      // Context restoration resets drawing state even when dimensions are unchanged.
+      lastPixels = 0;
+      lastRows = 0;
+      scheduleResize();
+    };
     const observer = new ResizeObserver(scheduleResize);
     observer.observe(element);
     window.addEventListener("resize", scheduleResize);
+    element.addEventListener("contextrestored", restore);
     resize();
     return () => {
       observer.disconnect();
       window.removeEventListener("resize", scheduleResize);
+      element.removeEventListener("contextrestored", restore);
       if (frame !== null) window.cancelAnimationFrame(frame);
     };
   }, [canvas, width, height]);

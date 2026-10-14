@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 for (const density of [1, 1.25, 2]) {
-  test.describe(`vector atmosphere at DPR ${density}`, () => {
+  test.describe(`cached atmosphere at DPR ${density}`, () => {
     test.use({ deviceScaleFactor: density });
     for (const game of ["rhythm", "ski"]) {
       test(`${game} preserves the original pixels and sharpness after rotation`, async ({ page }) => {
@@ -10,23 +10,43 @@ for (const density of [1, 1.25, 2]) {
         await page.addInitScript(({ snow }) => {
           const results: Array<{ width: number; height: number; max: number; changed: number; pixels: number }> = [];
           Object.assign(window, { __atmosphereResults: results });
+          const frames: number[] = [];
+          Object.assign(window, { __atmosphereFrames: frames });
           const seen = new Set<string>();
-          const counts = new WeakMap<CanvasRenderingContext2D, number>();
+          document.addEventListener("contextrestored", () => seen.clear(), true);
+          const counts = new WeakMap<CanvasRenderingContext2D, { rects: number; gradients: number }>();
           const clear = CanvasRenderingContext2D.prototype.clearRect;
           CanvasRenderingContext2D.prototype.clearRect = function (...args) {
-            if (this.canvas.closest(".motion-expansion")) counts.set(this, 0);
+            if (this.canvas.closest(".motion-expansion")) counts.set(this, { rects: 0, gradients: 0 });
             clear.apply(this, args);
           };
-          const capture = (c: CanvasRenderingContext2D, path?: Path2D) => {
-            if (!(path instanceof Path2D) || !c.canvas.closest(".motion-expansion")) return;
-            const count = (counts.get(c) || 0) + 1;
-            counts.set(c, count);
-            if (count !== 2) return;
+          const recordGradient = (c: CanvasRenderingContext2D, args: number[]) => {
+            if (!c.canvas.closest(".motion-expansion")) return;
+            if (!["0,0,0,380", "340,70,8,290,120,300", "240,190,130,240,190,360"].includes(args.join(","))) return;
+            const frame = counts.get(c);
+            if (frame) frame.gradients++;
+          };
+          const linear = CanvasRenderingContext2D.prototype.createLinearGradient;
+          CanvasRenderingContext2D.prototype.createLinearGradient = function (...args) {
+            recordGradient(this, args); return linear.apply(this, args);
+          };
+          const radial = CanvasRenderingContext2D.prototype.createRadialGradient;
+          CanvasRenderingContext2D.prototype.createRadialGradient = function (...args) {
+            recordGradient(this, args); return radial.apply(this, args);
+          };
+          const capture = (c: CanvasRenderingContext2D) => {
+            const frame = counts.get(c);
+            if (!frame || !c.canvas.closest(".motion-expansion")) return;
+            frame.rects++;
+            // Sample immediately after the unchanged atmospheric geometry, before objects.
+            if (frame.rects !== (snow ? 49 : 58)) return;
+            frames.push(frame.gradients);
+            if (frames.length > 120) frames.shift();
             const { width, height } = c.canvas;
             const key = `${width}:${height}`;
             if (seen.has(key)) return;
             seen.add(key);
-            // Frozen reference painter from main 9a8fbcd, before path batching.
+            // Frozen reference painter from main 9a8fbcd, before static material caching.
             const canvas = document.createElement("canvas");
             canvas.width = width; canvas.height = height;
             const r = canvas.getContext("2d")!;
@@ -64,14 +84,9 @@ for (const density of [1, 1.25, 2]) {
             }
             results.push({ width, height, max, changed, pixels: width * height });
           };
-          const fill = CanvasRenderingContext2D.prototype.fill;
-          CanvasRenderingContext2D.prototype.fill = function (...args: Parameters<typeof fill>) {
-            fill.apply(this, args);
-            capture(this, args[0] instanceof Path2D ? args[0] : undefined);
-          };
-          const stroke = CanvasRenderingContext2D.prototype.stroke;
-          CanvasRenderingContext2D.prototype.stroke = function (...args: Parameters<typeof stroke>) {
-            stroke.apply(this, args); capture(this, args[0]);
+          const fillRect = CanvasRenderingContext2D.prototype.fillRect;
+          CanvasRenderingContext2D.prototype.fillRect = function (...args) {
+            fillRect.apply(this, args); capture(this);
           };
         }, { snow: game === "ski" });
         await page.goto(`./#/jogar/${game}`);
@@ -83,10 +98,26 @@ for (const density of [1, 1.25, 2]) {
         const first = (await results())[0];
         await page.setViewportSize({ width: 844, height: 390 });
         await expect.poll(async () => (await results()).some(r => r.width !== first.width)).toBe(true);
+        const beforeRestore = (await results()).length;
+        await page.locator(".motion-expansion canvas").evaluate(element => {
+          const canvas = element as HTMLCanvasElement;
+          canvas.width = canvas.width; // simulate the drawing-state reset of GPU restoration
+          canvas.dispatchEvent(new Event("contextrestored"));
+        });
+        await expect.poll(async () => (await results()).length).toBeGreaterThan(beforeRestore);
+        await expect.poll(() => page.locator(".motion-expansion canvas").evaluate(element => {
+          const canvas = element as HTMLCanvasElement, matrix = canvas.getContext("2d")!.getTransform();
+          return Math.abs(matrix.a - canvas.width / 480) < .0001 && Math.abs(matrix.d - canvas.height / 380) < .0001;
+        })).toBe(true);
         for (const result of await results()) {
           expect(result.max, JSON.stringify(result)).toBeLessThanOrEqual(2);
           expect(result.changed / result.pixels).toBeLessThanOrEqual(.003);
         }
+        const frames = () => page.evaluate(() => (window as unknown as { __atmosphereFrames: number[] }).__atmosphereFrames);
+        const before = (await frames()).length;
+        await page.getByRole("button", { name: "Começar", exact: true }).click();
+        await expect.poll(async () => (await frames()).length).toBeGreaterThanOrEqual(before + 6);
+        expect((await frames()).slice(-3)).toEqual([0, 0, 0]);
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
       });
     }
