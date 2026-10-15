@@ -16,6 +16,7 @@ import { revealPlayfield } from "./revealPlayfield";
 import { useReducedMotion } from "../useReducedMotion";
 import { useResponsiveCanvas } from "./useResponsiveCanvas";
 import { paintBlock, paintRock } from "./canvasMaterials";
+import { actionCanvasMaterials } from "./actionCanvasMaterials";
 import { identifyTouchGesture, shouldQueueCanvasTapAction } from "../lib/touchCanvas";
 import { actionPresentation } from "../lib/actionPresentation";
 import { createCanvasFeedback } from './canvasFeedback';
@@ -39,10 +40,8 @@ function paint(
   reducedMotion: boolean,
 ) {
   const space = ["asteroides", "invasores", "pouso"].includes(s.id);
-  const sky = ctx.createLinearGradient(0, 0, 0, 360);
-  sky.addColorStop(0, space ? "#071026" : "#162c40");
-  sky.addColorStop(1, space ? "#192a43" : "#43606b");
-  ctx.fillStyle = sky;
+  const materials = actionCanvasMaterials(ctx, space);
+  ctx.fillStyle = materials.sky;
   ctx.fillRect(0, 0, 480, 360);
   ctx.fillStyle = "#bbdbef";
   const drift = reducedMotion ? 0 : s.time * (space ? 5 : 1.25);
@@ -59,10 +58,7 @@ function paint(
   }
   ctx.globalAlpha = 1;
   if (!space) {
-    const haze = ctx.createLinearGradient(0, 120, 0, 330);
-    haze.addColorStop(0, "rgba(216,236,242,.08)");
-    haze.addColorStop(1, "rgba(8,20,26,0)");
-    ctx.fillStyle = haze;
+    ctx.fillStyle = materials.haze!;
     ctx.fillRect(0, 105, 480, 225);
   }
   const circle = (x: number, y: number, r: number, color: string) => {
