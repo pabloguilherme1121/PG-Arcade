@@ -840,6 +840,11 @@ export default function App() {
       <footer>
         <a href="#/">PG Arcade</a>
         <span>Feito para jogar. Sem cadastro.</span>
+        <nav className="project-network-links" aria-label="Outros projetos de Pablo Guilherme">
+          <a href="https://pabloguilherme1121.github.io/PG-portfolio/#rede-projetos">Todos os projetos</a>
+          <a href="https://pabloguilherme1121.github.io/eleicoes-goias-2026/">Eleições Goiás</a>
+          <a href="https://pabloguilherme01.github.io/observatorio/#dashboard">Observatório</a>
+        </nav>
       </footer>
     </div>
   );
