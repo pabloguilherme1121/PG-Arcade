@@ -35,7 +35,7 @@ for (const width of [320, 390, 1280]) {
     for (const game of games) {
       await page.goto(`./#/jogar/${game.id}`);
       await expect(page.locator("[data-arcade-arena]").first()).toBeVisible();
-      await expect(page.getByLabel("Modo de sessão").locator("option")).toHaveCount(3);
+      await expect(page.locator(".session-mode-cards button")).toHaveCount(3);
       if (await page.locator(".player-utilities:not([open]) summary").count()) {
     await page.locator(".player-utilities summary").click();
   }
@@ -43,7 +43,7 @@ for (const width of [320, 390, 1280]) {
       const player = page.locator(".player");
       await expect(player).toHaveAttribute("data-viewport-fullscreen", "true");
       expect(await player.evaluate((element) => element.scrollWidth <= element.clientWidth + 1), game.id).toBe(true);
-      await page.getByLabel("Modo de sessão").selectOption("sprint");
+      await page.locator(".session-mode-cards").getByRole("button", { name: /Sprint/ }).click();
       await expect(page.getByLabel("Dificuldade do desafio de tempo").locator("option")).toHaveCount(3);
       await page.keyboard.press("Escape");
       await expect(player).toHaveAttribute("data-immersive", "false");
@@ -80,7 +80,7 @@ test("session timer pauses on interruption, resumes and blocks play at its deadl
   const time = new Date("2026-10-09T12:00:00Z");
   await page.clock.install({ time: new Date(time.getTime() - 60_000) });
   await page.clock.pauseAt(time);
-  await page.getByLabel("Modo de sessão").selectOption("sprint");
+  await page.locator(".session-mode-cards").getByRole("button", { name: /Sprint/ }).click();
   await page.getByLabel("Dificuldade do desafio de tempo").selectOption("hard");
   await expect(page.getByRole("timer")).toHaveText("1:00");
   await expect(page.locator("[data-session-content]")).toHaveAttribute("inert");

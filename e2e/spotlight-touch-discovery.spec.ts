@@ -26,7 +26,7 @@ test.describe("descoberta premium mobile", () => {
       await expect(featured).toHaveCount(0);
 
       await page.getByRole("button", { name: "Zerar filtros", exact: true }).tap();
-      await page.getByRole("button", { name: "Dupla local", exact: true }).tap();
+      await page.getByRole("combobox", { name: "Filtrar por modo", exact: true }).selectOption("Dupla local");
       await expect(page.locator(".game-card")).toHaveCount(5);
       const link = featured.getByRole("link", { name: /Jogar sugestão:/ });
       const target = await link.getAttribute("href");

@@ -30,7 +30,7 @@ for (const game of [
 test("timed session and inner game both pause when PWA goes into the background", async ({ page }) => {
   await page.goto("./#/jogar/runner");
   const session = page.locator(".session-challenge");
-  await page.getByRole("combobox", { name: "Modo de sessão" }).selectOption("sprint");
+  await page.locator(".session-mode-cards").getByRole("button", { name: /Sprint/ }).click();
   await page.getByRole("button", { name: "Iniciar desafio de tempo" }).click();
   await page.locator(".action-collection-overlay").getByRole("button", { name: "Começar" }).click();
   await expect(session).toHaveAttribute("data-session-phase", "running");

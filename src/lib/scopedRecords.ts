@@ -2,7 +2,7 @@ export type ScopedRecords = Record<string, number>;
 export function isScopedRecordKey(key: string) {
   const [game, session, variant, ...extra] = key.split("|");
   if (extra.length || !/^(free|(?:sprint|marathon)-(?:easy|normal|hard))$/.test(session ?? "")) return false;
-  return game === "2048" ? /^(easy|normal|hard)$/.test(variant ?? "")
+  return (game === "2048" || game === "reflexo") ? /^(easy|normal|hard)$/.test(variant ?? "")
     : game === "memoria" ? /^(4|8|12)-(500|900|1500)$/.test(variant ?? "")
     : game === "blocos" ? /^[012]$/.test(variant ?? "")
     : game === "snake" && /^(classic|wrap)-(100|160|220)-(constant|progressive)$/.test(variant ?? "");

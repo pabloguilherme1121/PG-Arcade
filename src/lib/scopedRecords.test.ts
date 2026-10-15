@@ -17,3 +17,12 @@ it("separates difficulty and timed sessions and preserves the best result on imp
 it("rejects malformed keys, unsupported variants and unsafe scores", () => {
   expect(normalizeScopedRecords({ '__proto__': 9, 'snake|free|classic-220-constant': 10, 'snake|free|wrap-220-progressive': 20, 'blocos|free|4': 9, '2048|free|hard': Infinity, 'blocos|free|0': 1.5, 'memoria|free|4-900|extra': 5 })).toEqual({ 'snake|free|classic-220-constant': 10, 'snake|free|wrap-220-progressive': 20 });
 });
+
+it("keeps reaction difficulty and session records separate without relabeling legacy scores", () => {
+  const imported = mergeProgress({ ...emptyProgress(), records: { reflexo: 4800 } }, {
+    recordsV2: { "reflexo|free|easy": 4700, "reflexo|free|hard": 3200, "reflexo|sprint-normal|easy": 4100, "reflexo|free|unknown": 5 },
+  });
+  expect(imported.records.reflexo).toBe(4800);
+  expect(imported.recordsV2).toEqual({ "reflexo|free|easy": 4700, "reflexo|free|hard": 3200, "reflexo|sprint-normal|easy": 4100 });
+  expect(addScopedRecord(imported.recordsV2!, "reflexo|free|hard", 3000)).toBe(imported.recordsV2);
+});

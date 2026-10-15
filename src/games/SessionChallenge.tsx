@@ -19,10 +19,12 @@ export default function SessionChallenge({ children, gameId, progress, update }:
   const [mode, setMode] = useState<SessionMode>("free");
   const [level, setLevel] = useState<SessionLevel>("normal");
   const [phase, setPhase] = useState<"ready" | "running" | "paused" | "done">("ready");
+  const [gameActive, setGameActive] = useState<boolean | null>(null);
   const [round, setRound] = useState(0);
   const [remaining, setRemaining] = useState(120);
   const left = useRef(120);
   const running = useRef(false);
+  const pausing = useRef(false);
   const last = useRef(0);
   const controls = useRef<HTMLDivElement>(null);
   const settle = useCallback(() => {
@@ -32,15 +34,17 @@ export default function SessionChallenge({ children, gameId, progress, update }:
     setRemaining(left.current);
   }, []);
   const pause = useCallback(() => {
-    if (!running.current) return;
-    settle();
+    if (phase !== "running" || mode === "free" || pausing.current) return;
+    pausing.current = true;
+    if (running.current) settle();
     running.current = false;
     setPhase(left.current <= 0 ? "done" : "paused");
-    window.dispatchEvent(new Event("pg-arcade-pause"));
-  }, [settle]);
+    try { window.dispatchEvent(new Event("pg-arcade-pause")); }
+    finally { pausing.current = false; }
+  }, [settle, phase, mode]);
   useAutoPause(pause);
   useEffect(() => {
-    if (mode === "free" || phase !== "running") return;
+    if (mode === "free" || phase !== "running" || gameActive === false) return;
     running.current = true;
     last.current = performance.now();
     const tick = window.setInterval(() => {
@@ -52,9 +56,13 @@ export default function SessionChallenge({ children, gameId, progress, update }:
         controls.current?.querySelector<HTMLButtonElement>("[data-session-start]")?.focus({ preventScroll: true });
       }
     }, 200);
-    return () => { window.clearInterval(tick); running.current = false; };
-  }, [phase, mode, settle]);
+    return () => {
+      if (running.current) settle();
+      window.clearInterval(tick); running.current = false;
+    };
+  }, [phase, mode, settle, gameActive]);
   function configure(nextMode: SessionMode, nextLevel: SessionLevel) {
+    setGameActive(null);
     setRound(n => n + 1);
     running.current = false;
     window.dispatchEvent(new Event("pg-arcade-pause"));
@@ -88,7 +96,7 @@ export default function SessionChallenge({ children, gameId, progress, update }:
   const elapsed = mode === 'free' ? 0 : Math.max(0, duration - remaining);
   const urgent = mode !== 'free' && phase === 'running' && remaining <= 15;
   return (
-    <div className="session-challenge" data-session-mode={mode} data-session-phase={phase} data-session-urgent={urgent}>
+    <div className="session-challenge" data-session-mode={mode} data-session-phase={phase} data-session-urgent={urgent} data-session-playing={gameActive === true}>
       <div className="session-mode-cards" role="group" aria-label="Escolha seu ritmo de partida">
         {sessionModes.map(([value,title,description])=><button key={value} type="button" aria-label={`${title}: ${description}`} aria-pressed={mode===value}
           disabled={phase==='running' || phase==='paused'} onClick={()=>{if(value!==mode) configure(value,level);}}>
@@ -99,13 +107,6 @@ export default function SessionChallenge({ children, gameId, progress, update }:
         {sessionModes.find(([value]) => value === mode)?.[2]}
       </p>
       <div className="session-options" ref={controls}>
-        <label>Modo de sessão
-          <select aria-label="Modo de sessão" value={mode} disabled={phase === "running" || phase === "paused"} onChange={(e) => configure(e.target.value as SessionMode, level)}>
-            <option value="free">Livre · no seu ritmo</option>
-            <option value="sprint">Sprint · partida rápida</option>
-            <option value="marathon">Maratona · sessão longa</option>
-          </select>
-        </label>
         {mode !== "free" && <>
           <label>Pressão de tempo
             <select aria-label="Dificuldade do desafio de tempo" value={level} disabled={phase === "running" || phase === "paused"} onChange={(e) => configure(mode, e.target.value as SessionLevel)}>
@@ -127,7 +128,7 @@ export default function SessionChallenge({ children, gameId, progress, update }:
         {urgent && <span className="session-final-warning" role="status">Últimos 15 segundos. Continue no seu ritmo.</span>}
       </div>}
       {mode !== "free" && <p className="session-note" role="status">
-        {phase === "done" ? "Tempo encerrado. A sessão foi bloqueada; seus recordes já conquistados continuam salvos." : phase === "paused" ? "Sessão pausada. Retome a sessão e use Continuar no jogo, se necessário." : "O relógio limita a sessão inteira. Iniciar abre uma nova partida; use os controles do jogo para jogar. Pausar sessão também pausa o relógio."}
+        {phase === "done" ? "Tempo encerrado. A sessão foi bloqueada; seus recordes já conquistados continuam salvos." : phase === "paused" ? "Sessão pausada. Libere a sessão e continue no jogo. O relógio dos jogos com pausa aguarda a retomada." : "Iniciar libera uma nova partida. Nos jogos com início e pausa, o relógio acompanha a atividade do jogo; nos tabuleiros, conta o tempo da sessão."}
       </p>}
       {blocked && <section className="session-checkpoint" aria-label="Estado do desafio de tempo">
         <div><strong>{phase === 'paused' ? 'Uma pausa no desafio' : phase === 'done' ? 'Seu tempo de sessão terminou' : 'Sua arena está pronta'}</strong>
@@ -135,7 +136,7 @@ export default function SessionChallenge({ children, gameId, progress, update }:
         <button type="button" onClick={start}>{phase === 'paused' ? 'Retomar desafio' : phase === 'done' ? 'Jogar outro desafio' : 'Liberar arena'}</button>
       </section>}
       <div key={round} inert={blocked} data-session-content>
-        <RecordScopeProvider value={{ records: scoped, session: sessionKey, save: saveRecord }}>{children}</RecordScopeProvider>
+        <RecordScopeProvider value={{ records: scoped, session: sessionKey, save: saveRecord, activity: setGameActive }}>{children}</RecordScopeProvider>
       </div>
     </div>
   );

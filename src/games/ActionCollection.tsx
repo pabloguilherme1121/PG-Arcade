@@ -312,7 +312,7 @@ export default function ActionCollection({
     pointerDirection.current = null;
     setStatus((p) => (p === "running" ? "paused" : p));
   }, []);
-  useAutoPause(pause);
+  useAutoPause(pause, status === "running");
   useEffect(() => {
     const fresh = newAction(id, difficulty, mode);
     state.current = fresh;

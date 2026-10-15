@@ -42,7 +42,7 @@ export default function Racing({
     stopEngine();
     setStatus((s) => (s === "running" ? "paused" : s));
   }, [stopEngine]);
-  useAutoPause(pause);
+  useAutoPause(pause, status === "running");
   useEffect(() => {
     if (status !== "running") return;
     timer.current = setInterval(() => {

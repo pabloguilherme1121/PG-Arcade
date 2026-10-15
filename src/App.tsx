@@ -432,6 +432,16 @@ export default function App() {
                 <ArrowLeft size={19} />
                 Voltar aos jogos
               </a>
+                <button
+                  onClick={(event) => void toggleFullscreen(event.currentTarget)}
+                  aria-pressed={fullscreen}
+                  aria-label={fullscreen ? "Sair da tela cheia" : "Tela cheia"}
+                >
+                  {fullscreen ? <Minimize size={19} /> : <Maximize size={19} />}
+                  <span className="hide-small">
+                    {fullscreen ? "Sair" : "Tela cheia"}
+                  </span>
+                </button>
               <details className="player-utilities" onToggle={(e) => { if (e.currentTarget.open) window.dispatchEvent(new Event("pg-arcade-pause")); }}>
                 <summary>Opções da partida</summary>
                 <div>
@@ -455,16 +465,6 @@ export default function App() {
                   <LinkIcon size={19} />
                   <span className="hide-small">Compartilhar</span>
                 </button>
-                <button
-                  onClick={(event) => void toggleFullscreen(event.currentTarget)}
-                  aria-pressed={fullscreen}
-                  aria-label={fullscreen ? "Sair da tela cheia" : "Tela cheia"}
-                >
-                  {fullscreen ? <Minimize size={19} /> : <Maximize size={19} />}
-                  <span className="hide-small">
-                    {fullscreen ? "Sair" : "Tela cheia"}
-                  </span>
-                </button>
                 <a className="button" href="#conforto" onClick={(e) => { e.preventDefault(); const el=document.getElementById("conforto") as HTMLDetailsElement; el.open=true; el.scrollIntoView({block:"start"}); el.querySelector("summary")?.focus(); }}>Ajustar conforto</a>
                 <button ref={restartTrigger} onClick={askRestart} aria-keyshortcuts="Alt+Shift+R">Reiniciar com confirmação</button>
                 </div>
@@ -482,15 +482,15 @@ export default function App() {
               </div>
             </div>
             <div className="player-mode-ribbon" role="group" data-player-modes aria-label="Estilos e modos disponíveis">
-              <strong>Estilos e modos</strong>
+              <strong>Características do jogo</strong>
               {(activeModes.length ? activeModes : ["classico" as const]).map(tag =>
                 <span key={tag} data-mode={tag}>{modeLabel(tag)}</span>)}
-              <small>Ajuste as opções disponíveis dentro do jogo.</small>
+              <small>As opções selecionáveis ficam nos controles da partida.</small>
             </div>
             <div className="player-gameplay-orientation" data-gameplay-orientation>
               <strong>Como jogar {game.name}</strong>
               <span>{gameHelp[game.id].split(". ")[0]}</span>
-              <small data-player-record>{progress.records[game.id] ? `Sua melhor marca geral: ${progress.records[game.id]} ${recordUnits[game.id] ?? "pontos"}` : "Primeira partida — faça sua marca"}</small>
+              <small data-player-record>{["snake", "2048", "memoria", "blocos", "reflexo"].includes(game.id) ? "Recorde por configuração no placar do jogo" : progress.records[game.id] ? `Recorde histórico geral: ${progress.records[game.id]} ${recordUnits[game.id] ?? "pontos"}` : "Primeira partida — faça sua marca"}</small>
               <button
                 type="button"
                 className="gameplay-control-toggle"
@@ -632,6 +632,7 @@ export default function App() {
                 <span className="hero-eyebrow">PG ARCADE / SUA PRÓXIMA PARTIDA</span>
                 <h1 ref={heading} tabIndex={-1}>Escolha. Jogue.<br/>Faça uma pausa.</h1>
                 <p>{games.length} jogos no navegador, sem cadastro. Comece com um clássico ou encontre seu próximo desafio.</p>
+                <label className="search hero-search"><Search size={18}/><input aria-label="Encontrar jogo" placeholder="Qual jogo você procura?" value={query} onChange={e => setQuery(e.target.value)}/></label>
                 <a href="#catalogo" className="button primary" onClick={(event) => { event.preventDefault(); document.getElementById("catalogo")?.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth" }); }}>Explorar jogos <ArrowRight size={19}/></a>
                 {progress.last && <a className="last-game" href={`#/jogar/${progress.last}`} onClick={() => rememberCatalog(progress.last!)}>Iniciar nova partida: {games.find(g => g.id === progress.last)?.name}<ArrowRight size={15}/></a>}
               </div>
@@ -650,7 +651,7 @@ export default function App() {
                   document.querySelector<HTMLInputElement>('#catalogo input')?.focus({preventScroll:true});
                 }}><span className="experience-number" aria-hidden="true">{number}</span><strong>{title}</strong><span>{description}</span><span className="experience-action">Explorar <ArrowRight size={16} aria-hidden="true"/></span></button>)}</div>
               </section>
-              <section aria-labelledby="start-picks"><div className="section-title"><h2 id="start-picks">Por onde começar</h2><p>Seis maneiras diferentes de jogar.</p></div><div className="curated-grid">{curated.map(g => renderCard(g, true))}</div></section>
+              <section aria-labelledby="start-picks"><div className="section-title"><h2 id="start-picks">Por onde começar</h2><p>Escolhas para sua próxima partida.</p></div><div className="curated-grid">{curated.map(g => renderCard(g, true))}</div></section>
               {visited.length > 0 && <section aria-labelledby="recent-picks"><div className="section-title"><h2 id="recent-picks">Volte a um jogo</h2><p>Nova partida. Visitas e recordes ficam neste navegador.</p></div><div className="personal-grid">{visited.map(g => renderCard(g, true))}</div></section>}
               {saved.length > 0 && <section aria-labelledby="saved-picks"><div className="section-title"><h2 id="saved-picks">Seus favoritos</h2><a href="#/favoritos">Ver todos</a></div><div className="personal-grid">{saved.map(g => renderCard(g, true))}</div></section>}
             </div>}
@@ -694,16 +695,16 @@ export default function App() {
                   <span>Explore modos reais ou continue descobrindo. As sugestões usam apenas o histórico neste navegador.</span>
                 </div>
                 <div className="smart-mode-chips" role="group" aria-label="Filtros por modo">
-                  {discoveryFilters.map(filter => (
+                  {discoveryFilters.filter(filter => filter.id !== "dupla").map(filter => (
                     <button key={filter.id} type="button"
                       aria-pressed={modeFilter === filter.id}
                       className={modeFilter === filter.id ? "selected" : ""}
-                      onClick={() => setModeFilter(filter.id)}>{filter.label} <span className="mode-count" aria-hidden="true">{modeCounts[filter.id]}</span></button>
+                      onClick={() => setModeFilter(filter.id)}>{filter.id === "dupla" ? "Dupla local" : filter.label} <span className="mode-count" aria-hidden="true">{modeCounts[filter.id]}</span></button>
                   ))}
                 </div>
               </div>
               <div className="catalog-tools">
-                <label>Modo <select aria-label="Filtrar por modo" value={mode} onChange={(e) => setMode(e.target.value)}><option>Todos</option><option value="Solo">Somente solo</option><option>Dupla local</option></select></label>
+                <label>Jogadores <select aria-label="Filtrar por modo" value={mode} onChange={(e) => setMode(e.target.value)}><option>Todos</option><option value="Solo">Somente solo</option><option>Dupla local</option></select></label>
                 <label>
                   Ordenar{" "}
                   <select
@@ -713,7 +714,7 @@ export default function App() {
                   >
                     <option value="destaques">Destaques</option>
                     <option value="nome">Nome A–Z</option>
-                    <option value="visitados">Mais jogados por você</option>
+                    <option value="visitados">Mais acessados por você</option>
                     <option value="recomendados">Para você (neste aparelho)</option>
                   </select>
                 </label>
