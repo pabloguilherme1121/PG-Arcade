@@ -32,6 +32,7 @@ test("puzzle exposes real swipe handling and configuration-specific records", as
   await expect(page.locator(".sliding-board")).toHaveAttribute("data-touch-swipe", "true");
   await page.getByLabel("Dificuldade do Quebra-cabeça").selectOption("12");
   await expect(page.locator(".scores")).toContainText("—");
+  await page.locator(".sliding-board").scrollIntoViewIfNeeded();
   const tile = page.locator(".sliding-board button:not(:disabled)").first();
   const from = (await tile.boundingBox())!;
   const to = (await page.locator(".sliding-board [role=img]").boundingBox())!;

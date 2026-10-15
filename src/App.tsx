@@ -481,7 +481,7 @@ export default function App() {
                 <p className="player-description">{game.description}</p>
               </div>
             </div>
-            <div className="player-mode-ribbon" role="group" data-player-modes aria-label="Estilos e modos disponíveis">
+            <div className="player-mode-ribbon" tabIndex={0} role="group" data-player-modes aria-label="Estilos e modos disponíveis">
               <strong>Características do jogo</strong>
               {(activeModes.length ? activeModes : ["classico" as const]).map(tag =>
                 <span key={tag} data-mode={tag}>{modeLabel(tag)}</span>)}
