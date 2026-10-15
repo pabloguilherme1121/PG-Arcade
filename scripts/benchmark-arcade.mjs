@@ -89,16 +89,18 @@ async function sample(browser, id) {
     else if (id === "2048") for (const key of ["ArrowLeft", "ArrowDown", "ArrowRight", "ArrowUp"]) await arena.locator(".board2048").press(key);
     else if (id === "memoria") { await arena.locator(".memory-card").nth(0).click(); await arena.locator(".memory-card").nth(1).click(); }
     else if (id === "xadrez") { await arena.getByRole("gridcell").nth(52).click(); await arena.getByRole("gridcell").nth(36).click(); }
-    const frameSample = await page.evaluate(count => new Promise(resolve => {
+    const frameSample = await page.evaluate(count => new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => reject(new Error("Frame sample timed out")), 30000);
       const deltas = []; let last = performance.now();
       const tick = now => {
         deltas.push(now - last); last = now;
         if (deltas.length < count) requestAnimationFrame(tick);
-        else resolve(deltas);
+        else { clearTimeout(timeout); resolve(deltas); }
       };
       requestAnimationFrame(tick);
     }), frameCount);
     data.frameIntervalMs = stats(frameSample);
+    data.frameP95Ms = data.frameIntervalMs.p95;
     data.framesOver50ms = frameSample.filter(ms => ms > 50).length;
     data.scenario = defaults.includes(id) ? "reference-action-then-frame-sample" : "idle-frame-sample";
     if (pageErrors.length) throw new Error("Invalid sample for " + id + ": " + pageErrors.join("; "));
@@ -132,7 +134,7 @@ async function run() {
       rows.push(row);
       process.stdout.write(id + " " + (i + 1) + "/" + samples + ": " + rounded(row.routeReadyMs) + "ms, " + row.domNodes + " DOM nodes\n");
     }
-    const metrics = ["routeReadyMs", "domNodes", "svgNodes", "jsCssTransferBytes", "longTaskCount", "longTaskTotalMs", "jsHeapBytes", "framesOver50ms"];
+    const metrics = ["routeReadyMs", "domNodes", "svgNodes", "jsCssTransferBytes", "longTaskCount", "longTaskTotalMs", "jsHeapBytes", "framesOver50ms", "frameP95Ms"];
     const perGame = Object.fromEntries(selected.map(id => [id, Object.fromEntries(metrics.map(metric => [
       metric, stats(rows.filter(row => row.id === id).map(row => row[metric]).filter(Number.isFinite)),
     ]))]));

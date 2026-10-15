@@ -16,7 +16,7 @@ export function validateProgressBackup(data: unknown): "valid" | "empty" | "inva
     const days = (data.dailyActivity as Record<string, unknown>).days as Record<string, unknown>;
     const normalized = normalizeDailyActivity(data.dailyActivity);
     for (const [day, values] of Object.entries(days)) {
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !counts(values)) return "invalid";
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !Number.isFinite(Date.parse(day)) || new Date(day).toISOString().slice(0, 10) !== day || !counts(values)) return "invalid";
       if (Object.keys(values as object).length && !normalized.days[day]) return "invalid";
     }
   }
