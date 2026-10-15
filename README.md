@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **100 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **101 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -11,7 +11,7 @@ Comece por seis mecânicas diferentes, volte ao último jogo visitado ou explore
 
 Direção, contratos e inventário individual: [PRODUCT.md](PRODUCT.md), [DESIGN.md](DESIGN.md) e [GAME-INVENTORY.md](docs/GAME-INVENTORY.md).
 
-## Expansão para 100 jogos
+## Expansão para 101 jogos
 
 A segunda expansão adiciona 28 jogos de tabuleiro e estratégia, 12 desafios de lógica e palavras e 10 jogos de ação. As regras são separadas da interface; os módulos são carregados sob demanda. Há controles de teclado e toque, pausa automática, reinício, dificuldade, recordes e ampliação de tabuleiro. Resta Um gera desafios por jogadas reversas, e os jogos de separar cores possuem soluções verificadas.
 
@@ -27,16 +27,17 @@ Os novos jogos incluem Cinco em Linha, Hex, Ataxx, Mancala, Chomp, Oito Rainhas,
 | Segunda expansão: tabuleiro e estratégia (28) | Maré de Cores, Colapso de Cristais, Resta Um, Caminho do Cavalo, Oito Rainhas, Quadrado Latino, Dupla Binária, Torres da Cidade, Desigualdades, Quadrado Mágico, Deslize 15, Mosaico Giratório, Rede de Tubos, Espelhos e Luz, Circuito Único, Trilhas Numeradas, Pilhas de Cores, Laboratório de Líquidos, Saída Livre, Trilha de Memória, Cinco em Linha, Hex Conexões, Colônia Ataxx, Ilhas em Duelo, Linha de Avanço, Mancala, Chocolate Tático, Fronteiras |
 | Segunda expansão: lógica e palavras (12) | Cálculo Relâmpago, Duelo de Frações, Detector de Primos, Incógnita, Desafio 24, Próximo Número, Oficina de Anagramas, Forca de Palavras, Caça-palavras, Cor em Conflito, Intruso Lógico, Olho de Águia |
 | Segunda expansão: ação (10) | Pulso Musical, Balões em Fuga, Escudo Meteórico, Torre de Precisão, Equilíbrio Orbital, Slalom Alpino, Travessia Urbana, Salto no Pêndulo, Sentinela, Ricochete Tático |
+| Novo puzzle (1) | Blocos Infinito — linhas, combos e três peças por rodada |
 | Jogos anteriores (22) | Sequência de Cores, Palavra Secreta, Rally de Checkpoints, Coleta na Estrada, Defesa Orbital, Campo Minado, Reflexo Rápido, Corrida Turbo, Estacionamento, Alvos Espaciais, Luzes Out, Caça-estrelas, Liga 4, Quebra-cabeça, 2048, Snake, Memória, Xadrez, Futebol, Dominó, Damas, Jogo da velha |
 
 ## Modos, dificuldade e duração
 
 Os controles compartilhados usam alvos de pelo menos 44×48 px; direções e controles de movimento usam 56 px, preservando o tamanho das casas dos tabuleiros. Campos em celulares usam texto de 16 px. O foco de teclado permanece visível, os botões respondem ao pressionar e as ações principais têm destaque verde. Nos jogos de movimento, toques rápidos são guardados até a próxima etapa da física; cancelar o ponteiro libera a direção, e soltar Ação não produz uma segunda ativação por clique.
 
-- Todos os 100 jogos oferecem sessões Livre, Sprint e Maratona. Livre preserva as regras e os limites próprios do jogo. Sprint dura 3, 2 ou 1 minuto; Maratona dura 10, 5 ou 3 minutos, conforme a pressão de tempo Fácil, Normal ou Difícil. Iniciar um desafio abre uma nova partida. Ao expirar, a sessão bloqueia os controles; pausar a sessão ou sair da janela congela o relógio e pausa o jogo. Retome a sessão e, quando necessário, use Continuar no jogo. Esses níveis alteram o tempo da sessão; a dificuldade das regras continua nos controles específicos de cada jogo.
+- Todos os 101 jogos oferecem sessões Livre, Sprint e Maratona. Livre preserva as regras e os limites próprios do jogo. Sprint dura 3, 2 ou 1 minuto; Maratona dura 10, 5 ou 3 minutos, conforme a pressão de tempo Fácil, Normal ou Difícil. Iniciar um desafio abre uma nova partida. Ao expirar, a sessão bloqueia os controles; pausar a sessão ou sair da janela congela o relógio e pausa o jogo. Retome a sessão e, quando necessário, use Continuar no jogo. Esses níveis alteram o tempo da sessão; a dificuldade das regras continua nos controles específicos de cada jogo.
 - Snake tem Clássico e Portal: no Portal, atravessar a borda leva ao lado oposto, mas tocar o próprio corpo continua encerrando a partida. As três velocidades valem para ambos.
 - 2048 tem Fácil (98% de peças 2), Normal (90%) e Difícil (70%, sem desfazer). Reflexo Rápido muda a janela de pontuação entre 1,4, 1 e 0,6 segundo. Quebra-cabeça oferece embaralhamentos por 12, 40 ou 100 movimentos legais; todos são solucionáveis, e a distância mínima da solução varia entre partidas.
-- Memória oferece 4, 8 ou 12 pares. Pausar ou sair da janela mantém as cartas abertas e o tempo restante de observação; Continuar retoma esse tempo. Trocar a dificuldade inicia uma partida nova. O recorde continua geral por jogo, sem separar tamanhos de tabuleiro.
+- Memória oferece 4, 8 ou 12 pares. Pausar ou sair da janela mantém as cartas abertas e o tempo restante de observação; Continuar retoma esse tempo. Trocar a dificuldade inicia uma partida nova. Novos recordes separam tamanho do tabuleiro, tempo de observação e modo de sessão. O tempo de observação é escolhido antes da primeira carta.
 - Os 28 jogos da primeira expansão têm Fácil, Normal e Difícil. Lógica combina desafios livres com séries de cinco; Nim também oferece a regra em que retirar a última peça perde.
 - Ação tem Missão com objetivo e até 180 segundos, ou Resistência sem limite de tempo. A física e os controles mudam entre modalidades: rebotes, giro e impulso, salto, voo, combustível, pouso e checkpoints.
 - Esportes e casuais têm sessões de 5, 10 ou 15 rodadas; cada dificuldade altera parâmetros próprios, como vento, tolerância, obstáculos, tentativas ou ritmo.
@@ -54,7 +55,7 @@ Tela cheia usa a API do navegador ou ocupa a janela em aparelhos sem suporte. O 
 
 Conforto visual oferece alto contraste e redução de efeitos para todo o catálogo, respeitando a preferência do aparelho. As opções persistem localmente; com armazenamento bloqueado, funcionam durante a sessão. Movimento necessário à jogabilidade é preservado.
 
-Há recordes em 94 jogos. Memória e Quebra-cabeça usam menos jogadas como melhor resultado; os demais usam pontos. Os recordes são gerais por jogo e podem variar com modo e dificuldade: não são uma classificação competitiva entre jogadores.
+Há recordes em 95 jogos. Memória e Quebra-cabeça usam menos jogadas como melhor resultado; os demais usam pontos. 2048, Memória, Snake e Blocos Infinito também guardam recordes por dificuldade/configuração e sessão (Livre, Sprint ou Maratona com sua pressão de tempo). A cópia JSON inclui esses dados em `recordsV2`; importar preserva os melhores resultados em cada categoria. Marcas gerais anteriores permanecem disponíveis, sem atribuir modos desconhecidos ao histórico. Os outros jogos ainda usam recordes gerais: não são uma classificação competitiva entre jogadores.
 
 Em **Meu progresso**, salve uma cópia JSON de favoritos, visitas e recordes. Restaurar combina os dados e preserva os melhores resultados. Os arquivos são processados localmente; não há sincronização automática entre dispositivos.
 
@@ -72,7 +73,7 @@ Sem conta, publicidade ou envio de dados das partidas a servidores. Progresso é
 
 Node.js 24: `npm ci`, `npm run dev`, `npm run audit`, `npm test`, `npm run build`, `npm run check:bundle`, `npm run test:e2e`.
 
-Instalável como PWA, com fallback offline da navegação e cache local de assets já usados. Carregamento sob demanda por jogo/coleção. GitHub Actions valida regras e partidas em Chromium, Firefox e WebKit contra o build de produção servido por `npm run preview`, incluindo o prefixo `/PG-Arcade/`, antes de publicar no GitHub Pages. Falhas preservam traces e capturas para diagnóstico. `npm run test:e2e` reconstrói a aplicação antes da execução, evitando testar artefatos antigos. A suíte inclui auditoria automatizada WCAG com axe-core nos 100 jogos. Rotas com hash funcionam em hospedagem estática.
+Instalável como PWA, com fallback offline da navegação e cache local de assets já usados. Carregamento sob demanda por jogo/coleção. GitHub Actions valida regras e partidas em Chromium, Firefox e WebKit contra o build de produção servido por `npm run preview`, incluindo o prefixo `/PG-Arcade/`, antes de publicar no GitHub Pages. Falhas preservam traces e capturas para diagnóstico. `npm run test:e2e` reconstrói a aplicação antes da execução, evitando testar artefatos antigos. A suíte inclui auditoria automatizada WCAG com axe-core nos 101 jogos. Rotas com hash funcionam em hospedagem estática.
 
 ## Origem e licença
 

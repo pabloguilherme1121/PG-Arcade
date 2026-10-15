@@ -1,5 +1,10 @@
+import { RecordScopeProvider } from "./RecordScope";
+import { addScopedRecord } from "../lib/scopedRecords";
+import type { Progress } from "../lib/progress";
+import type { GameId } from "../lib/catalog";
 import "../studio.css";
 import './quality.css';
+import "./playerMotion.css";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { formatSessionTime, sessionSeconds, type SessionLevel, type SessionMode } from "../lib/sessionChallenge";
 import { useAutoPause } from "./useAutoPause";
@@ -10,7 +15,7 @@ const sessionModes = [
   ['marathon', 'Maratona', 'Mais tempo para construir sua melhor marca.'],
 ] as const;
 
-export default function SessionChallenge({ children }: { children: ReactNode }) {
+export default function SessionChallenge({ children, gameId, progress, update }: { children: ReactNode; gameId: GameId; progress: Progress; update: (fn: (p: Progress) => Progress) => void }) {
   const [mode, setMode] = useState<SessionMode>("free");
   const [level, setLevel] = useState<SessionLevel>("normal");
   const [phase, setPhase] = useState<"ready" | "running" | "paused" | "done">("ready");
@@ -50,6 +55,7 @@ export default function SessionChallenge({ children }: { children: ReactNode }) 
     return () => { window.clearInterval(tick); running.current = false; };
   }, [phase, mode, settle]);
   function configure(nextMode: SessionMode, nextLevel: SessionLevel) {
+    setRound(n => n + 1);
     running.current = false;
     window.dispatchEvent(new Event("pg-arcade-pause"));
     setMode(nextMode);
@@ -66,6 +72,17 @@ export default function SessionChallenge({ children }: { children: ReactNode }) 
     }
     setPhase("running");
   }
+  const sessionKey = mode === "free" ? "free" : `${mode}-${level}`;
+  const saveRecord = useCallback((variant: string, score: number) => {
+    const key = `${gameId}|${sessionKey}|${variant}`;
+    update(p => {
+      const previous = p.recordsV2 || {};
+      const next = addScopedRecord(previous, key, score);
+      return next === previous ? p : { ...p, recordsV2: next };
+    });
+  }, [gameId, sessionKey, update]);
+  const scoped = Object.fromEntries(Object.entries(progress.recordsV2 || {})
+    .filter(([key]) => key.startsWith(`${gameId}|`)).map(([key, value]) => [key.slice(gameId.length + 1), value]));
   const blocked = mode !== "free" && phase !== "running";
   const duration = sessionSeconds(mode, level);
   const elapsed = mode === 'free' ? 0 : Math.max(0, duration - remaining);
@@ -118,7 +135,7 @@ export default function SessionChallenge({ children }: { children: ReactNode }) 
         <button type="button" onClick={start}>{phase === 'paused' ? 'Retomar desafio' : phase === 'done' ? 'Jogar outro desafio' : 'Liberar arena'}</button>
       </section>}
       <div key={round} inert={blocked} data-session-content>
-        {children}
+        <RecordScopeProvider value={{ records: scoped, session: sessionKey, save: saveRecord }}>{children}</RecordScopeProvider>
       </div>
     </div>
   );

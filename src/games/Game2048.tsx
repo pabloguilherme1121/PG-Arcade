@@ -1,3 +1,4 @@
+import { useScopedRecord } from "./RecordScope";
 import { useState, useRef } from "react";
 import "./gameplay.css";
 import { Undo2, Play } from "lucide-react";
@@ -12,8 +13,8 @@ import {
 } from "../lib/engines";
 import Controls from "./Controls";
 export default function Game2048({
-  record,
-  onRecord,
+  record: legacyRecord,
+  onRecord: saveLegacy,
 }: {
   record: number;
   onRecord: (n: number) => void;
@@ -21,6 +22,7 @@ export default function Game2048({
   const [state, setState] = useState(() => ({ board: new2048(), score: 0, moves: 0 }));
   const [history, setHistory] = useState<(typeof state)[]>([]);
   const [difficulty, setDifficulty] = useState("normal");
+  const [record, onRecord] = useScopedRecord(difficulty, legacyRecord, saveLegacy);
   const twoChance = difficulty === "easy" ? 0.98 : difficulty === "hard" ? 0.7 : 0.9;
   const undoLimit = difficulty === "easy" ? 3 : difficulty === "normal" ? 1 : 0;
   const bestTile = Math.max(...state.board);
@@ -63,7 +65,7 @@ export default function Game2048({
             <option value="hard">Difícil · mais peças 4, sem desfazer</option>
           </select>
         </label></div>
-        <div className="scores">
+        <div className="scores" role="group" aria-label="Placar e recorde desta configuração">
           <div>
             Pontos<strong>{state.score}</strong>
           </div>

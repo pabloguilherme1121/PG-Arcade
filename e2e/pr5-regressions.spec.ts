@@ -73,7 +73,7 @@ for (const preference of ["system", "saved"] as const) {
     await page.setViewportSize({ width: 320, height: 740 });
     await page.emulateMedia({ reducedMotion: preference === "system" ? "reduce" : "no-preference" });
     if (preference === "saved") await page.addInitScript(() => localStorage.setItem("pg-arcade-preferences-v1", JSON.stringify({ motion: "reduced" })));
-    expect(games).toHaveLength(100);
+    expect(games).toHaveLength(101);
     for (const { id, name } of games) {
       await page.goto(`./#/jogar/${id}`);
       await expect(page.locator(".player h1")).toHaveText(name);

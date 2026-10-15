@@ -1,6 +1,6 @@
 # Visual and touch experience
 
-All 100 titles use the shared game surface loaded by SessionChallenge. It adds
+All 101 titles use the shared game surface loaded by SessionChallenge. It adds
 dimensional button materials, clear pressed feedback, canvas borders, and direct
 selection of Free, Sprint and Marathon sessions. Game-specific board materials
 include wooden strategy surfaces, shaded stones for Gomoku/Hex/Ataxx, glass-like
@@ -10,7 +10,7 @@ preferences remain supported. No decorative animation runs continuously.
 GameCover loads a local mechanic illustration for every game, with reserved
 dimensions and lazy loading in the catalog. Its generation script reuses the
 actual board/question snapshots, authored mechanic previews and original scenes.
-The 100 SVGs together are approximately 179 KiB before compression.
+The 101 SVGs together are approximately 179 KiB before compression.
 
 ## Direct gestures
 
@@ -42,7 +42,7 @@ MotionExpansion stops scheduling frames when the game reaches a terminal state.
 Focused browser checks exercise real Chromium touch input and WebKit pointer
 input, cancellation, native taps, undo, single-move scoring and mode locks.
 Existing suites cover actual board victories, quiz rounds, casual physics and
-records, the 100-game mobile control surface, and Axe accessibility checks.
+records, the 101-game mobile control surface, and Axe accessibility checks.
 
 These are improvements to the existing 2D engines. They do not imply a 3D or
 photorealistic remake, physical-device validation, or a published deployment.

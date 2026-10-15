@@ -9,8 +9,8 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
     for(const id of ['xadrez','rhythm','balloons','arithmetic','sudoku']) expect(supported).not.toContain(id);
     expect(new Set(supported).size).toBe(supported.length);
   });
-  it("tem classificação determinística para os 100 jogos sem inventar modos",()=>{
-    expect(games).toHaveLength(100);
+  it("tem classificação determinística para os 101 jogos sem inventar modos",()=>{
+    expect(games).toHaveLength(101);
     for(const game of games){
       const tags=modeTags(game);
       expect(tags).toContain("classico");
@@ -36,14 +36,14 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
     expect(filterByMode(games,"nao-jogados",visited,favorites).some(g=>g.id==="xadrez")).toBe(false);
     expect(filterByMode(games,"favoritos",visited,favorites).map(g=>g.id)).toEqual(["xadrez"]);
     expect(filterByMode(games,"dupla",visited,favorites)).toHaveLength(5);
-    expect(filterByMode(games,"todos",visited,favorites)).toHaveLength(100);
+    expect(filterByMode(games,"todos",visited,favorites)).toHaveLength(101);
   });
   it("prioriza preferências locais com desempate previsível e sem mutações",()=>{
     const input=[...games];
     const result=recommendGames(input,{favorites:["damas"],visits:{damas:3,xadrez:2},last:"xadrez"});
     expect(result[0].id).toBe("damas");
-    expect(result).toHaveLength(100);
-    expect(new Set(result.map(g=>g.id)).size).toBe(100);
+    expect(result).toHaveLength(101);
+    expect(new Set(result.map(g=>g.id)).size).toBe(101);
     expect(input).toEqual(games);
     expect(recommendGames(input,{favorites:[],visits:{},last:null})).toEqual(games);
   });
@@ -60,7 +60,7 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
     const visits = { xadrez: 2, domino: 0, liga4: 1 };
     const played = filterByMode(games, "jogados", visits, ["domino"]);
     expect(played.map(game => game.id)).toEqual(games.filter(game => game.id === "xadrez" || game.id === "liga4").map(game => game.id));
-    expect(filterByMode(games, "nao-jogados", visits, [])).toHaveLength(98);
+    expect(filterByMode(games, "nao-jogados", visits, [])).toHaveLength(99);
     expect(filterByMode(games, "jogados", {}, ["xadrez"])).toHaveLength(0);
     expect(visits).toEqual({ xadrez: 2, domino: 0, liga4: 1 });
   });

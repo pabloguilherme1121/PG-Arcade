@@ -118,6 +118,8 @@ test("Memory completes all pairs and stores the best score", async ({
     page.locator(".scores>div").nth(1).locator("strong"),
   ).not.toHaveText("—");
   await page.reload();
+  await expect(page.locator(".scores>div").nth(1).locator("strong")).toHaveText("—");
+  await page.getByLabel("Tempo para observar cartas diferentes").selectOption("500");
   await expect(
     page.locator(".scores>div").nth(1).locator("strong"),
   ).not.toHaveText("—");

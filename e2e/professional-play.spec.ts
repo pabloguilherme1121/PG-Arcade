@@ -268,14 +268,17 @@ test("large controls preference persists and enlarges shared play controls on mo
 });
 
 
-test("visual shell keeps clear premium hierarchy across catalog and player on mobile", async ({ page }) => {
+test("visual shell keeps clear premium hierarchy across catalog and player on mobile", async ({ page, browserName }) => {
+  // Firefox snapshots the full SVG catalog around each assertion/navigation.
+  // The CI trace exhausted 30s after successful catalog checks; retain every check.
+  test.setTimeout(browserName === "firefox" ? 90_000 : 30_000);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("./");
 
   const hero = page.locator(".hero");
   const firstCard = page.locator(".game-card").first();
   await expect(hero).toBeVisible();
-  await expect(hero).toContainText("100 jogos no navegador");
+  await expect(hero).toContainText("101 jogos no navegador");
   await expect(page.locator(".curated-card")).toHaveCount(6);
   await expect(firstCard.locator(".game-category")).toBeVisible();
 

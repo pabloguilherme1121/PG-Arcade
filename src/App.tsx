@@ -32,8 +32,9 @@ import {
   expandedGames,
   type ExpandedId,
 } from "./lib/expandedCatalog";
-import { gameHelp, recordUnits } from "./lib/gameHelp";
+
 import { discoveryFilters, filterByMode, modeTags, modeLabel, recommendGames, type DiscoveryFilter } from "./lib/smartDiscovery";
+import { gameHelp, recordUnits } from "./lib/gameHelp";
 import GameCover from "./GameCover";
 import {
   readProgress,
@@ -83,6 +84,7 @@ const players = {
     ]),
   ) as unknown as Record<NewGameId, ComponentType<PlayerProps>>),
   ...collectionPlayers,
+  blocos: lazy(() => import("./games/BlockPuzzle")),
   sequencia: lazy(() => import("./games/ColorSequence")),
   palavra: lazy(() => import("./games/SecretWord")),
   rally: lazy(() => import("./games/Rally")),
@@ -254,7 +256,7 @@ export default function App() {
   }, []);
   useEffect(() => {
     if (isGameId(page)) {
-      // Keep daily stats lazy: the 100-game catalog has a strict initial bundle budget.
+      // Keep daily stats lazy: the catalog has a strict initial bundle budget.
       void import("./lib/dailyProgress").then(({ recordDailyVisit }) => {
         recordDailyVisit(page);
       }).catch(() => { /* Offline without this optional chunk must not break gameplay. */ });
@@ -321,7 +323,7 @@ export default function App() {
   const game = games.find((g) => g.id === page);
   const Player = game ? players[game.id] : null;
   const activeModes = game ? modeTags(game).filter(tag => tag !== "classico") : [];
-  useEffect(() => { document.title = `${game ? game.name : page === "favoritos" ? "Seus favoritos" : page === "progresso" ? "Meu progresso" : "100 jogos no navegador"} — PG Arcade`; }, [game, page]);
+  useEffect(() => { document.title = `${game ? game.name : page === "favoritos" ? "Seus favoritos" : page === "progresso" ? "Meu progresso" : `${games.length} jogos no navegador`} — PG Arcade`; }, [game, page]);
   const normalizedQuery = useMemo(() => searchText(query), [query]);
   const matchingGames = useMemo(() => games.filter(g =>
     (page !== "favoritos" || progress.favorites.includes(g.id)) &&
@@ -488,7 +490,7 @@ export default function App() {
             <div className="player-gameplay-orientation" data-gameplay-orientation>
               <strong>Como jogar {game.name}</strong>
               <span>{gameHelp[game.id].split(". ")[0]}</span>
-              <small data-player-record>{progress.records[game.id] ? `Sua melhor marca: ${progress.records[game.id]} ${recordUnits[game.id] ?? "pontos"}` : "Primeira partida — faça sua marca"}</small>
+              <small data-player-record>{progress.records[game.id] ? `Sua melhor marca geral: ${progress.records[game.id]} ${recordUnits[game.id] ?? "pontos"}` : "Primeira partida — faça sua marca"}</small>
               <button
                 type="button"
                 className="gameplay-control-toggle"
@@ -586,7 +588,7 @@ export default function App() {
             </dialog>
             <GameError key={`${game.id}-${session}`}>
             <Suspense fallback={<p className="empty" role="status">Preparando partida…</p>}>
-            <SessionChallenge key={`${game.id}-${session}`}>
+            <SessionChallenge key={`${game.id}-${session}`} gameId={game.id} progress={progress} update={update}>
               <Suspense
                 fallback={
                   <p className="empty" role="status">
@@ -658,7 +660,7 @@ export default function App() {
                 <h2 ref={page === "favoritos" ? heading : undefined} tabIndex={page === "favoritos" ? -1 : undefined}>
                   {page === "favoritos"
                     ? "Seus favoritos"
-                    : "Explore os 100 jogos"}
+                    : `Explore os ${games.length} jogos`}
                 </h2>
                 <label className="search">
                   <Search size={18} />

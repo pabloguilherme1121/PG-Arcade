@@ -23,12 +23,12 @@ import {
   newMotion,
 } from "./motionExpansion";
 import { normalizeProgress } from "./progress";
-describe("100-game catalog contract", () => {
+describe("101-game catalog contract", () => {
   it("registers fifty additional unique games, with help and persistent progress", () => {
-    expect(games).toHaveLength(100);
+    expect(games).toHaveLength(101);
     expect(newGames).toHaveLength(50);
-    expect(new Set(games.map((g) => g.id)).size).toBe(100);
-    expect(new Set(games.map((g) => g.name)).size).toBe(100);
+    expect(new Set(games.map((g) => g.id)).size).toBe(101);
+    expect(new Set(games.map((g) => g.name)).size).toBe(101);
     for (const g of newGames) {
       expect(gameHelp[g.id].length).toBeGreaterThan(65);
       expect(recordUnits[g.id]).toBe("pontos");

@@ -4,6 +4,12 @@ export const games = [
   ...newGames,
   ...expandedGames,
   {
+    id: "blocos",
+    name: "Blocos Infinito",
+    description: "Encaixe peças e complete linhas em um desafio sem fim.",
+    category: "Casuais",
+  },
+  {
     id: "sequencia",
     name: "Sequência de Cores",
     description: "Observe, memorize e repita. Uma cor a mais por nível.",

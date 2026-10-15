@@ -3,8 +3,11 @@ import { expect, test } from "@playwright/test";
 test("Snake premium shows length, queued turn and pace without losing touch controls", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 740 });
   await page.goto("./#/jogar/snake");
-  await page.clock.install();
   const board = page.locator(".snake-board");
+  await expect(board).toBeVisible();
+  const time = new Date("2026-10-09T12:00:00Z");
+  await page.clock.install({ time: new Date(time.getTime() - 60_000) });
+  await page.clock.pauseAt(time);
   const progressive = page.getByRole("checkbox", { name: /aceleração progressiva/i });
   await expect(progressive).not.toBeChecked();
   await expect(page.locator("[data-snake-length]")).toHaveText("3");

@@ -20,7 +20,7 @@ test("six previously visited reference families remain usable in the open offlin
   test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("./");
-  await expect(page.locator(".game-card")).toHaveCount(100);
+  await expect(page.locator(".game-card")).toHaveCount(101);
   for (const [id, field, name] of references) await showGame(page, id, field, name);
 
   await context.setOffline(true);
@@ -30,7 +30,7 @@ test("six previously visited reference families remain usable in the open offlin
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), id).toBe(true);
     }
     await page.evaluate(() => { window.location.hash = "#/"; });
-    await expect(page.locator(".game-card")).toHaveCount(100);
+    await expect(page.locator(".game-card")).toHaveCount(101);
   } finally {
     await context.setOffline(false);
   }
@@ -61,7 +61,7 @@ test("cached six reference chunks survive a Chromium service-worker offline relo
     await page.reload();
     for (const [id, field, name] of references) await showGame(page, id, field, name);
     await page.evaluate(() => { window.location.hash = "#/"; });
-    await expect(page.locator(".game-card")).toHaveCount(100);
+    await expect(page.locator(".game-card")).toHaveCount(101);
   } finally {
     await context.setOffline(false);
   }

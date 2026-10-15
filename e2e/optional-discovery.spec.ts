@@ -5,7 +5,7 @@ test("an unavailable optional recommendation never hides the catalog or its filt
   page.on("pageerror", error => errors.push(error.message));
   await page.route(/CatalogSpotlight-[^/]+\.(js|css)/, route => route.abort());
   await page.goto("./");
-  await expect(page.locator(".game-card")).toHaveCount(100);
+  await expect(page.locator(".game-card")).toHaveCount(101);
   await page.getByLabel("Buscar jogo").fill("xadrez");
   await expect(page.locator(".game-card")).toHaveCount(1);
   await page.getByRole("link", { name: "Jogar Xadrez", exact: true }).click();

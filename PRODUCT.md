@@ -2,7 +2,7 @@
 
 ## Proposta
 
-Escolher uma mecânica reconhecível e começar uma partida no navegador, especialmente no celular. O catálogo conserva 100 jogos, sem cadastro. A primeira tela apresenta seis entradas variadas: Snake, Maré de Cores, Liga 4, Basquete, Palavra Secreta e Pulso Musical. A escolha é editorial, sem inventar popularidade, duração ou dificuldade relativa.
+Escolher uma mecânica reconhecível e começar uma partida no navegador, especialmente no celular. O catálogo conserva 101 jogos, sem cadastro. A primeira tela apresenta seis entradas variadas: Snake, Maré de Cores, Liga 4, Basquete, Palavra Secreta e Pulso Musical. A escolha é editorial, sem inventar popularidade, duração ou dificuldade relativa.
 
 ## Jornada
 
@@ -28,11 +28,11 @@ Escolher uma mecânica reconhecível e começar uma partida no navegador, especi
 
 | Achado | Mudança | Verificação |
 | --- | --- | --- |
-| 50 SVGs com dimensão nula na versão publicada | Container de preview deixa de ser grid com padding conflitante; SVG recebe dimensões e proporção explícitas | Regressão de dimensões nos 100 cards em 320/360/390/430/768/1024/1440 px |
-| Prévia genérica não revela a mecânica | 100 capas SVG determinísticas com objetivo escrito no card e orientação de gameplay | Capas exclusivas, gradientes sem IDs duplicados e objetivos disponíveis mesmo com requisições de preview bloqueadas |
+| 50 SVGs com dimensão nula na versão publicada | Container de preview deixa de ser grid com padding conflitante; SVG recebe dimensões e proporção explícitas | Regressão de dimensões nos 101 cards em 320/360/390/430/768/1024/1440 px |
+| Prévia genérica não revela a mecânica | 101 capas SVG determinísticas com objetivo escrito no card e orientação de gameplay | Capas exclusivas, gradientes sem IDs duplicados e objetivos disponíveis mesmo com requisições de preview bloqueadas |
 | Arena precedida por camadas de utilidades | Barra curta e opções secundárias, preferências após o conteúdo principal | Teste de teclado/visibilidade de utilidades e amostra de arena |
 | Ajuda solo cita adversário | Texto de desfazer depende de jogo estratégico/duelo | Regressão em Maré de Cores e Resta Um |
 | Busca perde resultados com espaços repetidos | Busca normalizada por termos em nome, descrição e categoria | Testes unitários e E2E com “CORES maré” |
 | Navegação de volta perde posição | Contexto de catálogo em sessionStorage e memória | E2E com filtro, ordem, posição, foco e reload durante a partida |
 
-Inventário individual: [docs/GAME-INVENTORY.md](docs/GAME-INVENTORY.md). A lista é extraída da implementação; uma lista de 100 entradas não substitui verificação profunda das regras e partidas. O relatório de publicação deve registrar separadamente unitários, E2E, CI, merge e versão pública.
+Inventário individual: [docs/GAME-INVENTORY.md](docs/GAME-INVENTORY.md). A lista é extraída da implementação; uma lista de 101 entradas não substitui verificação profunda das regras e partidas. O relatório de publicação deve registrar separadamente unitários, E2E, CI, merge e versão pública.

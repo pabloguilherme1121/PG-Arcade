@@ -1,3 +1,4 @@
+import { useScopedRecord } from "./RecordScope";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useAutoPause } from "./useAutoPause";
 import {
@@ -22,14 +23,15 @@ import "./Memory.css";
 const icons = [Diamond, Heart, Star, Sun, Moon, Flame, Leaf, Zap, Crown, Cloud, Music, Anchor];
 const names = ["diamante", "coração", "estrela", "sol", "lua", "chama", "folha", "raio", "coroa", "nuvem", "música", "âncora"];
 export default function Memory({
-  record,
-  onRecord,
+  record: legacyRecord,
+  onRecord: saveLegacy,
 }: {
   record: number;
   onRecord: (n: number) => void;
 }) {
   const [peekTime, setPeekTime] = useState(900);
   const [pairs, setPairs] = useState(8);
+  const [record, onRecord] = useScopedRecord(`${pairs}-${peekTime}`, legacyRecord, saveLegacy);
   const [paused, setPaused] = useState(false);
   const observeLeft = useRef(900);
   const pause = useCallback(() => setPaused(true), []);
@@ -99,7 +101,7 @@ export default function Memory({
             <option value={12}>Difícil · 12 pares</option>
           </select>
         </label></div>
-        <div className="scores">
+        <div className="scores" role="group" aria-label="Placar e recorde desta configuração">
           <div>
             Jogadas<strong>{moves}</strong>
           </div>
@@ -184,7 +186,7 @@ export default function Memory({
         <select
           id="memory-peek"
           value={peekTime}
-          disabled={open.length === 2}
+          disabled={moves > 0 || open.length > 0}
           onChange={(e) => setPeekTime(Number(e.target.value))}
         >
           <option value={1500}>Tranquilo • 1,5 segundo</option>
@@ -192,6 +194,7 @@ export default function Memory({
           <option value={500}>Rápido • 0,5 segundo</option>
         </select>
         <p>
+          Escolha o tempo de observação antes da primeira carta. Os recordes separam tamanho e tempo de observação.
           Os símbolos ajudam você a reconhecer os pares sem depender apenas de
           cores.
         </p>
