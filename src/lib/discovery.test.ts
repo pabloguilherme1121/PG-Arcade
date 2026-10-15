@@ -31,7 +31,7 @@ describe("catalog discovery", () => {
   });
 
   it("restores smart filters and recommendations after reload, while accepting older sessions", () => {
-    const stored = { ...defaultView, sort: "recomendados", modeFilter: "dupla" as const, scroll: 160, focusId: "xadrez" as const };
+    const stored = { ...defaultView, sort: "recomendados", modeFilter: "dupla" as const, swipeOnly: true, scroll: 160, focusId: "xadrez" as const };
     let raw = JSON.stringify(stored);
     vi.stubGlobal("sessionStorage", {
       getItem: () => raw,
