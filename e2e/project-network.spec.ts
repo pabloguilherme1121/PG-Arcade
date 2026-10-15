@@ -19,3 +19,23 @@ for (const width of [320, 390, 1280]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   });
 }
+
+// Optional UI requested before the service worker takes control may be unavailable
+// on the first offline reload. The game and persisted preferences must survive.
+test("optional panel failures keep the game and saved preferences usable", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", error => errors.push(error.message));
+  await page.addInitScript(() => localStorage.setItem("pg-arcade-preferences-v1", JSON.stringify({ contrast: true, motion: "reduced", controls: "large" })));
+  await page.route(/\/(?:VisualPreferences|ProjectNetwork)-[^/]+\.(?:js|css)$/, route => route.abort());
+  await page.goto("./#/jogar/2048");
+  const board = page.locator(".board2048");
+  await expect(board).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute("data-arcade-controls", "large");
+  await expect(page.locator("html")).toHaveAttribute("data-arcade-contrast", "true");
+  await page.locator("#conforto summary").click();
+  await expect(page.locator("#conforto [role=status]")).toContainText("preferências salvas continuam ativas");
+  for (const key of ["ArrowLeft", "ArrowDown", "ArrowRight", "ArrowUp"]) await board.press(key);
+  await expect(page.getByRole("button", { name: "Desfazer", exact: true })).toBeEnabled();
+  await expect(page.locator("footer a")).toHaveAttribute("href", "https://pabloguilherme1121.github.io/PG-portfolio/#rede-projetos");
+  expect(errors).toEqual([]);
+});

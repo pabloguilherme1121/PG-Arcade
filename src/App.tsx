@@ -146,8 +146,14 @@ function route() {
 
 
 const specificStyles = new Set(["rapido", "sem-pressa", "bot", "treino", "sobrevivencia", "deslizar"]);
-const VisualPreferences = lazy(() => import("./VisualPreferences"));
-const ProjectNetwork = lazy(() => import("./ProjectNetwork"));
+// Optional panels may be absent from the first offline cache. Their load failure
+// must not unmount the catalog or a previously cached game.
+const VisualPreferences = lazy(() => import("./VisualPreferences").catch(() => ({
+  default: () => <p role="status">Opções visuais indisponíveis. Suas preferências salvas continuam ativas. Reconecte e recarregue para ajustar.</p>,
+})));
+const ProjectNetwork = lazy(() => import("./ProjectNetwork").catch(() => ({
+  default: () => <footer><a style={{ display: "inline-flex", minHeight: 44, alignItems: "center" }} href="https://pabloguilherme1121.github.io/PG-portfolio/#rede-projetos">Todos os projetos</a></footer>,
+})));
 
 export default function App() {
   const reducedMotion = useReducedMotion();
