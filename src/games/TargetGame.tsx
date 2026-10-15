@@ -50,7 +50,7 @@ export default function TargetGame({
     deadline.current = null;
     setStatus((s) => (s === "running" ? "paused" : s));
   }, [settle]);
-  useAutoPause(pause, status === "running");
+  useAutoPause(pause, status === "running", status === "done", score);
   function freshTargets() {
     const cells = Array.from({ length: 9 }, (_, i) => i);
     const next: Target[] = [];

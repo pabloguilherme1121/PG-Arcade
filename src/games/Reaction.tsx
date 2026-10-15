@@ -34,7 +34,7 @@ export default function Reaction({
     () => setPhase((p) => (p === "wait" || p === "go" ? "paused" : p)),
     [],
   );
-  useAutoPause(pause, phase === "wait" || phase === "go");
+  useAutoPause(pause, phase === "wait" || phase === "go", phase === "done", score);
   useEffect(() => {
     if (phase !== "wait") return;
     const timer = setTimeout(

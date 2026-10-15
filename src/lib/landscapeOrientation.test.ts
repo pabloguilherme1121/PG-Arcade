@@ -45,3 +45,12 @@ it("handles missing or synchronously failing orientation APIs", () => {
   setup(() => { throw new Error("unsupported"); });
   expect(() => preferLandscape()()).not.toThrow();
 });
+
+it("keeps boards free to rotate automatically and honors explicit orientation", async () => {
+  const { gameOrientation } = await import("./landscapeOrientation");
+  expect(gameOrientation("xadrez", "auto")).toBeNull();
+  expect(gameOrientation("2048", "auto")).toBeNull();
+  expect(gameOrientation("corrida", "auto")).toBe("landscape");
+  expect(gameOrientation("xadrez", "landscape")).toBe("landscape");
+  expect(gameOrientation("corrida", "portrait")).toBe("portrait");
+});

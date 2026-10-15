@@ -51,6 +51,21 @@ jobs:
           name: arcade-dist
           path: dist
       - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Sample reference loading and frame intervals
+        if: matrix.browser == 'chromium'
+        run: |
+          npm run preview -- --port 5191 --strictPort > /tmp/arcade-preview.log 2>&1 &
+          PREVIEW_PID=$!
+          trap 'kill "$PREVIEW_PID" 2>/dev/null || true' EXIT
+          node --input-type=module -e 'for(let i=0;i<60;i++){try{const r=await fetch("http://127.0.0.1:5191/PG-Arcade/");if(r.ok)process.exit(0)}catch{}await new Promise(r=>setTimeout(r,500))}process.exit(1)'
+          npm run perf:benchmark -- --base-url=http://127.0.0.1:5191/PG-Arcade/ --samples=3 --frames=120 --output=artifacts/arcade-performance.json
+      - uses: actions/upload-artifact@v7
+        if: always() && matrix.browser == 'chromium'
+        with:
+          name: arcade-reference-performance
+          path: artifacts/arcade-performance.json
+          if-no-files-found: warn
+          retention-days: 7
       - run: npx playwright test --project=${{ matrix.browser }}
       - uses: actions/upload-artifact@v7
         if: failure()

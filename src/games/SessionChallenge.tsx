@@ -1,3 +1,4 @@
+import OrientationControl from "./OrientationControl";
 import { RecordScopeProvider } from "./RecordScope";
 import { addScopedRecord } from "../lib/scopedRecords";
 import type { Progress } from "../lib/progress";
@@ -19,6 +20,12 @@ export default function SessionChallenge({ children, gameId, progress, update }:
   const [mode, setMode] = useState<SessionMode>("free");
   const [level, setLevel] = useState<SessionLevel>("normal");
   const [phase, setPhase] = useState<"ready" | "running" | "paused" | "done">("ready");
+  const [results, setResults] = useState<number[]>([]);
+  const baseline = useRef(progress.recordsV2 || {});
+  const generalBaseline = useRef(progress.records[gameId] || 0);
+  const addResult = useCallback((score: number) => {
+    if (mode !== "free" && phase === "running") setResults(previous => [...previous, score]);
+  }, [mode, phase]);
   const [gameActive, setGameActive] = useState<boolean | null>(null);
   const [round, setRound] = useState(0);
   const [remaining, setRemaining] = useState(120);
@@ -62,6 +69,9 @@ export default function SessionChallenge({ children, gameId, progress, update }:
     };
   }, [phase, mode, settle, gameActive]);
   function configure(nextMode: SessionMode, nextLevel: SessionLevel) {
+    setResults([]);
+    baseline.current = progress.recordsV2 || {};
+    generalBaseline.current = progress.records[gameId] || 0;
     setGameActive(null);
     setRound(n => n + 1);
     running.current = false;
@@ -74,6 +84,9 @@ export default function SessionChallenge({ children, gameId, progress, update }:
   }
   function start() {
     if (phase !== "paused") {
+      setResults([]);
+      baseline.current = progress.recordsV2 || {};
+      generalBaseline.current = progress.records[gameId] || 0;
       setRound((n) => n + 1);
       left.current = sessionSeconds(mode, level);
       setRemaining(left.current);
@@ -107,6 +120,7 @@ export default function SessionChallenge({ children, gameId, progress, update }:
         {sessionModes.find(([value]) => value === mode)?.[2]}
       </p>
       <div className="session-options" ref={controls}>
+        <OrientationControl/>
         {mode !== "free" && <>
           <label>Pressão de tempo
             <select aria-label="Dificuldade do desafio de tempo" value={level} disabled={phase === "running" || phase === "paused"} onChange={(e) => configure(mode, e.target.value as SessionLevel)}>
@@ -130,13 +144,21 @@ export default function SessionChallenge({ children, gameId, progress, update }:
       {mode !== "free" && <p className="session-note" role="status">
         {phase === "done" ? "Tempo encerrado. A sessão foi bloqueada; seus recordes já conquistados continuam salvos." : phase === "paused" ? "Sessão pausada. Libere a sessão e continue no jogo. O relógio dos jogos com pausa aguarda a retomada." : "Iniciar libera uma nova partida. Nos jogos com início e pausa, o relógio acompanha a atividade do jogo; nos tabuleiros, conta o tempo da sessão."}
       </p>}
+      {mode !== "free" && phase === "done" && <section aria-label="Resumo da sessão" className="session-summary">
+        <h3>Resultado da sessão</h3>
+        <p>Conclusões registradas pelo jogo: {results.length}.</p>
+        <p>{results.length ? `Melhor resultado registrado: ${Math.max(...results)} pontos.` : "Nenhuma conclusão foi registrada antes do fim do tempo."}</p>
+        <p>Configurações com novo recorde: {Object.entries(progress.recordsV2 || {}).filter(([key, value]) => key.startsWith(`${gameId}|${sessionKey}|`) && value > (baseline.current[key] || 0)).length}.</p>
+        <p>{(progress.records[gameId] || 0) > generalBaseline.current ? "Você também melhorou sua marca geral." : "Sua marca geral anterior foi preservada."}</p>
+        <small>O total inclui somente jogos que informam sua conclusão. A comparação por configuração aparece onde há suporte.</small>
+      </section>}
       {blocked && <section className="session-checkpoint" aria-label="Estado do desafio de tempo">
         <div><strong>{phase === 'paused' ? 'Uma pausa no desafio' : phase === 'done' ? 'Seu tempo de sessão terminou' : 'Sua arena está pronta'}</strong>
           <p>{phase === 'ready' ? 'Inicie o desafio para liberar o jogo. O tempo começa a contar ao iniciar.' : `Tempo de jogo nesta sessão: ${formatSessionTime(elapsed)}. ${phase === 'paused' ? 'O relógio está parado.' : 'Os recordes conquistados permanecem salvos.'}`}</p></div>
         <button type="button" onClick={start}>{phase === 'paused' ? 'Retomar desafio' : phase === 'done' ? 'Jogar outro desafio' : 'Liberar arena'}</button>
       </section>}
       <div key={round} inert={blocked} data-session-content>
-        <RecordScopeProvider value={{ records: scoped, session: sessionKey, save: saveRecord, activity: setGameActive }}>{children}</RecordScopeProvider>
+        <RecordScopeProvider value={{ records: scoped, session: sessionKey, save: saveRecord, activity: setGameActive, result: addResult }}>{children}</RecordScopeProvider>
       </div>
     </div>
   );

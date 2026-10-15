@@ -452,7 +452,7 @@ function Fishing({ options, onRound }: PlayProps) {
       }),
     [],
   );
-  useAutoPause(pause, phase === "waiting" || phase === "bite" || phase === "reel");
+  useAutoPause(pause, phase === "waiting" || phase === "bite" || phase === "reel", phase === "result", points);
   useEffect(() => {
     if (!["waiting", "bite", "reel"].includes(phase)) return;
     const timer = setInterval(() => setTick((t) => t + 1), 150);

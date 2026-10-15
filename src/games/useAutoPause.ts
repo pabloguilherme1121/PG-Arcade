@@ -1,8 +1,8 @@
 import { useGameActivity } from "./RecordScope";
 import { useEffect } from "react";
 export type PlayStatus = "ready" | "running" | "paused" | "done";
-export function useAutoPause(pause: () => void, active?: boolean) {
-  useGameActivity(active);
+export function useAutoPause(pause: () => void, active?: boolean, complete = false, score = 0) {
+  useGameActivity(active, complete, score);
   useEffect(() => {
     const hidden = () => {
       if (document.hidden) pause();

@@ -46,3 +46,36 @@ test("mobile exposes fullscreen directly and only one session selector", async (
   await expect(page.getByLabel("Modo de sessão", { exact: true })).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
 });
+
+test("backup rejects malformed and empty copies without changing stored progress", async ({ page }) => {
+  await page.goto("./#/progresso");
+  const before = await page.evaluate(() => localStorage.getItem("pg-arcade-progress-v1"));
+  const upload = page.getByLabel("Restaurar cópia do progresso", { exact: true });
+  await upload.setInputFiles({ name: "invalid.json", mimeType: "application/json", buffer: Buffer.from(JSON.stringify({ favorites: "snake", records: {} })) });
+  await expect(page.locator(".progress-backup [role=status]")).toContainText("Não foi possível restaurar");
+  await upload.setInputFiles({ name: "empty.json", mimeType: "application/json", buffer: Buffer.from(JSON.stringify({ favorites: [], records: {} })) });
+  await expect(page.locator(".progress-backup [role=status]")).toContainText("sem favoritos, visitas ou recordes");
+  expect(await page.evaluate(() => localStorage.getItem("pg-arcade-progress-v1"))).toBe(before);
+});
+
+test("configuration records are grouped, searchable and expandable", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("pg-arcade-progress-v1", JSON.stringify({ favorites: [], records: {}, recordsV2: { "reflexo|free|hard": 4000, "2048|free|easy": 256 } })));
+  await page.goto("./#/progresso");
+  const section = page.getByRole("region", { name: "Recordes por modo e dificuldade" });
+  await section.getByLabel("Buscar recordes por jogo").fill("Reflexo");
+  await expect(section.locator("details")).toHaveCount(1);
+  await section.locator("summary").click();
+  await expect(section.getByRole("link")).toContainText("4000");
+  await section.getByLabel("Buscar recordes por jogo").fill("nenhum");
+  await expect(section.getByRole("status")).toContainText("Nenhum recorde encontrado");
+});
+
+test("orientation choice persists without changing the board or requiring fullscreen support", async ({ page }) => {
+  await page.goto("./#/jogar/xadrez");
+  const choice = page.getByLabel("Orientação em tela cheia", { exact: true });
+  await expect(choice).toHaveValue("auto");
+  await choice.selectOption("portrait");
+  await page.reload();
+  await expect(choice).toHaveValue("portrait");
+  await expect(page.locator("[data-chess-board]")).toBeVisible();
+});
