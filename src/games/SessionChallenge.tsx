@@ -8,7 +8,7 @@ import "../studio.css";
 import './quality.css';
 import "./playerMotion.css";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { formatSessionTime, sessionSeconds, type SessionLevel, type SessionMode } from "../lib/sessionChallenge";
+import { formatSessionTime, sessionSeconds, improvedSessionRecords, improvedGeneralRecord, type SessionLevel, type SessionMode } from "../lib/sessionChallenge";
 import { useAutoPause } from "./useAutoPause";
 
 const sessionModes = [
@@ -149,8 +149,8 @@ export default function SessionChallenge({ children, gameId, progress, update }:
         <h3>Resultado da sessão</h3>
         <p>Conclusões registradas pelo jogo: {results.length}.</p>
         <p>{results.length ? `Melhor resultado registrado: ${["puzzle", "memoria"].includes(gameId) ? Math.min(...results) : Math.max(...results)} ${recordUnits[gameId] || "pontos"}.` : "Nenhuma conclusão foi registrada antes do fim do tempo."}</p>
-        <p>Configurações com novo recorde: {Object.entries(progress.recordsV2 || {}).filter(([key, value]) => key.startsWith(`${gameId}|${sessionKey}|`) && value > (baseline.current[key] || 0)).length}.</p>
-        <p>{(progress.records[gameId] || 0) > generalBaseline.current ? "Você também melhorou sua marca geral." : "Sua marca geral anterior foi preservada."}</p>
+        <p>Configurações com novo recorde: {improvedSessionRecords(gameId, sessionKey, baseline.current, progress.recordsV2 || {})}.</p>
+        <p>{improvedGeneralRecord(gameId, generalBaseline.current, progress.records[gameId] || 0) ? "Você também melhorou sua marca geral." : "Sua marca geral anterior foi preservada."}</p>
         <small>O total inclui somente jogos que informam sua conclusão. A comparação por configuração aparece onde há suporte.</small>
       </section>}
       {blocked && <section className="session-checkpoint" aria-label="Estado do desafio de tempo">

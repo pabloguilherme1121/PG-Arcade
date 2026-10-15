@@ -1,3 +1,10 @@
+import { addScopedRecord, type ScopedRecords } from "./scopedRecords";
+export function improvedSessionRecords(game: string, session: string, before: ScopedRecords, after: ScopedRecords) {
+  return Object.entries(after).filter(([key, score]) => key.startsWith(`${game}|${session}|`) && addScopedRecord(before, key, score) !== before).length;
+}
+export function improvedGeneralRecord(game: string, before: number, after: number) {
+  return after > 0 && (game === "memoria" || game === "puzzle" ? !before || after < before : after > before);
+}
 export type SessionMode = "free" | "sprint" | "marathon";
 export type SessionLevel = "easy" | "normal" | "hard";
 export function sessionSeconds(mode: SessionMode, level: SessionLevel) {
