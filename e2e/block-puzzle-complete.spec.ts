@@ -1,7 +1,9 @@
 import { expect, test } from '@playwright/test';
 
-test('Blocos completes a deterministic round, saves the result and recovers with undo', async ({ page }) => {
-  test.setTimeout(60000);
+test('Blocos completes a deterministic round, saves the result and recovers with undo', async ({ page, browserName }) => {
+  // CI WebKit traces took ~2 seconds per real click; this round uses 62 clicks.
+  // Keep all 31 moves, final score, defeat, persistence and undo assertions.
+  test.setTimeout(browserName === 'webkit' ? 180_000 : 60_000);
   await page.addInitScript(() => { Date.now = () => 42; });
   await page.goto('./#/jogar/blocos');
   await expect(page.locator('[data-blocks-board] button')).toHaveCount(64);
