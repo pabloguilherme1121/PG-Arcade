@@ -47,7 +47,7 @@ test("Busca pelo teclado e ajuda acessível sem interferir nos controles do jogo
   await page.keyboard.press("/");
   await expect(page.getByRole("textbox",{name:"Buscar jogo"})).toBeFocused();
   await page.keyboard.type("memoria");
-  await expect(page.locator(".game-card")).not.toHaveCount(100);
+  await expect(page.locator(".game-card")).not.toHaveCount(101);
   await page.keyboard.press("Escape");
   await expect(page.getByRole("textbox",{name:"Buscar jogo"})).toHaveValue("");
   await page.goto("./#/jogar/snake");

@@ -1,3 +1,4 @@
+import { useScopedRecord } from "./RecordScope";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Pause, Play, RotateCcw } from "lucide-react";
 import {
@@ -23,8 +24,8 @@ const initialBody = () => [
   { x: 5, y: 8 },
 ];
 export default function Snake({
-  record,
-  onRecord,
+  record: legacyRecord,
+  onRecord: saveLegacy,
 }: {
   record: number;
   onRecord: (n: number) => void;
@@ -38,6 +39,7 @@ export default function Snake({
   const [speed, setSpeed] = useState(160);
   const [mode, setMode] = useState("classic");
   const [progressive, setProgressive] = useState(false);
+  const [record, onRecord] = useScopedRecord(`${mode}-${speed}-${progressive ? "progressive" : "constant"}`, legacyRecord, saveLegacy);
   const [queuedPreview, setQueuedPreview] = useState<Direction[]>([]);
   const delay = snakeTickDelay(speed, score, progressive);
   const current = useRef<Direction>("right");
@@ -112,7 +114,7 @@ export default function Snake({
   return (
     <div className="game-layout">
       <div className="board-column">
-        <div className="scores">
+        <div className="scores" role="group" aria-label="Placar e recorde desta configuração">
           <div>
             Pontos<strong>{score}</strong>
           </div>
@@ -269,8 +271,8 @@ export default function Snake({
         <select
           id="snake-speed"
           value={speed}
-          disabled={status === "running"}
-          onChange={(e) => setSpeed(Number(e.target.value))}
+          disabled={status === "running" || status === "paused"}
+          onChange={(e) => { setSpeed(Number(e.target.value)); reset(); }}
         >
           <option value={220}>Tranquilo</option>
           <option value={160}>Clássico</option>
@@ -278,7 +280,7 @@ export default function Snake({
         </select>
         <label className="snake-challenge-toggle">
           <input type="checkbox" checked={progressive} disabled={status === "running" || status === "paused"}
-            onChange={(event) => setProgressive(event.target.checked)} />
+            onChange={(event) => { setProgressive(event.target.checked); reset(); }} />
           <span>Aceleração progressiva</span>
         </label>
         <p className="small" data-snake-challenge>

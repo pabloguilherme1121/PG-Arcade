@@ -1,0 +1,19 @@
+import { expect, it } from "vitest";
+import { addScopedRecord, normalizeScopedRecords } from "./scopedRecords";
+import { emptyProgress, mergeProgress, normalizeProgress } from "./progress";
+it("keeps legacy records without assigning them to an unknown difficulty", () => {
+  const progress = normalizeProgress({ records: { memoria: 4, '2048': 8192 } });
+  expect(progress.recordsV2).toBeUndefined();
+  const merged = mergeProgress(progress, { recordsV2: { 'memoria|free|12-900': 30, '2048|sprint-hard|normal': 256 } });
+  expect(merged.records).toEqual(progress.records);
+  expect(merged.recordsV2).toEqual({ 'memoria|free|12-900': 30, '2048|sprint-hard|normal': 256 });
+});
+it("separates difficulty and timed sessions and preserves the best result on import", () => {
+  const original = { ...emptyProgress(), recordsV2: { 'memoria|free|4-900': 6, '2048|free|easy': 100 } };
+  const merged = mergeProgress(original, { recordsV2: { 'memoria|free|4-900': 8, 'memoria|free|12-900': 24, '2048|free|easy': 80, '2048|sprint-hard|easy': 12 } });
+  expect(merged.recordsV2).toEqual({ 'memoria|free|4-900': 6, 'memoria|free|12-900': 24, '2048|free|easy': 100, '2048|sprint-hard|easy': 12 });
+  expect(addScopedRecord(merged.recordsV2!, 'memoria|free|4-900', 4)['memoria|free|4-900']).toBe(4);
+});
+it("rejects malformed keys, unsupported variants and unsafe scores", () => {
+  expect(normalizeScopedRecords({ '__proto__': 9, 'snake|free|classic-220-constant': 10, 'snake|free|wrap-220-progressive': 20, 'blocos|free|4': 9, '2048|free|hard': Infinity, 'blocos|free|0': 1.5, 'memoria|free|4-900|extra': 5 })).toEqual({ 'snake|free|classic-220-constant': 10, 'snake|free|wrap-220-progressive': 20 });
+});

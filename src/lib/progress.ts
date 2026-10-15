@@ -1,3 +1,4 @@
+import { normalizeScopedRecords, addScopedRecord, type ScopedRecords } from "./scopedRecords";
 import { isGameId, type GameId } from "./catalog";
 export const storageKey = "pg-arcade-progress-v1";
 export type Progress = {
@@ -5,6 +6,7 @@ export type Progress = {
   visits: Partial<Record<GameId, number>>;
   records: Partial<Record<GameId, number>>;
   last: GameId | null;
+  recordsV2?: ScopedRecords;
 };
 export const emptyProgress = (): Progress => ({
   favorites: [],
@@ -28,6 +30,8 @@ export function normalizeProgress(raw: unknown): Progress {
           value >= 1
         )
           clean[field][key] = Math.floor(value);
+  const recordsV2 = normalizeScopedRecords(data.recordsV2);
+  if (Object.keys(recordsV2).length) clean.recordsV2 = recordsV2;
   clean.last = isGameId(data.last) ? data.last : null;
   return clean;
 }
@@ -70,6 +74,8 @@ export function mergeProgress(current: Progress, imported: unknown): Progress {
           : oldScore || newScore
         : Math.max(oldScore, newScore);
   }
+  for (const [key, value] of Object.entries(incoming.recordsV2 || {}))
+    result.recordsV2 = addScopedRecord(result.recordsV2 || {}, key, value);
   result.last ||= incoming.last;
   return result;
 }

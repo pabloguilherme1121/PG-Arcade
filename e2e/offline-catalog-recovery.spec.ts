@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 // Issue #79: portable offline contract without assuming identical service-worker lifecycles.
 test("the catalog keeps its navigation usable after reconnecting", async ({ page, context }) => {
   await page.goto("./");
-  await expect(page.locator(".game-card")).toHaveCount(100);
+  await expect(page.locator(".game-card")).toHaveCount(101);
   await context.setOffline(true);
   try {
     // The already-rendered catalog must remain interactive without a network.
@@ -14,7 +14,7 @@ test("the catalog keeps its navigation usable after reconnecting", async ({ page
     await context.setOffline(false);
   }
   await page.getByLabel("Buscar jogo").fill("");
-  await expect(page.locator(".game-card")).toHaveCount(100);
+  await expect(page.locator(".game-card")).toHaveCount(101);
   await page.getByRole("link", { name: "Jogar 2048", exact: true }).click();
   await expect(page.locator(".board2048")).toBeVisible();
 });

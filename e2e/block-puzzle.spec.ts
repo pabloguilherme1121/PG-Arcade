@@ -34,3 +34,36 @@ test("game-specific help remains keyboard-accessible on the player route", async
   await help.locator("summary").click();
   await expect(help).toContainText("Preencha linhas ou colunas para limpá-las");
 });
+
+for (const width of [320, 390, 844]) {
+  test(`drag preview commits once and cancellation never places a piece at ${width}`, async ({ page }) => {
+    await page.setViewportSize({ width, height: width === 844 ? 390 : 844 });
+    await page.goto('./#/jogar/blocos');
+    const tray = page.getByRole('button', { name: /Peça 1 com/ });
+    await tray.scrollIntoViewIfNeeded();
+    const target = page.locator('[data-blocks-board] [data-cell="0"]');
+    // Keep both the tray and top of the board visible for a real pointer gesture.
+    await page.evaluate(() => document.querySelector('[data-blocks-board]')?.scrollIntoView({ block: 'start' }));
+    const start = await tray.boundingBox(), end = await target.boundingBox();
+    expect(start).not.toBeNull(); expect(end).not.toBeNull();
+    await page.mouse.move(start!.x + start!.width / 2, start!.y + 15);
+    await page.mouse.down();
+    await page.mouse.move(end!.x + end!.width / 2, end!.y + end!.height / 2, { steps: 8 });
+    await expect(page.locator('.blocks-board .is-preview-valid').first()).toBeVisible();
+    await page.mouse.up();
+    await expect(page.locator('[data-blocks-moves]')).toHaveText('1');
+    await expect(page.locator('.blocks-board .is-preview-valid')).toHaveCount(0);
+    await page.getByRole('button', { name: 'Desfazer', exact: true }).click();
+    await expect(page.locator('[data-blocks-moves]')).toHaveText('0');
+    await page.evaluate(() => document.querySelector('[data-blocks-board]')?.scrollIntoView({ block: 'start' }));
+    const cancelStart = (await tray.boundingBox())!, cancelEnd = (await target.boundingBox())!;
+    await page.mouse.move(cancelStart.x + cancelStart.width / 2, cancelStart.y + 15);
+    await page.mouse.down();
+    await page.mouse.move(cancelEnd.x + cancelEnd.width / 2, cancelEnd.y + cancelEnd.height / 2, { steps: 8 });
+    await expect(page.locator('.blocks-board .is-preview-valid').first()).toBeVisible();
+    await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+    await expect(page.locator('.blocks-board .is-preview-valid')).toHaveCount(0);
+    await page.mouse.up();
+    await expect(page.locator('[data-blocks-moves]')).toHaveText('0');
+  });
+}

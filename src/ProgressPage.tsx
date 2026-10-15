@@ -1,6 +1,7 @@
+import { scopedRecordLabel } from "./lib/scopedRecords";
 import { useState, useEffect, type RefObject } from "react";
 import { ArrowRight, Heart, Trophy } from "lucide-react";
-import { games } from "./lib/catalog";
+import { games, type GameId } from "./lib/catalog";
 import { recordUnits } from "./lib/gameHelp";
 import { mergeProgress, type Progress } from "./lib/progress";
 import { readDailyActivity, restoreDailyActivity, summarizeDailyActivity } from "./lib/dailyProgress";
@@ -21,7 +22,8 @@ export default function ProgressPage({progress, heading, update}:Props) {
   setTimeout(()=>URL.revokeObjectURL(url),1000);
   setMessage("Cópia de progresso preparada. Guarde o arquivo para restaurar em outro navegador.");
  }
- const recordCount=games.filter(g=>progress.records[g.id]).length;
+ const hasRecord = (id: GameId) => !!progress.records[id] || Object.keys(progress.recordsV2 || {}).some(key => key.startsWith(`${id}|`));
+ const recordCount=games.filter(g=>hasRecord(g.id)).length;
  const today = summarizeDailyActivity(readDailyActivity());
  return (
           <section className="progress-section">
@@ -102,16 +104,25 @@ export default function ProgressPage({progress, heading, update}:Props) {
                 />
               </label>
             </div>
+            {Object.keys(progress.recordsV2 || {}).length > 0 && <section aria-label="Recordes por modo e dificuldade">
+              <h3>Por modo e dificuldade</h3>
+              <div className="record-list">{Object.entries(progress.recordsV2 || {}).map(([key, value]) => {
+                const game = games.find(g => g.id === key.split("|")[0]);
+                return game && <a href={`#/jogar/${game.id}`} key={key}><span>{game.name}<small>{scopedRecordLabel(key)}</small></span><strong>{value} {recordUnits[game.id]}</strong></a>;
+              })}</div>
+            </section>}
+            <h3>Marcas gerais</h3>
+            <p className="muted">As marcas gerais abaixo incluem resultados antigos e podem misturar modos. Os recordes por modo não atribuem dificuldade aos dados antigos.</p>
             <div className="record-list">
               {games
-                .filter((g) => !!recordUnits[g.id] && (recordView === "todos" || progress.records[g.id]))
+                .filter((g) => !!recordUnits[g.id] && (recordView === "todos" || hasRecord(g.id)))
                 .map((g) => (
                   <a href={`#/jogar/${g.id}`} key={g.id}>
                     <span>{g.name}</span>
                     <strong>
                       {progress.records[g.id]
                         ? `${progress.records[g.id]} ${recordUnits[g.id]}`
-                        : "Ainda sem recorde"}
+                        : "Sem marca geral"}
                     </strong>
                     <ArrowRight size={18} />
                   </a>

@@ -7,7 +7,7 @@
 .blocks-board button.is-filled{background:linear-gradient(145deg,#b2f785,#58bacc);box-shadow:inset 0 2px 3px #ffffff60,inset 0 -3px 4px #174c6377}
 .blocks-board button:focus-visible,.blocks-tray button:focus-visible{outline:3px solid #fff;outline-offset:2px;position:relative;z-index:1}
 .blocks-tray{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px;max-width:470px}
-.blocks-tray button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:100px;border:2px solid #46617a;border-radius:12px;padding:8px;background:#14263a;color:#eef7ff;cursor:pointer;touch-action:manipulation}
+.blocks-tray button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:100px;border:2px solid #46617a;border-radius:12px;padding:8px;background:#14263a;color:#eef7ff;cursor:grab;touch-action:none}
 .blocks-tray button[aria-pressed="true"]{border-color:#c9f65a;background:#223c49}
 .blocks-tray button:disabled{opacity:.45;cursor:default}
 .blocks-piece-grid{display:grid;grid-template-columns:repeat(4,14px);grid-template-rows:repeat(4,14px);gap:2px}
@@ -16,3 +16,14 @@
 .blocks-layout>.instructions{flex:1 1 230px;max-width:360px}
 @media(max-width:430px){.blocks-layout{gap:14px}.blocks-board{width:100%}.blocks-tray button{min-height:86px}.blocks-piece-grid{grid-template-columns:repeat(4,12px);grid-template-rows:repeat(4,12px)}}
 @media(prefers-reduced-motion:reduce){.blocks-board button{transition:none}}
+
+.blocks-board button.is-preview-valid{background:#6ccf9b;box-shadow:inset 0 0 0 2px #e0ffc5}
+.blocks-board button.is-preview-invalid{background:#a63d51;box-shadow:inset 0 0 0 2px #ffd4dc}
+@media(min-width:568px) and (max-height:540px){
+  .blocks-main{display:grid;grid-template-columns:minmax(0,1fr) 100px;gap:8px 12px}
+  .blocks-main>.session-options,.blocks-main>.scores,.blocks-main>.blocks-intro,.blocks-main>.game-status,.blocks-main>.game-actions{grid-column:1/-1}
+  .blocks-board{grid-column:1;grid-row:4;width:100%;max-width:min(470px,calc(100dvh - 80px));scroll-margin-top:72px}
+  .blocks-tray{grid-column:2;grid-row:4;display:flex;flex-direction:column;margin:0;gap:4px}
+  .blocks-tray button{min-height:76px;padding:4px;gap:2px}
+  .blocks-piece-grid{grid-template-columns:repeat(4,10px);grid-template-rows:repeat(4,10px)}
+}

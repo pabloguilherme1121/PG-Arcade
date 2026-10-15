@@ -59,7 +59,11 @@ for (const pairs of [4, 12]) {
     expect(await page.evaluate(() => JSON.parse(localStorage.getItem("pg-arcade-progress-v1") || "{}").records.memoria)).toBe(moves);
     await page.clock.resume();
     await page.reload();
+    await expect(page.locator(".scores strong").nth(1)).toHaveText("—");
+    await page.getByLabel("Dificuldade da memória").selectOption(String(pairs));
+    await page.getByLabel("Tempo para observar cartas diferentes").selectOption("500");
     await expect(page.locator(".scores strong").nth(1)).toHaveText(String(moves));
+    expect(await page.evaluate(key => JSON.parse(localStorage.getItem("pg-arcade-progress-v1") || "{}").recordsV2[key], `memoria|free|${pairs}-500`)).toBe(moves);
   });
 }
 
