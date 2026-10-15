@@ -24,15 +24,21 @@ test("native fullscreen or viewport fallback keeps a working exit and navigation
 });
 
 for (const width of [320, 390, 1280]) {
-  test(`all 100 games expose session modes and fit immersive view at ${width}px`, async ({ page }) => {
-    test.setTimeout(180_000);
+  // WebKit takes longer at desktop widths. Keep all 100 cases without
+  // putting their accumulated navigation time under one test timeout.
+  const batches = width === 1280
+    ? Array.from({ length: Math.ceil(games.length / 20) }, (_, i) => games.slice(i * 20, (i + 1) * 20))
+    : [games];
+  for (const [batchIndex, batch] of batches.entries()) {
+  test(`all 100 games expose session modes and fit immersive view at ${width}px${width === 1280 ? ` (batch ${batchIndex + 1}/${batches.length})` : ""}`, async ({ page }) => {
+    test.setTimeout(width === 1280 ? 90_000 : 180_000);
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.setViewportSize({ width, height: width === 1280 ? 900 : 844 });
     await page.addInitScript(() => {
       Element.prototype.requestFullscreen = () => Promise.reject(new Error("unsupported"));
     });
-    for (const game of games) {
+    for (const game of batch) {
       await page.goto(`./#/jogar/${game.id}`);
       await expect(page.locator("[data-arcade-arena]").first()).toBeVisible();
       await expect(page.locator(".session-mode-cards button")).toHaveCount(3);
@@ -50,6 +56,7 @@ for (const width of [320, 390, 1280]) {
     }
     expect(errors).toEqual([]);
   });
+  }
 }
 
 test("viewport fullscreen isolates keyboard focus, restores scroll and passes axe", async ({ page }) => {
