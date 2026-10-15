@@ -24,38 +24,43 @@ test("native fullscreen or viewport fallback keeps a working exit and navigation
 });
 
 for (const width of [320, 390, 1280]) {
-  // WebKit takes longer at desktop widths. Keep all 100 cases without
-  // putting their accumulated navigation time under one test timeout.
+  // Keep the desktop WebKit sweep split into bounded runs; all 100 games still run.
   const batches = width === 1280
-    ? Array.from({ length: Math.ceil(games.length / 20) }, (_, i) => games.slice(i * 20, (i + 1) * 20))
+    ? Array.from({ length: Math.ceil(games.length / 20) }, (_, i) =>
+        games.slice(i * 20, (i + 1) * 20))
     : [games];
+
   for (const [batchIndex, batch] of batches.entries()) {
-  test(`all 100 games expose session modes and fit immersive view at ${width}px${width === 1280 ? ` (batch ${batchIndex + 1}/${batches.length})` : ""}`, async ({ page }) => {
-    test.setTimeout(width === 1280 ? 90_000 : 180_000);
-    const errors: string[] = [];
-    page.on("pageerror", (error) => errors.push(error.message));
-    await page.setViewportSize({ width, height: width === 1280 ? 900 : 844 });
-    await page.addInitScript(() => {
-      Element.prototype.requestFullscreen = () => Promise.reject(new Error("unsupported"));
+    const suffix = width === 1280 ? ` (batch ${batchIndex + 1}/${batches.length})` : "";
+    test(`all 100 games expose session modes and fit immersive view at ${width}px${suffix}`, async ({ page }) => {
+      test.setTimeout(width === 1280 ? 120_000 : 180_000);
+      const errors: string[] = [];
+      page.on("pageerror", (error) => errors.push(error.message));
+      await page.setViewportSize({ width, height: width === 1280 ? 900 : 844 });
+      await page.addInitScript(() => {
+        Element.prototype.requestFullscreen = () => Promise.reject(new Error("unsupported"));
+      });
+
+      for (const game of batch) {
+        await test.step(`validate immersive mode: ${game.id}`, async () => {
+          await page.goto(`./#/jogar/${game.id}`);
+          await expect(page.locator("[data-arcade-arena]").first()).toBeVisible();
+          await expect(page.locator(".session-mode-cards button")).toHaveCount(3);
+          if (await page.locator(".player-utilities:not([open]) summary").count()) {
+            await page.locator(".player-utilities summary").click();
+          }
+          await page.getByRole("button", { name: "Tela cheia", exact: true }).click();
+          const player = page.locator(".player");
+          await expect(player).toHaveAttribute("data-viewport-fullscreen", "true");
+          expect(await player.evaluate((element) => element.scrollWidth <= element.clientWidth + 1), game.id).toBe(true);
+          await page.locator(".session-mode-cards").getByRole("button", { name: /Sprint/ }).click();
+          await expect(page.getByLabel("Dificuldade do desafio de tempo").locator("option")).toHaveCount(3);
+          await page.keyboard.press("Escape");
+          await expect(player).toHaveAttribute("data-immersive", "false");
+        });
+      }
+      expect(errors).toEqual([]);
     });
-    for (const game of batch) {
-      await page.goto(`./#/jogar/${game.id}`);
-      await expect(page.locator("[data-arcade-arena]").first()).toBeVisible();
-      await expect(page.locator(".session-mode-cards button")).toHaveCount(3);
-      if (await page.locator(".player-utilities:not([open]) summary").count()) {
-    await page.locator(".player-utilities summary").click();
-  }
-      await page.getByRole("button", { name: "Tela cheia", exact: true }).click();
-      const player = page.locator(".player");
-      await expect(player).toHaveAttribute("data-viewport-fullscreen", "true");
-      expect(await player.evaluate((element) => element.scrollWidth <= element.clientWidth + 1), game.id).toBe(true);
-      await page.locator(".session-mode-cards").getByRole("button", { name: /Sprint/ }).click();
-      await expect(page.getByLabel("Dificuldade do desafio de tempo").locator("option")).toHaveCount(3);
-      await page.keyboard.press("Escape");
-      await expect(player).toHaveAttribute("data-immersive", "false");
-    }
-    expect(errors).toEqual([]);
-  });
   }
 }
 
