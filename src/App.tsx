@@ -33,7 +33,7 @@ import {
   type ExpandedId,
 } from "./lib/expandedCatalog";
 
-import { discoveryFilters, filterByMode, modeTags, modeLabel, recommendGames, type DiscoveryFilter } from "./lib/smartDiscovery";
+import { discoveryFilters, filterByMode, supportsSwipe, modeTags, modeLabel, recommendGames, type DiscoveryFilter } from "./lib/smartDiscovery";
 import { gameHelp, recordUnits } from "./lib/gameHelp";
 import GameCover from "./GameCover";
 import {
@@ -145,6 +145,10 @@ function route() {
 }
 
 
+const specificStyles = new Set(["rapido", "sem-pressa", "bot", "treino", "sobrevivencia", "deslizar"]);
+const VisualPreferences = lazy(() => import("./VisualPreferences"));
+const ProjectNetwork = lazy(() => import("./ProjectNetwork"));
+
 export default function App() {
   const reducedMotion = useReducedMotion();
   const [page, setPage] = useState(route);
@@ -184,12 +188,16 @@ export default function App() {
   const [category, setCategory] = useState(initialView.category);
   const [mode, setMode] = useState(initialView.mode);
   const [modeFilter, setModeFilter] = useState<DiscoveryFilter>(initialView.modeFilter);
-  catalogView.current = { ...catalogView.current, query, category, sort, mode, modeFilter };
+  const [swipeOnly, setSwipeOnly] = useState(initialView.swipeOnly);
+  const clearCatalogFilters = () => {
+    setCategory("Todos"); setMode("Todos"); setModeFilter("todos"); setSwipeOnly(false);
+  };
+  catalogView.current = { ...catalogView.current, query, category, sort, mode, modeFilter, swipeOnly };
   const rememberCatalog = (id: GameId) => {
     catalogView.current = { ...catalogView.current, scroll: window.scrollY, returnPage: page, focusId: id };
     saveCatalogView(catalogView.current);
   };
-  useEffect(() => { saveCatalogView(catalogView.current); }, [query, category, sort, mode, modeFilter]);
+  useEffect(() => { saveCatalogView(catalogView.current); }, [query, category, sort, mode, modeFilter, swipeOnly]);
   const [message, setMessage] = useState("");
   const arena = useRef<HTMLDivElement>(null);
   const { active: fullscreen, viewport, toggle: toggleFullscreen } = useImmersivePlayer(arena, page);
@@ -329,8 +337,9 @@ export default function App() {
     (page !== "favoritos" || progress.favorites.includes(g.id)) &&
     (category === "Todos" || categoryGroup(g.category) === category) &&
     supportsPlayerMode(g.id, mode) &&
+    (!swipeOnly || supportsSwipe(g.id)) &&
     matchesGame(g, normalizedQuery)),
-    [page, progress.favorites, category, mode, normalizedQuery]);
+    [page, progress.favorites, category, mode, normalizedQuery, swipeOnly]);
   const visible = useMemo(() => filterByMode(matchingGames, modeFilter, progress.visits, progress.favorites),
     [matchingGames, modeFilter, progress.visits, progress.favorites]);
   const modeCounts = useMemo(() => Object.fromEntries(discoveryFilters.map(filter =>
@@ -642,7 +651,7 @@ export default function App() {
               </div>
               <img src={`${import.meta.env.BASE_URL}assets/arcade-hero.webp`} alt="" width="1707" height="924" fetchPriority="high"/>
             </section>}
-            {page === "catalogo" && !query && category === "Todos" && mode === "Todos" && modeFilter === "todos" && <div className="discovery">
+            {page === "catalogo" && !query && category === "Todos" && mode === "Todos" && modeFilter === "todos" && !swipeOnly && <div className="discovery">
               <section className="experience-selection" aria-labelledby="experience-title">
                 <div className="section-title"><h2 id="experience-title">Qual é o seu ritmo?</h2><p>Encontre uma partida para este momento.</p></div>
                 <div className="experience-grid">{([
@@ -703,17 +712,18 @@ export default function App() {
                     <button key={filter.id} type="button"
                       aria-pressed={modeFilter === filter.id}
                       className={modeFilter === filter.id ? "selected" : ""}
-                      disabled={modeCounts[filter.id] === 0 && modeFilter !== filter.id && ["rapido", "sem-pressa", "bot", "treino", "sobrevivencia", "deslizar"].includes(filter.id)}
+                      disabled={modeCounts[filter.id] === 0 && modeFilter !== filter.id && specificStyles.has(filter.id)}
                       title={`${modeCounts[filter.id]} jogos com os filtros atuais`}
                       onClick={() => setModeFilter(filter.id)}>{filter.id === "dupla" ? "Dupla local" : filter.label} <span className="mode-count" aria-hidden="true">{modeCounts[filter.id]}</span></button>
                   ))}
                 </div>
               </div>
+              <label className="swipe-filter"><input type="checkbox" checked={swipeOnly} onChange={e => setSwipeOnly(e.target.checked)} /> Somente jogos com deslize na tela</label>
               <div className="catalog-tools">
                 <label>Jogadores <select aria-label="Filtrar por modo" value={mode} onChange={(e) => {
                   const next = e.target.value;
                   setMode(next);
-                  if (["rapido", "sem-pressa", "bot", "treino", "sobrevivencia", "deslizar"].includes(modeFilter) && !filterByMode(games.filter(g => supportsPlayerMode(g.id, next)), modeFilter, progress.visits, progress.favorites).length) setModeFilter("todos");
+                  if (specificStyles.has(modeFilter) && !filterByMode(games.filter(g => supportsPlayerMode(g.id, next)), modeFilter, progress.visits, progress.favorites).length) setModeFilter("todos");
                 }}><option>Todos</option><option value="Solo">Somente solo</option><option>Dupla local</option></select></label>
                 <label>
                   Ordenar{" "}
@@ -729,7 +739,7 @@ export default function App() {
                   </select>
                 </label>
                 <span role="status">{visible.length} jogos encontrados</span>
-                <button type="button" className="clear-smart-filters" onClick={() => { setQuery(""); setCategory("Todos"); setMode("Todos"); setModeFilter("todos"); setSort("destaques"); }}>Zerar filtros</button>
+                <button type="button" className="clear-smart-filters" onClick={() => { setQuery(""); clearCatalogFilters(); setSort("destaques"); }}>Zerar filtros</button>
                 <button
                   disabled={!visible.length}
                   onClick={() => {
@@ -741,8 +751,9 @@ export default function App() {
                   Jogo surpresa
                 </button>
               </div>
-              {(query || category !== "Todos" || mode !== "Todos" || modeFilter !== "todos") && <div className="active-catalog-filters" role="group" aria-label="Filtros ativos">
+              {(query || category !== "Todos" || mode !== "Todos" || modeFilter !== "todos" || swipeOnly) && <div className="active-catalog-filters" role="group" aria-label="Filtros ativos">
                 <span>Você está explorando</span>
+                {swipeOnly && <button onClick={() => setSwipeOnly(false)} aria-label="Remover filtro de deslize">Deslizar na tela <span aria-hidden="true">×</span></button>}
                 {query && <button onClick={()=>setQuery("")} aria-label={`Remover busca: ${query}`}>“{query}” <span aria-hidden="true">×</span></button>}
                 {category !== "Todos" && <button onClick={()=>setCategory("Todos")} aria-label={`Remover categoria: ${category}`}>{category} <span aria-hidden="true">×</span></button>}
                 {mode !== "Todos" && <button onClick={()=>setMode("Todos")} aria-label={`Remover modo: ${mode}`}>{mode === "Solo" ? "Somente solo" : mode} <span aria-hidden="true">×</span></button>}
@@ -766,14 +777,12 @@ export default function App() {
                       : "Tente outro nome ou categoria."}
                   </p>
                   {query && games.some(g => matchesGame(g, normalizedQuery)) && <button onClick={() => {
-                    setCategory('Todos');setMode('Todos');setModeFilter('todos');location.hash='/';
+                    clearCatalogFilters();location.hash='/';
                   }}>Buscar “{query}” em todos os jogos</button>}
                   <button
                     onClick={() => {
                       setQuery("");
-                      setCategory("Todos");
-                      setMode("Todos");
-                      setModeFilter("todos");
+                      clearCatalogFilters();
                       setSort("destaques");
                       location.hash = "/";
                     }}
@@ -794,64 +803,10 @@ export default function App() {
           }}
         >
           <summary>Conforto visual</summary>
-          <div className="preference-options">
-            <label>
-              <input
-                type="checkbox"
-                checked={preferences.contrast}
-                onChange={(e) =>
-                  setPreferences((p) => ({
-                    ...p,
-                    contrast: e.target.checked,
-                  }))
-                }
-              />
-              Alto contraste
-            </label>
-            <label>
-              Movimento
-              <select
-                aria-label="Movimento da interface"
-                value={preferences.motion}
-                onChange={(e) =>
-                  setPreferences((p) => ({
-                    ...p,
-                    motion: e.target.value as "system" | "reduced",
-                  }))
-                }
-              >
-                <option value="system">Preferência do aparelho</option>
-                <option value="reduced">Reduzir efeitos</option>
-              </select>
-            </label>
-            <label>
-              Tamanho dos controles
-              <select
-                aria-label="Tamanho dos controles"
-                value={preferences.controls}
-                onChange={(e) =>
-                  setPreferences((p) => ({
-                    ...p,
-                    controls: e.target.value as "standard" | "large",
-                  }))
-                }
-              >
-                <option value="standard">Padrão</option>
-                <option value="large">Ampliados</option>
-              </select>
-            </label>
-          </div>
-          <p>
-            As opções valem para todos os jogos. Reduzir efeitos mantém os
-            movimentos necessários para jogar; controles ampliados aumentam os
-            principais alvos de toque sem alterar os tabuleiros.
-          </p>
+          <Suspense fallback={null}><VisualPreferences preferences={preferences} setPreferences={setPreferences} /></Suspense>
         </details>
       </main>
-      <footer>
-        <a href="#/">PG Arcade</a>
-        <span>Feito para jogar. Sem cadastro.</span>
-      </footer>
+      <Suspense fallback={null}><ProjectNetwork /></Suspense>
     </div>
   );
 }

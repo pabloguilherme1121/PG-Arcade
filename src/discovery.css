@@ -107,6 +107,20 @@ html[data-arcade-contrast="true"] .experience-grid button{background:#000;border
 .active-catalog-filters button>span {font-size:20px;flex-shrink:0;line-height:1;}
 html[data-arcade-contrast="true"] .active-catalog-filters button {background:#000;border-color:#fff;color:#fff;}
 
+.swipe-filter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  margin-block: 12px;
+  cursor: pointer;
+}
+.swipe-filter input {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+}
 .hero-search{max-width:32rem;margin:16px 0}.hero-search input{min-width:0;width:100%}
 @media(max-width:767px){.curated-grid > :nth-child(n+4){display:none}.hero h1{font-size:32px}.hero{padding:16px}.hero-eyebrow{display:none}}
 /* Retain help and accessibility controls while removing repeated descriptions during play. */
