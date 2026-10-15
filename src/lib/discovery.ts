@@ -19,6 +19,10 @@ export const recommended: GameId[] = ["snake", "flood", "liga4", "basquete", "pa
 export function gameMode(id: GameId) {
   return ["liga4", "velha", "xadrez", "damas", "domino"].includes(id) ? "Solo ou dupla local" : "Solo";
 }
+/** Every current title supports solo play, including local duels with a bot. */
+export function supportsPlayerMode(id: GameId, mode: string) {
+  return mode !== "Dupla local" || gameMode(id).includes("dupla");
+}
 export type CatalogView = { query: string; category: string; sort: string; mode: string; modeFilter: DiscoveryFilter; scroll: number; returnPage: string; focusId: GameId | null };
 export const defaultView: CatalogView = { query: "", category: "Todos", sort: "destaques", mode: "Todos", modeFilter: "todos", scroll: 0, returnPage: "catalogo", focusId: null };
 export function readCatalogView(): CatalogView {

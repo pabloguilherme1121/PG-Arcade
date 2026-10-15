@@ -1,3 +1,4 @@
+import { recordUnits } from "../lib/gameHelp";
 import OrientationControl from "./OrientationControl";
 import { RecordScopeProvider } from "./RecordScope";
 import { addScopedRecord } from "../lib/scopedRecords";
@@ -147,7 +148,7 @@ export default function SessionChallenge({ children, gameId, progress, update }:
       {mode !== "free" && phase === "done" && <section aria-label="Resumo da sessão" className="session-summary">
         <h3>Resultado da sessão</h3>
         <p>Conclusões registradas pelo jogo: {results.length}.</p>
-        <p>{results.length ? `Melhor resultado registrado: ${Math.max(...results)} pontos.` : "Nenhuma conclusão foi registrada antes do fim do tempo."}</p>
+        <p>{results.length ? `Melhor resultado registrado: ${["puzzle", "memoria"].includes(gameId) ? Math.min(...results) : Math.max(...results)} ${recordUnits[gameId] || "pontos"}.` : "Nenhuma conclusão foi registrada antes do fim do tempo."}</p>
         <p>Configurações com novo recorde: {Object.entries(progress.recordsV2 || {}).filter(([key, value]) => key.startsWith(`${gameId}|${sessionKey}|`) && value > (baseline.current[key] || 0)).length}.</p>
         <p>{(progress.records[gameId] || 0) > generalBaseline.current ? "Você também melhorou sua marca geral." : "Sua marca geral anterior foi preservada."}</p>
         <small>O total inclui somente jogos que informam sua conclusão. A comparação por configuração aparece onde há suporte.</small>

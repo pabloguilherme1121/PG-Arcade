@@ -115,16 +115,16 @@ async function run() {
     const context = await browser.newContext({ viewport: { width, height }, serviceWorkers: "block" });
     const page = await context.newPage();
     await page.goto(root.href, { waitUntil: "domcontentloaded" });
-    await page.locator("[data-catalog-game]").first().waitFor({ state: "visible" });
-    const ids = await page.locator("[data-catalog-game]").evaluateAll(elements =>
+    await page.locator(".game-grid [data-catalog-game]").first().waitFor({ state: "visible" });
+    const ids = await page.locator(".game-grid [data-catalog-game]").evaluateAll(elements =>
       elements.map(element => element.getAttribute("data-catalog-game")).filter(Boolean));
     const catalog = await page.evaluate(() => ({
       domNodes: document.getElementsByTagName("*").length,
       svgNodes: document.querySelectorAll("svg").length,
-      cardCount: document.querySelectorAll("[data-catalog-game]").length,
+      cardCount: document.querySelectorAll(".game-grid [data-catalog-game]").length,
     }));
     await context.close();
-    if (ids.length !== 100 || new Set(ids).size !== 100) throw new Error("Catalog must contain 100 unique IDs");
+    if (!ids.length || new Set(ids).size !== ids.length || defaults.some(id => !ids.includes(id))) throw new Error("Catalog must contain unique IDs and all reference games");
     const requested = option("all", "false") === "true" ? ids : option("games", defaults.join(",")).split(",");
     const selected = [...new Set(requested.map(x => x.trim()).filter(Boolean))];
     if (!selected.length || selected.some(id => !ids.includes(id))) throw new Error("Unknown or empty game IDs");

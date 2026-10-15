@@ -1,10 +1,12 @@
+import { useBoardGesture } from "./useBoardGesture";
+import { useGameActivity, useScopedRecord } from "./RecordScope";
 import { useState } from "react";
 import { movePuzzle, puzzleSolved, shuffledPuzzle } from "../lib/puzzles";
 import { puzzleInPlaceCount, puzzleManhattanDistance } from "../lib/puzzleFeedback";
 import "./SlidingPuzzle.css";
 export default function SlidingPuzzle({
-  record,
-  onRecord,
+  record: legacyRecord,
+  onRecord: saveLegacy,
 }: {
   record: number;
   onRecord: (n: number) => void;
@@ -15,7 +17,9 @@ export default function SlidingPuzzle({
   const [history, setHistory] = useState<number[][]>([]);
   const [lastTile, setLastTile] = useState<number | null>(null);
   const [difficulty, setDifficulty] = useState(100);
+  const [record, onRecord] = useScopedRecord(String(difficulty), legacyRecord, saveLegacy);
   const won = puzzleSolved(board);
+  useGameActivity(undefined, won, moves);
   const placed = puzzleInPlaceCount(board);
   const distance = puzzleManhattanDistance(board);
   function shuffle(depth: number) {
@@ -42,6 +46,10 @@ export default function SlidingPuzzle({
       setMoves((m) => m + 1);
     }
   }
+  const gesture = useBoardGesture((_from, _to, direction) => {
+    const offsets = { left: 1, right: -1, up: 3, down: -3 };
+    if (direction !== "tap") move(board.indexOf(0) + offsets[direction]);
+  }, !won);
   return (
     <div className="game-layout">
       <div className="board-column">
@@ -55,7 +63,7 @@ export default function SlidingPuzzle({
             <option value={40}>Normal · intermediário</option>
             <option value={100}>Difícil · embaralhamento longo</option>
           </select>
-        </label></div>
+        </label><small>Trocar o nível reinicia a partida. A dificuldade muda o embaralhamento; o tabuleiro continua 3 por 3.</small></div>
         <div className="scores">
           <div>
             Jogadas<strong>{moves}</strong>
@@ -75,6 +83,7 @@ export default function SlidingPuzzle({
         </p>
         <div
           className="sliding-board"
+          {...gesture}
           role="group"
           aria-label="Quebra-cabeça de oito peças"
           tabIndex={0}
@@ -95,6 +104,7 @@ export default function SlidingPuzzle({
             v ? (
               <button
                 key={i}
+                data-drag-index={i}
                 data-puzzle-last={v === lastTile ? "true" : undefined}
                 aria-label={`Peça ${v}`}
                 disabled={won || !movePuzzle(board, i)}
@@ -103,7 +113,7 @@ export default function SlidingPuzzle({
                 {v}
               </button>
             ) : (
-              <span key={i} role="img" aria-label="Espaço vazio" />
+              <span key={i} data-drag-index={i} role="img" aria-label="Espaço vazio" />
             ),
           )}
         </div>
@@ -128,7 +138,7 @@ export default function SlidingPuzzle({
           </div>
         )}
         <p>
-          Toque em uma peça ao lado do espaço vazio para movê-la. Organize de 1
+          Deslize no tabuleiro ou toque em uma peça ao lado do espaço vazio para movê-la. Organize de 1
           a 8, deixando o espaço vazio no canto inferior direito.
         </p>
         <h3>Teclado</h3>

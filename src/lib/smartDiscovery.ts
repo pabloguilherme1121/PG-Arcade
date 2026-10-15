@@ -11,7 +11,7 @@ const duels = new Set<GameId>(["damas","domino","liga4","velha","xadrez"]);
 const swipeGames=new Set<GameId>([
   ...newGames.filter(g=>g.family==='motion' && !['rhythm','balloons'].includes(g.id)).map(g=>g.id),
   ...expandedGames.filter(g=>g.family==='action').map(g=>g.id),
-  'snake','2048','wordsearch','slideblock','labirinto','sokoban','match3',
+  'snake','2048','puzzle','wordsearch','slideblock','labirinto','sokoban','match3',
 ]);
 export const supportsSwipe=(id:GameId)=>swipeGames.has(id);
 const quick = new Set<GameId>(["reflexo","estrelas","tiro","rally","corrida"]);

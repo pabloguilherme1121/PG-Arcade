@@ -80,3 +80,5 @@ html[data-arcade-contrast="true"] .player .mines-board button { border: 2px soli
   .player .mines-premium-hud { gap: 5px; }
   .player .mines-premium-hud > div { padding: 7px 3px; }
 }
+
+.mines-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}.mines-scroll.mines-zoom .mines-board{width:430px;max-width:none}.mines-touch-tools{position:relative}.mines-touch-tools > span{flex-basis:100%;font-size:.85rem}.mines-touch-tools button[aria-pressed="true"]{outline:2px solid #dcffae;outline-offset:2px}.player .mines-board button{touch-action:manipulation}

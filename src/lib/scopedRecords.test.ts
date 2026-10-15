@@ -26,3 +26,12 @@ it("keeps reaction difficulty and session records separate without relabeling le
   expect(imported.recordsV2).toEqual({ "reflexo|free|easy": 4700, "reflexo|free|hard": 3200, "reflexo|sprint-normal|easy": 4100 });
   expect(addScopedRecord(imported.recordsV2!, "reflexo|free|hard", 3000)).toBe(imported.recordsV2);
 });
+
+it("compares mines scores upwards and puzzle moves downwards within their own difficulties", () => {
+  const records = { "minas|free|6": 500, "puzzle|free|12": 8 };
+  expect(addScopedRecord(records, "minas|free|6", 490)).toBe(records);
+  expect(addScopedRecord(records, "minas|free|16", 1300)["minas|free|16"]).toBe(1300);
+  expect(addScopedRecord(records, "puzzle|free|12", 6)["puzzle|free|12"]).toBe(6);
+  expect(addScopedRecord(records, "puzzle|free|40", 30)["puzzle|free|40"]).toBe(30);
+  expect(normalizeScopedRecords({ "minas|free|9": 30, "puzzle|free|10": 5 })).toEqual({});
+});

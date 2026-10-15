@@ -43,7 +43,7 @@ import {
 } from "./lib/progress";
 import { readPreferences, applyPreferences } from "./lib/preferences";
 
-import { searchText, matchesGame, categoryGroup, recommended, gameMode, readCatalogView, saveCatalogView } from "./lib/discovery";
+import { searchText, matchesGame, categoryGroup, supportsPlayerMode, recommended, gameMode, readCatalogView, saveCatalogView } from "./lib/discovery";
 import { useReducedMotion } from "./useReducedMotion";
 import { useImmersivePlayer } from "./lib/useImmersivePlayer";
 import "./features/portfolio/components/PortfolioArcade.css";
@@ -328,7 +328,7 @@ export default function App() {
   const matchingGames = useMemo(() => games.filter(g =>
     (page !== "favoritos" || progress.favorites.includes(g.id)) &&
     (category === "Todos" || categoryGroup(g.category) === category) &&
-    (mode === "Todos" || (mode === "Dupla local" ? gameMode(g.id).includes("dupla") : gameMode(g.id) === "Solo")) &&
+    supportsPlayerMode(g.id, mode) &&
     matchesGame(g, normalizedQuery)),
     [page, progress.favorites, category, mode, normalizedQuery]);
   const visible = useMemo(() => filterByMode(matchingGames, modeFilter, progress.visits, progress.favorites),
@@ -490,7 +490,7 @@ export default function App() {
             <div className="player-gameplay-orientation" data-gameplay-orientation>
               <strong>Como jogar {game.name}</strong>
               <span>{gameHelp[game.id].split(". ")[0]}</span>
-              <small data-player-record>{["snake", "2048", "memoria", "blocos", "reflexo"].includes(game.id) ? "Recorde por configuração no placar do jogo" : progress.records[game.id] ? `Recorde histórico geral: ${progress.records[game.id]} ${recordUnits[game.id] ?? "pontos"}` : "Primeira partida — faça sua marca"}</small>
+              <small data-player-record>{["snake", "2048", "memoria", "blocos", "reflexo", "minas", "puzzle"].includes(game.id) ? "Recorde por configuração no placar do jogo" : progress.records[game.id] ? `Recorde histórico geral: ${progress.records[game.id]} ${recordUnits[game.id] ?? "pontos"}` : "Primeira partida — faça sua marca"}</small>
               <button
                 type="button"
                 className="gameplay-control-toggle"
@@ -699,12 +699,18 @@ export default function App() {
                     <button key={filter.id} type="button"
                       aria-pressed={modeFilter === filter.id}
                       className={modeFilter === filter.id ? "selected" : ""}
+                      disabled={modeCounts[filter.id] === 0 && modeFilter !== filter.id && ["rapido", "sem-pressa", "bot", "treino", "sobrevivencia", "deslizar"].includes(filter.id)}
+                      title={`${modeCounts[filter.id]} jogos com os filtros atuais`}
                       onClick={() => setModeFilter(filter.id)}>{filter.id === "dupla" ? "Dupla local" : filter.label} <span className="mode-count" aria-hidden="true">{modeCounts[filter.id]}</span></button>
                   ))}
                 </div>
               </div>
               <div className="catalog-tools">
-                <label>Jogadores <select aria-label="Filtrar por modo" value={mode} onChange={(e) => setMode(e.target.value)}><option>Todos</option><option value="Solo">Somente solo</option><option>Dupla local</option></select></label>
+                <label>Jogadores <select aria-label="Filtrar por modo" value={mode} onChange={(e) => {
+                  const next = e.target.value;
+                  setMode(next);
+                  if (["rapido", "sem-pressa", "bot", "treino", "sobrevivencia", "deslizar"].includes(modeFilter) && !filterByMode(games.filter(g => supportsPlayerMode(g.id, next)), modeFilter, progress.visits, progress.favorites).length) setModeFilter("todos");
+                }}><option>Todos</option><option value="Solo">Somente solo</option><option>Dupla local</option></select></label>
                 <label>
                   Ordenar{" "}
                   <select
