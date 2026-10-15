@@ -6,7 +6,7 @@ for(const width of [320,390]) test(`active filters can be removed individually a
   const catalog=page.locator('#catalogo');
   await catalog.getByRole('button',{name:'Estratégia',exact:true}).click();
   await catalog.getByLabel('Buscar jogo',{exact:true}).fill('xadrez');
-  await catalog.getByRole('group',{name:'Filtros por modo'}).getByRole('button',{name:/Dupla local/}).click();
+  await catalog.getByLabel('Filtrar por modo',{exact:true}).selectOption('Dupla local');
   const chips=catalog.getByRole('group',{name:'Filtros ativos'});
   await expect(chips.getByRole('button')).toHaveCount(3);
   await chips.getByRole('button',{name:'Remover categoria: Estratégia',exact:true}).click();

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { readOrientationPreference, saveOrientationPreference, type OrientationPreference } from "../lib/landscapeOrientation";
 export default function OrientationControl() {
   const [value, setValue] = useState(readOrientationPreference);
-  return <label>Orientação em tela cheia
+  return <details className="orientation-control"><summary>Orientação da tela</summary><label>Orientação em tela cheia
     <select aria-label="Orientação em tela cheia" value={value} onChange={event => {
       const next = event.target.value as OrientationPreference;
       setValue(next); saveOrientationPreference(next);
@@ -12,5 +12,5 @@ export default function OrientationControl() {
       <option value="landscape">Horizontal</option>
     </select>
     <small>Depende do navegador. Você também pode girar o aparelho manualmente.</small>
-  </label>;
+  </label></details>;
 }

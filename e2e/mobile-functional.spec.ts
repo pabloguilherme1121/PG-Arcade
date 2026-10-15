@@ -72,3 +72,15 @@ test("Liga 4 offers a broad touch control that plays exactly one selected column
   await expect(page.locator('.connect-board [data-cell="38"]')).toHaveClass(/disc-1/);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
 });
+
+test("fullscreen allows changing session mode without hiding its only selector", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 740 });
+  await page.addInitScript(() => { Element.prototype.requestFullscreen = () => Promise.reject(Error("viewport")); });
+  await page.goto("./#/jogar/snake");
+  await page.getByRole("button", { name: "Tela cheia", exact: true }).click();
+  await page.locator(".session-mode-cards").getByRole("button", { name: /Sprint/ }).click();
+  await expect(page.getByLabel("Dificuldade do desafio de tempo")).toBeVisible();
+  await expect(page.locator(".session-challenge")).toHaveAttribute("data-session-mode", "sprint");
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".player")).toHaveAttribute("data-immersive", "false");
+});

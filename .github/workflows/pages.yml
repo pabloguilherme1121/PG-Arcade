@@ -67,7 +67,9 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
       - name: Focused mobile and accessibility smoke
-        run: npx playwright test e2e/accessibility-critical.spec.ts e2e/focused-polish.spec.ts e2e/mobile-functional.spec.ts --project=${{ matrix.browser }}
+        run: |
+          npx playwright test e2e/accessibility-critical.spec.ts e2e/focused-polish.spec.ts e2e/mobile-functional.spec.ts --project=${{ matrix.browser }}
+          npx playwright test e2e/catalog-experience.spec.ts e2e/scoped-backup.spec.ts e2e/professional-play.spec.ts --grep "active filters|backup imports|visual shell" --project=${{ matrix.browser }}
       - run: npx playwright test --project=${{ matrix.browser }}
       - uses: actions/upload-artifact@v7
         if: failure()

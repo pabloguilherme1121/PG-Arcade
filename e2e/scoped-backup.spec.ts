@@ -12,7 +12,12 @@ test('backup imports, merges and exports scoped records without inventing legacy
   await importRecords({ 'memoria|free|4-900': 6, '2048|free|hard': 100 });
   await expect(page.getByRole('region', { name: 'Recordes por modo e dificuldade' })).toContainText('4 pares');
   await expect(page.getByRole('button', { name: 'Com recorde (2)', exact: true })).toBeVisible();
-  await importRecords({ 'memoria|free|4-900': 8, '2048|free|hard': 80, 'blocos|free|invalid': 999, 'blocos|free|2': 200, 'snake|marathon-hard|classic-100-progressive': 10 });
+  const beforeInvalid = await page.evaluate(() => localStorage.getItem('pg-arcade-progress-v1'));
+  await restore.setInputFiles({ name: 'invalid.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ favorites: [], records: {}, recordsV2: { 'blocos|free|invalid': 999, 'blocos|free|2': 200 } })) });
+  await expect(page.locator('.progress-backup [role=status]')).toContainText('Não foi possível restaurar');
+  expect(await page.evaluate(() => localStorage.getItem('pg-arcade-progress-v1'))).toBe(beforeInvalid);
+  await expect(page.getByRole('button', { name: 'Com recorde (2)', exact: true })).toBeVisible();
+  await importRecords({ 'memoria|free|4-900': 8, '2048|free|hard': 80, 'blocos|free|2': 200, 'snake|marathon-hard|classic-100-progressive': 10 });
   await expect(page.getByRole('button', { name: 'Com recorde (4)', exact: true })).toBeVisible();
   const [download] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Salvar cópia do progresso' }).click()]);
   const exported = JSON.parse(await readFile((await download.path())!, 'utf8'));

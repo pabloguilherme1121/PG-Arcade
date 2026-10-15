@@ -74,6 +74,7 @@ test("orientation choice persists without changing the board or requiring fullsc
   await page.goto("./#/jogar/xadrez");
   const choice = page.getByLabel("Orientação em tela cheia", { exact: true });
   await expect(choice).toHaveValue("auto");
+  await page.locator(".orientation-control summary").click();
   await choice.selectOption("portrait");
   await page.reload();
   await expect(choice).toHaveValue("portrait");
