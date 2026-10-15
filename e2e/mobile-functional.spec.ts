@@ -41,7 +41,7 @@ test("puzzle exposes real swipe handling and configuration-specific records", as
   await page.mouse.move(to.x + to.width / 2, to.y + to.height / 2, { steps: 6 });
   await page.mouse.up();
   await expect(page.locator(".scores strong").first()).toHaveText("1");
-  await expect(page.locator(".session-options")).toContainText("reinicia a partida");
+  await expect(page.locator(".board-column > .session-options")).toContainText("reinicia a partida");
 });
 
 test("word keyboard choice avoids duplicate virtual keyboards and retains the draft", async ({ page }) => {
