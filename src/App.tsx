@@ -490,7 +490,7 @@ export default function App() {
             <div className="player-gameplay-orientation" data-gameplay-orientation>
               <strong>Como jogar {game.name}</strong>
               <span>{gameHelp[game.id].split(". ")[0]}</span>
-              <small data-player-record>{["snake", "2048", "memoria", "blocos", "reflexo", "minas", "puzzle"].includes(game.id) ? "Recorde por configuração no placar do jogo" : progress.records[game.id] ? `Recorde histórico geral: ${progress.records[game.id]} ${recordUnits[game.id] ?? "pontos"}` : "Primeira partida — faça sua marca"}</small>
+              <small data-player-record>{["snake", "2048", "memoria", "blocos", "reflexo", "minas", "puzzle", "palavra"].includes(game.id) ? "Recorde por configuração no placar do jogo" : progress.records[game.id] ? `Recorde histórico geral: ${progress.records[game.id]} ${recordUnits[game.id] ?? "pontos"}` : "Primeira partida — faça sua marca"}</small>
               <button
                 type="button"
                 className="gameplay-control-toggle"

@@ -42,3 +42,32 @@ test("puzzle exposes real swipe handling and configuration-specific records", as
   await expect(page.locator(".scores strong").first()).toHaveText("1");
   await expect(page.locator(".session-options")).toContainText("reinicia a partida");
 });
+
+test("word keyboard choice avoids duplicate virtual keyboards and retains the draft", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 740 });
+  await page.goto("./#/jogar/palavra");
+  const input = page.getByLabel("Sua palavra", { exact: true });
+  await expect(input).toHaveAttribute("inputmode", "none");
+  await page.getByRole("button", { name: "Letra C", exact: true }).click();
+  await expect(input).toHaveValue("C");
+  await page.getByLabel("Teclado da Palavra Secreta").selectOption("device");
+  await expect(input).toHaveAttribute("inputmode", "text");
+  await expect(page.getByRole("group", { name: "Teclado de letras na tela" })).toHaveCount(0);
+  await expect(input).toHaveValue("C");
+  await input.fill("CASAS");
+  await page.getByLabel("Teclado da Palavra Secreta").selectOption("screen");
+  await expect(input).toHaveValue("CASAS");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+});
+
+test("Liga 4 offers a broad touch control that plays exactly one selected column", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 740 });
+  await page.goto("./#/jogar/liga4");
+  await page.getByLabel("Coluna do Liga 4", { exact: true }).selectOption("3");
+  const drop = page.getByRole("button", { name: "Soltar peça", exact: true });
+  expect((await drop.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+  await drop.click();
+  await expect(page.locator(".connect-board .disc-1")).toHaveCount(1);
+  await expect(page.locator('.connect-board [data-cell="38"]')).toHaveClass(/disc-1/);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+});

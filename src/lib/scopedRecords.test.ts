@@ -35,3 +35,10 @@ it("compares mines scores upwards and puzzle moves downwards within their own di
   expect(addScopedRecord(records, "puzzle|free|40", 30)["puzzle|free|40"]).toBe(30);
   expect(normalizeScopedRecords({ "minas|free|9": 30, "puzzle|free|10": 5 })).toEqual({});
 });
+
+it("keeps word records independent for four and six attempts and preserves better scores", () => {
+  const records = normalizeScopedRecords({ "palavra|free|6": 600, "palavra|free|4": 400, "palavra|free|5": 500 });
+  expect(records).toEqual({ "palavra|free|6": 600, "palavra|free|4": 400 });
+  expect(addScopedRecord(records, "palavra|free|4", 300)).toBe(records);
+  expect(addScopedRecord(records, "palavra|sprint-normal|4", 400)["palavra|sprint-normal|4"]).toBe(400);
+});

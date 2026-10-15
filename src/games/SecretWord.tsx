@@ -1,3 +1,4 @@
+import { useGameActivity, useScopedRecord } from "./RecordScope";
 import { useState } from "react";
 import { words, evaluateWord } from "../lib/wordGame";
 import { wordKeyboardFeedback } from "../lib/wordKeyboardFeedback";
@@ -10,8 +11,8 @@ const names = {
 const pick = () => words[Math.floor(Math.random() * words.length)];
 const keyboardRows = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
 export default function SecretWord({
-  record,
-  onRecord,
+  record: legacyRecord,
+  onRecord: saveLegacy,
 }: {
   record: number;
   onRecord: (n: number) => void;
@@ -23,6 +24,9 @@ export default function SecretWord({
     [limit, setLimit] = useState(6);
   const won = guesses.includes(answer),
     done = won || guesses.length >= limit;
+  const [record, onRecord] = useScopedRecord(String(limit), legacyRecord, saveLegacy);
+  const [keyboardMode, setKeyboardMode] = useState("screen");
+  useGameActivity(undefined, done, won ? (limit - guesses.length + 1) * 100 : 0);
   const remaining = Math.max(0, limit - guesses.length);
   const keyboard = wordKeyboardFeedback(guesses, answer);
   function submitGuess() {
@@ -107,12 +111,18 @@ export default function SecretWord({
             ))}
           </ol>
         </div>
+        <label className="word-keyboard-choice">Teclado
+          <select aria-label="Teclado da Palavra Secreta" value={keyboardMode} onChange={event => {
+            setKeyboardMode(event.target.value);
+          }}><option value="screen">Na tela do jogo</option><option value="device">Do aparelho</option></select>
+        </label>
         <form
           onSubmit={(e) => { e.preventDefault(); submitGuess(); }}
         >
           <label htmlFor="secret-word">Sua palavra</label>
           <input
             id="secret-word"
+            inputMode={keyboardMode === "screen" ? "none" : "text"}
             className="word-input"
             value={entry}
             onChange={(e) => setEntry(e.target.value.toUpperCase())}
@@ -127,7 +137,7 @@ export default function SecretWord({
             Testar palavra
           </button>
         </form>
-        <div className="word-touch-keyboard" role="group" aria-label="Teclado de letras na tela">
+        {keyboardMode === "screen" && <div className="word-touch-keyboard" role="group" aria-label="Teclado de letras na tela">
           {keyboardRows.map((row)=>(
             <div className="word-keyboard-row" key={row}>
               {Array.from(row,(letter)=>(
@@ -143,7 +153,7 @@ export default function SecretWord({
             <button type="button" disabled={done||!entry.length} aria-label="Apagar letra" onClick={()=>setEntry(value=>value.slice(0,-1))}>Apagar letra</button>
             <button type="button" disabled={done||entry.length!==5} onClick={submitGuess}>Enviar tentativa</button>
           </div>
-        </div>
+        </div>}
         <p id="word-feedback" className="game-status" role="status">
           {won
             ? `Acertou! A palavra é ${answer}.`
