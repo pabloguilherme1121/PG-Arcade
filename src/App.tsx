@@ -433,7 +433,11 @@ export default function App() {
                 Voltar aos jogos
               </a>
                 <button
-                  onClick={(event) => void toggleFullscreen(event.currentTarget)}
+                  onClick={(event) => {
+                    const menu = event.currentTarget.closest(".player-toolbar")?.querySelector<HTMLDetailsElement>(".player-utilities");
+                    if (menu) menu.open = false;
+                    void toggleFullscreen(event.currentTarget);
+                  }}
                   aria-pressed={fullscreen}
                   aria-label={fullscreen ? "Sair da tela cheia" : "Tela cheia"}
                 >

@@ -77,7 +77,9 @@ test("fullscreen allows changing session mode without hiding its only selector",
   await page.setViewportSize({ width: 320, height: 740 });
   await page.addInitScript(() => { Element.prototype.requestFullscreen = () => Promise.reject(Error("viewport")); });
   await page.goto("./#/jogar/snake");
+  await page.locator(".player-utilities summary").click();
   await page.getByRole("button", { name: "Tela cheia", exact: true }).click();
+  await expect(page.locator(".player-utilities")).not.toHaveAttribute("open", "");
   await page.locator(".session-mode-cards").getByRole("button", { name: /Sprint/ }).click();
   await expect(page.getByLabel("Dificuldade do desafio de tempo")).toBeVisible();
   await expect(page.locator(".session-challenge")).toHaveAttribute("data-session-mode", "sprint");
