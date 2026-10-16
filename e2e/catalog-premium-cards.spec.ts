@@ -8,6 +8,9 @@ for (const width of [320, 390]) {
     await page.goto("./");
     const cards = page.locator(".game-grid .game-card");
     await expect(cards).toHaveCount(games.length);
+    // Integration contract with #120: premium cards must keep lazy cover priorities.
+    await expect(cards.first().locator("img.cover-mechanic")).toHaveAttribute("fetchpriority", "high");
+    await expect(cards.nth(4).locator("img.cover-mechanic")).toHaveAttribute("fetchpriority", "low");
     const card = cards.filter({ has: page.getByRole("link", { name: "Jogar Snake", exact: true }) });
     const link = card.getByRole("link", { name: "Jogar Snake", exact: true });
     await expect(card.locator(".game-metadata")).toHaveCSS("display", "flex");
