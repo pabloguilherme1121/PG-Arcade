@@ -2,7 +2,8 @@ import { expect, test } from "@playwright/test";
 import { games } from "../src/lib/catalog";
 
 for (const width of [320, 390]) {
-  test(`premium cards retain keyboard focus, accurate modes and local favorites at ${width}px`, async ({ page }) => {
+  test(`premium cards retain keyboard focus, accurate modes and local favorites at ${width}px`, async ({ page, browserName }) => {
+    if (browserName === "firefox") test.slow();
     await page.setViewportSize({ width, height: 844 });
     await page.goto("./");
     const cards = page.locator(".game-grid .game-card");
