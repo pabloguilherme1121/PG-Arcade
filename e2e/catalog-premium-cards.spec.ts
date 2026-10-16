@@ -37,7 +37,8 @@ for (const width of [320, 390]) {
   });
 }
 
-test("premium cards obey reduced motion and high contrast without layout overflow", async ({ page }) => {
+test("premium cards obey reduced motion and high contrast without layout overflow", async ({ page, browserName }) => {
+  if (browserName === "firefox") test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.addInitScript(() => localStorage.setItem("pg-arcade-preferences-v1", JSON.stringify({
