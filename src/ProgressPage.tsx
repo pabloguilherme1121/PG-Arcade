@@ -1,4 +1,5 @@
 import { validateProgressBackup } from "./lib/progressBackup";
+import { searchText } from "./lib/discovery";
 import { scopedRecordLabel } from "./lib/scopedRecords";
 import { useState, useEffect, type RefObject } from "react";
 import { ArrowRight, Heart, Trophy } from "lucide-react";
@@ -26,6 +27,8 @@ export default function ProgressPage({progress, heading, update}:Props) {
  }
  const hasRecord = (id: GameId) => !!progress.records[id] || Object.keys(progress.recordsV2 || {}).some(key => key.startsWith(`${id}|`));
  const recordCount=games.filter(g=>hasRecord(g.id)).length;
+ const normalizedRecordQuery = searchText(recordQuery);
+ const matchingRecordGames = games.filter(game => searchText(game.name).includes(normalizedRecordQuery));
  const today = summarizeDailyActivity(readDailyActivity());
  return (
           <section className="progress-section">
@@ -104,13 +107,13 @@ export default function ProgressPage({progress, heading, update}:Props) {
             {Object.keys(progress.recordsV2 || {}).length > 0 && <section aria-label="Recordes por modo e dificuldade">
               <h3>Por modo e dificuldade</h3>
               <label>Buscar recordes<input type="search" aria-label="Buscar recordes por jogo" value={recordQuery} onChange={e => setRecordQuery(e.target.value)}/></label>
-              {games.filter(game => game.name.toLocaleLowerCase("pt-BR").includes(recordQuery.toLocaleLowerCase("pt-BR"))).map(game => {
+              {matchingRecordGames.map(game => {
                 const entries = Object.entries(progress.recordsV2 || {}).filter(([key]) => key.startsWith(`${game.id}|`));
                 return entries.length ? <details key={game.id}><summary>{game.name} · {entries.length} configurações</summary>
                   <div className="record-list">{entries.map(([key, value]) => <a href={`#/jogar/${game.id}`} key={key}><span>{game.name}<small>{scopedRecordLabel(key)}</small></span><strong>{value} {recordUnits[game.id]}</strong></a>)}</div>
                 </details> : null;
               })}
-              {recordQuery && !games.some(game => game.name.toLocaleLowerCase("pt-BR").includes(recordQuery.toLocaleLowerCase("pt-BR")) && Object.keys(progress.recordsV2 || {}).some(key => key.startsWith(`${game.id}|`))) && <p role="status">Nenhum recorde encontrado para este jogo.</p>}
+              {recordQuery && !matchingRecordGames.some(game => Object.keys(progress.recordsV2 || {}).some(key => key.startsWith(`${game.id}|`))) && <p role="status">Nenhum recorde encontrado para este jogo.</p>}
             </section>}
             <h3>Marcas gerais</h3>
             <p className="muted">As marcas gerais abaixo incluem resultados antigos e podem misturar modos. Os recordes por modo não atribuem dificuldade aos dados antigos.</p>

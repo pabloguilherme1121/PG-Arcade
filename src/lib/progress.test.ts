@@ -51,3 +51,15 @@ it("accepts missing and malformed data without crashing", () => {
     {},
   );
 });
+
+it("rejects finite but unsafe stored scores and visits without discarding valid progress", () => {
+  const result = normalizeProgress({
+    visits: { snake: Number.MAX_SAFE_INTEGER + 1, memoria: 3.5 },
+    records: { puzzle: 1e200, "2048": 64 },
+  });
+  expect(result).toEqual({
+    ...emptyProgress(),
+    visits: { memoria: 3 },
+    records: { "2048": 64 },
+  });
+});
