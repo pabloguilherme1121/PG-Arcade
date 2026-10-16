@@ -1,0 +1,86 @@
+/* One card surface for search results, collections and recent favorites.
+   Decorative layers stay CSS-only: no extra cover DOM or mobile animations. */
+.game-grid .game-card,
+.curated-grid .curated-card,
+.personal-grid .curated-card {
+  border-color: color-mix(in srgb, var(--card-accent, #98c1d9) 22%, #455269);
+  background: linear-gradient(160deg, rgba(51, 73, 96, .33), rgba(12, 19, 29, .92) 65%), #101923;
+  box-shadow: inset 0 1px 0 #ffffff16, 0 10px 28px #0005;
+}
+
+.game-grid .game-card .game-link,
+.curated-grid .curated-card .game-link,
+.personal-grid .curated-card .game-link {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.game-grid .game-card .game-metadata,
+.curated-grid .curated-card .game-metadata,
+.personal-grid .curated-card .game-metadata {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  min-height: 44px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid #cde2fa26;
+  color: #d9e5f4;
+  font-size: clamp(12px, 2.9vw, 13px);
+  line-height: 1.5;
+}
+
+.game-grid .game-card .game-metadata::after,
+.curated-grid .curated-card .game-metadata::after,
+.personal-grid .curated-card .game-metadata::after {
+  content: "Jogar ↗";
+  flex: 0 0 auto;
+  margin-left: auto;
+  color: #e3ffa6;
+  font-weight: 800;
+  letter-spacing: .01em;
+}
+
+.game-grid .game-card:focus-within,
+.curated-grid .curated-card:focus-within,
+.personal-grid .curated-card:focus-within {
+  border-color: #d1f99a;
+  box-shadow: inset 0 1px 0 #ffffff22, 0 0 0 2px #c9f65a33, 0 14px 30px #0006;
+}
+
+@media (hover: none) {
+  .game-grid .game-card:hover,
+  .curated-grid .curated-card:hover,
+  .personal-grid .curated-card:hover {
+    transform: none;
+  }
+}
+
+html[data-arcade-contrast="true"] .game-grid .game-card,
+html[data-arcade-contrast="true"] .curated-grid .curated-card,
+html[data-arcade-contrast="true"] .personal-grid .curated-card {
+  background: #000;
+  border-color: #fff;
+  box-shadow: none;
+}
+
+html[data-arcade-contrast="true"] .game-metadata {
+  border-color: #fff;
+  color: #fff;
+}
+
+html[data-arcade-contrast="true"] .game-metadata::after {
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-grid .game-card,
+  .curated-grid .curated-card,
+  .personal-grid .curated-card {
+    transition: none !important;
+    transform: none !important;
+  }
+}
