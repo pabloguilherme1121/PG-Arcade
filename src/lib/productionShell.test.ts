@@ -28,3 +28,8 @@ describe("production shell", () => {
     expect(worker).toContain("event.waitUntil(cacheRuntimeResponse");
   });
 });
+
+it("loads shared legacy arena styles with the game family, not the catalog entry", () => {
+  expect(read("src/App.tsx")).not.toContain('import "./features/portfolio/components/PortfolioArcade.css";');
+  expect(read("src/features/portfolio/components/ArcadeDifficultyNotice.tsx")).toContain('import "./PortfolioArcade.css";');
+});
