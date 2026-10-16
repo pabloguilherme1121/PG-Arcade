@@ -21,7 +21,14 @@ export default function CatalogSpotlight({ candidates, progress, remember }: {
       <div className="smart-spotlight-modes" role="group" aria-label="Modos disponíveis">
         {tags.map(tag => <span key={tag} data-spotlight-mode={tag}>{modeLabel(tag)}</span>)}
       </div>
-      <a className="smart-spotlight-play" href={`#/jogar/${game.id}`} onClick={() => remember(game.id)}>Jogar sugestão: {game.name}</a>
+      <a className="smart-spotlight-play" href={`#/jogar/${game.id}`} onClick={event => {
+        // Commit the route before stateful catalog bookkeeping; Firefox can drop
+        // the native hash navigation after a touch-triggered React rerender.
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.defaultPrevented) return;
+        event.preventDefault();
+        window.location.hash = `/jogar/${game.id}`;
+        remember(game.id);
+      }}>Jogar sugestão: {game.name}</a>
     </div>
   </aside>;
 }
