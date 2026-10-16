@@ -1,3 +1,5 @@
+import "./PortfolioArcade.css";
+
 type ArcadeGame = "velha" | "domino" | "futebol" | "damas" | "xadrez";
 
 type Level = "easy" | "normal" | "hard" | "master" | "impossible" | "expert";
