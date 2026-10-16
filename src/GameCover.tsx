@@ -35,7 +35,8 @@ function GameCover({ id, name, category, compact = false, priority = false }: Co
         <text x="374" y="207" fill={art.secondary} fontSize="16" letterSpacing="2" textAnchor="end" fontWeight="700" fontFamily="monospace">{art.chapter}</text>
       </svg>
       <img className="cover-mechanic" src={`${import.meta.env.BASE_URL}covers/${id}.svg`}
-        width="240" height="150" alt="" loading={compact || priority ? "eager" : "lazy"} decoding="async" />
+        width="240" height="150" alt="" loading={compact || priority ? "eager" : "lazy"}
+        fetchPriority={compact || priority ? "high" : "low"} decoding="async" />
     </div>
   );
 }
