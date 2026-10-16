@@ -46,7 +46,6 @@ import { readPreferences, applyPreferences } from "./lib/preferences";
 import { searchText, matchesGame, categoryGroup, supportsPlayerMode, recommended, gameMode, readCatalogView, saveCatalogView } from "./lib/discovery";
 import { useReducedMotion } from "./useReducedMotion";
 import { useImmersivePlayer } from "./lib/useImmersivePlayer";
-import "./features/portfolio/components/PortfolioArcade.css";
 const ProgressPage = lazy(() => import("./ProgressPage"));
 const CatalogSpotlight = lazy(() => import("./CatalogSpotlight").catch(() => ({default: () => null})));
 const SessionChallenge = lazy(() => import("./games/SessionChallenge"));
