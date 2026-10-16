@@ -168,3 +168,20 @@ test("Snake portal crosses a wall and hard 2048 removes undo", async ({ page }) 
   await page.locator(".board2048").press("ArrowLeft");
   await expect(page.getByRole("button", { name: "Desfazer", exact: true })).toBeDisabled();
 });
+
+test("legacy games load their shared arena styles on demand without losing mobile controls", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 740 });
+  await page.goto("./");
+  const legacyRulesLoaded = () => page.evaluate(() => Array.from(document.styleSheets).some(sheet => {
+    try { return Array.from(sheet.cssRules).some(rule => rule.cssText.includes(".arcade-difficulty-notice")); }
+    catch { return false; }
+  }));
+  expect(await legacyRulesLoaded()).toBe(false);
+  for (const id of ["xadrez", "damas", "domino", "velha", "futebol"]) {
+    await page.goto(`./#/jogar/${id}`);
+    const notice = page.locator("[data-arcade-difficulty]");
+    await expect(notice).toBeVisible();
+    expect(await notice.evaluate(element => getComputedStyle(element).display), id).toBe("flex");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), id).toBe(true);
+  }
+});
