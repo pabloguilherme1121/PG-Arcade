@@ -5,7 +5,7 @@
 .personal-grid .curated-card {
   border-color: color-mix(in srgb, var(--card-accent, #98c1d9) 22%, #455269);
   background: linear-gradient(160deg, rgba(51, 73, 96, .33), rgba(12, 19, 29, .92) 65%), #101923;
-  box-shadow: inset 0 1px 0 #ffffff16, 0 10px 28px #0005;
+  box-shadow: inset 0 1px 0 #ffffff16;
 }
 
 .game-grid .game-card .game-link,
@@ -49,6 +49,15 @@
 .personal-grid .curated-card:focus-within {
   border-color: #d1f99a;
   box-shadow: inset 0 1px 0 #ffffff22, 0 0 0 2px #c9f65a33, 0 14px 30px #0006;
+}
+
+/* Keep the 100-card idle grid cheap on Firefox/mobile. Elevation is opt-in. */
+@media (hover: hover) and (min-width: 900px) {
+  .game-grid .game-card:hover,
+  .curated-grid .curated-card:hover,
+  .personal-grid .curated-card:hover {
+    box-shadow: inset 0 1px 0 #ffffff20, 0 8px 20px #0005;
+  }
 }
 
 @media (hover: none) {
