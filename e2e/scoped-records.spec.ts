@@ -43,3 +43,26 @@ test('scoped records still work when storage is blocked', async ({ page }) => {
   await page.locator('.board2048').press('ArrowLeft');
   await expect(page.locator('.scores strong').nth(1)).toHaveText('4');
 });
+
+test("record search finds Memória without accents and keeps unrelated scoped records hidden", async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("pg-arcade-progress-v1", JSON.stringify({
+      favorites: [],
+      visits: {},
+      records: {},
+      recordsV2: { "memoria|free|8-900": 12, "puzzle|free|12": 20 },
+    }));
+  });
+  await page.goto("./#/progresso");
+  const scoped = page.getByRole("region", { name: "Recordes por modo e dificuldade" });
+  await expect(scoped.locator("details")).toHaveCount(2);
+  const search = page.getByRole("searchbox", { name: "Buscar recordes por jogo" });
+  await search.fill("memoria");
+  await expect(scoped.locator("details")).toHaveCount(1);
+  await expect(scoped.locator("summary")).toContainText("Memória");
+  await search.fill("MÉMÓRIA");
+  await expect(scoped.locator("details")).toHaveCount(1);
+  await search.fill("sem registro");
+  await expect(scoped.locator("details")).toHaveCount(0);
+  await expect(scoped.getByRole("status")).toContainText("Nenhum recorde encontrado");
+});
