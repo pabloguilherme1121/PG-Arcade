@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-test('combines swipe controls with styles and restores and clears the filters', async ({ page }) => {
+test('combines swipe controls with styles and restores and clears the filters', async ({ page, browserName }) => {
+  // Firefox's 101 SVG covers and CI trace capture can exceed the shared 30s budget.
+  if (browserName === 'firefox') test.slow();
   await page.setViewportSize({ width: 320, height: 740 });
   await page.goto('./#/');
   await page.getByRole('button', { name: /^Sem pressa/ }).click();
