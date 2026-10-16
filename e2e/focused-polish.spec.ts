@@ -28,9 +28,13 @@ test("timed reaction waits for actual play before starting or resuming its clock
   await page.locator(".reaction-board").click();
   await page.clock.runFor(2000);
   await expect(page.getByRole("timer")).not.toHaveText("2:00");
-  await page.getByRole("button", { name: "Pausar sessão", exact: true }).click();
+  const pauseSession = page.getByRole("button", { name: "Pausar sessão", exact: true });
+  await pauseSession.focus();
+  await pauseSession.press("Enter");
   const paused = await page.getByRole("timer").textContent();
-  await page.getByRole("button", { name: "Retomar sessão", exact: true }).click();
+  const resumeSession = page.getByRole("button", { name: "Retomar sessão", exact: true });
+  await resumeSession.focus();
+  await resumeSession.press("Enter");
   await page.clock.runFor(5000);
   await expect(page.getByRole("timer")).toHaveText(paused!);
   await page.locator(".reaction-board").click();
