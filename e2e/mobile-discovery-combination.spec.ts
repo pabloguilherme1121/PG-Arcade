@@ -22,7 +22,7 @@ test('memory exposes round settings and adapts the hard board to landscape', asy
   await page.goto('./#/jogar/memoria');
   await page.getByLabel('Dificuldade da memória', { exact: true }).selectOption('12');
   const observation = page.getByLabel('Tempo para observar cartas diferentes');
-  await expect(page.locator('.board-column > .session-options')).toContainText('Tempo para observar');
+  await expect(observation).toBeVisible();
   await observation.selectOption('1500');
   await expect(page.locator('.memory-card')).toHaveCount(24);
   expect(await page.locator('.memory-board').evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length)).toBe(6);
