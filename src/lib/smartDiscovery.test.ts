@@ -1,8 +1,18 @@
 import { describe, expect, it } from "vitest";
 import { games } from "./catalog";
-import { modeTags, filterByMode, recommendGames, modeLabel } from "./smartDiscovery";
+import { modeTags, previewModeTags, filterByMode, recommendGames, modeLabel } from "./smartDiscovery";
 
 describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
+  it("renders at most two honest mode chips and falls back to Clássico", () => {
+    const duel = games.find(game => game.id === "xadrez")!;
+    const casual = games.find(game => game.id === "flood")!;
+    const full = modeTags(duel);
+    expect(previewModeTags(duel)).toEqual(["sem-pressa", "dupla"]);
+    expect(previewModeTags(casual)).toEqual(["classico"]);
+    expect(modeTags(duel)).toEqual(full);
+    expect(games.every(game => previewModeTags(game).length >= 1 && previewModeTags(game).length <= 2)).toBe(true);
+  });
+
   it('only offers swipes for engines with direct gesture handlers',()=>{
     const supported=filterByMode(games,'deslizar',{},[]).map(g=>g.id);
     for(const id of ['snake','2048','wordsearch','slideblock','labirinto','sokoban','match3','runner','ski']) expect(supported).toContain(id);
