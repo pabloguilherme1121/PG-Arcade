@@ -27,7 +27,8 @@ export function normalizeProgress(raw: unknown): Progress {
           isGameId(key) &&
           typeof value === "number" &&
           Number.isFinite(value) &&
-          value >= 1
+          value >= 1 &&
+          value <= Number.MAX_SAFE_INTEGER
         )
           clean[field][key] = Math.floor(value);
   const recordsV2 = normalizeScopedRecords(data.recordsV2);
