@@ -199,10 +199,10 @@ export default function App() {
     setCategory("Todos"); setMode("Todos"); setModeFilter("todos"); setSwipeOnly(false);
   };
   catalogView.current = { ...catalogView.current, query, category, sort, mode, modeFilter, swipeOnly };
-  const rememberCatalog = (id: GameId) => {
+  const rememberCatalog = useCallback((id: GameId) => {
     catalogView.current = { ...catalogView.current, scroll: window.scrollY, returnPage: page, focusId: id };
     saveCatalogView(catalogView.current);
-  };
+  }, [page]);
   useEffect(() => { saveCatalogView(catalogView.current); }, [query, category, sort, mode, modeFilter, swipeOnly]);
   const [message, setMessage] = useState("");
   const arena = useRef<HTMLDivElement>(null);
@@ -304,14 +304,14 @@ export default function App() {
     },
     [page, update],
   );
-  function favorite(id: GameId) {
+  const favorite = useCallback((id: GameId) => {
     update((p) => ({
       ...p,
       favorites: p.favorites.includes(id)
         ? p.favorites.filter((v) => v !== id)
         : [...p.favorites, id],
     }));
-  }
+  }, [update]);
   async function copyLink() {
     try {
       await navigator.clipboard.writeText(location.href);
