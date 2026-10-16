@@ -51,6 +51,12 @@ export function modeTags(game:GameInfo):GameModeTag[] {
   if(survival.has(game.id)) result.push("sobrevivencia");
   return result;
 }
+/** Shared compact preview for catalog cards and the featured suggestion. */
+export function previewModeTags(game: GameInfo): GameModeTag[] {
+  const available = modeTags(game).filter(tag => tag !== "classico").slice(0, 2);
+  return available.length ? available : ["classico"];
+}
+
 export function filterByMode<T extends GameInfo>(
   games:readonly T[], selected:DiscoveryFilter,
   visits:Partial<Record<GameId,number>>, favorites:readonly string[],
