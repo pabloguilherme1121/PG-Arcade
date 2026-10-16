@@ -47,8 +47,11 @@ test("Sliding puzzle moves with touch and keyboard and resets", async ({
   await expect(page.locator(".scores strong").first()).toHaveText("0");
 });
 test("Catalog sorts, clears filters and selects surprise within results", async ({
-  page,
+  page, browserName,
 }) => {
+  // Firefox renders and measures 101 SVG covers in this full catalog journey.
+  // Retain the complete interaction assertions while allowing the heavy browser pass.
+  if (browserName === "firefox") test.slow();
   await page.goto("./");
   await page.getByLabel("Ordenar jogos").selectOption("nome");
   const names = await page.locator(".game-card h3").allTextContents();
