@@ -5,7 +5,7 @@ import { modeTags, previewModeTags, filterByMode, recommendGames, modeLabel } fr
 describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
   it("renders at most two honest mode chips and falls back to Clássico", () => {
     const duel = games.find(game => game.id === "xadrez")!;
-    const casual = games.find(game => game.id === "flood")!;
+    const casual = games.find(game => game.id === "futebol")!;
     const full = modeTags(duel);
     expect(previewModeTags(duel)).toEqual(["sem-pressa", "dupla"]);
     expect(previewModeTags(casual)).toEqual(["classico"]);
