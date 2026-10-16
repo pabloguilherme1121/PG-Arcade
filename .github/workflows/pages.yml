@@ -70,6 +70,10 @@ jobs:
         run: |
           npx playwright test e2e/accessibility-critical.spec.ts e2e/focused-polish.spec.ts e2e/mobile-functional.spec.ts e2e/project-network.spec.ts e2e/mobile-discovery-combination.spec.ts e2e/rhythm-touch-cancellation.spec.ts --project=${{ matrix.browser }}
           npx playwright test e2e/catalog-experience.spec.ts e2e/scoped-backup.spec.ts e2e/professional-play.spec.ts e2e/studio-followups.spec.ts --grep "active filters|backup imports|visual shell|desktop immersive canvas" --project=${{ matrix.browser }}
+      - name: WebKit 320px real-touch repeat regression (issue 114)
+        if: matrix.browser == 'webkit'
+        run: |
+          npx playwright test e2e/spotlight-touch-discovery.spec.ts --project=webkit --grep "320px" --repeat-each=8 --workers=1 --retries=0 --trace=retain-on-failure
       - name: Offline reload regression
         if: matrix.browser == 'chromium'
         run: |
