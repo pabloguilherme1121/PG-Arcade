@@ -22,8 +22,8 @@ export default function CatalogSpotlight({ candidates, progress, remember }: {
         {tags.map(tag => <span key={tag} data-spotlight-mode={tag}>{modeLabel(tag)}</span>)}
       </div>
       <a className="smart-spotlight-play" href={`#/jogar/${game.id}`} onClick={event => {
-        // Commit the route before stateful catalog bookkeeping; Firefox can drop
-        // the native hash navigation after a touch-triggered React rerender.
+        // Commit the route synchronously for standard activation, instead of
+        // depending on deferred native hash navigation after the touch event.
         if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.defaultPrevented) return;
         event.preventDefault();
         window.location.hash = `/jogar/${game.id}`;
