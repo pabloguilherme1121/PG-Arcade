@@ -76,6 +76,8 @@
   text-decoration:none;
   overflow-wrap:anywhere;
   touch-action:manipulation;
+  /* Keep the touch target clear of viewport gesture edges when scrolled into view. */
+  scroll-margin-block: 72px 96px;
   transition:background-color 140ms ease,transform 120ms ease;
 }
 .smart-spotlight-play svg {flex-shrink:0}
@@ -87,7 +89,7 @@
 @media(max-width:540px) {
   .smart-spotlight {grid-template-columns:82px minmax(0,1fr);gap:10px;padding:10px}
   .smart-spotlight p {display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
-  .smart-spotlight-play {padding-inline:10px}
+  .smart-spotlight-play {padding-inline:10px;min-height:48px;transform:none}
 }
 @media(max-width:350px) {
   .smart-spotlight-art {align-self:start}
