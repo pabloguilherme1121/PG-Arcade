@@ -1,4 +1,5 @@
 import { Heart } from "lucide-react";
+import { memo } from "react";
 import GameCover from "./GameCover";
 import "./CatalogGameCard.css";
 import type { games, GameId } from "./lib/catalog";
@@ -17,7 +18,7 @@ type Props = {
 };
 
 /** Single source of truth for curated and searchable game cards. */
-export default function CatalogGameCard({
+function CatalogGameCard({
   game, contextual = false, priority = false, isFavorite, onOpen, onFavorite,
 }: Props) {
   const modes = previewModeTags(game);
@@ -53,3 +54,5 @@ export default function CatalogGameCard({
     </article>
   );
 }
+
+export default memo(CatalogGameCard);
