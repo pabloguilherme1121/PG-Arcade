@@ -793,9 +793,13 @@ main {
 
 .game-card {
   --card-accent: var(--pg-accent-2);
-  content-visibility: auto;
-  contain-intrinsic-size: 330px;
   min-width: 0;
+}
+
+/* Defer only fixed-ratio artwork: skipping whole cards changes grid height
+   while Firefox synthesizes a click after a touch, moving later links. */
+.game-card .game-cover {
+  content-visibility: auto;
 }
 
 .game-card[data-game-category="Estratégia"],

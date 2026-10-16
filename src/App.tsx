@@ -36,6 +36,7 @@ import {
 import { discoveryFilters, filterByMode, supportsSwipe, modeTags, modeLabel, recommendGames, type DiscoveryFilter } from "./lib/smartDiscovery";
 import { gameHelp, recordUnits } from "./lib/gameHelp";
 import GameCover from "./GameCover";
+import CatalogGameCard from "./CatalogGameCard";
 import {
   readProgress,
   saveProgress,
@@ -43,7 +44,7 @@ import {
 } from "./lib/progress";
 import { readPreferences, applyPreferences } from "./lib/preferences";
 
-import { searchText, matchesGame, categoryGroup, supportsPlayerMode, recommended, gameMode, readCatalogView, saveCatalogView } from "./lib/discovery";
+import { searchText, matchesGame, categoryGroup, supportsPlayerMode, recommended, readCatalogView, saveCatalogView } from "./lib/discovery";
 import { useReducedMotion } from "./useReducedMotion";
 import { useImmersivePlayer } from "./lib/useImmersivePlayer";
 const ProgressPage = lazy(() => import("./ProgressPage"));
@@ -198,10 +199,10 @@ export default function App() {
     setCategory("Todos"); setMode("Todos"); setModeFilter("todos"); setSwipeOnly(false);
   };
   catalogView.current = { ...catalogView.current, query, category, sort, mode, modeFilter, swipeOnly };
-  const rememberCatalog = (id: GameId) => {
+  const rememberCatalog = useCallback((id: GameId) => {
     catalogView.current = { ...catalogView.current, scroll: window.scrollY, returnPage: page, focusId: id };
     saveCatalogView(catalogView.current);
-  };
+  }, [page]);
   useEffect(() => { saveCatalogView(catalogView.current); }, [query, category, sort, mode, modeFilter, swipeOnly]);
   const [message, setMessage] = useState("");
   const arena = useRef<HTMLDivElement>(null);
@@ -303,14 +304,14 @@ export default function App() {
     },
     [page, update],
   );
-  function favorite(id: GameId) {
+  const favorite = useCallback((id: GameId) => {
     update((p) => ({
       ...p,
       favorites: p.favorites.includes(id)
         ? p.favorites.filter((v) => v !== id)
         : [...p.favorites, id],
     }));
-  }
+  }, [update]);
   async function copyLink() {
     try {
       await navigator.clipboard.writeText(location.href);
@@ -354,19 +355,17 @@ export default function App() {
   const visited = games.filter(g => progress.visits[g.id]).sort((a,b) => (b.id === progress.last ? 1 : 0) - (a.id === progress.last ? 1 : 0) || (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)).slice(0,4);
   const saved = games.filter(g => progress.favorites.includes(g.id)).slice(0,4);
   function renderCard(g: typeof games[number], contextual = false, priority = false) {
-    return <article className={contextual ? "curated-card" : "game-card"} key={g.id} data-game-category={g.category} data-catalog-game={contextual ? undefined : g.id}>
-      <a className="game-link" href={`#/jogar/${g.id}`} aria-label={`${contextual ? "Começar com" : "Jogar"} ${g.name}`} onClick={() => rememberCatalog(g.id)}>
-        <GameCover id={g.id} name={g.name} category={g.category} priority={priority} /><span className="game-category">{categoryGroup(g.category)}</span>
-        <div className="card-mode-tags" role="group" aria-label="Estilos e modos disponíveis">
-          {(modeTags(g).filter(tag => tag !== "classico").slice(0, 2).length
-            ? modeTags(g).filter(tag => tag !== "classico").slice(0, 2)
-            : ["classico" as const]).map(tag => <span key={tag} data-game-mode={tag}>{modeLabel(tag)}</span>)}
-        </div>
-        <h3>{g.name}</h3><p>{g.description}</p>
-        <span className="game-metadata">{gameMode(g.id)} · Teclado e toque</span>
-      </a>
-      <button className="favorite" onClick={() => favorite(g.id)} aria-label={`${contextual ? "Seleção: " : ""}${progress.favorites.includes(g.id) ? "Remover" : "Adicionar"} ${g.name} ${progress.favorites.includes(g.id) ? "dos" : "aos"} favoritos`} aria-pressed={progress.favorites.includes(g.id)}><Heart size={19} fill={progress.favorites.includes(g.id) ? "currentColor" : "none"}/></button>
-    </article>;
+    return (
+      <CatalogGameCard
+        key={g.id}
+        game={g}
+        contextual={contextual}
+        priority={priority}
+        isFavorite={progress.favorites.includes(g.id)}
+        onOpen={rememberCatalog}
+        onFavorite={favorite}
+      />
+    );
   }
   const sorted = useMemo(
     () => sort === "recomendados" ? recommendGames(visible, progress) :

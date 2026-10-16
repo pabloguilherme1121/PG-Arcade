@@ -79,7 +79,16 @@ jobs:
         run: |
           npx playwright test e2e/offline.spec.ts e2e/offline-six-references.spec.ts e2e/cover-cache-regression.spec.ts --project=chromium
           npx playwright test e2e/rhythm-touch-cancellation.spec.ts --project=chromium --repeat-each=3 --workers=1
-      - run: npx playwright test --project=${{ matrix.browser }}
+      # Firefox and the 101 SVG catalog compete heavily when two parallel workers
+      # decode cards and traverse every game. Run the *same full suite* serially
+      # to test the contention hypothesis without skipping or relaxing assertions.
+      - name: Run complete browser suite
+        run: |
+          if [ "${{ matrix.browser }}" = "firefox" ]; then
+            npx playwright test --project=firefox --workers=1
+          else
+            npx playwright test --project=${{ matrix.browser }}
+          fi
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
