@@ -1,3 +1,4 @@
+import { validateProgressBackup } from "./lib/progressBackup";
 import { scopedRecordLabel } from "./lib/scopedRecords";
 import { useState, useEffect, type RefObject } from "react";
 import { ArrowRight, Heart, Trophy } from "lucide-react";
@@ -13,6 +14,7 @@ type Props = {
  update: (fn: (p: Progress) => Progress) => void;
 };
 export default function ProgressPage({progress, heading, update}:Props) {
+ const [recordQuery,setRecordQuery]=useState("");
  const [message,setMessage]=useState("");
  const [recordView,setRecordView]=useState("todos");
  useEffect(()=>{ heading.current?.focus({preventScroll:true}); },[heading]);
@@ -79,17 +81,12 @@ export default function ProgressPage({progress, heading, update}:Props) {
                     try {
                       if (file.size > 512000) throw Error();
                       const data: unknown = JSON.parse(await file.text());
-                      if (
-                        !data ||
-                        typeof data !== "object" ||
-                        Array.isArray(data) ||
-                        !("favorites" in data) ||
-                        !("records" in data)
-                      )
-                        throw Error();
+                      const validity = validateProgressBackup(data);
+                      if (validity === "invalid") throw Error();
+                      if (validity === "empty") { setMessage("Cópia válida, mas sem favoritos, visitas ou recordes para restaurar."); return; }
                       update((p) => mergeProgress(p, data));
-                      const hasDaily = "dailyActivity" in data;
-                      const dailySaved = !hasDaily || restoreDailyActivity(data.dailyActivity);
+                      const hasDaily = !!data && typeof data === "object" && "dailyActivity" in data;
+                      const dailySaved = !hasDaily || restoreDailyActivity((data as Record<string, unknown>).dailyActivity);
                       setMessage(
                         dailySaved
                           ? "Progresso restaurado. Seus melhores recordes foram preservados."
@@ -106,10 +103,14 @@ export default function ProgressPage({progress, heading, update}:Props) {
             </div>
             {Object.keys(progress.recordsV2 || {}).length > 0 && <section aria-label="Recordes por modo e dificuldade">
               <h3>Por modo e dificuldade</h3>
-              <div className="record-list">{Object.entries(progress.recordsV2 || {}).map(([key, value]) => {
-                const game = games.find(g => g.id === key.split("|")[0]);
-                return game && <a href={`#/jogar/${game.id}`} key={key}><span>{game.name}<small>{scopedRecordLabel(key)}</small></span><strong>{value} {recordUnits[game.id]}</strong></a>;
-              })}</div>
+              <label>Buscar recordes<input type="search" aria-label="Buscar recordes por jogo" value={recordQuery} onChange={e => setRecordQuery(e.target.value)}/></label>
+              {games.filter(game => game.name.toLocaleLowerCase("pt-BR").includes(recordQuery.toLocaleLowerCase("pt-BR"))).map(game => {
+                const entries = Object.entries(progress.recordsV2 || {}).filter(([key]) => key.startsWith(`${game.id}|`));
+                return entries.length ? <details key={game.id}><summary>{game.name} · {entries.length} configurações</summary>
+                  <div className="record-list">{entries.map(([key, value]) => <a href={`#/jogar/${game.id}`} key={key}><span>{game.name}<small>{scopedRecordLabel(key)}</small></span><strong>{value} {recordUnits[game.id]}</strong></a>)}</div>
+                </details> : null;
+              })}
+              {recordQuery && !games.some(game => game.name.toLocaleLowerCase("pt-BR").includes(recordQuery.toLocaleLowerCase("pt-BR")) && Object.keys(progress.recordsV2 || {}).some(key => key.startsWith(`${game.id}|`))) && <p role="status">Nenhum recorde encontrado para este jogo.</p>}
             </section>}
             <h3>Marcas gerais</h3>
             <p className="muted">As marcas gerais abaixo incluem resultados antigos e podem misturar modos. Os recordes por modo não atribuem dificuldade aos dados antigos.</p>

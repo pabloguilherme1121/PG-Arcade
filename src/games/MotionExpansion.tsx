@@ -236,7 +236,7 @@ export default function MotionExpansion({
       setHud(state.current);
     }
   }, []);
-  useAutoPause(pause);
+  useAutoPause(pause, hud.status === "running", hud.status === "won" || hud.status === "lost", hud.score);
   useEffect(() => {
     if (!["won", "lost"].includes(hud.status) || awarded.current) return;
     awarded.current = true;

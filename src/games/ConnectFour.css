@@ -81,3 +81,5 @@ html[data-arcade-contrast="true"] .player .connect-board .disc-preview::before {
   .player .connect-preview-hud { padding: 8px; font-size: 12px; }
   .player .connect-board { padding: 6px; }
 }
+
+.connect-touch-choice{display:none}@media(pointer:coarse),(max-width:430px){.connect-touch-choice{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin:10px 0}.connect-touch-choice label{flex:1;min-width:0}.connect-touch-choice select{width:100%;min-height:44px}.connect-touch-choice button{min-height:44px}}

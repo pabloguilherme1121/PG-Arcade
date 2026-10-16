@@ -17,3 +17,28 @@ it("separates difficulty and timed sessions and preserves the best result on imp
 it("rejects malformed keys, unsupported variants and unsafe scores", () => {
   expect(normalizeScopedRecords({ '__proto__': 9, 'snake|free|classic-220-constant': 10, 'snake|free|wrap-220-progressive': 20, 'blocos|free|4': 9, '2048|free|hard': Infinity, 'blocos|free|0': 1.5, 'memoria|free|4-900|extra': 5 })).toEqual({ 'snake|free|classic-220-constant': 10, 'snake|free|wrap-220-progressive': 20 });
 });
+
+it("keeps reaction difficulty and session records separate without relabeling legacy scores", () => {
+  const imported = mergeProgress({ ...emptyProgress(), records: { reflexo: 4800 } }, {
+    recordsV2: { "reflexo|free|easy": 4700, "reflexo|free|hard": 3200, "reflexo|sprint-normal|easy": 4100, "reflexo|free|unknown": 5 },
+  });
+  expect(imported.records.reflexo).toBe(4800);
+  expect(imported.recordsV2).toEqual({ "reflexo|free|easy": 4700, "reflexo|free|hard": 3200, "reflexo|sprint-normal|easy": 4100 });
+  expect(addScopedRecord(imported.recordsV2!, "reflexo|free|hard", 3000)).toBe(imported.recordsV2);
+});
+
+it("compares mines scores upwards and puzzle moves downwards within their own difficulties", () => {
+  const records = { "minas|free|6": 500, "puzzle|free|12": 8 };
+  expect(addScopedRecord(records, "minas|free|6", 490)).toBe(records);
+  expect(addScopedRecord(records, "minas|free|16", 1300)["minas|free|16"]).toBe(1300);
+  expect(addScopedRecord(records, "puzzle|free|12", 6)["puzzle|free|12"]).toBe(6);
+  expect(addScopedRecord(records, "puzzle|free|40", 30)["puzzle|free|40"]).toBe(30);
+  expect(normalizeScopedRecords({ "minas|free|9": 30, "puzzle|free|10": 5 })).toEqual({});
+});
+
+it("keeps word records independent for four and six attempts and preserves better scores", () => {
+  const records = normalizeScopedRecords({ "palavra|free|6": 600, "palavra|free|4": 400, "palavra|free|5": 500 });
+  expect(records).toEqual({ "palavra|free|6": 600, "palavra|free|4": 400 });
+  expect(addScopedRecord(records, "palavra|free|4", 300)).toBe(records);
+  expect(addScopedRecord(records, "palavra|sprint-normal|4", 400)["palavra|sprint-normal|4"]).toBe(400);
+});

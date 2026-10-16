@@ -1,11 +1,12 @@
+import { useGameActivity, useScopedRecord } from "./RecordScope";
 import { useState } from "react";
 import { Flag, Bomb } from "lucide-react";
 import { neighbors, plantMines, revealCells, chordCells } from "../lib/mines";
 import { minesFocusTarget } from "../lib/minesNavigation";
 import "./Minesweeper.css";
 export default function Minesweeper({
-  record,
-  onRecord,
+  record: legacyRecord,
+  onRecord: saveLegacy,
 }: {
   record: number;
   onRecord: (n: number) => void;
@@ -17,8 +18,11 @@ export default function Minesweeper({
     [lost, setLost] = useState(false),
     [moves, setMoves] = useState(0);
   const [mineCount, setMineCount] = useState(10);
+  const [record, onRecord] = useScopedRecord(String(mineCount), legacyRecord, saveLegacy);
+  const [zoom, setZoom] = useState(false);
   const safeTotal = 64 - mineCount;
   const won = open.length === safeTotal;
+  useGameActivity(undefined, won || lost, won ? Math.max(1, mineCount * 100 - moves * 10) : 0);
   function reset() {
     setMines(null); setOpen([]); setFlags([]); setLost(false); setMoves(0); setFlagMode(false);
   }
@@ -79,6 +83,12 @@ export default function Minesweeper({
           aria-valuetext={`${open.length} de ${safeTotal} casas seguras abertas`}>
           <span style={{width:`${open.length / safeTotal * 100}%`}} />
         </div>
+        <div className="game-actions mines-touch-tools" role="group" aria-label="Ferramentas do Campo Minado">
+          <button aria-pressed={flagMode} onClick={() => setFlagMode(value => !value)}>{flagMode ? "Modo bandeira" : "Modo revelar"}</button>
+          <button aria-pressed={zoom} onClick={() => setZoom(value => !value)}>{zoom ? "Tabuleiro compacto" : "Ampliar casas"}</button>
+          <span role="status">{flagMode ? "Toque para marcar ou desmarcar; não revela casas." : "Toque para revelar. Mude para bandeira antes de marcar."}</span>
+        </div>
+        <div className={`mines-scroll${zoom ? " mines-zoom" : ""}`} tabIndex={zoom ? 0 : undefined} role={zoom ? "region" : undefined} aria-label={zoom ? "Tabuleiro ampliado, deslize para os lados" : undefined}>
         <div
           className="mines-board"
           role="group"
@@ -131,6 +141,7 @@ export default function Minesweeper({
             );
           })}
         </div>
+        </div>
         <p role="status" className="game-status">
           {won
             ? `Campo limpo! ${moves} jogadas.`
@@ -139,12 +150,6 @@ export default function Minesweeper({
               : "Abra as casas seguras. O primeiro toque sempre é seguro."}
         </p>
         <div className="game-actions">
-          <button
-            aria-pressed={flagMode}
-            onClick={() => setFlagMode((m) => !m)}
-          >
-            {flagMode ? "Modo bandeira" : "Modo revelar"}
-          </button>
           <button
             onClick={() => {
               reset();
@@ -155,7 +160,7 @@ export default function Minesweeper({
         </div>
       </div>
       <aside className="instructions">
-        <label>Dificuldade<select aria-label="Dificuldade do Campo Minado" value={mineCount} disabled={moves > 0 && !lost && !won} onChange={(e) => { setMineCount(Number(e.target.value)); reset(); }}>
+        <label>Dificuldade<select aria-label="Dificuldade do Campo Minado" value={mineCount} disabled={(moves > 0 || flags.length > 0) && !lost && !won} onChange={(e) => { setMineCount(Number(e.target.value)); reset(); }}>
           <option value={6}>Fácil · 6 minas</option><option value={10}>Normal · 10 minas</option><option value={16}>Difícil · 16 minas</option>
         </select></label>
         <h2>Pense antes de abrir</h2>

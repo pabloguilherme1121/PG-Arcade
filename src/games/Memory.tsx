@@ -100,7 +100,21 @@ export default function Memory({
             <option value={8}>Normal · 8 pares</option>
             <option value={12}>Difícil · 12 pares</option>
           </select>
-        </label></div>
+        </label>
+        <label htmlFor="memory-peek">
+          Tempo para observar cartas diferentes
+        </label>
+        <select
+          id="memory-peek"
+          value={peekTime}
+          disabled={moves > 0 || open.length > 0}
+          onChange={(e) => setPeekTime(Number(e.target.value))}
+        >
+          <option value={1500}>Tranquilo • 1,5 segundo</option>
+          <option value={900}>Clássico • 0,9 segundo</option>
+          <option value={500}>Rápido • 0,5 segundo</option>
+        </select>
+        </div>
         <div className="scores" role="group" aria-label="Placar e recorde desta configuração">
           <div>
             Jogadas<strong>{moves}</strong>
@@ -121,6 +135,7 @@ export default function Memory({
         </div>
         <div
           className="memory-board"
+          data-memory-size={pairs}
           ref={boardRef}
           tabIndex={0}
           role="group"
@@ -180,19 +195,6 @@ export default function Memory({
         </p>
         <hr />
         <h3>Observe e lembre</h3>
-        <label htmlFor="memory-peek">
-          Tempo para observar cartas diferentes
-        </label>
-        <select
-          id="memory-peek"
-          value={peekTime}
-          disabled={moves > 0 || open.length > 0}
-          onChange={(e) => setPeekTime(Number(e.target.value))}
-        >
-          <option value={1500}>Tranquilo • 1,5 segundo</option>
-          <option value={900}>Clássico • 0,9 segundo</option>
-          <option value={500}>Rápido • 0,5 segundo</option>
-        </select>
         <p>
           Escolha o tempo de observação antes da primeira carta. Os recordes separam tamanho e tempo de observação.
           Os símbolos ajudam você a reconhecer os pares sem depender apenas de

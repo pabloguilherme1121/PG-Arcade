@@ -14,6 +14,7 @@ const positiveInteger = (key, fallback, maximum) => {
   return value;
 };
 const samples = positiveInteger("samples", "3", 30);
+const frameCount = positiveInteger("frames", "120", 600);
 const width = positiveInteger("width", "390", 2560);
 const height = positiveInteger("height", "844", 2560);
 const cpu = positiveInteger("cpu", "4", 20);
@@ -81,6 +82,27 @@ async function sample(browser, id) {
         overflowX: document.documentElement.scrollWidth > innerWidth + 1,
       };
     });
+    // Exercise a named, repeatable scenario instead of reporting idle frames as gameplay.
+    if (id === "snake") await arena.getByRole("button", { name: "Jogar", exact: true }).click();
+    else if (id === "corrida") await arena.getByRole("button", { name: "Largar", exact: true }).click();
+    else if (id === "futebol") await arena.locator("[data-football-shoot]").click();
+    else if (id === "2048") for (const key of ["ArrowLeft", "ArrowDown", "ArrowRight", "ArrowUp"]) await arena.locator(".board2048").press(key);
+    else if (id === "memoria") { await arena.locator(".memory-card").nth(0).click(); await arena.locator(".memory-card").nth(1).click(); }
+    else if (id === "xadrez") { await arena.getByRole("gridcell").nth(52).click(); await arena.getByRole("gridcell").nth(36).click(); }
+    const frameSample = await page.evaluate(count => new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => reject(new Error("Frame sample timed out")), 30000);
+      const deltas = []; let last = performance.now();
+      const tick = now => {
+        deltas.push(now - last); last = now;
+        if (deltas.length < count) requestAnimationFrame(tick);
+        else { clearTimeout(timeout); resolve(deltas); }
+      };
+      requestAnimationFrame(tick);
+    }), frameCount);
+    data.frameIntervalMs = stats(frameSample);
+    data.frameP95Ms = data.frameIntervalMs.p95;
+    data.framesOver50ms = frameSample.filter(ms => ms > 50).length;
+    data.scenario = defaults.includes(id) ? "reference-action-then-frame-sample" : "idle-frame-sample";
     if (pageErrors.length) throw new Error("Invalid sample for " + id + ": " + pageErrors.join("; "));
     return { id, ...data, errors: pageErrors };
   } finally {
@@ -93,16 +115,16 @@ async function run() {
     const context = await browser.newContext({ viewport: { width, height }, serviceWorkers: "block" });
     const page = await context.newPage();
     await page.goto(root.href, { waitUntil: "domcontentloaded" });
-    await page.locator("[data-catalog-game]").first().waitFor({ state: "visible" });
-    const ids = await page.locator("[data-catalog-game]").evaluateAll(elements =>
+    await page.locator(".game-grid [data-catalog-game]").first().waitFor({ state: "visible" });
+    const ids = await page.locator(".game-grid [data-catalog-game]").evaluateAll(elements =>
       elements.map(element => element.getAttribute("data-catalog-game")).filter(Boolean));
     const catalog = await page.evaluate(() => ({
       domNodes: document.getElementsByTagName("*").length,
       svgNodes: document.querySelectorAll("svg").length,
-      cardCount: document.querySelectorAll("[data-catalog-game]").length,
+      cardCount: document.querySelectorAll(".game-grid [data-catalog-game]").length,
     }));
     await context.close();
-    if (ids.length !== 100 || new Set(ids).size !== 100) throw new Error("Catalog must contain 100 unique IDs");
+    if (!ids.length || new Set(ids).size !== ids.length || defaults.some(id => !ids.includes(id))) throw new Error("Catalog must contain unique IDs and all reference games");
     const requested = option("all", "false") === "true" ? ids : option("games", defaults.join(",")).split(",");
     const selected = [...new Set(requested.map(x => x.trim()).filter(Boolean))];
     if (!selected.length || selected.some(id => !ids.includes(id))) throw new Error("Unknown or empty game IDs");
@@ -112,7 +134,7 @@ async function run() {
       rows.push(row);
       process.stdout.write(id + " " + (i + 1) + "/" + samples + ": " + rounded(row.routeReadyMs) + "ms, " + row.domNodes + " DOM nodes\n");
     }
-    const metrics = ["routeReadyMs", "domNodes", "svgNodes", "jsCssTransferBytes", "longTaskCount", "longTaskTotalMs", "jsHeapBytes"];
+    const metrics = ["routeReadyMs", "domNodes", "svgNodes", "jsCssTransferBytes", "longTaskCount", "longTaskTotalMs", "jsHeapBytes", "framesOver50ms", "frameP95Ms"];
     const perGame = Object.fromEntries(selected.map(id => [id, Object.fromEntries(metrics.map(metric => [
       metric, stats(rows.filter(row => row.id === id).map(row => row[metric]).filter(Number.isFinite)),
     ]))]));
@@ -120,7 +142,7 @@ async function run() {
       metadata: { timestamp: new Date().toISOString(), baseURL: root.href,
         browser: "chromium", browserVersion: browser.version(), profile: cpu === 1 ? "unthrottled-desktop" : "emulated-cpu-" + cpu + "x",
         warning: "CPU throttling is not a physical mid-range Android measurement.",
-        viewport: { width, height }, samples, cache: "new-context-per-sample; service-worker-blocked" },
+        viewport: { width, height }, samples, frameCount, frameMetric: "requestAnimationFrame intervals after a reference action; not GPU render time or sustained gameplay FPS", cache: "new-context-per-sample; service-worker-blocked" },
       catalog, perGame, rows,
     };
     await mkdir(dirname(output), { recursive: true });

@@ -33,7 +33,7 @@ import {
   type ExpandedId,
 } from "./lib/expandedCatalog";
 
-import { discoveryFilters, filterByMode, modeTags, modeLabel, recommendGames, type DiscoveryFilter } from "./lib/smartDiscovery";
+import { discoveryFilters, filterByMode, supportsSwipe, modeTags, modeLabel, recommendGames, type DiscoveryFilter } from "./lib/smartDiscovery";
 import { gameHelp, recordUnits } from "./lib/gameHelp";
 import GameCover from "./GameCover";
 import {
@@ -43,7 +43,7 @@ import {
 } from "./lib/progress";
 import { readPreferences, applyPreferences } from "./lib/preferences";
 
-import { searchText, matchesGame, categoryGroup, recommended, gameMode, readCatalogView, saveCatalogView } from "./lib/discovery";
+import { searchText, matchesGame, categoryGroup, supportsPlayerMode, recommended, gameMode, readCatalogView, saveCatalogView } from "./lib/discovery";
 import { useReducedMotion } from "./useReducedMotion";
 import { useImmersivePlayer } from "./lib/useImmersivePlayer";
 import "./features/portfolio/components/PortfolioArcade.css";
@@ -145,6 +145,16 @@ function route() {
 }
 
 
+const specificStyles = new Set(["rapido", "sem-pressa", "bot", "treino", "sobrevivencia", "deslizar"]);
+// Optional panels may be absent from the first offline cache. Their load failure
+// must not unmount the catalog or a previously cached game.
+const VisualPreferences = lazy(() => import("./VisualPreferences").catch(() => ({
+  default: () => <p role="status">Opções visuais indisponíveis. Suas preferências salvas continuam ativas. Reconecte e recarregue para ajustar.</p>,
+})));
+const ProjectNetwork = lazy(() => import("./ProjectNetwork").catch(() => ({
+  default: () => <footer><a style={{ display: "inline-flex", minHeight: 44, alignItems: "center" }} href="https://pabloguilherme1121.github.io/PG-portfolio/#rede-projetos">Todos os projetos</a></footer>,
+})));
+
 export default function App() {
   const reducedMotion = useReducedMotion();
   const [page, setPage] = useState(route);
@@ -184,12 +194,16 @@ export default function App() {
   const [category, setCategory] = useState(initialView.category);
   const [mode, setMode] = useState(initialView.mode);
   const [modeFilter, setModeFilter] = useState<DiscoveryFilter>(initialView.modeFilter);
-  catalogView.current = { ...catalogView.current, query, category, sort, mode, modeFilter };
+  const [swipeOnly, setSwipeOnly] = useState(initialView.swipeOnly);
+  const clearCatalogFilters = () => {
+    setCategory("Todos"); setMode("Todos"); setModeFilter("todos"); setSwipeOnly(false);
+  };
+  catalogView.current = { ...catalogView.current, query, category, sort, mode, modeFilter, swipeOnly };
   const rememberCatalog = (id: GameId) => {
     catalogView.current = { ...catalogView.current, scroll: window.scrollY, returnPage: page, focusId: id };
     saveCatalogView(catalogView.current);
   };
-  useEffect(() => { saveCatalogView(catalogView.current); }, [query, category, sort, mode, modeFilter]);
+  useEffect(() => { saveCatalogView(catalogView.current); }, [query, category, sort, mode, modeFilter, swipeOnly]);
   const [message, setMessage] = useState("");
   const arena = useRef<HTMLDivElement>(null);
   const { active: fullscreen, viewport, toggle: toggleFullscreen } = useImmersivePlayer(arena, page);
@@ -328,9 +342,10 @@ export default function App() {
   const matchingGames = useMemo(() => games.filter(g =>
     (page !== "favoritos" || progress.favorites.includes(g.id)) &&
     (category === "Todos" || categoryGroup(g.category) === category) &&
-    (mode === "Todos" || (mode === "Dupla local" ? gameMode(g.id).includes("dupla") : gameMode(g.id) === "Solo")) &&
+    supportsPlayerMode(g.id, mode) &&
+    (!swipeOnly || supportsSwipe(g.id)) &&
     matchesGame(g, normalizedQuery)),
-    [page, progress.favorites, category, mode, normalizedQuery]);
+    [page, progress.favorites, category, mode, normalizedQuery, swipeOnly]);
   const visible = useMemo(() => filterByMode(matchingGames, modeFilter, progress.visits, progress.favorites),
     [matchingGames, modeFilter, progress.visits, progress.favorites]);
   const modeCounts = useMemo(() => Object.fromEntries(discoveryFilters.map(filter =>
@@ -432,6 +447,20 @@ export default function App() {
                 <ArrowLeft size={19} />
                 Voltar aos jogos
               </a>
+                <button
+                  onClick={(event) => {
+                    const menu = event.currentTarget.closest(".player-toolbar")?.querySelector<HTMLDetailsElement>(".player-utilities");
+                    if (menu) menu.open = false;
+                    void toggleFullscreen(event.currentTarget);
+                  }}
+                  aria-pressed={fullscreen}
+                  aria-label={fullscreen ? "Sair da tela cheia" : "Tela cheia"}
+                >
+                  {fullscreen ? <Minimize size={19} /> : <Maximize size={19} />}
+                  <span className="hide-small">
+                    {fullscreen ? "Sair" : "Tela cheia"}
+                  </span>
+                </button>
               <details className="player-utilities" onToggle={(e) => { if (e.currentTarget.open) window.dispatchEvent(new Event("pg-arcade-pause")); }}>
                 <summary>Opções da partida</summary>
                 <div>
@@ -455,16 +484,6 @@ export default function App() {
                   <LinkIcon size={19} />
                   <span className="hide-small">Compartilhar</span>
                 </button>
-                <button
-                  onClick={(event) => void toggleFullscreen(event.currentTarget)}
-                  aria-pressed={fullscreen}
-                  aria-label={fullscreen ? "Sair da tela cheia" : "Tela cheia"}
-                >
-                  {fullscreen ? <Minimize size={19} /> : <Maximize size={19} />}
-                  <span className="hide-small">
-                    {fullscreen ? "Sair" : "Tela cheia"}
-                  </span>
-                </button>
                 <a className="button" href="#conforto" onClick={(e) => { e.preventDefault(); const el=document.getElementById("conforto") as HTMLDetailsElement; el.open=true; el.scrollIntoView({block:"start"}); el.querySelector("summary")?.focus(); }}>Ajustar conforto</a>
                 <button ref={restartTrigger} onClick={askRestart} aria-keyshortcuts="Alt+Shift+R">Reiniciar com confirmação</button>
                 </div>
@@ -481,16 +500,16 @@ export default function App() {
                 <p className="player-description">{game.description}</p>
               </div>
             </div>
-            <div className="player-mode-ribbon" role="group" data-player-modes aria-label="Estilos e modos disponíveis">
-              <strong>Estilos e modos</strong>
+            <div className="player-mode-ribbon" tabIndex={0} role="group" data-player-modes aria-label="Estilos e modos disponíveis">
+              <strong>Características do jogo</strong>
               {(activeModes.length ? activeModes : ["classico" as const]).map(tag =>
                 <span key={tag} data-mode={tag}>{modeLabel(tag)}</span>)}
-              <small>Ajuste as opções disponíveis dentro do jogo.</small>
+              <small>As opções selecionáveis ficam nos controles da partida.</small>
             </div>
             <div className="player-gameplay-orientation" data-gameplay-orientation>
               <strong>Como jogar {game.name}</strong>
               <span>{gameHelp[game.id].split(". ")[0]}</span>
-              <small data-player-record>{progress.records[game.id] ? `Sua melhor marca geral: ${progress.records[game.id]} ${recordUnits[game.id] ?? "pontos"}` : "Primeira partida — faça sua marca"}</small>
+              <small data-player-record>{["snake", "2048", "memoria", "blocos", "reflexo", "minas", "puzzle", "palavra"].includes(game.id) ? "Recorde por configuração no placar do jogo" : progress.records[game.id] ? `Recorde histórico geral: ${progress.records[game.id]} ${recordUnits[game.id] ?? "pontos"}` : "Primeira partida — faça sua marca"}</small>
               <button
                 type="button"
                 className="gameplay-control-toggle"
@@ -632,12 +651,13 @@ export default function App() {
                 <span className="hero-eyebrow">PG ARCADE / SUA PRÓXIMA PARTIDA</span>
                 <h1 ref={heading} tabIndex={-1}>Escolha. Jogue.<br/>Faça uma pausa.</h1>
                 <p>{games.length} jogos no navegador, sem cadastro. Comece com um clássico ou encontre seu próximo desafio.</p>
+                <label className="search hero-search"><Search size={18}/><input aria-label="Encontrar jogo" placeholder="Qual jogo você procura?" value={query} onChange={e => setQuery(e.target.value)}/></label>
                 <a href="#catalogo" className="button primary" onClick={(event) => { event.preventDefault(); document.getElementById("catalogo")?.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth" }); }}>Explorar jogos <ArrowRight size={19}/></a>
                 {progress.last && <a className="last-game" href={`#/jogar/${progress.last}`} onClick={() => rememberCatalog(progress.last!)}>Iniciar nova partida: {games.find(g => g.id === progress.last)?.name}<ArrowRight size={15}/></a>}
               </div>
               <img src={`${import.meta.env.BASE_URL}assets/arcade-hero.webp`} alt="" width="1707" height="924" fetchPriority="high"/>
             </section>}
-            {page === "catalogo" && !query && category === "Todos" && mode === "Todos" && modeFilter === "todos" && <div className="discovery">
+            {page === "catalogo" && !query && category === "Todos" && mode === "Todos" && modeFilter === "todos" && !swipeOnly && <div className="discovery">
               <section className="experience-selection" aria-labelledby="experience-title">
                 <div className="section-title"><h2 id="experience-title">Qual é o seu ritmo?</h2><p>Encontre uma partida para este momento.</p></div>
                 <div className="experience-grid">{([
@@ -650,7 +670,7 @@ export default function App() {
                   document.querySelector<HTMLInputElement>('#catalogo input')?.focus({preventScroll:true});
                 }}><span className="experience-number" aria-hidden="true">{number}</span><strong>{title}</strong><span>{description}</span><span className="experience-action">Explorar <ArrowRight size={16} aria-hidden="true"/></span></button>)}</div>
               </section>
-              <section aria-labelledby="start-picks"><div className="section-title"><h2 id="start-picks">Por onde começar</h2><p>Seis maneiras diferentes de jogar.</p></div><div className="curated-grid">{curated.map(g => renderCard(g, true))}</div></section>
+              <section aria-labelledby="start-picks"><div className="section-title"><h2 id="start-picks">Por onde começar</h2><p>Escolhas para sua próxima partida.</p></div><div className="curated-grid">{curated.map(g => renderCard(g, true))}</div></section>
               {visited.length > 0 && <section aria-labelledby="recent-picks"><div className="section-title"><h2 id="recent-picks">Volte a um jogo</h2><p>Nova partida. Visitas e recordes ficam neste navegador.</p></div><div className="personal-grid">{visited.map(g => renderCard(g, true))}</div></section>}
               {saved.length > 0 && <section aria-labelledby="saved-picks"><div className="section-title"><h2 id="saved-picks">Seus favoritos</h2><a href="#/favoritos">Ver todos</a></div><div className="personal-grid">{saved.map(g => renderCard(g, true))}</div></section>}
             </div>}
@@ -694,16 +714,23 @@ export default function App() {
                   <span>Explore modos reais ou continue descobrindo. As sugestões usam apenas o histórico neste navegador.</span>
                 </div>
                 <div className="smart-mode-chips" role="group" aria-label="Filtros por modo">
-                  {discoveryFilters.map(filter => (
+                  {discoveryFilters.filter(filter => filter.id !== "dupla").map(filter => (
                     <button key={filter.id} type="button"
                       aria-pressed={modeFilter === filter.id}
                       className={modeFilter === filter.id ? "selected" : ""}
-                      onClick={() => setModeFilter(filter.id)}>{filter.label} <span className="mode-count" aria-hidden="true">{modeCounts[filter.id]}</span></button>
+                      disabled={modeCounts[filter.id] === 0 && modeFilter !== filter.id && specificStyles.has(filter.id)}
+                      title={`${modeCounts[filter.id]} jogos com os filtros atuais`}
+                      onClick={() => setModeFilter(filter.id)}>{filter.id === "dupla" ? "Dupla local" : filter.label} <span className="mode-count" aria-hidden="true">{modeCounts[filter.id]}</span></button>
                   ))}
                 </div>
               </div>
+              <label className="swipe-filter"><input type="checkbox" checked={swipeOnly} onChange={e => setSwipeOnly(e.target.checked)} /> Somente jogos com deslize na tela</label>
               <div className="catalog-tools">
-                <label>Modo <select aria-label="Filtrar por modo" value={mode} onChange={(e) => setMode(e.target.value)}><option>Todos</option><option value="Solo">Somente solo</option><option>Dupla local</option></select></label>
+                <label>Jogadores <select aria-label="Filtrar por modo" value={mode} onChange={(e) => {
+                  const next = e.target.value;
+                  setMode(next);
+                  if (specificStyles.has(modeFilter) && !filterByMode(games.filter(g => supportsPlayerMode(g.id, next)), modeFilter, progress.visits, progress.favorites).length) setModeFilter("todos");
+                }}><option>Todos</option><option value="Solo">Somente solo</option><option>Dupla local</option></select></label>
                 <label>
                   Ordenar{" "}
                   <select
@@ -713,12 +740,12 @@ export default function App() {
                   >
                     <option value="destaques">Destaques</option>
                     <option value="nome">Nome A–Z</option>
-                    <option value="visitados">Mais jogados por você</option>
+                    <option value="visitados">Mais acessados por você</option>
                     <option value="recomendados">Para você (neste aparelho)</option>
                   </select>
                 </label>
                 <span role="status">{visible.length} jogos encontrados</span>
-                <button type="button" className="clear-smart-filters" onClick={() => { setQuery(""); setCategory("Todos"); setMode("Todos"); setModeFilter("todos"); setSort("destaques"); }}>Zerar filtros</button>
+                <button type="button" className="clear-smart-filters" onClick={() => { setQuery(""); clearCatalogFilters(); setSort("destaques"); }}>Zerar filtros</button>
                 <button
                   disabled={!visible.length}
                   onClick={() => {
@@ -730,8 +757,9 @@ export default function App() {
                   Jogo surpresa
                 </button>
               </div>
-              {(query || category !== "Todos" || mode !== "Todos" || modeFilter !== "todos") && <div className="active-catalog-filters" role="group" aria-label="Filtros ativos">
+              {(query || category !== "Todos" || mode !== "Todos" || modeFilter !== "todos" || swipeOnly) && <div className="active-catalog-filters" role="group" aria-label="Filtros ativos">
                 <span>Você está explorando</span>
+                {swipeOnly && <button onClick={() => setSwipeOnly(false)} aria-label="Remover filtro de deslize">Deslizar na tela <span aria-hidden="true">×</span></button>}
                 {query && <button onClick={()=>setQuery("")} aria-label={`Remover busca: ${query}`}>“{query}” <span aria-hidden="true">×</span></button>}
                 {category !== "Todos" && <button onClick={()=>setCategory("Todos")} aria-label={`Remover categoria: ${category}`}>{category} <span aria-hidden="true">×</span></button>}
                 {mode !== "Todos" && <button onClick={()=>setMode("Todos")} aria-label={`Remover modo: ${mode}`}>{mode === "Solo" ? "Somente solo" : mode} <span aria-hidden="true">×</span></button>}
@@ -755,14 +783,12 @@ export default function App() {
                       : "Tente outro nome ou categoria."}
                   </p>
                   {query && games.some(g => matchesGame(g, normalizedQuery)) && <button onClick={() => {
-                    setCategory('Todos');setMode('Todos');setModeFilter('todos');location.hash='/';
+                    clearCatalogFilters();location.hash='/';
                   }}>Buscar “{query}” em todos os jogos</button>}
                   <button
                     onClick={() => {
                       setQuery("");
-                      setCategory("Todos");
-                      setMode("Todos");
-                      setModeFilter("todos");
+                      clearCatalogFilters();
                       setSort("destaques");
                       location.hash = "/";
                     }}
@@ -783,64 +809,10 @@ export default function App() {
           }}
         >
           <summary>Conforto visual</summary>
-          <div className="preference-options">
-            <label>
-              <input
-                type="checkbox"
-                checked={preferences.contrast}
-                onChange={(e) =>
-                  setPreferences((p) => ({
-                    ...p,
-                    contrast: e.target.checked,
-                  }))
-                }
-              />
-              Alto contraste
-            </label>
-            <label>
-              Movimento
-              <select
-                aria-label="Movimento da interface"
-                value={preferences.motion}
-                onChange={(e) =>
-                  setPreferences((p) => ({
-                    ...p,
-                    motion: e.target.value as "system" | "reduced",
-                  }))
-                }
-              >
-                <option value="system">Preferência do aparelho</option>
-                <option value="reduced">Reduzir efeitos</option>
-              </select>
-            </label>
-            <label>
-              Tamanho dos controles
-              <select
-                aria-label="Tamanho dos controles"
-                value={preferences.controls}
-                onChange={(e) =>
-                  setPreferences((p) => ({
-                    ...p,
-                    controls: e.target.value as "standard" | "large",
-                  }))
-                }
-              >
-                <option value="standard">Padrão</option>
-                <option value="large">Ampliados</option>
-              </select>
-            </label>
-          </div>
-          <p>
-            As opções valem para todos os jogos. Reduzir efeitos mantém os
-            movimentos necessários para jogar; controles ampliados aumentam os
-            principais alvos de toque sem alterar os tabuleiros.
-          </p>
+          <Suspense fallback={null}><VisualPreferences preferences={preferences} setPreferences={setPreferences} /></Suspense>
         </details>
       </main>
-      <footer>
-        <a href="#/">PG Arcade</a>
-        <span>Feito para jogar. Sem cadastro.</span>
-      </footer>
+      <Suspense fallback={null}><ProjectNetwork /></Suspense>
     </div>
   );
 }

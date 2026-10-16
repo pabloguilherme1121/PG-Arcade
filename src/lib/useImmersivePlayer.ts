@@ -11,13 +11,19 @@ export function useImmersivePlayer(player: RefObject<HTMLDivElement | null>, rou
 
   useEffect(() => {
     if (!native) return;
-    let cancelled = false;
+    let generation = 0;
     let release: (() => void) | undefined;
-    void import("./landscapeOrientation").then(({ preferLandscape }) => {
-      if (!cancelled) release = preferLandscape();
-    }).catch(() => undefined);
-    return () => { cancelled = true; release?.(); };
-  }, [native]);
+    const apply = () => {
+      const current = ++generation;
+      release?.(); release = undefined;
+      void import("./landscapeOrientation").then(({ preferGameOrientation }) => {
+        if (current === generation) release = preferGameOrientation(route);
+      }).catch(() => undefined);
+    };
+    apply();
+    window.addEventListener("pg-arcade-orientation", apply);
+    return () => { generation++; release?.(); window.removeEventListener("pg-arcade-orientation", apply); };
+  }, [native, route]);
 
   useEffect(() => {
     const change = () => setNative(document.fullscreenElement === player.current && !!player.current);

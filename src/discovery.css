@@ -106,3 +106,23 @@ html[data-arcade-contrast="true"] .experience-grid button{background:#000;border
 .active-catalog-filters button {display:inline-flex;gap:12px;align-items:center;max-width:100%;overflow-wrap:anywhere;text-align:left;padding:8px 12px;border:1px solid #829663;border-radius:10px;background:#243323;color:#efffda;font-size:13px;}
 .active-catalog-filters button>span {font-size:20px;flex-shrink:0;line-height:1;}
 html[data-arcade-contrast="true"] .active-catalog-filters button {background:#000;border-color:#fff;color:#fff;}
+
+.swipe-filter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  margin-block: 12px;
+  cursor: pointer;
+}
+.swipe-filter input {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+}
+.hero-search{max-width:32rem;margin:16px 0}.hero-search input{min-width:0;width:100%}
+@media(max-width:767px){.curated-grid > :nth-child(n+4){display:none}.hero h1{font-size:32px}.hero{padding:16px}.hero-eyebrow{display:none}}
+/* Retain help and accessibility controls while removing repeated descriptions during play. */
+.player:has(.session-challenge[data-session-playing="true"]) :is(.player-coverline .player-description,.player-mode-ribbon,.player-gameplay-orientation > :not(button)){display:none}
+.player-toolbar{flex-wrap:wrap}.player-toolbar > button{width:auto;min-width:44px;min-height:44px}

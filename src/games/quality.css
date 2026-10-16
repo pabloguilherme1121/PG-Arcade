@@ -26,7 +26,15 @@ html[data-arcade-contrast="true"] :is(.session-mode-cards button,[data-arcade-ar
 html[data-arcade-motion="reduced"] [data-arcade-arena] button {transition:none;transform:none!important;}
 @media(prefers-reduced-motion:reduce) {[data-arcade-arena] button {transition:none;transform:none!important;}}
 @media(max-width:540px) {.session-mode-cards {margin:0;gap:6px;}.session-mode-cards button {padding:6px 8px;min-height:44px;align-items:center;justify-content:center;text-align:center;}.session-mode-cards span {display:none;}.session-mode-cards strong {font-size:13px;}.session-challenge .session-options {margin-bottom:4px;}}
-.player[data-immersive="true"] .session-mode-cards {display:none;}
+.player[data-immersive="true"] .session-mode-cards {display:grid;margin:4px 0}.player[data-immersive="true"] .session-mode-cards button{min-height:44px;padding:6px 8px;align-items:center;justify-content:center}.player[data-immersive="true"] .session-mode-cards span{display:none}
+/* On tall desktop stages, orientation shares the mode row instead of pushing
+   the rhythm canvas below the viewport. Keep narrow layouts stacked. */
+@media (min-width:900px) and (min-height:541px) {
+  .player[data-immersive="true"] .session-challenge[data-session-mode="free"] {display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:12px;align-items:center}
+  .player[data-immersive="true"] .session-challenge[data-session-mode="free"] > * {grid-column:1/-1}
+  .player[data-immersive="true"] .session-challenge[data-session-mode="free"] > .session-mode-cards {grid-column:1;grid-row:1}
+  .player[data-immersive="true"] .session-challenge[data-session-mode="free"] > .session-options {grid-column:2;grid-row:1;margin:0}
+}
 
 /* Clear score hierarchy and durable board materials, without decorative loops. */
 @media (orientation:landscape) and (min-width:568px) and (max-height:540px) {
@@ -150,3 +158,5 @@ html[data-arcade-motion="reduced"] .session-mode-cards button {
   transition:none!important;
   transform:none!important;
 }
+
+.orientation-control{font-size:13px;max-width:100%;margin:0}.orientation-control summary{cursor:pointer;min-height:32px;padding:6px 8px}.orientation-control[open] label{padding:8px;max-width:100%}

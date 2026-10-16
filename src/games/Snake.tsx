@@ -110,7 +110,7 @@ export default function Snake({
     setStatus((s) => (s === "running" ? "paused" : s));
   }, []);
   // Includes blur, hidden, pagehide and freeze when mobile PWA enters BFCache.
-  useAutoPause(pause);
+  useAutoPause(pause, status === "running", status === "over" || status === "won", score);
   return (
     <div className="game-layout">
       <div className="board-column">

@@ -15,7 +15,7 @@ test('2048 separates difficulties and timed sessions, retaining old records thro
   await expect(best).toHaveText('0');
   await page.getByLabel('Dificuldade do 2048').selectOption('easy');
   await expect(best).toHaveText('4');
-  await page.getByLabel('Modo de sessão', { exact: true }).selectOption('sprint');
+  await page.locator(".session-mode-cards").getByRole("button", { name: /Sprint/ }).click();
   await expect(best).toHaveText('0');
   await page.getByRole('button', { name: 'Iniciar desafio de tempo', exact: true }).click();
   await page.getByLabel('Dificuldade do 2048').selectOption('easy');

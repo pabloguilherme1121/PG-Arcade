@@ -24,7 +24,7 @@ export default function ColorSequence({
     () => setPhase((p) => (p === "show" || p === "input" ? "paused" : p)),
     [],
   );
-  useAutoPause(pause);
+  useAutoPause(pause, phase === "show" || phase === "input", phase === "done", sequence.length * 100);
   useEffect(() => {
     if (phase !== "show") {
       setLit(-1);

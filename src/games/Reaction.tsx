@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
+import { useScopedRecord } from "./RecordScope";
 import { useAutoPause } from "./useAutoPause";
 import { reactionPoints, reactionSummary } from "../lib/reactionFeedback";
 import "./Reaction.css";
 export default function Reaction({
-  record,
-  onRecord,
+  record: legacyRecord,
+  onRecord: saveLegacy,
 }: {
   record: number;
   onRecord: (n: number) => void;
@@ -17,6 +18,12 @@ export default function Reaction({
     [message, setMessage] = useState("Espere o sinal verde antes de tocar.");
   const signal = useRef(0);
   const [difficulty, setDifficulty] = useState("normal");
+  const [record, onRecord] = useScopedRecord(difficulty, legacyRecord, saveLegacy);
+  const answered = useRef(false);
+  const suppressClick = useRef(false);
+  useLayoutEffect(() => {
+    if (phase === "go") signal.current = performance.now();
+  }, [phase]);
   const [responseTimes, setResponseTimes] = useState<number[]>([]);
   const [lastTime, setLastTime] = useState<number | null>(null);
   const [falseStarts, setFalseStarts] = useState(0);
@@ -27,12 +34,11 @@ export default function Reaction({
     () => setPhase((p) => (p === "wait" || p === "go" ? "paused" : p)),
     [],
   );
-  useAutoPause(pause);
+  useAutoPause(pause, phase === "wait" || phase === "go", phase === "done", score);
   useEffect(() => {
     if (phase !== "wait") return;
     const timer = setTimeout(
       () => {
-        signal.current = performance.now();
         setPhase("go");
       },
       difficulty === "hard" ? 700 + Math.random() * 2300 : difficulty === "easy" ? 1800 + Math.random() * 1000 : 1200 + Math.random() * 1800,
@@ -41,11 +47,13 @@ export default function Reaction({
   }, [phase, difficulty]);
   function tap() {
     if (phase === "ready" || phase === "result" || phase === "paused") {
+      answered.current = false;
       setResultTone("none");
       setPhase("wait");
       return;
     }
-    if (phase !== "wait" && phase !== "go") return;
+    if ((phase !== "wait" && phase !== "go") || answered.current) return;
+    answered.current = true;
     const elapsed = phase === "go" ? Math.max(0, Math.round(performance.now() - signal.current)) : null;
     const earned = elapsed !== null ? reactionPoints(elapsed, scoringWindow) : 0;
     setResultTone(elapsed === null ? "early" : "valid");
@@ -101,7 +109,23 @@ export default function Reaction({
         <button
           className={`reaction-board reaction-${phase}`}
           data-reaction-result={resultTone}
-          onClick={tap}
+          onPointerDown={(event) => {
+            if (!event.isPrimary || event.button !== 0) return;
+            suppressClick.current = true;
+            event.currentTarget.focus({ preventScroll: true });
+            tap();
+          }}
+          onPointerCancel={() => { suppressClick.current = false; }}
+          onKeyDown={(event) => {
+            if (event.key !== "Enter" && event.key !== " ") return;
+            event.preventDefault();
+            if (!event.repeat) { suppressClick.current = false; tap(); }
+          }}
+          onClick={(event) => {
+            if (suppressClick.current && event.detail !== 0) { suppressClick.current = false; return; }
+            suppressClick.current = false;
+            if (event.detail === 0) tap();
+          }}
           disabled={phase === "done"}
           aria-label={
             phase === "go"

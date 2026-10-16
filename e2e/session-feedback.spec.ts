@@ -4,7 +4,7 @@ import AxeBuilder from '@axe-core/playwright';
 test('session progress tracks active time, freezes on pause and explains completion',async({page})=>{
   await page.clock.install();
   await page.goto('./#/jogar/memoria');
-  await page.getByLabel('Modo de sessão',{exact:true}).selectOption('sprint');
+  await page.locator(".session-mode-cards").getByRole("button", { name: /Sprint/ }).click();
   await page.getByLabel('Dificuldade do desafio de tempo').selectOption('hard');
   await expect(page.getByRole('progressbar',{name:'Tempo utilizado na sessão'})).toHaveAttribute('value','0');
   await page.getByRole('button',{name:'Liberar arena',exact:true}).click();

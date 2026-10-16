@@ -67,6 +67,12 @@ export default function ConnectFour() {
               onClick={() => { setSelectedColumn(i); play(i); }}>{i + 1} ↓</button>
           ))}
         </div>
+        <div className="connect-touch-choice">
+          <label>Coluna para jogar<select aria-label="Coluna do Liga 4" value={selectedColumn} disabled={over || paused || botTurn} onChange={event => setSelectedColumn(Number(event.target.value))}>
+            {Array.from({ length: 7 }, (_, column) => <option key={column} value={column} disabled={board[column] !== 0}>Coluna {column + 1}{board[column] ? " · cheia" : ""}</option>)}
+          </select></label>
+          <button className="primary" disabled={over || paused || botTurn || board[selectedColumn] !== 0} onClick={() => play(selectedColumn)}>Soltar peça</button>
+        </div>
         <div
           className="connect-board"
           data-selected-column={selectedColumn + 1}

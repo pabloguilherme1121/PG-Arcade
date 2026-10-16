@@ -18,7 +18,11 @@ test("a cancelled rhythm touch never plays a phantom lane, while a valid tap doe
     }) as typeof structuredClone;
   });
   await page.goto("./#/jogar/rhythm");
-  await page.clock.install();
+  const frozen = new Date("2026-10-15T12:00:00Z");
+  await page.clock.install({ time: frozen });
+  // A cancellation before the next physics frame must not become a tap.
+  // Installing the clock alone still advances time between CDP calls.
+  await page.clock.pauseAt(new Date(frozen.getTime() + 1000));
   await page.getByRole("button", { name: "Começar", exact: true }).click();
   const canvas = page.locator(".motion-stage canvas");
   await canvas.scrollIntoViewIfNeeded();

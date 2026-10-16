@@ -12,7 +12,7 @@ for (const viewport of [{width: 320, height: 740}, {width: 844, height: 390}]) {
     await expect(page.getByRole("button", { name: "Desfazer" })).toBeEnabled();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     await page.reload();
-    await expect(page.locator("[data-player-record]")).toContainText("Sua melhor marca");
+    await expect.poll(async () => Number(await page.locator(".scores strong").nth(1).textContent())).toBeGreaterThan(0);
   });
 }
 test("Blocos Infinito accepts keyboard arrows and recovers after undo", async ({page}) => {

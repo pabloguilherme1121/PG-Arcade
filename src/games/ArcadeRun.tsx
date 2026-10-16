@@ -39,7 +39,7 @@ export default function ArcadeRun({
     () => setStatus((s) => (s === "running" ? "paused" : s)),
     [],
   );
-  useAutoPause(pause);
+  useAutoPause(pause, status === "running", status === "done", state.score);
   useEffect(() => {
     if (status !== "running") return;
     const timer = setInterval(

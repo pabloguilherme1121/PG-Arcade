@@ -80,3 +80,8 @@ Instalável como PWA, com fallback offline da navegação e cache local de asset
 Os cinco jogos originais foram adaptados de [PG-portfolio](https://github.com/pabloguilherme1121/PG-portfolio), sob licença MIT. Os outros 95 jogos e o catálogo foram desenvolvidos para este projeto. Ilustrações foram criadas com auxílio de geração de imagem.
 
 Licença MIT.
+
+### Medição dos jogos de referência
+O job Chromium publica `arcade-reference-performance` com três amostras frias de Snake, 2048, Memória, Xadrez, Corrida e Futebol, viewport 390×844 e CPU simulada em 4×. O JSON inclui carregamento, DOM, tarefas longas e intervalos de 120 frames após uma ação definida. Intervalo de `requestAnimationFrame` não é tempo de renderização da GPU nem prova de FPS sustentado em partida; cenários discretos podem ficar ociosos após a ação.
+
+Para repetir localmente com Chromium instalado e o preview iniciado: `npm run perf:benchmark -- --base-url=http://127.0.0.1:5173/ --samples=3 --frames=120`. Em aparelho físico, repetir início, 60 segundos de jogo, pausa/retomada e rotação nos seis jogos, anotando modelo, navegador, aquecimento e falhas de controle. Os resultados simulados não substituem essa verificação.
