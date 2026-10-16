@@ -1,5 +1,6 @@
 import { Heart } from "lucide-react";
 import GameCover from "./GameCover";
+import "./CatalogGameCard.css";
 import type { games, GameId } from "./lib/catalog";
 import { categoryGroup, gameMode } from "./lib/discovery";
 import { modeLabel, previewModeTags } from "./lib/smartDiscovery";
