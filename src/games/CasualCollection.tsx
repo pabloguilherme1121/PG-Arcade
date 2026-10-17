@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useAutoPause } from "./useAutoPause";
 import {
   casualGames,
@@ -432,6 +432,7 @@ function Jewels({ options, onRound }: PlayProps) {
   );
 }
 function Fishing({ options, onRound }: PlayProps) {
+  const lastTensionTick = useRef(0);
   const [phase, setPhase] = useState<
       "ready" | "waiting" | "bite" | "reel" | "paused" | "result"
     >("ready"),
@@ -460,7 +461,9 @@ function Fishing({ options, onRound }: PlayProps) {
   }, [phase]);
 
   useEffect(() => {
-    if (phase !== "reel" || tick <= 0) return;
+    // Returning from pause changes phase, but must not replay the same physics step.
+    if (phase !== "reel" || tick <= 0 || tick === lastTensionTick.current) return;
+    lastTensionTick.current = tick;
     setTension((current) =>
       fishingTensionTick(current, tick, options.difficulty),
     );
