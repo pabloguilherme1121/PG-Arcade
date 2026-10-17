@@ -15,7 +15,7 @@ function localDay(date: Date): string {
   const day = String(date.getDate()).padStart(2, "0");
   return year + "-" + month + "-" + day;
 }
-function validDay(day: string): boolean {
+export function isDailyActivityDay(day: string): boolean {
   if (!dayPattern.test(day)) return false;
   const [year, month, date] = day.split("-").map(Number);
   const parsed = new Date(Date.UTC(year, month - 1, date));
@@ -28,7 +28,8 @@ export function normalizeDailyActivity(raw: unknown): DailyActivity {
   const data = raw as Record<string, unknown>;
   if (data.version !== 1 || !data.days || typeof data.days !== "object" || Array.isArray(data.days)) return clean;
   const days = data.days as Record<string, unknown>;
-  for (const key of Object.keys(days).filter(validDay).sort().reverse().slice(0, MAX_DAYS)) {
+  let retained = 0;
+  for (const key of Object.keys(days).filter(isDailyActivityDay).sort().reverse()) {
     const visits = days[key];
     if (!visits || typeof visits !== "object" || Array.isArray(visits)) continue;
     const counts: Partial<Record<GameId, number>> = {};
@@ -36,7 +37,10 @@ export function normalizeDailyActivity(raw: unknown): DailyActivity {
       if (isGameId(id) && typeof count === "number" && Number.isFinite(count) && count >= 1)
         counts[id] = Math.min(Number.MAX_SAFE_INTEGER, Math.floor(count));
     }
-    if (Object.keys(counts).length) clean.days[key] = counts;
+    if (Object.keys(counts).length) {
+      clean.days[key] = counts;
+      if (++retained === MAX_DAYS) break;
+    }
   }
   return clean;
 }

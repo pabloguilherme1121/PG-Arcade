@@ -80,3 +80,21 @@ it("merges dated backup into the separate local key and survives blocked storage
     setItem: (_: string, __: string): void => { throw Error("blocked"); } };
   expect(restoreDailyActivity({ version: 1, days: {} }, blocked)).toBe(false);
 });
+
+it('does not let newer empty days evict older real activity', () => {
+  const days: Record<string, Record<string, number>> = { '2025-01-01': { snake: 4 } };
+  for (let index = 1; index <= 400; index++) {
+    const day = new Date(Date.UTC(2025, 0, 1 + index)).toISOString().slice(0, 10);
+    days[day] = {};
+  }
+  expect(normalizeDailyActivity({ version: 1, days }).days).toEqual({ '2025-01-01': { snake: 4 } });
+});
+it('retains the newest 400 real days after accepting a longer calendar', () => {
+  const days = Object.fromEntries(Array.from({ length: 401 }, (_, index) => [
+    new Date(Date.UTC(2025, 0, 1 + index)).toISOString().slice(0, 10), { snake: 1 },
+  ]));
+  const normalized = normalizeDailyActivity({ version: 1, days });
+  expect(Object.keys(normalized.days)).toHaveLength(400);
+  expect(normalized.days['2025-01-01']).toBeUndefined();
+  expect(normalized.days['2026-02-05']).toEqual({ snake: 1 });
+});
