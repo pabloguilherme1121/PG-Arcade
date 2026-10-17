@@ -94,7 +94,7 @@ test("modo inteligente e ordem personalizada sobrevivem ao reload da partida", a
 });
 
 for (const width of [320, 390]) {
-  test(`busca rápida, limpeza e categoria reversível a ${width}px`, async ({ page }) => {
+  test(`busca rápida e limpeza preservam foco a ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     await page.goto("./");
     const search = page.getByRole("textbox", { name: "Buscar jogo", exact: true });
@@ -104,16 +104,33 @@ for (const width of [320, 390]) {
     await expect(page.locator(".game-grid")).toHaveAttribute("aria-busy", "false");
     await expect(page.getByRole("link", { name: "Jogar Xadrez", exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Limpar busca", exact: true }).click();
-    await expect(search).toBeFocused();
-    await expect(search).toHaveValue("");
-    await expect(page.locator(".game-card")).toHaveCount(games.length);
+    // Poll inside the browser: repeated protocol assertions snapshot all 101
+    // SVG cards and can spend the entire deadline in Firefox instrumentation.
+    await page.waitForFunction(expectedCards => {
+      const input = document.querySelector<HTMLInputElement>('input[aria-label="Buscar jogo"]');
+      return !!input && document.activeElement === input && input.value === ""
+        && document.querySelectorAll(".game-grid .game-card").length === expectedCards
+        && document.documentElement.scrollWidth <= innerWidth;
+    }, games.length, { timeout: 5_000 });
+  });
+
+  // Search/reset and category toggling are independent user journeys. Keeping
+  // separate contexts also avoids carrying scroll and deferred-search state
+  // into the category contract while retaining traces and the default timeout.
+  test(`categoria reversível mantém o catálogo a ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("./");
     const category = page.getByRole("group", { name: "Categorias", exact: true }).getByRole("button", { name: "Estratégia", exact: true });
     await category.click();
     await expect(category).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator(".game-card")).toHaveCount(games.filter(g => g.category === "Estratégia").length);
     await category.click();
-    await expect(category).toHaveAttribute("aria-pressed", "false");
-    await expect(page.locator(".game-card")).toHaveCount(games.length);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.waitForFunction(expectedCards => {
+      const button = [...document.querySelectorAll(".filters button")]
+        .find(element => element.textContent?.trim().startsWith("Estratégia"));
+      return button?.getAttribute("aria-pressed") === "false"
+        && document.querySelectorAll(".game-grid .game-card").length === expectedCards
+        && document.documentElement.scrollWidth <= innerWidth;
+    }, games.length, { timeout: 5_000 });
   });
 }
