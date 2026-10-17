@@ -11,6 +11,8 @@ Executar `npm run perf:benchmark -- --base-url=http://127.0.0.1:5173/ --samples=
 - O benchmark deve falhar se a quantidade de cartões mudar durante a amostra ou se `documentElement.scrollWidth > innerWidth + 1` em qualquer posição.
 - Comparar as medianas e p95 com a `main` usando exatamente o mesmo runner, versão do navegador, flags e amostras. Não impor um limiar temporal inventado antes de capturar uma linha de base reproduzível.
 
+Baseline local versionada: [catalog-2026-10-17.json](performance/catalog-2026-10-17.json), com commit de origem e arquivos da build Pages. São seis amostras do catálogo, 54 posições, mais 18 ensaios dos jogos de referência, em Chromium com CPU emulada a 4×. Os 101 cartões permaneceram presentes e não houve overflow em 320/390 px. DOM e SVGs contam a tela inteira do catálogo; long tasks incluem carregamento e rolagem. O resumo agrega p95 de cada amostra, não calcula um p95 global de todas as posições. Estes dados não certificam Android físico.
+
 ## Android físico — verificação obrigatória e ainda pendente
 
 Registrar aparelho, versão do Android/Chrome, taxa de atualização, nível de bateria, modo de economia de energia, resolução CSS, versão/commit do site, temperatura inicial/final e rede.
