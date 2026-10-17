@@ -94,7 +94,7 @@ test("modo inteligente e ordem personalizada sobrevivem ao reload da partida", a
 });
 
 for (const width of [320, 390]) {
-  test(`busca rápida, limpeza e categoria reversível a ${width}px`, async ({ page }) => {
+  test(`busca rápida e limpeza restauram foco e catálogo a ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     await page.goto("./");
     const search = page.getByRole("textbox", { name: "Buscar jogo", exact: true });
@@ -106,6 +106,16 @@ for (const width of [320, 390]) {
     await page.getByRole("button", { name: "Limpar busca", exact: true }).click();
     await expect(search).toBeFocused();
     await expect(search).toHaveValue("");
+    await expect(page.locator(".game-card")).toHaveCount(games.length);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+
+  // Independent journeys get isolated contexts and the unchanged 30s budget.
+  // Firefox trace snapshots of repeatedly restored SVG cards otherwise consume
+  // the combined test budget even when every interaction assertion succeeds.
+  test(`categoria reversível restaura o catálogo a ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("./");
     await expect(page.locator(".game-card")).toHaveCount(games.length);
     const category = page.getByRole("group", { name: "Categorias", exact: true }).getByRole("button", { name: "Estratégia", exact: true });
     await category.click();
