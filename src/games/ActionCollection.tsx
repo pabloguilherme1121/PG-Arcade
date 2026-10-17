@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   actionCollectionGames,
+  actionDifficultyTuning,
   newAction,
   stepAction,
   idleInput,
@@ -12,6 +13,7 @@ import {
   type ActionInput,
 } from "../lib/actionCollection";
 import { useAutoPause, type PlayStatus } from "./useAutoPause";
+import { useScopedRecord } from './RecordScope';
 import { revealPlayfield } from "../lib/revealPlayfield";
 import { useReducedMotion } from "../useReducedMotion";
 import { useResponsiveCanvas } from "./useResponsiveCanvas";
@@ -281,8 +283,8 @@ function paint(
 }
 export default function ActionCollection({
   gameId,
-  record,
-  onRecord,
+  record: legacyRecord,
+  onRecord: saveLegacy,
 }: {
   gameId: string;
   record: number;
@@ -293,6 +295,8 @@ export default function ActionCollection({
   const reducedMotion = useReducedMotion();
   const [difficulty, setDifficulty] = useState<Difficulty>("normal"),
     [mode, setMode] = useState<ActionMode>("mission");
+  const [record, onRecord] = useScopedRecord(`${difficulty}-${mode}`, legacyRecord, saveLegacy);
+  const tuning = actionDifficultyTuning(difficulty);
   const [status, setStatus] = useState<PlayStatus>("ready"),
     [hud, setHud] = useState(() => newAction(id));
   const state = useRef(hud),
@@ -471,6 +475,7 @@ export default function ActionCollection({
           Dificuldade
           <select
             aria-label="Dificuldade"
+            aria-describedby="action-difficulty-details"
             value={difficulty}
             disabled={status === "running" || status === "paused"}
             onChange={(e) => setDifficulty(e.target.value as Difficulty)}
@@ -486,6 +491,7 @@ export default function ActionCollection({
           Modo
           <select
             aria-label="Modo"
+            aria-describedby="action-mode-details"
             value={mode}
             disabled={status === "running" || status === "paused"}
             onChange={(e) => setMode(e.target.value as ActionMode)}
@@ -495,7 +501,12 @@ export default function ActionCollection({
           </select>
         </label>
       </div>
-      <p className="action-objective">
+      <p id="action-difficulty-details" className="small">
+        {`${tuning.lives} vidas · proteção após impacto: ${tuning.impactProtection.toLocaleString('pt-BR')} s · pressão inicial: ${Math.round(tuning.initialPressure * 100)}%. `}
+        {tuning.pressureGrowth ? 'A pressão cresce gradualmente durante a partida.' : 'Ritmo constante durante a partida.'}
+        {' O recorde compara somente esta dificuldade e este modo.'}
+      </p>
+      <p className="action-objective" id="action-mode-details">
         {mode === "mission"
           ? `Objetivo: ${target} pontos em até 180 segundos.`
           : "Resista enquanto tiver vidas. Sem limite de tempo."}
@@ -514,7 +525,7 @@ export default function ActionCollection({
           Tempo <strong>{Math.floor(hud.time)} s</strong>
         </span>
         <span>
-          Recorde <strong>{Math.max(record, hud.score)}</strong>
+          Recorde <strong>{record}</strong>
         </span>
       </div>
       {mode === "mission" && <ArenaProgress label="Meta da missão" value={hud.score} target={target} unit="pontos" detail={`${Math.max(0, Math.ceil(180 - hud.time))} s restantes`} />}

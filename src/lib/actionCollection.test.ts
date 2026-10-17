@@ -10,6 +10,30 @@ import {
   lunarLandingOutcome,
 } from "./actionCollection";
 describe("action collection physics", () => {
+  for (const id of ['voo', 'jetpack'] as const) it(`${id} preserves route clearance and collision boundaries across all five difficulties`, () => {
+    const widths = (['easy', 'normal', 'hard', 'master', 'expert'] as const).map(level => {
+      const initial = newAction(id, level, 'endless');
+      initial.spawn = 10;
+      const spawned = stepAction(initial, idleInput, 0);
+      const gate = spawned.objects.find(object => object.kind === 'gate')!;
+      expect(gate).toBeDefined();
+      const centered = { ...spawned, y: gate.y, vy: 0, objects: [{ ...gate, x: 95 }] };
+      expect(stepAction(centered, idleInput, 0).lives).toBe(centered.lives);
+      expect(stepAction({ ...centered, y: gate.y + gate.r + 20 }, idleInput, 0).lives).toBe(centered.lives - 1);
+      return gate.r * 2;
+    });
+    expect(widths).toEqual([150, 125, 105, 125, 125]);
+  });
+
+  it('preserves starting lives and impact protection while sharing difficulty parameters', () => {
+    const levels = ['easy', 'normal', 'hard', 'master', 'expert'] as const;
+    for (const game of actionCollectionGames) expect(levels.map(level => newAction(game.id, level).lives)).toEqual([5, 3, 3, 2, 2]);
+    expect(levels.map(level => {
+      const state = newAction('voo', level);
+      state.y = -20;
+      return stepAction(state, idleInput, 0).cooldown;
+    })).toEqual([1.35, 1.1, 0.9, 0.75, 0.65]);
+  });
   it("defines ten distinct games and bounds frame delta", () => {
     expect(new Set(actionCollectionGames.map((g) => g.id)).size).toBe(10);
     for (const g of actionCollectionGames) {

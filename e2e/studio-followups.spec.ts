@@ -77,6 +77,7 @@ test("desktop immersive canvas uses the available stage without horizontal overf
   }
     await page.getByRole("button", { name: "Tela cheia", exact: true }).click();
     await expect(page.locator(".player")).toHaveAttribute("data-immersive", "true");
+    if (id === "breakout") await expect(page.locator("#action-difficulty-details")).toContainText("proteção após impacto");
     await expect.poll(() => page.locator("canvas").evaluate((element) => element.getBoundingClientRect().width)).toBeGreaterThanOrEqual(560);
     // CSS subpixel rounding may exceed the viewport edge by a fraction of a pixel.
     expect(await page.locator("canvas").evaluate((element) =>
