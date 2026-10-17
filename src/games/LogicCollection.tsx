@@ -1,5 +1,5 @@
 import { useState, Children, isValidElement, cloneElement } from "react";
-import { useGameActivity } from "./RecordScope";
+import { useGameActivity, useScopedRecord } from "./RecordScope";
 import type { CSSProperties, KeyboardEvent, ReactNode } from "react";
 import {
   logicGames,
@@ -102,13 +102,14 @@ function Grid({
   );
 }
 const cellTab = (i: number) => (i === 0 ? 0 : -1);
-export default function LogicCollection({ gameId, record, onRecord }: Props) {
+export default function LogicCollection({ gameId, record: legacyRecord, onRecord: saveLegacy }: Props) {
   const [difficulty, setDifficulty] = useState(1),
     [mode, setMode] = useState("livre"),
     [round, setRound] = useState(1),
     [generation, setGeneration] = useState(0),
     [won, setWon] = useState(false),
     [score, setScore] = useState(0);
+  const [record, onRecord] = useScopedRecord(`${difficulty}-${mode}`, legacyRecord, saveLegacy);
   useGameActivity(undefined, won, score);
   const metadata = logicGames.find((g) => g.id === gameId)!;
   const win = () => {
@@ -168,6 +169,7 @@ export default function LogicCollection({ gameId, record, onRecord }: Props) {
         Desafio {round}
         {mode === "serie" ? " / 5" : ""} · Pontos {score} · Recorde {record}
       </p>
+      <p className="small">O recorde compara somente esta dificuldade e este modo.</p>
       <div key={`${gameId}-${difficulty}-${mode}-${round}-${generation}`}>
         {gameId === "sudoku" ? (
           <Sudoku {...settings} />

@@ -35,6 +35,8 @@ test("Sudoku accepts a completed board and records the victory", async ({
   }
   await won(page);
   await page.reload();
+  await expect(page.locator(".lc-stats")).toContainText("Recorde 0");
+  await page.locator('.lc-settings').getByLabel('Dificuldade', { exact: true }).selectOption('0');
   await expect(page.locator(".lc-stats")).toContainText("Recorde 100");
 });
 test("Nonogram solves a figure with clues and advances the series", async ({

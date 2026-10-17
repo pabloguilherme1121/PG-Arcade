@@ -1,6 +1,28 @@
 import { expect, it } from "vitest";
-import { addScopedRecord, normalizeScopedRecords } from "./scopedRecords";
+import { addScopedRecord, normalizeScopedRecords, scopedRecordLabel } from "./scopedRecords";
 import { emptyProgress, mergeProgress, normalizeProgress } from "./progress";
+import { validateProgressBackup } from "./progressBackup";
+
+it('separates logic difficulties, modes and sessions without relabeling legacy records', () => {
+  const incoming = { 'hanoi|free|0-livre': 100, 'hanoi|free|2-serie': 1500, 'nim|sprint-hard|1-reverso': 200 };
+  const merged = mergeProgress({ ...emptyProgress(), records: { hanoi: 999 } }, { recordsV2: incoming });
+  expect(merged.records).toEqual({ hanoi: 999 });
+  expect(merged.recordsV2).toEqual(incoming);
+  expect(validateProgressBackup({ favorites: [], records: {}, recordsV2: incoming })).toBe('valid');
+  expect(addScopedRecord(incoming, 'hanoi|free|0-livre', 80)).toBe(incoming);
+  expect(addScopedRecord(incoming, 'hanoi|free|0-livre', 200)['hanoi|free|0-livre']).toBe(200);
+  expect(scopedRecordLabel('hanoi|free|0-livre')).toBe('Livre · Fácil · Desafio livre');
+  expect(scopedRecordLabel('nim|sprint-hard|1-reverso')).toBe('Sprint · Difícil · Normal · Última peça perde');
+});
+
+it('accepts only implemented logic modes across all ten engines', () => {
+  const ids = ['sudoku', 'nonograma', 'labirinto', 'sokoban', 'hanoi', 'senha', 'nim', 'reversi', 'batalha', 'pontes'];
+  for (const id of ids) {
+    expect(normalizeScopedRecords({ [`${id}|free|1-serie`]: 200 })).toEqual({ [`${id}|free|1-serie`]: 200 });
+    expect(normalizeScopedRecords({ [`${id}|free|3-livre`]: 200, [`${id}|free|1-unknown`]: 200 })).toEqual({});
+    expect(normalizeScopedRecords({ [`${id}|free|1-reverso`]: 200 })).toEqual(id === 'nim' ? { 'nim|free|1-reverso': 200 } : {});
+  }
+});
 it("keeps legacy records without assigning them to an unknown difficulty", () => {
   const progress = normalizeProgress({ records: { memoria: 4, '2048': 8192 } });
   expect(progress.recordsV2).toBeUndefined();
