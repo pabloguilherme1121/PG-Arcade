@@ -31,6 +31,11 @@ test.describe("descoberta premium mobile", () => {
       const link = featured.getByRole("link", { name: /Jogar sugestão:/ });
       const target = await link.getAttribute("href");
       expect(["#/jogar/damas", "#/jogar/domino", "#/jogar/liga4", "#/jogar/velha", "#/jogar/xadrez"]).toContain(target);
+      // The spotlight sits below the five cards. On Firefox a large smooth
+      // auto-scroll can still be moving when Playwright sends its touch point.
+      // Settle the link in view first; keep the real tap and URL assertion.
+      await link.evaluate(element => element.scrollIntoView({ block: "center", behavior: "instant" }));
+      await expect(link).toBeInViewport();
       await link.tap();
       await expect(page).toHaveURL(/#\/jogar\//);
       await expect(page.locator("[data-arcade-arena]")).toBeVisible();
