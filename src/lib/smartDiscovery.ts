@@ -69,6 +69,24 @@ export function filterByMode<T extends GameInfo>(
   return games.filter(g=>modeTags(g).includes(selected));
 }
 
+/** Count all discovery facets in one catalog pass, without allocating filtered lists. */
+export function countModes(
+  games: readonly GameInfo[], visits: Partial<Record<GameId, number>>, favorites: readonly string[],
+): Record<DiscoveryFilter, number> {
+  const counts: Record<DiscoveryFilter, number> = {
+    todos: games.length, classico: 0, rapido: 0, "sem-pressa": 0, dupla: 0, bot: 0,
+    treino: 0, sobrevivencia: 0, "nao-jogados": 0, jogados: 0, favoritos: 0, deslizar: 0,
+  };
+  const saved = new Set(favorites);
+  for (const game of games) {
+    for (const tag of modeTags(game)) counts[tag]++;
+    counts[(visits[game.id] || 0) > 0 ? "jogados" : "nao-jogados"]++;
+    if (saved.has(game.id)) counts.favoritos++;
+    if (supportsSwipe(game.id)) counts.deslizar++;
+  }
+  return counts;
+}
+
 /** On-device ranking. Favorites first; then related and unplayed titles. No tracking/network. */
 export function recommendGames<T extends GameInfo>(
   games:readonly T[],history:DiscoveryHistory,

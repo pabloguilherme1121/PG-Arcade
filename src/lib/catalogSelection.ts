@@ -1,6 +1,6 @@
 import { games } from './catalog';
 import { categoryGroup, matchesGame, supportsPlayerMode, type CatalogView } from './discovery';
-import { discoveryFilters, filterByMode, recommendGames, supportsSwipe, type DiscoveryFilter } from './smartDiscovery';
+import { countModes, filterByMode, recommendGames, supportsSwipe } from './smartDiscovery';
 import type { Progress } from './progress';
 type CatalogGame = (typeof games)[number];
 type Criteria = Pick<CatalogView, 'query' | 'category' | 'mode' | 'modeFilter' | 'swipeOnly'>;
@@ -16,8 +16,7 @@ export function selectCatalog(source: readonly CatalogGame[], criteria: Criteria
   const categoryCounts: Record<string, number> = Object.fromEntries(catalogCategories.map(category => [category, 0]));
   categoryCounts.Todos = categoryCandidates.length;
   for (const game of categoryCandidates) categoryCounts[categoryGroup(game.category)]++;
-  const modeCounts = Object.fromEntries(discoveryFilters.map(filter => [filter.id,
-    filterByMode(matching, filter.id, history.visits, history.favorites).length])) as Record<DiscoveryFilter, number>;
+  const modeCounts = countModes(matching, history.visits, history.favorites);
   return { visible, categoryCounts, modeCounts };
 }
 export function sortCatalog(source: readonly CatalogGame[], order: string, history: History) {

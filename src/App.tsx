@@ -8,6 +8,7 @@ import {
   useCallback,
   useRef,
   useMemo,
+  useDeferredValue,
   type ReactNode,
   type ComponentType,
 } from "react";
@@ -339,7 +340,9 @@ export default function App() {
   const Player = game ? players[game.id] : null;
   const activeModes = game ? modeTags(game).filter(tag => tag !== "classico") : [];
   useEffect(() => { document.title = `${game ? game.name : page === "favoritos" ? "Seus favoritos" : page === "progresso" ? "Meu progresso" : `${games.length} jogos no navegador`} — PG Arcade`; }, [game, page]);
-  const normalizedQuery = useMemo(() => searchText(query), [query]);
+  const deferredQuery = useDeferredValue(query);
+  const searchPending = query !== deferredQuery;
+  const normalizedQuery = useMemo(() => searchText(deferredQuery), [deferredQuery]);
   const { visible, categoryCounts, modeCounts } = useMemo(
     () => selectCatalog(games, { query: normalizedQuery, category, mode, modeFilter, swipeOnly }, progress, page === "favoritos"),
     [normalizedQuery, category, mode, modeFilter, swipeOnly, progress, page],
@@ -663,17 +666,18 @@ export default function App() {
                     ? "Seus favoritos"
                     : `Explore os ${games.length} jogos`}
                 </h2>
-                <label className="search">
+                <div className="search">
                   <Search size={18} />
                   <input
                     aria-label="Buscar jogo"
                     ref={searchInput}
                     onKeyDown={(event) => { if (event.key === "Escape") { setQuery(""); event.currentTarget.blur(); } }}
-                    placeholder="Buscar jogo"
+                    placeholder="Nome, estilo ou controle…"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                   />
-                </label>
+                  {query && <button type="button" className="clear-catalog-search" aria-label="Limpar busca" onClick={() => { setQuery(""); searchInput.current?.focus(); }}>×</button>}
+                </div>
               </div>
               <div className="filters" role="group" aria-label="Categorias">
                 {catalogCategories.map(
@@ -684,7 +688,7 @@ export default function App() {
                       key={c}
                       disabled={c !== "Todos" && c !== category && categoryCounts[c] === 0}
                       title={`${categoryCounts[c]} ${categoryCounts[c] === 1 ? "jogo" : "jogos"} com os outros filtros atuais`}
-                      onClick={() => setCategory(c)}
+                      onClick={() => setCategory(current => current === c ? "Todos" : c)}
                     >
                       {c} <span className="mode-count" aria-hidden="true">{categoryCounts[c]}</span>
                     </button>
@@ -694,7 +698,7 @@ export default function App() {
               <div className="smart-mode-discovery" role="region" aria-label="Encontre seu modo de jogar">
                 <div className="smart-mode-header">
                   <strong>Seu estilo de jogo</strong>
-                  <span>Explore modos reais ou continue descobrindo. As sugestões usam apenas o histórico neste navegador.</span>
+                  <span>Combine com categoria e jogadores. Toque no estilo selecionado para removê-lo.</span>
                 </div>
                 <div className="smart-mode-chips" role="group" aria-label="Filtros por modo">
                   {discoveryFilters.filter(filter => filter.id !== "dupla").map(filter => (
@@ -703,7 +707,8 @@ export default function App() {
                       className={modeFilter === filter.id ? "selected" : ""}
                       disabled={modeCounts[filter.id] === 0 && modeFilter !== filter.id && specificStyles.has(filter.id)}
                       title={`${modeCounts[filter.id]} jogos com os filtros atuais`}
-                      onClick={() => setModeFilter(filter.id)}>{filter.id === "dupla" ? "Dupla local" : filter.label} <span className="mode-count" aria-hidden="true">{modeCounts[filter.id]}</span></button>
+                      aria-description={`${modeCounts[filter.id]} jogos com os filtros atuais. Toque novamente para remover o estilo.`}
+                      onClick={() => setModeFilter(current => current === filter.id ? "todos" : filter.id)}>{filter.id === "dupla" ? "Dupla local" : filter.label} <span className="mode-count" aria-hidden="true">{modeCounts[filter.id]}</span></button>
                   ))}
                 </div>
               </div>
@@ -727,10 +732,10 @@ export default function App() {
                     <option value="recomendados">Para você (neste aparelho)</option>
                   </select>
                 </label>
-                <span role="status">{visible.length} jogos encontrados</span>
+                <span role="status" aria-live="polite" aria-atomic="true">{searchPending ? "Atualizando jogos…" : `${visible.length} jogos encontrados`}</span>
                 <button type="button" className="clear-smart-filters" onClick={() => { setQuery(""); clearCatalogFilters(); setSort("destaques"); }}>Zerar filtros</button>
                 <button
-                  disabled={!visible.length}
+                  disabled={searchPending || !visible.length}
                   onClick={() => {
                     const id = visible[Math.floor(Math.random() * visible.length)].id;
                     rememberCatalog(id);
@@ -748,7 +753,7 @@ export default function App() {
                 {mode !== "Todos" && <button onClick={()=>setMode("Todos")} aria-label={`Remover modo: ${mode}`}>{mode === "Solo" ? "Somente solo" : mode} <span aria-hidden="true">×</span></button>}
                 {modeFilter !== "todos" && <button onClick={()=>setModeFilter("todos")} aria-label={`Remover estilo: ${discoveryFilters.find(f=>f.id===modeFilter)?.label}`}>{discoveryFilters.find(f=>f.id===modeFilter)?.label} <span aria-hidden="true">×</span></button>}
               </div>}
-              <div className="game-grid">
+              <div className="game-grid" aria-busy={searchPending}>
                 {sorted.map((g, index) => renderCard(g, false, index < 4))}
 
               </div>

@@ -180,14 +180,17 @@ html[data-arcade-contrast="true"] :is(.smart-mode-discovery,.smart-mode-chips bu
 
 /* Refinamento mobile: chips navegáveis sem alargar a página, estados claros e foco real. */
 .smart-mode-discovery{
+  padding:16px;border-color:#435b6c;
   background:linear-gradient(145deg,#1b3045 0%,#20394b 62%,#243e46 100%);
   box-shadow:inset 0 1px 0 #ffffff18,0 12px 26px #0002;
 }
 .smart-mode-chips button{
+  display:inline-flex;align-items:center;gap:8px;font-size:13px;
   box-shadow:inset 0 1px 0 #ffffff16;
   transition:background-color 140ms ease,border-color 140ms ease,box-shadow 140ms ease;
 }
 .smart-mode-chips button[aria-pressed="true"]{
+  background:#d7ff9f;color:#14220e;border-color:#d7ff9f;
   box-shadow:inset 0 1px 0 #ffffff35,0 0 0 1px #d7ff9f55;
 }
 .smart-mode-chips button:focus-visible,
@@ -200,6 +203,9 @@ html[data-arcade-contrast="true"] :is(.smart-mode-discovery,.smart-mode-chips bu
     background:#345571;border-color:#d6ebf8;
   }
 }
+.mode-count{display:inline-grid;place-items:center;min-width:24px;padding:2px 6px;border-radius:8px;background:#0003;color:inherit;font-variant-numeric:tabular-nums;font-size:12px}
+.smart-mode-chips button:disabled{background:#182734;border-color:#465665;color:#aab8c4;box-shadow:none;cursor:not-allowed}
+.smart-mode-chips button[aria-pressed="true"] .mode-count{background:#14220e;color:#d7ff9f}
 /* Preserve above-the-fold gameplay on narrow mobile screens. */
 @media (max-width: 600px) {
   .player-mode-ribbon {

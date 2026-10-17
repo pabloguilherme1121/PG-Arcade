@@ -25,7 +25,12 @@ test("Filtros rápidos e favoritos persistem sem inventar modos",async({page,bro
   await page.getByRole("button",{name:"Partidas rápidas",exact:true}).click();
   const expected=games.filter(g=>modeTags(g).includes("rapido")).length;
   await expect(page.locator(".game-card")).toHaveCount(expected);
-  await page.getByRole("button",{name:"Zerar filtros",exact:true}).click();
+  const quick = page.getByRole("button", { name: "Partidas rápidas", exact: true });
+  await expect(quick).toHaveAttribute("aria-pressed", "true");
+  await expect(quick).toHaveAttribute("aria-description", new RegExp(`${expected} jogos`));
+  await quick.click();
+  await expect(quick).toHaveAttribute("aria-pressed", "false");
+  await expect(page.locator(".game-card")).toHaveCount(games.length);
   await page.getByRole("button",{name:"Ainda não joguei",exact:true}).click();
   await expect(page.locator(".game-card")).toHaveCount(games.length);
   await page.getByRole("button",{name:"Zerar filtros",exact:true}).click();
@@ -87,3 +92,28 @@ test("modo inteligente e ordem personalizada sobrevivem ao reload da partida", a
   await expect(page.getByRole("combobox", { name: "Ordenar jogos" })).toHaveValue("recomendados");
   await expect(page.locator(".game-card")).toHaveCount(5);
 });
+
+for (const width of [320, 390]) {
+  test(`busca rápida, limpeza e categoria reversível a ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("./");
+    const search = page.getByRole("textbox", { name: "Buscar jogo", exact: true });
+    await search.fill("xad");
+    await search.fill("xadrez");
+    await expect(page.locator(".game-card")).toHaveCount(1);
+    await expect(page.locator(".game-grid")).toHaveAttribute("aria-busy", "false");
+    await expect(page.getByRole("link", { name: "Jogar Xadrez", exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Limpar busca", exact: true }).click();
+    await expect(search).toBeFocused();
+    await expect(search).toHaveValue("");
+    await expect(page.locator(".game-card")).toHaveCount(games.length);
+    const category = page.getByRole("group", { name: "Categorias", exact: true }).getByRole("button", { name: "Estratégia", exact: true });
+    await category.click();
+    await expect(category).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator(".game-card")).toHaveCount(games.filter(g => g.category === "Estratégia").length);
+    await category.click();
+    await expect(category).toHaveAttribute("aria-pressed", "false");
+    await expect(page.locator(".game-card")).toHaveCount(games.length);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}

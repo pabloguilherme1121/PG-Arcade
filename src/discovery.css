@@ -39,7 +39,7 @@ summary { cursor:pointer; }
 .filters { gap:8px; }
 .filters button { padding:10px 14px; font-size:13px; }
 .catalog-tools { display:flex; flex-wrap:wrap; align-items:center; gap:12px 18px; }
-.catalog-tools label { display:flex; align-items:center; gap:8px; }
+.catalog-tools label { display:flex; flex-wrap:wrap; min-width:0; align-items:center; gap:8px; }
 .catalog-tools select { max-width:100%; }
 .favorites-jump { margin:24px 0 16px; }
 .favorite { min-width:44px; min-height:44px; right:17px; top:17px; backdrop-filter:none; background:#10212c; }
@@ -126,3 +126,22 @@ html[data-arcade-contrast="true"] .active-catalog-filters button {background:#00
 /* Retain help and accessibility controls while removing repeated descriptions during play. */
 .player:has(.session-challenge[data-session-playing="true"]) :is(.player-coverline .player-description,.player-mode-ribbon,.player-gameplay-orientation > :not(button)){display:none}
 .player-toolbar{flex-wrap:wrap}.player-toolbar > button{width:auto;min-width:44px;min-height:44px}
+
+/* Compact catalog controls with stable touch targets and visible state. */
+.catalog-heading .search{display:flex;align-items:center;gap:8px;min-width:0}
+.catalog-heading .search input{width:100%;min-width:0}
+.clear-catalog-search{flex:0 0 44px;padding:0;font-size:24px;border-radius:10px}
+.catalog .filters button[aria-pressed="true"]{background:#d7ff9f;color:#14220e;border-color:#d7ff9f}
+.catalog-tools [role="status"]{font-variant-numeric:tabular-nums;color:#d7ff9f}
+.catalog .swipe-filter{padding:10px 12px;border:1px solid #435b6c;border-radius:12px;background:#152432;font-size:13px}
+.catalog .swipe-filter input{accent-color:#c9f65a}
+@media(max-width:600px){
+  .catalog-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .catalog-tools label{display:grid;gap:6px;align-self:start}
+  .catalog-tools select{width:100%;min-width:0;margin:0;min-height:44px}
+  .catalog-tools [role="status"]{grid-column:1/-1;justify-self:start}
+  .catalog-tools button{min-width:0;width:100%;font-size:13px}
+  .smart-mode-header{flex-direction:column;gap:6px}
+  .smart-mode-header span{flex-basis:auto;line-height:1.5}
+}
+html[data-arcade-contrast="true"] .catalog :is(.swipe-filter,.mode-count){background:#000;color:#fff;border:1px solid #fff}
