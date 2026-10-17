@@ -1,7 +1,23 @@
 import { expect, it } from "vitest";
-import { addScopedRecord, normalizeScopedRecords, scopedRecordLabel } from "./scopedRecords";
+import { addScopedRecord, normalizeScopedRecords } from "./scopedRecords";
+import { scopedRecordLabel } from './scopedRecordLabels';
 import { emptyProgress, mergeProgress, normalizeProgress } from "./progress";
 import { validateProgressBackup } from "./progressBackup";
+
+it('keeps action difficulty, engine mode and session records independent on import', () => {
+  const values = { 'runner|free|normal-mission': 50, 'runner|free|normal-endless': 500, 'voo|sprint-hard|expert-mission': 200 };
+  const merged = mergeProgress({ ...emptyProgress(), records: { runner: 999 } }, { recordsV2: values });
+  expect(merged.records.runner).toBe(999);
+  expect(merged.recordsV2).toEqual(values);
+  expect(validateProgressBackup({ favorites: [], records: {}, recordsV2: values })).toBe('valid');
+  expect(scopedRecordLabel('voo|sprint-hard|expert-mission')).toBe('Sprint · Difícil · Especialista · Missão');
+  expect(addScopedRecord(values, 'runner|free|normal-mission', 40)).toBe(values);
+  const ids = ['breakout', 'pong', 'asteroides', 'invasores', 'runner', 'voo', 'jetpack', 'esquiva', 'pouso', 'drift'];
+  for (const id of ids) {
+    expect(normalizeScopedRecords({ [`${id}|free|master-endless`]: 200 })).toEqual({ [`${id}|free|master-endless`]: 200 });
+    expect(normalizeScopedRecords({ [`${id}|free|unknown-mission`]: 200, [`${id}|free|normal-unknown`]: 100 })).toEqual({});
+  }
+});
 
 it('separates logic difficulties, modes and sessions without relabeling legacy records', () => {
   const incoming = { 'hanoi|free|0-livre': 100, 'hanoi|free|2-serie': 1500, 'nim|sprint-hard|1-reverso': 200 };
