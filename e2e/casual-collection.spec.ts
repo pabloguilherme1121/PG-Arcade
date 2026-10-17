@@ -104,6 +104,10 @@ for (const id of ["vinteum", "dados", "boliche", "basquete", "arco"])
     const record = await page.locator(".casual-hud strong").nth(2).innerText();
     expect(Number(record)).toBeGreaterThan(0);
     await page.reload();
+    // Reload restores default settings; a different configuration has its own record.
+    await expect(page.locator(".casual-hud strong").nth(2)).toHaveText("0");
+    await page.locator(".casual-options select").first().selectOption("0");
+    await page.getByLabel("Formato da sessão", { exact: true }).selectOption("treino");
     await expect(page.locator(".casual-hud strong").nth(2)).toHaveText(record);
   });
 test("bowling hook visibly bends the ball trajectory", async ({ page }) => {
