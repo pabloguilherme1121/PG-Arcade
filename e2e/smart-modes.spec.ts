@@ -25,7 +25,12 @@ test("Filtros rápidos e favoritos persistem sem inventar modos",async({page,bro
   await page.getByRole("button",{name:"Partidas rápidas",exact:true}).click();
   const expected=games.filter(g=>modeTags(g).includes("rapido")).length;
   await expect(page.locator(".game-card")).toHaveCount(expected);
-  await page.getByRole("button",{name:"Zerar filtros",exact:true}).click();
+  const quick = page.getByRole("button", { name: "Partidas rápidas", exact: true });
+  await expect(quick).toHaveAttribute("aria-pressed", "true");
+  await expect(quick).toHaveAttribute("aria-description", new RegExp(`${expected} jogos`));
+  await quick.click();
+  await expect(quick).toHaveAttribute("aria-pressed", "false");
+  await expect(page.locator(".game-card")).toHaveCount(games.length);
   await page.getByRole("button",{name:"Ainda não joguei",exact:true}).click();
   await expect(page.locator(".game-card")).toHaveCount(games.length);
   await page.getByRole("button",{name:"Zerar filtros",exact:true}).click();

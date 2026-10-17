@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { games } from "./catalog";
-import { modeTags, previewModeTags, filterByMode, recommendGames, modeLabel } from "./smartDiscovery";
+import { countModes, discoveryFilters, modeTags, previewModeTags, filterByMode, recommendGames, modeLabel } from "./smartDiscovery";
 
 describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
   it("renders at most two honest mode chips and falls back to Clássico", () => {
@@ -73,5 +73,19 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
     expect(filterByMode(games, "nao-jogados", visits, [])).toHaveLength(99);
     expect(filterByMode(games, "jogados", {}, ["xadrez"])).toHaveLength(0);
     expect(visits).toEqual({ xadrez: 2, domino: 0, liga4: 1 });
+  });
+});
+
+describe("discovery facet counts", () => {
+  it("matches actual results across narrowed catalogs and local history", () => {
+    const visits = { xadrez: 2, domino: 0, liga4: 1 };
+    const favorites = ["xadrez", "xadrez", "runner", "unknown"];
+    for (const candidates of [games, games.filter(g => g.category === "Estratégia"), games.slice(0, 12), []]) {
+      const counts = countModes(candidates, visits, favorites);
+      for (const filter of [...discoveryFilters, { id: "classico" as const }]) {
+        expect(counts[filter.id]).toBe(filterByMode(candidates, filter.id, visits, favorites).length);
+      }
+      expect(counts.jogados + counts["nao-jogados"]).toBe(candidates.length);
+    }
   });
 });

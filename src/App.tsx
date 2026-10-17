@@ -33,7 +33,7 @@ import {
   type ExpandedId,
 } from "./lib/expandedCatalog";
 
-import { discoveryFilters, filterByMode, supportsSwipe, modeTags, modeLabel, recommendGames, type DiscoveryFilter } from "./lib/smartDiscovery";
+import { discoveryFilters, countModes, filterByMode, supportsSwipe, modeTags, modeLabel, recommendGames, type DiscoveryFilter } from "./lib/smartDiscovery";
 import { gameHelp, recordUnits } from "./lib/gameHelp";
 import GameCover from "./GameCover";
 import CatalogGameCard from "./CatalogGameCard";
@@ -348,8 +348,7 @@ export default function App() {
     [page, progress.favorites, category, mode, normalizedQuery, swipeOnly]);
   const visible = useMemo(() => filterByMode(matchingGames, modeFilter, progress.visits, progress.favorites),
     [matchingGames, modeFilter, progress.visits, progress.favorites]);
-  const modeCounts = useMemo(() => Object.fromEntries(discoveryFilters.map(filter =>
-    [filter.id, filterByMode(matchingGames, filter.id, progress.visits, progress.favorites).length])),
+  const modeCounts = useMemo(() => countModes(matchingGames, progress.visits, progress.favorites),
     [matchingGames, progress.visits, progress.favorites]);
   const curated = recommended.map(id => games.find(g => g.id === id)!);
   const visited = games.filter(g => progress.visits[g.id]).sort((a,b) => (b.id === progress.last ? 1 : 0) - (a.id === progress.last ? 1 : 0) || (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)).slice(0,4);
@@ -718,7 +717,8 @@ export default function App() {
                       className={modeFilter === filter.id ? "selected" : ""}
                       disabled={modeCounts[filter.id] === 0 && modeFilter !== filter.id && specificStyles.has(filter.id)}
                       title={`${modeCounts[filter.id]} jogos com os filtros atuais`}
-                      onClick={() => setModeFilter(filter.id)}>{filter.id === "dupla" ? "Dupla local" : filter.label} <span className="mode-count" aria-hidden="true">{modeCounts[filter.id]}</span></button>
+                      aria-description={`${modeCounts[filter.id]} jogos com os filtros atuais. Toque novamente para remover o estilo.`}
+                      onClick={() => setModeFilter(current => current === filter.id ? "todos" : filter.id)}>{filter.id === "dupla" ? "Dupla local" : filter.label} <span className="mode-count" aria-hidden="true">{modeCounts[filter.id]}</span></button>
                   ))}
                 </div>
               </div>
