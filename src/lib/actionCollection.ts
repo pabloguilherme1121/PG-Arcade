@@ -73,6 +73,22 @@ export const actionCollectionGames = [
 export type ActionId = (typeof actionCollectionGames)[number]["id"];
 export type Difficulty = "easy" | "normal" | "hard" | "master" | "expert";
 export type ActionMode = "mission" | "endless";
+type ActionDifficultyTuning = Readonly<{
+  lives: number;
+  impactProtection: number;
+  initialPressure: number;
+  pressureGrowth: number;
+  gateGap: number;
+}>;
+const difficultyProfiles: Record<Difficulty, ActionDifficultyTuning> = {
+  easy: { lives: 5, impactProtection: 1.35, initialPressure: 0.7, pressureGrowth: 0, gateGap: 150 },
+  normal: { lives: 3, impactProtection: 1.1, initialPressure: 1, pressureGrowth: 0.12, gateGap: 125 },
+  hard: { lives: 3, impactProtection: 0.9, initialPressure: 1.4, pressureGrowth: 0.2, gateGap: 105 },
+  // Faster routes need clearance for the existing steering/fuel model; width alone is not difficulty.
+  master: { lives: 2, impactProtection: 0.75, initialPressure: 1.58, pressureGrowth: 0.22, gateGap: 125 },
+  expert: { lives: 2, impactProtection: 0.65, initialPressure: 1.72, pressureGrowth: 0.25, gateGap: 125 },
+};
+export const actionDifficultyTuning = (difficulty: Difficulty): ActionDifficultyTuning => difficultyProfiles[difficulty];
 export interface Body {
   x: number;
   y: number;
@@ -156,7 +172,7 @@ export function newAction(
     objects: [],
     shots: [],
     score: 0,
-    lives: difficulty === "easy" ? 5 : difficulty === "master" || difficulty === "expert" ? 2 : 3,
+    lives: actionDifficultyTuning(difficulty).lives,
     level: 1,
     time: 0,
     spawn: 0,
@@ -213,16 +229,7 @@ export function invasionFormationFactor(alive: number) {
 function damage(s: ActionState) {
   if (s.cooldown > 0) return;
   s.lives--;
-  s.cooldown =
-    s.difficulty === "easy"
-      ? 1.35
-      : s.difficulty === "normal"
-        ? 1.1
-        : s.difficulty === "hard"
-          ? 0.9
-          : s.difficulty === "master"
-            ? 0.75
-            : 0.65;
+  s.cooldown = actionDifficultyTuning(s.difficulty).impactProtection;
   if (s.lives <= 0) s.done = true;
 }
 
@@ -256,11 +263,10 @@ export function lunarLandingOutcome(
 
 export function actionPressure(difficulty: Difficulty, time: number) {
   const ramp = Math.min(1, Math.max(0, time) / 120);
-  if (difficulty === "easy") return 0.7;
-  if (difficulty === "normal") return 1 + ramp * 0.12;
-  if (difficulty === "hard") return 1.4 * (1 + ramp * 0.2);
-  if (difficulty === "master") return 1.58 * (1 + ramp * 0.22);
-  return Math.min(2.15, 1.72 * (1 + ramp * 0.25));
+  const tuning = actionDifficultyTuning(difficulty);
+  return tuning.pressureGrowth
+    ? Math.min(2.15, tuning.initialPressure * (1 + ramp * tuning.pressureGrowth))
+    : tuning.initialPressure;
 }
 
 function nextWave(s: ActionState) {
@@ -524,8 +530,7 @@ export function stepAction(
       s.y = 180;
       s.vy = 0;
     }
-    const gap =
-      s.difficulty === "easy" ? 150 : s.difficulty === "hard" ? 105 : 125;
+    const gap = actionDifficultyTuning(s.difficulty).gateGap;
     if (s.spawn > 2.5 / f) {
       s.spawn = 0;
       const gateY = 85 + rand(s) * 190;

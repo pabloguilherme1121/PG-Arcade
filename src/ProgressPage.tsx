@@ -1,6 +1,6 @@
 import { MAX_PROGRESS_BACKUP_BYTES, validateProgressBackup } from "./lib/progressBackup";
 import { searchText } from "./lib/discovery";
-import { scopedRecordLabel } from "./lib/scopedRecords";
+import { scopedRecordLabel } from "./lib/scopedRecordLabels";
 import { useState, useEffect, type RefObject } from "react";
 import { ArrowRight, Heart, Trophy } from "lucide-react";
 import { games, type GameId } from "./lib/catalog";
