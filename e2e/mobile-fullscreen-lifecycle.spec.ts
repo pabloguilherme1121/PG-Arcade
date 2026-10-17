@@ -61,6 +61,14 @@ for (const width of [320, 390]) {
     const cards = page.locator(".memory-card");
     await expect(cards).toHaveCount(8);
     await enterImmersive(page);
+    // Requesting fullscreen can blur the page in a real browser. Memory
+    // deliberately pauses on blur: resume explicitly before any touch input.
+    if (await page.getByRole("button", { name: "Continuar", exact: true }).count()) {
+      await expect(page.locator(".game-status")).toContainText("Partida pausada");
+      await expect(page.locator(".memory-card:disabled")).toHaveCount(8);
+      await page.getByRole("button", { name: "Continuar", exact: true }).tap();
+    }
+    await expect(cards.first()).toBeEnabled();
     await cards.first().tap();
     await expect(cards.first()).toHaveAttribute("aria-pressed", "true");
     await page.getByRole("button", { name: "Pausar", exact: true }).tap();
