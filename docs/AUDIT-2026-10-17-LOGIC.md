@@ -7,9 +7,9 @@ Base: `13e5c1935497d1593922a713029e03a891e1ae88`, versão publicada e aprovada n
 | Prioridade | Reprodução na base | Consequência | Correção |
 | --- | --- | --- | --- |
 | P1 | Um recorde histórico de 999 no Hanói aparecia ao abrir qualquer dificuldade ou modo | Resultados não comparáveis apresentados como recorde da configuração | Dez jogos da família lógica passam a usar a camada existente `recordsV2`, com dificuldade, modo e sessão na chave |
-| P2 | “Contra o bot” devolvia cinco títulos e omitia Nim, Reversi e Pontes | Jogos com adversários implementados ficavam ocultos na descoberta | Separar capacidade de adversário automático da capacidade de dupla local; oito bots e as mesmas cinco duplas locais |
+| P2 | “Contra o bot” devolvia cinco títulos e omitia Nim, Reversi, Pontes e oito jogos estratégicos de tabuleiro | Jogos com adversários implementados ficavam ocultos na descoberta | Separar capacidade de adversário automático da capacidade de dupla local; 16 bots e as mesmas cinco duplas locais |
 
-Os dois cenários E2E falharam antes das correções, pelos valores incorretos de recorde e de quantidade. Três regressões unitárias também falharam na base. Os testes não aumentam timeouts, retries ou skips.
+Os dois cenários E2E falharam antes das correções, pelos valores incorretos de recorde e de quantidade. Três regressões unitárias também falharam na base; a extensão para os oito tabuleiros omitidos teve uma regressão própria reproduzida. Os testes não aumentam timeouts, retries ou skips.
 
 ## Compatibilidade e estrutura
 
@@ -18,7 +18,7 @@ Os dois cenários E2E falharam antes das correções, pelos valores incorretos d
 - Chaves e valores antigos continuam preservados e exportados. Nenhum recorde histórico é atribuído retroativamente a uma dificuldade desconhecida.
 - Novo recorde compara pontuação somente dentro da mesma chave; importação preserva a melhor marca. Modos ou variantes inexistentes continuam rejeitados antes da importação.
 - O progresso mostra dificuldade e modo em português; a interface informa o alcance do recorde.
-- Metadados de bots são independentes dos de dupla local. Contagens, busca e chips de descoberta compartilham `modeTags`; não há uma lista alternativa de resultados na interface.
+- Metadados de bots são independentes dos de dupla local. Os oito jogos adicionais são Gomoku, Hex, Ataxx, Isolamento, Breakthrough, Território, Mancala e Chomp; a inspeção do motor e os testes de partidas estratégicas confirmam respostas automáticas do adversário. Contagens, busca e chips de descoberta compartilham `modeTags`; não há uma lista alternativa de resultados na interface.
 
 ## Evidência e cobertura
 

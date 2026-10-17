@@ -8,7 +8,10 @@ type GameInfo = {id: GameId;name:string;category:string;description:string};
 type DiscoveryHistory = {favorites:readonly string[];visits:Partial<Record<GameId,number>>;last:GameId|null};
 
 const duels = new Set<GameId>(["damas","domino","liga4","velha","xadrez"]);
-const botGames = new Set<GameId>([...duels, 'nim', 'reversi', 'pontes']);
+const botGames = new Set<GameId>([
+  ...duels, 'nim', 'reversi', 'pontes',
+  'gomoku', 'hex', 'ataxx', 'isolation', 'breakthrough', 'territory', 'mancala', 'chomp',
+]);
 const swipeGames=new Set<GameId>([
   ...newGames.filter(g=>g.family==='motion' && !['rhythm','balloons'].includes(g.id)).map(g=>g.id),
   ...expandedGames.filter(g=>g.family==='action').map(g=>g.id),

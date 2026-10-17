@@ -30,7 +30,7 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
   });
   it("restringe duelo e bot aos jogos com modos efetivos",()=>{
     expect(filterByMode(games, 'dupla', {}, []).map(g=>g.id).sort()).toEqual(["damas","domino","liga4","velha","xadrez"]);
-    expect(filterByMode(games, 'bot', {}, []).map(g=>g.id).sort()).toEqual(["damas","domino","liga4","nim","pontes","reversi","velha","xadrez"]);
+    expect(filterByMode(games, 'bot', {}, []).map(g=>g.id).sort()).toEqual(["ataxx","breakthrough","chomp","damas","domino","gomoku","hex","isolation","liga4","mancala","nim","pontes","reversi","territory","velha","xadrez"]);
   });
   it("classifica treino e sobrevivência sem alterar os motores",()=>{
     expect(modeTags(games.find(g=>g.id==="pesca")!)).toContain("treino");
