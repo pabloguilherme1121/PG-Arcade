@@ -42,8 +42,16 @@ test("combined filters and catalog position survive a game and reload", async ({
   await expect(page.locator(".game-card")).toHaveCount(1);
   await page.getByRole("link",{name:"Jogar Maré de Cores",exact:true}).evaluate(link =>
     link.scrollIntoView({ block: "center", behavior: "instant" }));
-  const scroll=await page.evaluate(() => scrollY);
+  // WebKit can scroll the link into its clickable viewport during activation.
+  // Preserve the position at departure, after that native adjustment.
+  const departure = await page.evaluateHandle(() => {
+    const position = { scroll: window.scrollY };
+    document.addEventListener("click", () => { position.scroll = window.scrollY; }, { capture: true, once: true });
+    return position;
+  });
   await page.getByRole("link",{name:"Jogar Maré de Cores",exact:true}).click();
+  const scroll = await departure.evaluate(position => position.scroll);
+  await departure.dispose();
   await expect(page.locator("[data-arcade-arena] .new-grid")).toBeVisible();
   await expect(page.getByText("última jogada e a resposta do adversário.", {exact:false})).toHaveCount(0);
   await page.reload();
