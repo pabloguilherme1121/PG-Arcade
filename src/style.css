@@ -956,7 +956,7 @@ main {
   *:before,
   *:after {
     animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
+    transition-duration: 0s !important;
     scroll-behavior: auto !important;
   }
 }
@@ -1704,7 +1704,7 @@ html[data-arcade-motion="reduced"] *::before,
 html[data-arcade-motion="reduced"] *::after {
   animation-duration: 0.01ms !important;
   animation-iteration-count: 1 !important;
-  transition-duration: 0.01ms !important;
+  transition-duration: 0s !important;
   scroll-behavior: auto !important;
 }
 html[data-arcade-motion="reduced"] :is(button,a,.game-card,.memory-card,.disc) { transition: none !important; }

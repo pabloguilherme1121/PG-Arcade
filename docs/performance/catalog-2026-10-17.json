@@ -1,0 +1,937 @@
+{
+  "metadata": {
+    "timestamp": "2026-10-17T13:36:35.954Z",
+    "baseURL": "http://127.0.0.1:5189/PG-Arcade/",
+    "browser": "chromium",
+    "browserVersion": "156.0.8078.4",
+    "profile": "emulated-cpu-4x",
+    "warning": "CPU throttling is not a physical mid-range Android measurement.",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "samples": 3,
+    "frameCount": 120,
+    "frameMetric": "requestAnimationFrame intervals after a reference action; not GPU render time or sustained gameplay FPS",
+    "catalogMetric": "two animation frames after each programmed scroll over 101-card catalog; diagnostic proxy, not INP, sustained FPS or physical Android",
+    "cache": "new-context-per-sample; service-worker-blocked",
+    "sourceCommit": "cf3ceab35b335f4bb7262063e018ff3a5efe76fa",
+    "buildAssets": [
+      "/PG-Arcade/assets/index-CJWmLX7c.js",
+      "/PG-Arcade/assets/index-C3jNcJ2m.css"
+    ]
+  },
+  "catalog": {
+    "domNodes": 3001,
+    "svgNodes": 222,
+    "cardCount": 101
+  },
+  "catalogViewportSummary": {
+    "320": {
+      "cardCount": 101,
+      "domNodes": {
+        "p50": 3001,
+        "p95": 3001,
+        "max": 3001
+      },
+      "svgNodes": {
+        "p50": 222,
+        "p95": 222,
+        "max": 222
+      },
+      "twoFrameScrollP95Ms": {
+        "p50": 200,
+        "p95": 218.1,
+        "max": 218.1
+      },
+      "longTaskTotalMs": {
+        "p50": 638,
+        "p95": 706,
+        "max": 706
+      },
+      "samplesWithOverflow": 0
+    },
+    "390": {
+      "cardCount": 101,
+      "domNodes": {
+        "p50": 3001,
+        "p95": 3001,
+        "max": 3001
+      },
+      "svgNodes": {
+        "p50": 222,
+        "p95": 222,
+        "max": 222
+      },
+      "twoFrameScrollP95Ms": {
+        "p50": 351.5,
+        "p95": 375.4,
+        "max": 375.4
+      },
+      "longTaskTotalMs": {
+        "p50": 798,
+        "p95": 1473,
+        "max": 1473
+      },
+      "samplesWithOverflow": 0
+    }
+  },
+  "catalogViewportSamples": [
+    {
+      "cardCount": 101,
+      "domNodes": 3001,
+      "svgNodes": 222,
+      "maxScrollWidth": 320,
+      "viewportWidth": 320,
+      "overflowX": false,
+      "jsCssTransferBytes": 127055,
+      "jsHeapBytes": 10000000,
+      "longTaskCount": 6,
+      "longTaskTotalMs": 706,
+      "cardCounts": [
+        101,
+        101,
+        101,
+        101,
+        101,
+        101,
+        101,
+        101,
+        101
+      ],
+      "twoFrameScrollMs": {
+        "p50": 57.2,
+        "p95": 218.1,
+        "max": 218.1
+      },
+      "samplesOver50ms": 5
+    },
+    {
+      "cardCount": 101,
+      "domNodes": 3001,
+      "svgNodes": 222,
+      "maxScrollWidth": 320,
+      "viewportWidth": 320,
+      "overflowX": false,
+      "jsCssTransferBytes": 127055,
+      "jsHeapBytes": 10000000,
+      "longTaskCount": 3,
+      "longTaskTotalMs": 548,
+      "cardCounts": [
+        101,
+        101,
+        101,
+        101,
+        101,
+        101,
+        101,
+        101,
+        101
+      ],
+      "twoFrameScrollMs": {
+        "p50": 65.1,
+        "p95": 200,
+        "max": 200
+      },
+      "samplesOver50ms": 6
+    },
+    {
+      "cardCount": 101,
+      "domNodes": 3001,
+      "svgNodes": 222,
+      "maxScrollWidth": 320,
+      "viewportWidth": 320,
+      "overflowX": false,
+      "jsCssTransferBytes": 127055,
+      "jsHeapBytes": 10000000,
+      "longTaskCount": 5,
+      "longTaskTotalMs": 638,
+      "cardCounts": [
+        101,
+        101,
+        101,
+        101,
+        101,
+        101,
+        101,
+        101,
+        101
+      ],
+      "twoFrameScrollMs": {
+        "p50": 74,
+        "p95": 199,
+        "max": 199
+      },
+      "samplesOver50ms": 5
+    },
+    {
+      "cardCount": 101,
+      "domNodes": 3001,
+      "svgNodes": 222,
+      "maxScrollWidth": 390,
+      "viewportWidth": 390,
+      "overflowX": false,
+      "jsCssTransferBytes": 127055,
+      "jsHeapBytes": 10000000,
+      "longTaskCount": 7,
+      "longTaskTotalMs": 709,
+      "cardCounts": [
+        101,
+        101,
+        101,
+        101,
+        101,
+        101,
+        101,
+        101,
+        101
+      ],
+      "twoFrameScrollMs": {
+        "p50": 91.3,
+        "p95": 342,
+        "max": 342
+      },
+      "samplesOver50ms": 8
+    },
+    {
+      "cardCount": 101,
+      "domNodes": 3001,
+      "svgNodes": 222,
+      "maxScrollWidth": 390,
+      "viewportWidth": 390,
+      "overflowX": false,
+      "jsCssTransferBytes": 127055,
+      "jsHeapBytes": 10000000,
+      "longTaskCount": 6,
+      "longTaskTotalMs": 798,
+      "cardCounts": [
+        101,
+        101,
+        101,
+        101,
+        101,
+        101,
+        101,
+        101,
+        101
+      ],
+      "twoFrameScrollMs": {
+        "p50": 93.4,
+        "p95": 351.5,
+        "max": 351.5
+      },
+      "samplesOver50ms": 7
+    },
+    {
+      "cardCount": 101,
+      "domNodes": 3001,
+      "svgNodes": 222,
+      "maxScrollWidth": 390,
+      "viewportWidth": 390,
+      "overflowX": false,
+      "jsCssTransferBytes": 127055,
+      "jsHeapBytes": 10000000,
+      "longTaskCount": 13,
+      "longTaskTotalMs": 1473,
+      "cardCounts": [
+        101,
+        101,
+        101,
+        101,
+        101,
+        101,
+        101,
+        101,
+        101
+      ],
+      "twoFrameScrollMs": {
+        "p50": 170.9,
+        "p95": 375.4,
+        "max": 375.4
+      },
+      "samplesOver50ms": 7
+    }
+  ],
+  "perGame": {
+    "2048": {
+      "routeReadyMs": {
+        "p50": 1732.8,
+        "p95": 1744,
+        "max": 1744
+      },
+      "domNodes": {
+        "p50": 262,
+        "p95": 262,
+        "max": 262
+      },
+      "svgNodes": {
+        "p50": 13,
+        "p95": 13,
+        "max": 13
+      },
+      "jsCssTransferBytes": {
+        "p50": 146965,
+        "p95": 146965,
+        "max": 146965
+      },
+      "longTaskCount": {
+        "p50": 2,
+        "p95": 2,
+        "max": 2
+      },
+      "longTaskTotalMs": {
+        "p50": 374,
+        "p95": 417,
+        "max": 417
+      },
+      "jsHeapBytes": {
+        "p50": 10000000,
+        "p95": 10000000,
+        "max": 10000000
+      },
+      "framesOver50ms": {
+        "p50": 0,
+        "p95": 0,
+        "max": 0
+      },
+      "frameP95Ms": {
+        "p50": 16.7,
+        "p95": 16.8,
+        "max": 16.8
+      }
+    },
+    "snake": {
+      "routeReadyMs": {
+        "p50": 1618.8,
+        "p95": 2508.3,
+        "max": 2508.3
+      },
+      "domNodes": {
+        "p50": 509,
+        "p95": 509,
+        "max": 509
+      },
+      "svgNodes": {
+        "p50": 13,
+        "p95": 13,
+        "max": 13
+      },
+      "jsCssTransferBytes": {
+        "p50": 149146,
+        "p95": 149146,
+        "max": 149146
+      },
+      "longTaskCount": {
+        "p50": 2,
+        "p95": 4,
+        "max": 4
+      },
+      "longTaskTotalMs": {
+        "p50": 302,
+        "p95": 803,
+        "max": 803
+      },
+      "jsHeapBytes": {
+        "p50": 10000000,
+        "p95": 10000000,
+        "max": 10000000
+      },
+      "framesOver50ms": {
+        "p50": 1,
+        "p95": 4,
+        "max": 4
+      },
+      "frameP95Ms": {
+        "p50": 16.8,
+        "p95": 33.3,
+        "max": 33.3
+      }
+    },
+    "memoria": {
+      "routeReadyMs": {
+        "p50": 1586.3,
+        "p95": 1725.5,
+        "max": 1725.5
+      },
+      "domNodes": {
+        "p50": 297,
+        "p95": 297,
+        "max": 297
+      },
+      "svgNodes": {
+        "p50": 24,
+        "p95": 24,
+        "max": 24
+      },
+      "jsCssTransferBytes": {
+        "p50": 150255,
+        "p95": 150255,
+        "max": 150255
+      },
+      "longTaskCount": {
+        "p50": 2,
+        "p95": 2,
+        "max": 2
+      },
+      "longTaskTotalMs": {
+        "p50": 266,
+        "p95": 398,
+        "max": 398
+      },
+      "jsHeapBytes": {
+        "p50": 10000000,
+        "p95": 10000000,
+        "max": 10000000
+      },
+      "framesOver50ms": {
+        "p50": 0,
+        "p95": 2,
+        "max": 2
+      },
+      "frameP95Ms": {
+        "p50": 16.8,
+        "p95": 16.8,
+        "max": 16.8
+      }
+    },
+    "xadrez": {
+      "routeReadyMs": {
+        "p50": 1573.8,
+        "p95": 1594.9,
+        "max": 1594.9
+      },
+      "domNodes": {
+        "p50": 402,
+        "p95": 402,
+        "max": 402
+      },
+      "svgNodes": {
+        "p50": 13,
+        "p95": 13,
+        "max": 13
+      },
+      "jsCssTransferBytes": {
+        "p50": 151143,
+        "p95": 151143,
+        "max": 151143
+      },
+      "longTaskCount": {
+        "p50": 2,
+        "p95": 2,
+        "max": 2
+      },
+      "longTaskTotalMs": {
+        "p50": 270,
+        "p95": 284,
+        "max": 284
+      },
+      "jsHeapBytes": {
+        "p50": 10000000,
+        "p95": 10000000,
+        "max": 10000000
+      },
+      "framesOver50ms": {
+        "p50": 0,
+        "p95": 0,
+        "max": 0
+      },
+      "frameP95Ms": {
+        "p50": 16.8,
+        "p95": 16.8,
+        "max": 16.8
+      }
+    },
+    "corrida": {
+      "routeReadyMs": {
+        "p50": 1577.7,
+        "p95": 1645.1,
+        "max": 1645.1
+      },
+      "domNodes": {
+        "p50": 235,
+        "p95": 235,
+        "max": 235
+      },
+      "svgNodes": {
+        "p50": 9,
+        "p95": 9,
+        "max": 9
+      },
+      "jsCssTransferBytes": {
+        "p50": 145887,
+        "p95": 145887,
+        "max": 145887
+      },
+      "longTaskCount": {
+        "p50": 2,
+        "p95": 2,
+        "max": 2
+      },
+      "longTaskTotalMs": {
+        "p50": 264,
+        "p95": 284,
+        "max": 284
+      },
+      "jsHeapBytes": {
+        "p50": 10000000,
+        "p95": 10000000,
+        "max": 10000000
+      },
+      "framesOver50ms": {
+        "p50": 1,
+        "p95": 3,
+        "max": 3
+      },
+      "frameP95Ms": {
+        "p50": 16.8,
+        "p95": 33.3,
+        "max": 33.3
+      }
+    },
+    "futebol": {
+      "routeReadyMs": {
+        "p50": 1626.4,
+        "p95": 1677.3,
+        "max": 1677.3
+      },
+      "domNodes": {
+        "p50": 297,
+        "p95": 297,
+        "max": 297
+      },
+      "svgNodes": {
+        "p50": 11,
+        "p95": 11,
+        "max": 11
+      },
+      "jsCssTransferBytes": {
+        "p50": 151059,
+        "p95": 151059,
+        "max": 151059
+      },
+      "longTaskCount": {
+        "p50": 2,
+        "p95": 2,
+        "max": 2
+      },
+      "longTaskTotalMs": {
+        "p50": 320,
+        "p95": 372,
+        "max": 372
+      },
+      "jsHeapBytes": {
+        "p50": 10000000,
+        "p95": 10000000,
+        "max": 10000000
+      },
+      "framesOver50ms": {
+        "p50": 0,
+        "p95": 1,
+        "max": 1
+      },
+      "frameP95Ms": {
+        "p50": 16.8,
+        "p95": 16.8,
+        "max": 16.8
+      }
+    }
+  },
+  "rows": [
+    {
+      "id": "snake",
+      "routeReadyMs": 2508.2999999998137,
+      "domNodes": 509,
+      "svgNodes": 13,
+      "resources": 26,
+      "jsCssTransferBytes": 149146,
+      "longTaskCount": 4,
+      "longTaskTotalMs": 803,
+      "domContentLoadedMs": 244.79999999981374,
+      "jsHeapBytes": 10000000,
+      "overflowX": false,
+      "frameIntervalMs": {
+        "p50": 16.7,
+        "p95": 16.8,
+        "max": 33.4
+      },
+      "frameP95Ms": 16.8,
+      "framesOver50ms": 0,
+      "scenario": "reference-action-then-frame-sample",
+      "errors": []
+    },
+    {
+      "id": "snake",
+      "routeReadyMs": 1618.7999999998137,
+      "domNodes": 509,
+      "svgNodes": 13,
+      "resources": 26,
+      "jsCssTransferBytes": 149146,
+      "longTaskCount": 2,
+      "longTaskTotalMs": 302,
+      "domContentLoadedMs": 248.09999999962747,
+      "jsHeapBytes": 10000000,
+      "overflowX": false,
+      "frameIntervalMs": {
+        "p50": 16.7,
+        "p95": 16.7,
+        "max": 66.6
+      },
+      "frameP95Ms": 16.7,
+      "framesOver50ms": 1,
+      "scenario": "reference-action-then-frame-sample",
+      "errors": []
+    },
+    {
+      "id": "snake",
+      "routeReadyMs": 1537.6000000005588,
+      "domNodes": 509,
+      "svgNodes": 13,
+      "resources": 26,
+      "jsCssTransferBytes": 149146,
+      "longTaskCount": 2,
+      "longTaskTotalMs": 250,
+      "domContentLoadedMs": 217.90000000037253,
+      "jsHeapBytes": 10000000,
+      "overflowX": false,
+      "frameIntervalMs": {
+        "p50": 16.7,
+        "p95": 33.3,
+        "max": 100
+      },
+      "frameP95Ms": 33.3,
+      "framesOver50ms": 4,
+      "scenario": "reference-action-then-frame-sample",
+      "errors": []
+    },
+    {
+      "id": "2048",
+      "routeReadyMs": 1599.1000000005588,
+      "domNodes": 262,
+      "svgNodes": 13,
+      "resources": 25,
+      "jsCssTransferBytes": 146965,
+      "longTaskCount": 2,
+      "longTaskTotalMs": 300,
+      "domContentLoadedMs": 226.80000000074506,
+      "jsHeapBytes": 10000000,
+      "overflowX": false,
+      "frameIntervalMs": {
+        "p50": 16.7,
+        "p95": 16.7,
+        "max": 16.8
+      },
+      "frameP95Ms": 16.7,
+      "framesOver50ms": 0,
+      "scenario": "reference-action-then-frame-sample",
+      "errors": []
+    },
+    {
+      "id": "2048",
+      "routeReadyMs": 1732.7999999998137,
+      "domNodes": 262,
+      "svgNodes": 13,
+      "resources": 25,
+      "jsCssTransferBytes": 146965,
+      "longTaskCount": 2,
+      "longTaskTotalMs": 417,
+      "domContentLoadedMs": 211.5,
+      "jsHeapBytes": 10000000,
+      "overflowX": false,
+      "frameIntervalMs": {
+        "p50": 16.7,
+        "p95": 16.7,
+        "max": 16.8
+      },
+      "frameP95Ms": 16.7,
+      "framesOver50ms": 0,
+      "scenario": "reference-action-then-frame-sample",
+      "errors": []
+    },
+    {
+      "id": "2048",
+      "routeReadyMs": 1744,
+      "domNodes": 262,
+      "svgNodes": 13,
+      "resources": 25,
+      "jsCssTransferBytes": 146965,
+      "longTaskCount": 2,
+      "longTaskTotalMs": 374,
+      "domContentLoadedMs": 283.20000000018626,
+      "jsHeapBytes": 10000000,
+      "overflowX": false,
+      "frameIntervalMs": {
+        "p50": 16.7,
+        "p95": 16.8,
+        "max": 16.8
+      },
+      "frameP95Ms": 16.8,
+      "framesOver50ms": 0,
+      "scenario": "reference-action-then-frame-sample",
+      "errors": []
+    },
+    {
+      "id": "memoria",
+      "routeReadyMs": 1586.2999999998137,
+      "domNodes": 297,
+      "svgNodes": 24,
+      "resources": 27,
+      "jsCssTransferBytes": 150255,
+      "longTaskCount": 2,
+      "longTaskTotalMs": 266,
+      "domContentLoadedMs": 229.79999999981374,
+      "jsHeapBytes": 10000000,
+      "overflowX": false,
+      "frameIntervalMs": {
+        "p50": 16.7,
+        "p95": 16.7,
+        "max": 33.4
+      },
+      "frameP95Ms": 16.7,
+      "framesOver50ms": 0,
+      "scenario": "reference-action-then-frame-sample",
+      "errors": []
+    },
+    {
+      "id": "memoria",
+      "routeReadyMs": 1725.5,
+      "domNodes": 297,
+      "svgNodes": 24,
+      "resources": 27,
+      "jsCssTransferBytes": 150255,
+      "longTaskCount": 2,
+      "longTaskTotalMs": 398,
+      "domContentLoadedMs": 259.79999999981374,
+      "jsHeapBytes": 10000000,
+      "overflowX": false,
+      "frameIntervalMs": {
+        "p50": 16.7,
+        "p95": 16.8,
+        "max": 16.8
+      },
+      "frameP95Ms": 16.8,
+      "framesOver50ms": 0,
+      "scenario": "reference-action-then-frame-sample",
+      "errors": []
+    },
+    {
+      "id": "memoria",
+      "routeReadyMs": 1553.2000000001863,
+      "domNodes": 297,
+      "svgNodes": 24,
+      "resources": 27,
+      "jsCssTransferBytes": 150255,
+      "longTaskCount": 2,
+      "longTaskTotalMs": 245,
+      "domContentLoadedMs": 213.29999999981374,
+      "jsHeapBytes": 10000000,
+      "overflowX": false,
+      "frameIntervalMs": {
+        "p50": 16.7,
+        "p95": 16.8,
+        "max": 116.7
+      },
+      "frameP95Ms": 16.8,
+      "framesOver50ms": 2,
+      "scenario": "reference-action-then-frame-sample",
+      "errors": []
+    },
+    {
+      "id": "xadrez",
+      "routeReadyMs": 1573.800000000745,
+      "domNodes": 402,
+      "svgNodes": 13,
+      "resources": 26,
+      "jsCssTransferBytes": 151143,
+      "longTaskCount": 2,
+      "longTaskTotalMs": 265,
+      "domContentLoadedMs": 234.5,
+      "jsHeapBytes": 10000000,
+      "overflowX": false,
+      "frameIntervalMs": {
+        "p50": 16.7,
+        "p95": 16.8,
+        "max": 33.3
+      },
+      "frameP95Ms": 16.8,
+      "framesOver50ms": 0,
+      "scenario": "reference-action-then-frame-sample",
+      "errors": []
+    },
+    {
+      "id": "xadrez",
+      "routeReadyMs": 1594.9000000003725,
+      "domNodes": 402,
+      "svgNodes": 13,
+      "resources": 26,
+      "jsCssTransferBytes": 151143,
+      "longTaskCount": 2,
+      "longTaskTotalMs": 284,
+      "domContentLoadedMs": 220.79999999981374,
+      "jsHeapBytes": 10000000,
+      "overflowX": false,
+      "frameIntervalMs": {
+        "p50": 16.7,
+        "p95": 16.8,
+        "max": 33.3
+      },
+      "frameP95Ms": 16.8,
+      "framesOver50ms": 0,
+      "scenario": "reference-action-then-frame-sample",
+      "errors": []
+    },
+    {
+      "id": "xadrez",
+      "routeReadyMs": 1557.2999999998137,
+      "domNodes": 402,
+      "svgNodes": 13,
+      "resources": 26,
+      "jsCssTransferBytes": 151143,
+      "longTaskCount": 2,
+      "longTaskTotalMs": 270,
+      "domContentLoadedMs": 211.29999999981374,
+      "jsHeapBytes": 10000000,
+      "overflowX": false,
+      "frameIntervalMs": {
+        "p50": 16.7,
+        "p95": 16.7,
+        "max": 33.3
+      },
+      "frameP95Ms": 16.7,
+      "framesOver50ms": 0,
+      "scenario": "reference-action-then-frame-sample",
+      "errors": []
+    },
+    {
+      "id": "corrida",
+      "routeReadyMs": 1577.7000000001863,
+      "domNodes": 235,
+      "svgNodes": 9,
+      "resources": 25,
+      "jsCssTransferBytes": 145887,
+      "longTaskCount": 2,
+      "longTaskTotalMs": 264,
+      "domContentLoadedMs": 237.20000000018626,
+      "jsHeapBytes": 10000000,
+      "overflowX": false,
+      "frameIntervalMs": {
+        "p50": 16.7,
+        "p95": 16.8,
+        "max": 33.3
+      },
+      "frameP95Ms": 16.8,
+      "framesOver50ms": 0,
+      "scenario": "reference-action-then-frame-sample",
+      "errors": []
+    },
+    {
+      "id": "corrida",
+      "routeReadyMs": 1645.0999999996275,
+      "domNodes": 235,
+      "svgNodes": 9,
+      "resources": 25,
+      "jsCssTransferBytes": 145887,
+      "longTaskCount": 2,
+      "longTaskTotalMs": 252,
+      "domContentLoadedMs": 204.29999999981374,
+      "jsHeapBytes": 10000000,
+      "overflowX": false,
+      "frameIntervalMs": {
+        "p50": 16.7,
+        "p95": 33.3,
+        "max": 150.1
+      },
+      "frameP95Ms": 33.3,
+      "framesOver50ms": 3,
+      "scenario": "reference-action-then-frame-sample",
+      "errors": []
+    },
+    {
+      "id": "corrida",
+      "routeReadyMs": 1555.3999999994412,
+      "domNodes": 235,
+      "svgNodes": 9,
+      "resources": 25,
+      "jsCssTransferBytes": 145887,
+      "longTaskCount": 2,
+      "longTaskTotalMs": 284,
+      "domContentLoadedMs": 231.29999999981374,
+      "jsHeapBytes": 10000000,
+      "overflowX": false,
+      "frameIntervalMs": {
+        "p50": 16.7,
+        "p95": 16.7,
+        "max": 83.4
+      },
+      "frameP95Ms": 16.7,
+      "framesOver50ms": 1,
+      "scenario": "reference-action-then-frame-sample",
+      "errors": []
+    },
+    {
+      "id": "futebol",
+      "routeReadyMs": 1205.7000000001863,
+      "domNodes": 297,
+      "svgNodes": 11,
+      "resources": 24,
+      "jsCssTransferBytes": 151059,
+      "longTaskCount": 2,
+      "longTaskTotalMs": 285,
+      "domContentLoadedMs": 236.59999999962747,
+      "jsHeapBytes": 10000000,
+      "overflowX": false,
+      "frameIntervalMs": {
+        "p50": 16.7,
+        "p95": 16.8,
+        "max": 66.7
+      },
+      "frameP95Ms": 16.8,
+      "framesOver50ms": 1,
+      "scenario": "reference-action-then-frame-sample",
+      "errors": []
+    },
+    {
+      "id": "futebol",
+      "routeReadyMs": 1626.3999999994412,
+      "domNodes": 297,
+      "svgNodes": 11,
+      "resources": 24,
+      "jsCssTransferBytes": 151059,
+      "longTaskCount": 2,
+      "longTaskTotalMs": 320,
+      "domContentLoadedMs": 258,
+      "jsHeapBytes": 10000000,
+      "overflowX": false,
+      "frameIntervalMs": {
+        "p50": 16.7,
+        "p95": 16.8,
+        "max": 33.4
+      },
+      "frameP95Ms": 16.8,
+      "framesOver50ms": 0,
+      "scenario": "reference-action-then-frame-sample",
+      "errors": []
+    },
+    {
+      "id": "futebol",
+      "routeReadyMs": 1677.2999999998137,
+      "domNodes": 297,
+      "svgNodes": 11,
+      "resources": 24,
+      "jsCssTransferBytes": 151059,
+      "longTaskCount": 2,
+      "longTaskTotalMs": 372,
+      "domContentLoadedMs": 260.59999999962747,
+      "jsHeapBytes": 10000000,
+      "overflowX": false,
+      "frameIntervalMs": {
+        "p50": 16.7,
+        "p95": 16.8,
+        "max": 33.5
+      },
+      "frameP95Ms": 16.8,
+      "framesOver50ms": 0,
+      "scenario": "reference-action-then-frame-sample",
+      "errors": []
+    }
+  ]
+}

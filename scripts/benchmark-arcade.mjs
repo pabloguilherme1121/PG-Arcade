@@ -109,6 +109,75 @@ async function sample(browser, id) {
     await context.close();
   }
 }
+
+async function sampleCatalogScroll(browser, viewportWidth, expectedCards) {
+  const context = await browser.newContext({
+    viewport: { width: viewportWidth, height: viewportWidth === 320 ? 740 : 844 },
+    serviceWorkers: "block",
+  });
+  const page = await context.newPage();
+  await page.addInitScript(() => {
+    window.__arcadeCatalogLongTasks = [];
+    try {
+      new PerformanceObserver(list => {
+        for (const entry of list.getEntries()) window.__arcadeCatalogLongTasks.push(entry.duration);
+      }).observe({ type: "longtask", buffered: true });
+    } catch { /* Unsupported performance entry type. */ }
+  });
+  try {
+    if (cpu !== 1) {
+      const devtools = await context.newCDPSession(page);
+      await devtools.send("Emulation.setCPUThrottlingRate", { rate: cpu });
+    }
+    await page.goto(root.href, { waitUntil: "domcontentloaded", timeout: 30000 });
+    await page.waitForFunction(expected =>
+      document.querySelectorAll(".game-grid [data-catalog-game]").length === expected,
+      expectedCards, { timeout: 30000 });
+    const metrics = await page.evaluate(async () => {
+      const frame = () => new Promise(resolve => requestAnimationFrame(resolve));
+      const fractions = [0, .25, .5, .75, 1, .75, .5, .25, 0];
+      const scrollRange = Math.max(0, document.documentElement.scrollHeight - innerHeight);
+      const twoFrameScrollDurations = [];
+      const widths = [];
+      const cardCounts = [];
+      for (const fraction of fractions) {
+        const start = performance.now();
+        window.scrollTo({ top: Math.round(scrollRange * fraction), behavior: "instant" });
+        await frame();
+        await frame();
+        twoFrameScrollDurations.push(performance.now() - start);
+        widths.push(document.documentElement.scrollWidth);
+        cardCounts.push(document.querySelectorAll(".game-grid [data-catalog-game]").length);
+      }
+      const assets = performance.getEntriesByType("resource")
+        .filter(item => /\.(js|css)(\?|$)/.test(item.name));
+      const longTasks = window.__arcadeCatalogLongTasks || [];
+      return {
+        cardCount: document.querySelectorAll(".game-grid [data-catalog-game]").length,
+        domNodes: document.getElementsByTagName("*").length,
+        svgNodes: document.querySelectorAll("svg").length,
+        maxScrollWidth: Math.max(...widths),
+        viewportWidth: innerWidth,
+        overflowX: widths.some(value => value > innerWidth + 1),
+        jsCssTransferBytes: assets.reduce((sum, item) => sum + (item.transferSize || 0), 0),
+        jsHeapBytes: performance.memory?.usedJSHeapSize ?? null,
+        longTaskCount: longTasks.length,
+        longTaskTotalMs: longTasks.reduce((sum, ms) => sum + ms, 0),
+        twoFrameScrollDurations,
+        cardCounts,
+      };
+    });
+    const { twoFrameScrollDurations, ...rest } = metrics;
+    return {
+      ...rest,
+      twoFrameScrollMs: stats(twoFrameScrollDurations),
+      samplesOver50ms: twoFrameScrollDurations.filter(ms => ms > 50).length,
+    };
+  } finally {
+    await context.close();
+  }
+}
+
 async function run() {
   const browser = await chromium.launch({ headless: true });
   try {
@@ -124,6 +193,27 @@ async function run() {
       cardCount: document.querySelectorAll(".game-grid [data-catalog-game]").length,
     }));
     await context.close();
+    const catalogViewportSamples = [];
+    for (const viewportWidth of [320, 390]) {
+      for (let index = 0; index < samples; index++) {
+        const row = await sampleCatalogScroll(browser, viewportWidth, ids.length);
+        if (row.cardCount !== ids.length || row.cardCounts.some(count => count !== ids.length) || row.overflowX) {
+          throw new Error("Catalog count or horizontal overflow regression at " + viewportWidth + "px");
+        }
+        catalogViewportSamples.push(row);
+      }
+    }
+    const catalogViewportSummary = Object.fromEntries([320, 390].map(viewportWidth => {
+      const rows = catalogViewportSamples.filter(row => row.viewportWidth === viewportWidth);
+      return [String(viewportWidth), {
+        cardCount: ids.length,
+        domNodes: stats(rows.map(row => row.domNodes)),
+        svgNodes: stats(rows.map(row => row.svgNodes)),
+        twoFrameScrollP95Ms: stats(rows.map(row => row.twoFrameScrollMs.p95)),
+        longTaskTotalMs: stats(rows.map(row => row.longTaskTotalMs)),
+        samplesWithOverflow: rows.filter(row => row.overflowX).length,
+      }];
+    }));
     if (!ids.length || new Set(ids).size !== ids.length || defaults.some(id => !ids.includes(id))) throw new Error("Catalog must contain unique IDs and all reference games");
     const requested = option("all", "false") === "true" ? ids : option("games", defaults.join(",")).split(",");
     const selected = [...new Set(requested.map(x => x.trim()).filter(Boolean))];
@@ -142,8 +232,8 @@ async function run() {
       metadata: { timestamp: new Date().toISOString(), baseURL: root.href,
         browser: "chromium", browserVersion: browser.version(), profile: cpu === 1 ? "unthrottled-desktop" : "emulated-cpu-" + cpu + "x",
         warning: "CPU throttling is not a physical mid-range Android measurement.",
-        viewport: { width, height }, samples, frameCount, frameMetric: "requestAnimationFrame intervals after a reference action; not GPU render time or sustained gameplay FPS", cache: "new-context-per-sample; service-worker-blocked" },
-      catalog, perGame, rows,
+        viewport: { width, height }, samples, frameCount, frameMetric: "requestAnimationFrame intervals after a reference action; not GPU render time or sustained gameplay FPS", catalogMetric: "two animation frames after each programmed scroll over 101-card catalog; diagnostic proxy, not INP, sustained FPS or physical Android", cache: "new-context-per-sample; service-worker-blocked" },
+      catalog, catalogViewportSummary, catalogViewportSamples, perGame, rows,
     };
     await mkdir(dirname(output), { recursive: true });
     await writeFile(output, JSON.stringify(report, null, 2) + "\n");

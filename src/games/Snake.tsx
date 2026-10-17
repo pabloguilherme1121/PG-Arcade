@@ -12,7 +12,7 @@ import {
   type Point,
 } from "../lib/engines";
 import Controls from "./Controls";
-import { revealPlayfield } from "./revealPlayfield";
+import { revealPlayfield } from "../lib/revealPlayfield";
 import { snakeTickDelay } from "../lib/snakePacing";
 import { useAutoPause } from "./useAutoPause";
 import "./gameplay.css";
@@ -111,6 +111,12 @@ export default function Snake({
   }, []);
   // Includes blur, hidden, pagehide and freeze when mobile PWA enters BFCache.
   useAutoPause(pause, status === "running", status === "over" || status === "won", score);
+  useEffect(() => {
+    if (status === "ready") return;
+    const resize = () => revealPlayfield(board.current);
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
+  }, [status]);
   return (
     <div className="game-layout">
       <div className="board-column">
