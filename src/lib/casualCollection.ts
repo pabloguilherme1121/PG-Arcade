@@ -11,7 +11,7 @@ export const casualGames = [
     name: "Dados de Combinação",
     category: "Casuais",
     description: "Guarde dados e construa a melhor combinação.",
-    help: "Você tem três lançamentos por rodada. Toque nos dados para guardá-los e maximize pares, trincas, sequências ou cinco iguais.",
+    help: "Por rodada: quatro lançamentos no Fácil, três no Normal e dois no Difícil. Toque nos dados para guardá-los e maximize pares, trincas, sequências ou cinco iguais.",
   },
   {
     id: "boliche",
