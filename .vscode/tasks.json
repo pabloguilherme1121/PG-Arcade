@@ -68,6 +68,20 @@
       ],
       "group": "build",
       "problemMatcher": []
+    },
+    {
+      "label": "PG-Arcade: bundle budget",
+      "type": "shell",
+      "command": "npm",
+      "windows": {
+        "command": "npm.cmd"
+      },
+      "args": [
+        "run",
+        "check:bundle"
+      ],
+      "dependsOn": "PG-Arcade: production build",
+      "problemMatcher": []
     }
   ]
 }

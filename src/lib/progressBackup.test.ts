@@ -8,3 +8,10 @@ it("distinguishes empty copies and accepts old and configuration-aware backups",
   expect(validateProgressBackup({ favorites: ["snake"], records: {} })).toBe("valid");
   expect(validateProgressBackup({ favorites: [], records: {}, recordsV2: { "reflexo|free|hard": 4500 } })).toBe("valid");
 });
+
+it('validates long calendars independently of the 400-day retention policy', () => {
+  const days = Object.fromEntries(Array.from({ length: 401 }, (_, index) => [
+    new Date(Date.UTC(2025, 0, 1 + index)).toISOString().slice(0, 10), { snake: 1 },
+  ]));
+  expect(validateProgressBackup({ favorites: [], records: {}, dailyActivity: { version: 1, days } })).toBe('valid');
+});

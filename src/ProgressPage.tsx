@@ -1,4 +1,4 @@
-import { validateProgressBackup } from "./lib/progressBackup";
+import { MAX_PROGRESS_BACKUP_BYTES, validateProgressBackup } from "./lib/progressBackup";
 import { searchText } from "./lib/discovery";
 import { scopedRecordLabel } from "./lib/scopedRecords";
 import { useState, useEffect, type RefObject } from "react";
@@ -82,7 +82,7 @@ export default function ProgressPage({progress, heading, update}:Props) {
                     e.target.value = "";
                     if (!file) return;
                     try {
-                      if (file.size > 512000) throw Error();
+                      if (file.size > MAX_PROGRESS_BACKUP_BYTES) throw Error();
                       const data: unknown = JSON.parse(await file.text());
                       const validity = validateProgressBackup(data);
                       if (validity === "invalid") throw Error();
@@ -97,7 +97,7 @@ export default function ProgressPage({progress, heading, update}:Props) {
                       );
                     } catch {
                       setMessage(
-                        "Não foi possível restaurar. Escolha uma cópia JSON do PG Arcade de até 500 KB.",
+                        "Não foi possível restaurar. Escolha uma cópia JSON do PG Arcade de até 2 MiB.",
                       );
                     }
                   }}

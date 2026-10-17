@@ -1,4 +1,5 @@
 import { useState, Children, isValidElement, cloneElement } from "react";
+import { useGameActivity } from "./RecordScope";
 import type { CSSProperties, KeyboardEvent, ReactNode } from "react";
 import {
   logicGames,
@@ -108,6 +109,7 @@ export default function LogicCollection({ gameId, record, onRecord }: Props) {
     [generation, setGeneration] = useState(0),
     [won, setWon] = useState(false),
     [score, setScore] = useState(0);
+  useGameActivity(undefined, won, score);
   const metadata = logicGames.find((g) => g.id === gameId)!;
   const win = () => {
     if (won) return;
