@@ -139,6 +139,7 @@ async function sampleCatalogScroll(browser, viewportWidth, expectedCards) {
       const scrollRange = Math.max(0, document.documentElement.scrollHeight - innerHeight);
       const twoFrameScrollDurations = [];
       const widths = [];
+      const cardCounts = [];
       for (const fraction of fractions) {
         const start = performance.now();
         window.scrollTo({ top: Math.round(scrollRange * fraction), behavior: "instant" });
@@ -146,6 +147,7 @@ async function sampleCatalogScroll(browser, viewportWidth, expectedCards) {
         await frame();
         twoFrameScrollDurations.push(performance.now() - start);
         widths.push(document.documentElement.scrollWidth);
+        cardCounts.push(document.querySelectorAll(".game-grid [data-catalog-game]").length);
       }
       const assets = performance.getEntriesByType("resource")
         .filter(item => /\.(js|css)(\?|$)/.test(item.name));
@@ -162,6 +164,7 @@ async function sampleCatalogScroll(browser, viewportWidth, expectedCards) {
         longTaskCount: longTasks.length,
         longTaskTotalMs: longTasks.reduce((sum, ms) => sum + ms, 0),
         twoFrameScrollDurations,
+        cardCounts,
       };
     });
     const { twoFrameScrollDurations, ...rest } = metrics;
@@ -194,7 +197,7 @@ async function run() {
     for (const viewportWidth of [320, 390]) {
       for (let index = 0; index < samples; index++) {
         const row = await sampleCatalogScroll(browser, viewportWidth, ids.length);
-        if (row.cardCount !== ids.length || row.overflowX) {
+        if (row.cardCount !== ids.length || row.cardCounts.some(count => count !== ids.length) || row.overflowX) {
           throw new Error("Catalog count or horizontal overflow regression at " + viewportWidth + "px");
         }
         catalogViewportSamples.push(row);
