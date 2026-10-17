@@ -4,6 +4,22 @@ import { scopedRecordLabel } from './scopedRecordLabels';
 import { emptyProgress, mergeProgress, normalizeProgress } from "./progress";
 import { validateProgressBackup } from "./progressBackup";
 
+it('preserves casual records by difficulty, round format and session in backups', () => {
+  const ids = ['vinteum', 'dados', 'boliche', 'basquete', 'golfe', 'arco', 'pesca', 'match3'];
+  for (const id of ids) {
+    const values = { [`${id}|free|0-treino`]: 525, [`${id}|free|0-maratona`]: 1575, [`${id}|sprint-hard|2-classico`]: 400 };
+    expect(normalizeScopedRecords(values)).toEqual(values);
+    expect(validateProgressBackup({ favorites: [], records: {}, recordsV2: values })).toBe('valid');
+    expect(normalizeScopedRecords({ [`${id}|free|3-treino`]: 100, [`${id}|free|1-unknown`]: 100 })).toEqual({});
+    expect(addScopedRecord(values, `${id}|free|0-treino`, 100)).toBe(values);
+  }
+  const merged = mergeProgress({ ...emptyProgress(), records: { dados: 999 } }, { recordsV2: { 'dados|free|0-treino': 525 } });
+  expect(merged.records.dados).toBe(999);
+  expect(merged.recordsV2).toEqual({ 'dados|free|0-treino': 525 });
+  expect(scopedRecordLabel('dados|free|0-treino')).toBe('Livre · Fácil · Treino · 5 rodadas');
+  expect(scopedRecordLabel('pesca|sprint-hard|2-maratona')).toBe('Sprint · Difícil · Difícil · Maratona · 15 rodadas');
+});
+
 it('keeps action difficulty, engine mode and session records independent on import', () => {
   const values = { 'runner|free|normal-mission': 50, 'runner|free|normal-endless': 500, 'voo|sprint-hard|expert-mission': 200 };
   const merged = mergeProgress({ ...emptyProgress(), records: { runner: 999 } }, { recordsV2: values });

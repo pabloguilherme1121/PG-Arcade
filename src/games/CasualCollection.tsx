@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAutoPause } from "./useAutoPause";
+import { useScopedRecord } from './RecordScope';
 import {
   casualGames,
   handValue,
@@ -33,8 +34,8 @@ type PlayProps = {
 };
 export default function CasualCollection({
   gameId,
-  record,
-  onRecord,
+  record: legacyRecord,
+  onRecord: saveLegacy,
 }: {
   gameId: string;
   record: number;
@@ -49,6 +50,7 @@ export default function CasualCollection({
     [notice, setNotice] = useState("Escolha o formato da sua sessão."),
     [session, setSession] = useState(0),
     [done, setDone] = useState(false);
+  const [record, onRecord] = useScopedRecord(`${difficulty}-${mode}`, legacyRecord, saveLegacy);
   const total = mode === "treino" ? 5 : mode === "maratona" ? 15 : 10;
   function finish(points: number, message: string) {
     const next = score + points;
