@@ -9,7 +9,7 @@ import {
 } from "../lib/motionExpansion";
 import { newGames, type NewGameId } from "../lib/newCatalog";
 import { useAutoPause } from "./useAutoPause";
-import { revealPlayfield } from "./revealPlayfield";
+import { revealPlayfield } from "../lib/revealPlayfield";
 import { useResponsiveCanvas } from "./useResponsiveCanvas";
 import { paintAtmosphere, paintBlock, paintOrb, paintRoadCar, paintFrog, paintRock } from "./canvasMaterials";
 import { motionCanvasMaterials } from "./motionCanvasMaterials";

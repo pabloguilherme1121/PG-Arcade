@@ -1,6 +1,7 @@
 import { useAutoPause } from "./useAutoPause";
 import { useScopedRecord } from "./RecordScope";
-import { useRef, useState, useCallback, type PointerEvent, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, useCallback, type PointerEvent, type KeyboardEvent } from "react";
+import { revealPlayfield } from "../lib/revealPlayfield";
 import {
   newBlockPuzzle, canPlaceBlock, placeBlock,
   type BlockDifficulty, type BlockPuzzleState, type BlockShape,
@@ -24,6 +25,7 @@ export default function BlockPuzzle({ record: legacyRecord, onRecord: saveLegacy
   const [focusCell, setFocusCell] = useState(0);
   const [message, setMessage] = useState("Selecione uma peça e uma casa inicial livre.");
   const boardRef = useRef<HTMLDivElement>(null);
+  useEffect(() => { revealPlayfield(boardRef.current); }, []);
 
   const drag = useRef<{ id: number; piece: number; x: number; y: number; moved: boolean } | null>(null);
   const suppressClick = useRef(false);

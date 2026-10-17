@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
+import { revealPlayfield } from "./revealPlayfield";
 
 /** Native fullscreen with an accessible viewport fallback for mobile browsers. */
 export function useImmersivePlayer(player: RefObject<HTMLDivElement | null>, route: string) {
@@ -47,6 +48,7 @@ export function useImmersivePlayer(player: RefObject<HTMLDivElement | null>, rou
     if (!active || !player.current) return;
     const overflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    revealPlayfield(player.current.querySelector<HTMLElement>('[data-blocks-board]'));
     const siblings: Array<[HTMLElement, boolean]> = [];
     let branch: HTMLElement | null = player.current;
     while (branch?.parentElement && branch.parentElement !== document.body) {

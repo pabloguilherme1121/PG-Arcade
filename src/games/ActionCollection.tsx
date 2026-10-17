@@ -12,7 +12,7 @@ import {
   type ActionInput,
 } from "../lib/actionCollection";
 import { useAutoPause, type PlayStatus } from "./useAutoPause";
-import { revealPlayfield } from "./revealPlayfield";
+import { revealPlayfield } from "../lib/revealPlayfield";
 import { useReducedMotion } from "../useReducedMotion";
 import { useResponsiveCanvas } from "./useResponsiveCanvas";
 import { paintBlock, paintRock } from "./canvasMaterials";

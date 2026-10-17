@@ -60,6 +60,7 @@
   box-shadow: 0 12px 28px #0008;
 }
 .player[data-immersive="true"] .player-toolbar {
+  flex-wrap: nowrap;
   position: sticky;
   top: 0;
   z-index: 5;
@@ -164,6 +165,8 @@
     gap: 18px;
   }
   .player[data-immersive="true"] .player-toolbar { gap: 6px; }
+  .player[data-immersive="true"] .player-toolbar > * { width: auto; }
+  .player[data-immersive="true"] .player-utilities summary { min-height: 44px; padding: 8px; font-size: 12px; }
   .player[data-immersive="true"] .player-toolbar > div { gap: 4px; }
   .player[data-immersive="true"] .player-toolbar > a { font-size: 0; gap: 0; min-width: 44px; }
   .player[data-immersive="true"] .player-toolbar button { min-width: 44px; padding-inline: 10px; }
