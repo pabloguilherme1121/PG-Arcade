@@ -1,4 +1,4 @@
-import { useScopedRecord } from "./RecordScope";
+import { useGameActivity, useScopedRecord } from "./RecordScope";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useAutoPause } from "./useAutoPause";
 import {
@@ -45,6 +45,7 @@ export default function Memory({
   const [message, setMessage] = useState("Encontre o primeiro par.");
   const accuracy = memoryAccuracy(matched.length, moves);
   const won = matched.length === pairs;
+  useGameActivity(undefined, won, moves);
   function reset(nextPairs = pairs) {
     setPairs(nextPairs);
     setCards(shuffledPairs(nextPairs));

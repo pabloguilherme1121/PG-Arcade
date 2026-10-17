@@ -33,7 +33,7 @@ import {
   type ExpandedId,
 } from "./lib/expandedCatalog";
 
-import { discoveryFilters, filterByMode, supportsSwipe, modeTags, modeLabel, recommendGames, type DiscoveryFilter } from "./lib/smartDiscovery";
+import { discoveryFilters, filterByMode, modeTags, modeLabel, type DiscoveryFilter } from "./lib/smartDiscovery";
 import { gameHelp, recordUnits } from "./lib/gameHelp";
 import GameCover from "./GameCover";
 import CatalogGameCard from "./CatalogGameCard";
@@ -44,7 +44,8 @@ import {
 } from "./lib/progress";
 import { readPreferences, applyPreferences } from "./lib/preferences";
 
-import { searchText, matchesGame, categoryGroup, supportsPlayerMode, recommended, readCatalogView, saveCatalogView } from "./lib/discovery";
+import { searchText, matchesGame, supportsPlayerMode, recommended, readCatalogView, saveCatalogView } from "./lib/discovery";
+import { catalogCategories, selectCatalog, sortCatalog } from "./lib/catalogSelection";
 import { useReducedMotion } from "./useReducedMotion";
 import { useImmersivePlayer } from "./lib/useImmersivePlayer";
 const ProgressPage = lazy(() => import("./ProgressPage"));
@@ -339,18 +340,10 @@ export default function App() {
   const activeModes = game ? modeTags(game).filter(tag => tag !== "classico") : [];
   useEffect(() => { document.title = `${game ? game.name : page === "favoritos" ? "Seus favoritos" : page === "progresso" ? "Meu progresso" : `${games.length} jogos no navegador`} — PG Arcade`; }, [game, page]);
   const normalizedQuery = useMemo(() => searchText(query), [query]);
-  const matchingGames = useMemo(() => games.filter(g =>
-    (page !== "favoritos" || progress.favorites.includes(g.id)) &&
-    (category === "Todos" || categoryGroup(g.category) === category) &&
-    supportsPlayerMode(g.id, mode) &&
-    (!swipeOnly || supportsSwipe(g.id)) &&
-    matchesGame(g, normalizedQuery)),
-    [page, progress.favorites, category, mode, normalizedQuery, swipeOnly]);
-  const visible = useMemo(() => filterByMode(matchingGames, modeFilter, progress.visits, progress.favorites),
-    [matchingGames, modeFilter, progress.visits, progress.favorites]);
-  const modeCounts = useMemo(() => Object.fromEntries(discoveryFilters.map(filter =>
-    [filter.id, filterByMode(matchingGames, filter.id, progress.visits, progress.favorites).length])),
-    [matchingGames, progress.visits, progress.favorites]);
+  const { visible, categoryCounts, modeCounts } = useMemo(
+    () => selectCatalog(games, { query: normalizedQuery, category, mode, modeFilter, swipeOnly }, progress, page === "favoritos"),
+    [normalizedQuery, category, mode, modeFilter, swipeOnly, progress, page],
+  );
   const curated = recommended.map(id => games.find(g => g.id === id)!);
   const visited = games.filter(g => progress.visits[g.id]).sort((a,b) => (b.id === progress.last ? 1 : 0) - (a.id === progress.last ? 1 : 0) || (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)).slice(0,4);
   const saved = games.filter(g => progress.favorites.includes(g.id)).slice(0,4);
@@ -367,17 +360,7 @@ export default function App() {
       />
     );
   }
-  const sorted = useMemo(
-    () => sort === "recomendados" ? recommendGames(visible, progress) :
-      [...visible].sort((a, b) =>
-        sort === "nome"
-          ? a.name.localeCompare(b.name, "pt-BR")
-          : sort === "visitados"
-            ? (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)
-            : 0,
-      ),
-    [visible, sort, progress],
-  );
+  const sorted = useMemo(() => sortCatalog(visible, sort, progress), [visible, sort, progress]);
   return (
     <div className={`${focusMode && game ? "app-focus" : ""} ${fullscreen && game ? "app-immersive" : ""}`}>
       <a
@@ -693,15 +676,17 @@ export default function App() {
                 </label>
               </div>
               <div className="filters" role="group" aria-label="Categorias">
-                {["Todos", ...new Set(games.map((g) => categoryGroup(g.category)))].map(
+                {catalogCategories.map(
                   (c) => (
                     <button
                       aria-pressed={category === c}
                       className={category === c ? "selected" : ""}
                       key={c}
+                      disabled={c !== "Todos" && c !== category && categoryCounts[c] === 0}
+                      title={`${categoryCounts[c]} ${categoryCounts[c] === 1 ? "jogo" : "jogos"} com os outros filtros atuais`}
                       onClick={() => setCategory(c)}
                     >
-                      {c}
+                      {c} <span className="mode-count" aria-hidden="true">{categoryCounts[c]}</span>
                     </button>
                   ),
                 )}

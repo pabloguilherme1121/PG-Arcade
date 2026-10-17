@@ -35,6 +35,9 @@ export default function SessionChallenge({ children, gameId, progress, update }:
   const pausing = useRef(false);
   const last = useRef(0);
   const controls = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (phase === "done") controls.current?.querySelector<HTMLButtonElement>("[data-session-start]")?.focus({ preventScroll: true });
+  }, [phase]);
   const settle = useCallback(() => {
     if (!running.current) return;
     left.current = Math.max(0, left.current - (performance.now() - last.current) / 1000);
@@ -94,6 +97,13 @@ export default function SessionChallenge({ children, gameId, progress, update }:
     }
     setPhase("running");
   }
+  function finish() {
+    if (mode === "free" || (phase !== "running" && phase !== "paused")) return;
+    settle();
+    running.current = false;
+    window.dispatchEvent(new Event("pg-arcade-pause"));
+    setPhase("done");
+  }
   const sessionKey = mode === "free" ? "free" : `${mode}-${level}`;
   const saveRecord = useCallback((variant: string, score: number) => {
     const key = `${gameId}|${sessionKey}|${variant}`;
@@ -134,6 +144,7 @@ export default function SessionChallenge({ children, gameId, progress, update }:
           <button data-session-start onClick={phase === "running" ? pause : start}>
             {phase === "running" ? "Pausar sessão" : phase === "paused" ? "Retomar sessão" : phase === "done" ? "Repetir desafio de tempo" : "Iniciar desafio de tempo"}
           </button>
+          {(phase === "running" || phase === "paused") && <button onClick={finish}>Encerrar sessão</button>}
           {(phase === "paused" || phase === "done") && <button onClick={() => configure("free", level)}>Voltar à sessão livre</button>}
         </>}
       </div>
@@ -143,18 +154,18 @@ export default function SessionChallenge({ children, gameId, progress, update }:
         {urgent && <span className="session-final-warning" role="status">Últimos 15 segundos. Continue no seu ritmo.</span>}
       </div>}
       {mode !== "free" && <p className="session-note" role="status">
-        {phase === "done" ? "Tempo encerrado. A sessão foi bloqueada; seus recordes já conquistados continuam salvos." : phase === "paused" ? "Sessão pausada. Libere a sessão e continue no jogo. O relógio dos jogos com pausa aguarda a retomada." : "Iniciar libera uma nova partida. Nos jogos com início e pausa, o relógio acompanha a atividade do jogo; nos tabuleiros, conta o tempo da sessão."}
+        {phase === "done" ? `${remaining > 0 ? "Sessão encerrada" : "Tempo encerrado"}. A sessão foi bloqueada; seus recordes já conquistados continuam salvos.` : phase === "paused" ? "Sessão pausada. Libere a sessão e continue no jogo. O relógio dos jogos com pausa aguarda a retomada." : "Iniciar libera uma nova partida. Nos jogos com início e pausa, o relógio acompanha a atividade do jogo; nos tabuleiros, conta o tempo da sessão."}
       </p>}
       {mode !== "free" && phase === "done" && <section aria-label="Resumo da sessão" className="session-summary">
-        <h3>Resultado da sessão</h3>
+        <h2>Resultado da sessão</h2>
         <p>Conclusões registradas pelo jogo: {results.length}.</p>
-        <p>{results.length ? `Melhor resultado registrado: ${["puzzle", "memoria"].includes(gameId) ? Math.min(...results) : Math.max(...results)} ${recordUnits[gameId] || "pontos"}.` : "Nenhuma conclusão foi registrada antes do fim do tempo."}</p>
+        <p>{results.length ? `Melhor resultado registrado: ${["puzzle", "memoria"].includes(gameId) ? Math.min(...results) : Math.max(...results)} ${recordUnits[gameId] || "pontos"}.` : "Nenhuma conclusão foi registrada nesta sessão."}</p>
         <p>Configurações com novo recorde: {improvedSessionRecords(gameId, sessionKey, baseline.current, progress.recordsV2 || {})}.</p>
         <p>{improvedGeneralRecord(gameId, generalBaseline.current, progress.records[gameId] || 0) ? "Você também melhorou sua marca geral." : "Sua marca geral anterior foi preservada."}</p>
         <small>O total inclui somente jogos que informam sua conclusão. A comparação por configuração aparece onde há suporte.</small>
       </section>}
       {blocked && <section className="session-checkpoint" aria-label="Estado do desafio de tempo">
-        <div><strong>{phase === 'paused' ? 'Uma pausa no desafio' : phase === 'done' ? 'Seu tempo de sessão terminou' : 'Sua arena está pronta'}</strong>
+        <div><strong>{phase === 'paused' ? 'Uma pausa no desafio' : phase === 'done' ? remaining > 0 ? 'Sua sessão foi encerrada' : 'Seu tempo de sessão terminou' : 'Sua arena está pronta'}</strong>
           <p>{phase === 'ready' ? 'Inicie o desafio para liberar o jogo. O tempo começa a contar ao iniciar.' : `Tempo de jogo nesta sessão: ${formatSessionTime(elapsed)}. ${phase === 'paused' ? 'O relógio está parado.' : 'Os recordes conquistados permanecem salvos.'}`}</p></div>
         <button type="button" onClick={start}>{phase === 'paused' ? 'Retomar desafio' : phase === 'done' ? 'Jogar outro desafio' : 'Liberar arena'}</button>
       </section>}

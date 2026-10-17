@@ -1,7 +1,9 @@
 import { isGameId } from "./catalog";
 import { normalizeProgress } from "./progress";
 import { isScopedRecordKey } from "./scopedRecords";
-import { normalizeDailyActivity } from "./dailyProgress";
+import { isDailyActivityDay, normalizeDailyActivity } from "./dailyProgress";
+// Fits the app's complete 400-day calendar, even with maximum safe counts.
+export const MAX_PROGRESS_BACKUP_BYTES = 2 * 1024 * 1024;
 const object = (value: unknown): value is Record<string, unknown> => !!value && typeof value === "object" && !Array.isArray(value);
 const counts = (value: unknown, scoped = false) => object(value) && Object.entries(value).every(([key, score]) =>
   (scoped ? isScopedRecordKey(key) : isGameId(key)) && typeof score === "number" && Number.isSafeInteger(score) && score > 0);
@@ -14,10 +16,8 @@ export function validateProgressBackup(data: unknown): "valid" | "empty" | "inva
   if (data.dailyActivity !== undefined && (!object(data.dailyActivity) || data.dailyActivity.version !== 1 || !object(data.dailyActivity.days))) return "invalid";
   if (data.dailyActivity !== undefined) {
     const days = (data.dailyActivity as Record<string, unknown>).days as Record<string, unknown>;
-    const normalized = normalizeDailyActivity(data.dailyActivity);
     for (const [day, values] of Object.entries(days)) {
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !Number.isFinite(Date.parse(day)) || new Date(day).toISOString().slice(0, 10) !== day || !counts(values)) return "invalid";
-      if (Object.keys(values as object).length && !normalized.days[day]) return "invalid";
+      if (!isDailyActivityDay(day) || !counts(values)) return "invalid";
     }
   }
   const progress = normalizeProgress(data);
