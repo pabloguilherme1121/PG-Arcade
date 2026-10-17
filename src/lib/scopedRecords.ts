@@ -1,7 +1,10 @@
 export type ScopedRecords = Record<string, number>;
+// Explicit versioned schema: accepting a key must not depend on mutable catalog copy.
+const logicRecordGames = new Set(['sudoku', 'nonograma', 'labirinto', 'sokoban', 'hanoi', 'senha', 'nim', 'reversi', 'batalha', 'pontes']);
 export function isScopedRecordKey(key: string) {
   const [game, session, variant, ...extra] = key.split("|");
   if (extra.length || !/^(free|(?:sprint|marathon)-(?:easy|normal|hard))$/.test(session ?? "")) return false;
+  if (logicRecordGames.has(game)) return /^[012]-(livre|serie)$/.test(variant ?? '') || (game === 'nim' && /^[012]-reverso$/.test(variant ?? ''));
   return (game === "2048" || game === "reflexo") ? /^(easy|normal|hard)$/.test(variant ?? "")
     : game === "memoria" ? /^(4|8|12)-(500|900|1500)$/.test(variant ?? "")
     : game === "palavra" ? /^(4|6)$/.test(variant ?? "")
@@ -27,7 +30,9 @@ export function scopedRecordLabel(key: string) {
   const [game, session, variant] = key.split("|");
   const levels: Record<string, string> = { easy: "Fácil", normal: "Normal", hard: "Difícil", "0": "Fácil", "1": "Normal", "2": "Difícil" };
   const rhythm = session === "free" ? "Livre" : `${session.startsWith("sprint") ? "Sprint" : "Maratona"} · ${levels[session.split("-")[1]]}`;
-  const detail = game === "palavra" ? `${variant} tentativas` : game === "minas" ? `${variant} minas` : game === "puzzle" ? ({ "12": "Fácil", "40": "Normal", "100": "Difícil" } as Record<string, string>)[variant] : game === "memoria" ? `${variant.split("-")[0]} pares · ${Number(variant.split("-")[1]) / 1000} s`
+  const logicModes: Record<string, string> = { livre: 'Desafio livre', serie: 'Série de 5 desafios', reverso: 'Última peça perde' };
+  const detail = logicRecordGames.has(game) ? `${levels[variant.split('-')[0]]} · ${logicModes[variant.split('-')[1]]}`
+    : game === "palavra" ? `${variant} tentativas` : game === "minas" ? `${variant} minas` : game === "puzzle" ? ({ "12": "Fácil", "40": "Normal", "100": "Difícil" } as Record<string, string>)[variant] : game === "memoria" ? `${variant.split("-")[0]} pares · ${Number(variant.split("-")[1]) / 1000} s`
     : game === "snake" ? `${variant.startsWith("wrap") ? "Portal" : "Clássico"} · ${variant.split("-")[1]} ms · ${variant.endsWith("progressive") ? "progressivo" : "constante"}`
     : levels[variant];
   return `${rhythm} · ${detail}`;
