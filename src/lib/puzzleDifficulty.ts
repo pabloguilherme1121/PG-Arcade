@@ -1,4 +1,14 @@
 export const puzzleDifficultyDescriptions: Record<string, readonly string[]> = {
+  colorsort: [
+    '2 cores em 4 pilhas, incluindo 2 vazias. Mova uma peça por vez para uma pilha vazia ou com a mesma cor no topo.',
+    '3 cores em 5 pilhas, incluindo 2 vazias. Planeje a organização movendo uma peça por vez.',
+    '4 cores em 6 pilhas, incluindo 2 vazias. Organize todas as peças sem misturar cores no destino.',
+  ],
+  watersort: [
+    '2 cores em 4 recipientes, incluindo 2 vazios. Despeje o bloco de cor do topo até acabar o espaço no destino.',
+    '3 cores em 5 recipientes, incluindo 2 vazios. Cada despejo move o bloco de cor do topo que couber.',
+    '4 cores em 6 recipientes, incluindo 2 vazios. Planeje espaço para despejar blocos da mesma cor.',
+  ],
   queens: [
     '3 rainhas corretas já posicionadas. Complete as outras 5 sem ataques.',
     '1 rainha correta já posicionada. Complete as outras 7 sem ataques.',

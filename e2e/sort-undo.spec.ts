@@ -1,0 +1,22 @@
+import { expect, test } from '@playwright/test';
+for (const id of ['colorsort', 'watersort']) test(`${id} undo restores a transfer rather than selection taps`, async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 740 });
+  await page.goto(`./#/jogar/${id}`);
+  const game = page.locator('.board-expansion'), stacks = game.locator('.sort-board button');
+  const undo = game.getByRole('button', { name: 'Desfazer', exact: true });
+  await expect(stacks).toHaveCount(5);
+  const initial = await stacks.evaluateAll(nodes => nodes.map(node => node.getAttribute('data-stack')));
+  await stacks.first().click();
+  await expect(undo).toBeDisabled();
+  await stacks.nth(1).click();
+  await expect(undo).toBeDisabled();
+  await stacks.last().click();
+  await expect(game.locator('.new-hud strong').first()).toHaveText('1');
+  await expect(undo).toBeEnabled();
+  await stacks.first().click();
+  await stacks.nth(1).click();
+  await undo.click();
+  await expect(game.locator('.new-hud strong').first()).toHaveText('0');
+  expect(await stacks.evaluateAll(nodes => nodes.map(node => node.getAttribute('data-stack')))).toEqual(initial);
+  await expect(undo).toBeDisabled();
+});

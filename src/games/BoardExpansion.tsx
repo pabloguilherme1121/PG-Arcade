@@ -79,7 +79,9 @@ export default function BoardExpansion({ gameId, record: legacyRecord, onRecord:
   function update(next: BoardState) {
     if (next === state) return;
     setChanged(next.cells.flatMap((value, index) => value !== state.cells[index] ? [index] : []));
-    setHistory((h) => [...h.slice(-199), state]);
+    // Selection and rejected destinations are not turns in the sorting games.
+    if (!["colorsort", "watersort"].includes(gameId) || next.moves !== state.moves)
+      setHistory((h) => [...h.slice(-199), state]);
     setState(next);
   }
   const n = state.size,
@@ -119,7 +121,7 @@ export default function BoardExpansion({ gameId, record: legacyRecord, onRecord:
     return v ? String(v) : "·";
   }
   function keys(e: React.KeyboardEvent<HTMLDivElement>) {
-    if ((e.target as HTMLElement).closest('.magic-value-picker')) return;
+    if ((e.target as HTMLElement).closest('.magic-value-picker, .sort-board')) return;
     const index = Number((e.target as HTMLElement).dataset.index);
     if (!Number.isFinite(index)) {
       if (
@@ -281,11 +283,14 @@ export default function BoardExpansion({ gameId, record: legacyRecord, onRecord:
               ))}
             </div>
           ) : sort ? (
-            <div className="sort-board">
-              {Array.from({ length: 6 }, (_, tube) => (
+            <div className="sort-board" role="group" aria-label="Pilhas, valores da base ao topo">
+              {Array.from({ length: state.cells.length / 4 }, (_, tube) => (
                 <button
                   key={tube}
                   className={state.selected === tube ? "selected" : ""}
+                  data-tube={tube}
+                  data-stack={state.cells.slice(tube * 4, tube * 4 + 4).filter(Boolean).join(',')}
+                  aria-pressed={state.selected === tube}
                   disabled={state.status !== "playing"}
                   onClick={() => update(boardClick(state, tube * 4))}
                   aria-label={`Pilha ${tube + 1}: ${
