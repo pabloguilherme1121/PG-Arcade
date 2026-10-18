@@ -8,23 +8,30 @@ for (const width of [320, 390]) {
     await page.goto("./");
     const cards = page.locator(".game-grid .game-card");
     await expect(cards).toHaveCount(games.length);
-    // Integration contract with #120: premium cards must keep lazy cover priorities.
-    await expect(cards.first().locator("img.cover-mechanic")).toHaveAttribute("fetchpriority", "high");
-    await expect(cards.nth(4).locator("img.cover-mechanic")).toHaveAttribute("fetchpriority", "low");
     const card = cards.filter({ has: page.getByRole("link", { name: "Jogar Snake", exact: true }) });
     const link = card.getByRole("link", { name: "Jogar Snake", exact: true });
-    await expect(card.locator(".game-metadata")).toHaveCSS("display", "flex");
-    await expect(card.locator("[data-game-mode]")).not.toHaveCount(0);
-    await link.focus();
-    await expect(link).toBeFocused();
+    // Read independent presentation contracts together, avoiding several
+    // full-catalog protocol snapshots while retaining real focus/click actions.
     const appearance = await card.evaluate(element => {
       const rect = element.getBoundingClientRect();
       const border = getComputedStyle(element);
-      return { width: rect.width, radius: parseFloat(border.borderTopLeftRadius), border: border.borderTopStyle };
+      const catalog = document.querySelectorAll('.game-grid .game-card');
+      return { width: rect.width, radius: parseFloat(border.borderTopLeftRadius), border: border.borderTopStyle,
+        firstPriority: catalog[0]?.querySelector('img.cover-mechanic')?.getAttribute('fetchpriority'),
+        fifthPriority: catalog[4]?.querySelector('img.cover-mechanic')?.getAttribute('fetchpriority'),
+        metadataDisplay: getComputedStyle(element.querySelector('.game-metadata')!).display,
+        modeCount: element.querySelectorAll('[data-game-mode]').length };
     });
+    // Integration contract with #120: preserve eager/lazy cover priorities.
+    expect(appearance.firstPriority).toBe('high');
+    expect(appearance.fifthPriority).toBe('low');
+    expect(appearance.metadataDisplay).toBe('flex');
+    expect(appearance.modeCount).toBeGreaterThan(0);
     expect(appearance.width).toBeGreaterThan(0);
     expect(appearance.radius).toBeGreaterThanOrEqual(14);
     expect(appearance.border).toBe("solid");
+    await link.focus();
+    await expect(link).toBeFocused();
 
     const favorite = card.getByRole("button", { name: "Adicionar Snake aos favoritos" });
     await favorite.click();

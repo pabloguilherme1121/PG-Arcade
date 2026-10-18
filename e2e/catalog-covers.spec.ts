@@ -24,7 +24,12 @@ for (const width of [320,390,1280]) {
     await expect(cards.first().locator(".game-cover svg")).toBeVisible();
     await expect(cards.first().locator(".cover-mechanic")).toBeVisible();
     await cards.first().scrollIntoViewIfNeeded();
-    await expect.poll(()=>cards.first().locator('.cover-mechanic').evaluate(img=>(img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    // Poll in the page: repeated locator resolution + evaluation can consume
+    // the whole 5 s budget on Firefox before a second observation is made.
+    await page.waitForFunction(() => {
+      const image = document.querySelector<HTMLImageElement>('.game-card .cover-mechanic');
+      return image !== null && image.naturalWidth > 0;
+    }, undefined, { timeout: 5000 });
     await expect(page.getByRole("link",{name:"Jogar Xadrez"})).toBeVisible();
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
     await page.getByRole("link",{name:"Jogar Xadrez"}).click();
