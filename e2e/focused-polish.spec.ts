@@ -76,6 +76,15 @@ test("configuration records are grouped, searchable and expandable", async ({ pa
 
 test("orientation choice persists without changing the board or requiring fullscreen support", async ({ page }) => {
   await page.goto("./#/jogar/xadrez");
+  const toggle = page.locator(".orientation-control summary");
+  for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    const bounds = await toggle.boundingBox();
+    expect(bounds).not.toBeNull();
+    expect(bounds!.height).toBeGreaterThanOrEqual(44);
+    expect(bounds!.width).toBeGreaterThanOrEqual(44);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  }
   const choice = page.getByLabel("Orientação em tela cheia", { exact: true });
   await expect(choice).toHaveValue("auto");
   await page.locator(".orientation-control summary").click();
