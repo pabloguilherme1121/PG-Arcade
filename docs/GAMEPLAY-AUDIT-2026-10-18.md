@@ -7,7 +7,7 @@ Inspeção estrutural do catálogo e motores; não equivale a 101 partidas compl
 
 - Caça-palavras tinha as mesmas quatro palavras e posições em todos os níveis: corrigido nesta rodada.
 - Forca e Anagramas não garantiam progressão de comprimento e tinham pouca variedade por faixa: corrigidos; familiaridade e dificuldade humana ainda exigem avaliação.
-- Caminho do Cavalo, Oito Damas, Quadrado Mágico, Laço, Pontos Conectados, Organização de Cores, Organização de Água e Estacionamento de Blocos merecem revisão: em cinco sementes, Normal/Avançado têm o mesmo estado inicial e o motor não diferencia suas regras por nível, além da pontuação. Conferir nomes pelos IDs na tabela.
+- Caminho do Cavalo (knight), Oito Rainhas (queens), Quadrado Mágico (magic), Circuito Único (loop), Trilhas Numeradas (links), Pilhas de Cores (colorsort), Laboratório de Líquidos (watersort), Saída Livre (slideblock): em cinco sementes, Normal/Avançado têm o mesmo estado inicial e o motor não diferencia suas regras por nível, além da pontuação. Prioridade para uma próxima revisão de mecânicas.
 - Nos oito tabuleiros com adversário automático, posição inicial igual é normal: o bot usa dificuldade durante a decisão. Não se deve classificá-los como níveis falsos apenas comparando a posição inicial.
 - Desafio 24 usa os mesmos conjuntos no Normal e Avançado; entrada de expressões no teclado mobile merece revisão específica.
 - Ação, movimento e jogos independentes ainda precisam de partidas completas com avaliação de resposta ao toque, justiça de colisão e progressão; a tabela não finge uma certificação humana desses motores.
