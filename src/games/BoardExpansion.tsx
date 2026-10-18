@@ -205,6 +205,7 @@ export default function BoardExpansion({ gameId, record: legacyRecord, onRecord:
         </button>
       </div>
       {puzzleDifficultyDescriptions[gameId] && <p id="board-difficulty-description">{puzzleDifficultyDescriptions[gameId][difficulty]}</p>}
+      {gameId === "links" && difficulty === 2 && !expanded && <p className="links-touch-hint">Casas pequenas? Use Ampliar tabuleiro para tocar com mais precisão e deslize dentro dele para ver as outras casas.</p>}
       <div className="new-hud">
         <span>
           Jogadas <strong>{state.moves}</strong>
@@ -232,6 +233,7 @@ export default function BoardExpansion({ gameId, record: legacyRecord, onRecord:
               key={value}
               disabled={paused || state.status !== 'playing'}
               aria-pressed={state.value === value}
+              className={gameId === "links" && value > 0 ? `color-${value}` : undefined}
               onClick={() => update(boardValue(state, value))}
             >{value === 0 ? 'Apagar' : value}</button>)}
           </div>}
