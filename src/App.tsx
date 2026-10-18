@@ -197,7 +197,10 @@ export default function App() {
   const [mode, setMode] = useState(initialView.mode);
   const [modeFilter, setModeFilter] = useState<DiscoveryFilter>(initialView.modeFilter);
   useEffect(() => {
-    document.querySelectorAll('.filters [aria-pressed="true"],.smart-mode-chips [aria-pressed="true"]').forEach(el => { const row=el.parentElement; if(row) row.scrollLeft+=el.getBoundingClientRect().left-row.getBoundingClientRect().left-8; });
+    const reveal = () => document.querySelectorAll('.filters [aria-pressed="true"],.smart-mode-chips [aria-pressed="true"]').forEach(el => { const row=el.parentElement; if(row) row.scrollLeft+=el.getBoundingClientRect().left-row.getBoundingClientRect().left-8; });
+    reveal();
+    window.addEventListener('resize', reveal);
+    return () => window.removeEventListener('resize', reveal);
   }, [category, modeFilter, page]);
   const [swipeOnly, setSwipeOnly] = useState(initialView.swipeOnly);
   const clearCatalogFilters = () => {

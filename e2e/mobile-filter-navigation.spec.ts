@@ -18,6 +18,13 @@ for (const width of [320, 390]) {
       const chip = el.getBoundingClientRect(), row = el.parentElement!.getBoundingClientRect();
       return chip.left >= row.left - 1 && chip.right <= row.right + 1;
     })).toBe(true);
+    await page.setViewportSize({ width: 844, height: 390 });
+    await page.setViewportSize({ width, height: 844 });
+    await expect.poll(() => selected.evaluate(el => {
+      const chip=el.getBoundingClientRect(), row=el.parentElement!.getBoundingClientRect();
+      return chip.left>=row.left-1 && chip.right<=row.right+1;
+    })).toBe(true);
+    await expect(search).toHaveValue('xadrez');
     const edit = page.getByRole('button', { name: 'Editar busca', exact: true });
     await edit.tap();
     await expect(search).toBeFocused();

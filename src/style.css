@@ -2195,12 +2195,8 @@ html[data-arcade-contrast="true"] .experience-tools {
     flex-wrap: nowrap;
     overflow-x: auto;
     overscroll-behavior-inline: contain;
-    scrollbar-width: none;
+    scrollbar-width: thin;
     padding-bottom: 6px;
-  }
-
-  .filters::-webkit-scrollbar {
-    display: none;
   }
 
   .filters button {

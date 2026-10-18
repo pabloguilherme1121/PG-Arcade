@@ -36,7 +36,6 @@ summary { cursor:pointer; }
 .game-card:hover .preview, .curated-card:hover .preview { transform:none; }
 .catalog { padding-top:24px; border-top:1px solid #32414a; }
 .catalog-heading { gap:20px; }
-.filters { gap:8px; }
 .filters button { padding:10px 14px; font-size:13px; }
 .catalog-tools { display:flex; flex-wrap:wrap; align-items:center; gap:12px 18px; }
 .catalog-tools label { display:flex; flex-wrap:wrap; min-width:0; align-items:center; gap:8px; }
@@ -143,10 +142,10 @@ html[data-arcade-contrast="true"] .catalog :is(.swipe-filter,.mode-count){backgr
 
 /* Shared phone navigation, filters and session controls. */
 @media(max-width:700px){
-.site-header nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;gap:4px}
+.site-header nav{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
 .site-header nav a{display:grid;place-items:center;min-height:44px;padding:8px 4px}
 .catalog-tools{display:grid;grid-template-columns:minmax(0,1fr)}
-.catalog-tools label{display:grid;gap:6px}
+.catalog-tools label{display:grid}
 .catalog-tools select,.player .new-options select{width:100%;min-width:0;font-size:16px}
-.player .new-actions>button{flex:1 1 80px;min-width:0;padding-inline:8px;overflow-wrap:anywhere}
+.player .new-actions>button{flex:1 1 80px;min-width:0;overflow-wrap:anywhere}
 }
