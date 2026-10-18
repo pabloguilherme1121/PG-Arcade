@@ -159,4 +159,4 @@ html[data-arcade-motion="reduced"] .session-mode-cards button {
   transform:none!important;
 }
 
-.orientation-control{font-size:13px;max-width:100%;margin:0}.orientation-control summary{cursor:pointer;min-height:32px;padding:6px 8px}.orientation-control[open] label{padding:8px;max-width:100%}
+.orientation-control{font-size:13px;max-width:100%;margin:0}.orientation-control summary{cursor:pointer;min-height:44px;padding:10px 12px;touch-action:manipulation}.orientation-control[open] label{padding:8px;max-width:100%}
