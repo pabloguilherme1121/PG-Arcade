@@ -52,6 +52,16 @@ export default function CasualCollection({
     [done, setDone] = useState(false);
   const [record, onRecord] = useScopedRecord(`${difficulty}-${mode}`, legacyRecord, saveLegacy);
   const total = mode === "treino" ? 5 : mode === "maratona" ? 15 : 10;
+  function resetSession(start: boolean) {
+    setStarted(start);
+    setDone(false);
+    setScore(0);
+    setRound(1);
+    setSession(value => value + 1);
+    setNotice(start
+      ? "Sessão iniciada. Cada rodada contribui para seu placar."
+      : "Escolha o formato da sua sessão.");
+  }
   function finish(points: number, message: string) {
     const next = score + points;
     setScore(next);
@@ -72,7 +82,10 @@ export default function CasualCollection({
             aria-label="Dificuldade"
             value={difficulty}
             disabled={started && !done}
-            onChange={(e) => setDifficulty(Number(e.target.value))}
+            onChange={(e) => {
+              setDifficulty(Number(e.target.value));
+              resetSession(false);
+            }}
           >
             <option value={0}>Fácil</option>
             <option value={1}>Normal</option>
@@ -85,7 +98,10 @@ export default function CasualCollection({
             aria-label="Formato da sessão"
             value={mode}
             disabled={started && !done}
-            onChange={(e) => setMode(e.target.value)}
+            onChange={(e) => {
+              setMode(e.target.value);
+              resetSession(false);
+            }}
           >
             <option value="treino">Treino · 5 rodadas</option>
             <option value="classico">Clássico · 10 rodadas</option>
@@ -114,16 +130,7 @@ export default function CasualCollection({
       {!started || done ? (
         <button
           className="casual-primary"
-          onClick={() => {
-            setStarted(true);
-            setDone(false);
-            setScore(0);
-            setRound(1);
-            setSession(session + 1);
-            setNotice(
-              "Sessão iniciada. Cada rodada contribui para seu placar.",
-            );
-          }}
+          onClick={() => resetSession(true)}
         >
           {done ? "Nova sessão" : "Iniciar sessão"}
         </button>

@@ -1,6 +1,32 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
 
+for (const setting of ['format', 'difficulty'] as const) {
+  test(`changing casual ${setting} prepares a fresh session after completion`, async ({ page }) => {
+    await page.setViewportSize({ width: setting === 'format' ? 320 : 390, height: 844 });
+    await page.addInitScript(() => { Math.random = () => 0; });
+    await page.goto('./#/jogar/dados');
+    await page.getByLabel('Formato da sessão', { exact: true }).selectOption('treino');
+    await page.getByRole('button', { name: 'Iniciar sessão', exact: true }).click();
+    for (let round = 0; round < 5; round++) {
+      await page.getByRole('button', { name: 'Lançar dados', exact: true }).click();
+      await page.getByRole('button', { name: 'Registrar combinação', exact: true }).click();
+    }
+    await expect(page.locator('.casual-suite > [role=status]')).toContainText('Sessão concluída com 525 pontos.');
+    await page.getByLabel(setting === 'format' ? 'Formato da sessão' : 'Dificuldade', { exact: true }).selectOption(setting === 'format' ? 'maratona' : '2');
+    const hud = page.locator('.casual-hud strong');
+    await expect(hud.nth(0)).toHaveText(setting === 'format' ? '1 / 15' : '1 / 5');
+    await expect(hud.nth(1)).toHaveText('0');
+    await expect(page.locator('.casual-suite > [role=status]')).toHaveText('Escolha o formato da sua sessão.');
+    await page.getByRole('button', { name: 'Iniciar sessão', exact: true }).click();
+    await expect(page.getByLabel('Dificuldade', { exact: true })).toBeDisabled();
+    await expect(page.locator('.dice-table > p')).toContainText('Lançamentos: 0 /');
+    const progress = await page.evaluate(() => JSON.parse(localStorage.getItem('pg-arcade-progress-v1')!));
+    expect(progress.recordsV2['dados|free|1-treino']).toBe(525);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  });
+}
+
 test('dice difficulty limits the available rolls without blocking registration', async ({ page }) => {
   for (const [level, limit] of [['0', 4], ['1', 3], ['2', 2]] as const) {
     await page.goto('./#/jogar/dados');
