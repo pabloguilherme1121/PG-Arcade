@@ -467,11 +467,13 @@ export default function BoardExpansion({ gameId, record: legacyRecord, onRecord:
             <button onClick={() => reset()}>Reiniciar</button>
           </div>
           <p className="new-tip">
-            Setas navegam entre casas. Enter confirma. Desfazer recupera a
-            {" "}
-            {strategic.includes(gameId) || ["mancala", "chomp"].includes(gameId)
-              ? "última jogada e a resposta do adversário."
-              : "última jogada. Planeje a próxima tentativa no seu ritmo."}
+            {sort ? "Tab escolhe uma pilha. Enter ou Espaço confirma. Desfazer reverte a última transferência." : <>
+              Setas navegam entre casas. Enter confirma. Desfazer recupera a
+              {" "}
+              {strategic.includes(gameId) || ["mancala", "chomp"].includes(gameId)
+                ? "última jogada e a resposta do adversário."
+                : "última jogada. Planeje a próxima tentativa no seu ritmo."}
+            </>}
           </p>
         </aside>
       </div>
