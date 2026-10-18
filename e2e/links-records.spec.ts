@@ -14,9 +14,17 @@ test('revised links records preserve previous rules across reload and progress v
   const wrap=game.locator('.new-board-wrap');
   expect((await wrap.boundingBox())!.height).toBeLessThanOrEqual(page.viewportSize()!.height);
   await wrap.scrollIntoViewIfNeeded();
+  // Exercise native keyboard activation here; links-difficulty covers full touch games.
+  // WebKit CI spends ~2s sampling stability before each click, exhausting the
+  // record round's budget before reaching its persistence assertions.
   for(const route of solveLinks(values,fixed,6)) {
-    await cells.nth(route[0]).click();
-    for(const cell of route.slice(1,-1)) await cells.nth(cell).click();
+    for(const index of [route[0], ...route.slice(1,-1)]) {
+      const cell=cells.nth(index);
+      await expect(cell).toBeVisible();
+      await expect(cell).toBeEnabled();
+      await cell.focus();
+      await cell.press('Enter');
+    }
   }
   await expect(game.locator('.new-status')).toHaveText('Desafio concluído!');
   await expect(game.locator('.new-hud strong').nth(1)).not.toHaveText('0');
