@@ -14,6 +14,14 @@ for (const id of ['colorsort', 'watersort']) for (const width of [320, 390, 844]
     await expect(stacks).toHaveCount(difficulty + 4);
     const values = await stacks.evaluateAll(nodes => nodes.map(node => node.getAttribute('data-stack')!.split(',').filter(Boolean).map(Number)));
     const route = solveSort(values, id === 'watersort');
+    if (width === 844) {
+      const board = game.locator('.sort-board');
+      expect((await board.boundingBox())!.height).toBeLessThanOrEqual(366);
+      await board.scrollIntoViewIfNeeded();
+    }
+    const target = (await stacks.first().boundingBox())!;
+    expect(target.width).toBeGreaterThanOrEqual(44);
+    expect(target.height).toBeGreaterThanOrEqual(44);
     for (const [from, to] of route) {
       await stacks.nth(from).tap();
       await expect(stacks.nth(from)).toHaveAttribute('aria-pressed', 'true');
@@ -36,8 +44,11 @@ for (const id of ['colorsort', 'watersort']) test(`${id} preserves source on rej
   await page.setViewportSize({ width: 320, height: 740 });
   await page.goto(`./#/jogar/${id}`);
   const game = page.locator('.board-expansion'), stacks = game.locator('.sort-board button');
+  await expect(stacks).toHaveCount(5);
+  const statusHeight = (await game.locator('.new-status').boundingBox())!.height;
   await stacks.first().focus(); await page.keyboard.press('Enter');
   await expect(stacks.first()).toHaveAttribute('aria-pressed', 'true');
+  expect(Math.abs((await game.locator('.new-status').boundingBox())!.height - statusHeight)).toBeLessThanOrEqual(1);
   const before = await stacks.evaluateAll(nodes => nodes.map(node => node.getAttribute('data-stack')));
   await stacks.nth(1).tap();
   await expect(game.locator('.new-status')).toContainText('origem continua selecionada');

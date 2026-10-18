@@ -21,6 +21,7 @@ Um solucionador independente por busca em largura encontrou trajetórias mínima
 - Um destino cheio ou de cor incompatível mantém a origem selecionada e não consome jogada. A mensagem explica como continuar.
 - Tocar na própria origem cancela a seleção, com mensagem explícita.
 - Desfazer registra transferências, não seleções ou tentativas rejeitadas. A pausa preserva a seleção; reiniciar restaura a abertura do nível.
+- No horizontal de até 480 px de altura, as duas fileiras ficam compactas sem reduzir o alvo de toque de cada recipiente abaixo de 44 px. A área de feedback tem altura mínima reservada no mobile e mensagens mais curtas, evitando saltos do tabuleiro entre seleções. Antes da correção, o tabuleiro excedia a altura útil e uma seleção aumentava a mensagem em 72 px.
 - Contagem de recipientes e verificação de vitória usam o tamanho real do estado. Miniaturas estáticas refletem a nova abertura Normal, sem carregar o motor no catálogo inicial.
 
 ## Validação

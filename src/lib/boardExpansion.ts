@@ -714,7 +714,7 @@ export function boardClick(state: BoardState, index: number): BoardState {
     if (s.selected < 0) {
       if (!b.slice(to * 4, to * 4 + 4).some(Boolean)) return state;
       s.selected = to;
-      s.message = `Pilha ${to + 1} selecionada. Escolha uma pilha vazia ou com a mesma cor no topo. Toque novamente na origem para cancelar.`;
+      s.message = `Origem: pilha ${to + 1}. Escolha o destino; toque na origem para cancelar.`;
       return s;
     }
     const from = s.selected;
@@ -727,7 +727,7 @@ export function boardClick(state: BoardState, index: number): BoardState {
       dst = b.slice(to * 4, to * 4 + 4).filter(Boolean),
       color = src.at(-1)!;
     if (!src.length || dst.length === 4 || (dst.length && dst.at(-1) !== color))
-      return invalid("Destino cheio ou cor incompatível. A origem continua selecionada; escolha outra pilha.");
+      return invalid("Destino inválido. A origem continua selecionada; escolha outra pilha.");
     let count = 1;
     if (id === "watersort")
       while (count < src.length && src[src.length - 1 - count] === color)
