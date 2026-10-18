@@ -4,15 +4,16 @@ const logicRecordGames = new Set(['sudoku', 'nonograma', 'labirinto', 'sokoban',
 const actionRecordGames = new Set(['breakout', 'pong', 'asteroides', 'invasores', 'runner', 'voo', 'jetpack', 'esquiva', 'pouso', 'drift']);
 const casualRecordGames = new Set(['vinteum', 'dados', 'boliche', 'basquete', 'golfe', 'arco', 'pesca', 'match3']);
 const quizRecordGames = new Set(['arithmetic', 'fractions', 'primes', 'equation', 'twentyfour', 'numsequence', 'anagram', 'hangman', 'wordsearch', 'stroop', 'oddone', 'estimate']);
-export const scopedRecordFamily = (game: string): 'logic' | 'action' | 'casual' | 'quiz' | null =>
-  logicRecordGames.has(game) ? 'logic' : actionRecordGames.has(game) ? 'action' : casualRecordGames.has(game) ? 'casual' : quizRecordGames.has(game) ? 'quiz' : null;
+const boardRecordGames = new Set(['flood', 'same', 'peg', 'knight', 'queens', 'latin', 'takuzu', 'sky', 'futoshiki', 'magic', 'fifteen', 'rotate', 'pipes', 'laser', 'loop', 'links', 'colorsort', 'watersort', 'slideblock', 'memorypath', 'gomoku', 'hex', 'ataxx', 'isolation', 'breakthrough', 'territory', 'mancala', 'chomp']);
+export const scopedRecordFamily = (game: string): 'logic' | 'action' | 'casual' | 'quiz' | 'board' | null =>
+  logicRecordGames.has(game) ? 'logic' : actionRecordGames.has(game) ? 'action' : casualRecordGames.has(game) ? 'casual' : quizRecordGames.has(game) ? 'quiz' : boardRecordGames.has(game) ? 'board' : null;
 export function isScopedRecordKey(key: string) {
   const [game, session, variant, ...extra] = key.split("|");
   if (extra.length || !/^(free|(?:sprint|marathon)-(?:easy|normal|hard))$/.test(session ?? "")) return false;
   if (logicRecordGames.has(game)) return /^[012]-(livre|serie)$/.test(variant ?? '') || (game === 'nim' && /^[012]-reverso$/.test(variant ?? ''));
   if (actionRecordGames.has(game)) return /^(easy|normal|hard|master|expert)-(mission|endless)$/.test(variant ?? '');
   if (casualRecordGames.has(game)) return /^[012]-(treino|classico|maratona)$/.test(variant ?? '');
-  if (quizRecordGames.has(game)) return /^[012]$/.test(variant ?? '');
+  if (quizRecordGames.has(game) || boardRecordGames.has(game)) return /^[012]$/.test(variant ?? '');
   return (game === "2048" || game === "reflexo") ? /^(easy|normal|hard)$/.test(variant ?? "")
     : game === "memoria" ? /^(4|8|12)-(500|900|1500)$/.test(variant ?? "")
     : game === "palavra" ? /^(4|6)$/.test(variant ?? "")

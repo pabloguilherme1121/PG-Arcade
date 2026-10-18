@@ -137,6 +137,15 @@
   color: #fff;
   opacity: 1;
 }
+.grid-queens button, .grid-queens button.fixed { position: relative; line-height:1; }
+.new-grid.grid-queens button[data-conflict="true"] { background:#532c36; border-color:#ffadad; color:#fff; }
+.queen-conflict-mark { position:absolute; top:0; right:2px; font-size:11px; line-height:1; font-weight:800; }
+.new-board-wrap .magic-value-picker { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:4px; margin:0 0 8px; }
+.magic-value-picker button { padding:0; font-size:14px; min-width:0; }
+@media (max-height:480px) and (orientation:landscape) {
+  .board-expansion:is([data-new-game="queens"],[data-new-game="knight"]) .new-board-wrap:not(.board-scale-expanded) { width:100%; max-width:290px; margin-inline:auto; }
+  .board-expansion[data-new-game="magic"] .new-board-wrap:not(.board-scale-expanded) { max-width:280px; margin-inline:auto; }
+}
 .new-grid .selected,
 .sort-board .selected,
 .wordsearch-grid .selected {

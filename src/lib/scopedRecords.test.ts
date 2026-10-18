@@ -3,6 +3,24 @@ import { addScopedRecord, normalizeScopedRecords } from "./scopedRecords";
 import { scopedRecordLabel } from './scopedRecordLabels';
 import { emptyProgress, mergeProgress, normalizeProgress } from "./progress";
 import { validateProgressBackup } from "./progressBackup";
+import { newGames } from './newCatalog';
+
+it('separates all 28 board-game difficulty records without rewriting legacy marks', () => {
+  const boards = newGames.filter(game => game.family === 'board');
+  expect(boards).toHaveLength(28);
+  for (const game of boards) {
+    for (const level of [0, 1, 2]) {
+      const values = { [`${game.id}|free|${level}`]: 100 };
+      expect(normalizeScopedRecords(values)).toEqual(values);
+      expect(validateProgressBackup({ favorites: [], records: {}, recordsV2: values })).toBe('valid');
+    }
+    expect(normalizeScopedRecords({ [`${game.id}|free|3`]: 100 })).toEqual({});
+  }
+  const merged = mergeProgress({ ...emptyProgress(), records: { queens: 9999 } }, { recordsV2: { 'queens|free|2': 1400 } });
+  expect(merged.records.queens).toBe(9999);
+  expect(merged.recordsV2).toEqual({ 'queens|free|2': 1400 });
+  expect(scopedRecordLabel('queens|free|2')).toBe('Livre · Avançado');
+});
 
 it('keeps quiz difficulty records separate and preserves unclassified history', () => {
   const values = { 'wordsearch|free|0': 1000, 'wordsearch|free|2': 4500, 'arithmetic|sprint-hard|1': 200 };
