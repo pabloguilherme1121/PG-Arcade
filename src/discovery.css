@@ -145,3 +145,13 @@ html[data-arcade-contrast="true"] .active-catalog-filters button {background:#00
   .smart-mode-header span{flex-basis:auto;line-height:1.5}
 }
 html[data-arcade-contrast="true"] .catalog :is(.swipe-filter,.mode-count){background:#000;color:#fff;border:1px solid #fff}
+
+/* Shared phone navigation, filters and session controls. */
+@media(max-width:700px){
+.site-header nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;gap:4px}
+.site-header nav a{display:grid;place-items:center;min-height:44px;padding:8px 4px;text-align:center}
+.catalog-tools{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.catalog-tools label{display:grid;gap:6px}
+.catalog-tools select,.player .new-options select{width:100%;min-width:0;font-size:16px}
+.player .new-actions>button{flex:1 1 80px;min-width:0;padding-inline:8px;overflow-wrap:anywhere}
+}
