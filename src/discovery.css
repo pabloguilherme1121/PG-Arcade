@@ -136,11 +136,6 @@ html[data-arcade-contrast="true"] .active-catalog-filters button {background:#00
 .catalog .swipe-filter{padding:10px 12px;border:1px solid #435b6c;border-radius:12px;background:#152432;font-size:13px}
 .catalog .swipe-filter input{accent-color:#c9f65a}
 @media(max-width:600px){
-  .catalog-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-  .catalog-tools label{display:grid;gap:6px;align-self:start}
-  .catalog-tools select{width:100%;min-width:0;margin:0;min-height:44px}
-  .catalog-tools [role="status"]{grid-column:1/-1;justify-self:start}
-  .catalog-tools button{min-width:0;width:100%;font-size:13px}
   .smart-mode-header{flex-direction:column;gap:6px}
   .smart-mode-header span{flex-basis:auto;line-height:1.5}
 }
@@ -149,8 +144,8 @@ html[data-arcade-contrast="true"] .catalog :is(.swipe-filter,.mode-count){backgr
 /* Shared phone navigation, filters and session controls. */
 @media(max-width:700px){
 .site-header nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;gap:4px}
-.site-header nav a{display:grid;place-items:center;min-height:44px;padding:8px 4px;text-align:center}
-.catalog-tools{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.site-header nav a{display:grid;place-items:center;min-height:44px;padding:8px 4px}
+.catalog-tools{display:grid;grid-template-columns:minmax(0,1fr)}
 .catalog-tools label{display:grid;gap:6px}
 .catalog-tools select,.player .new-options select{width:100%;min-width:0;font-size:16px}
 .player .new-actions>button{flex:1 1 80px;min-width:0;padding-inline:8px;overflow-wrap:anywhere}
