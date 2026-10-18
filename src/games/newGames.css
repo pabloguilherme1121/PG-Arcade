@@ -513,3 +513,13 @@ html[data-arcade-contrast="true"] .new-grid button[data-last-move]::before { bor
 .motion-overlay:has(.arena-feedback) { gap: 0; background: radial-gradient(circle at 50% 35%, #2845566b, transparent 65%), #08121ce8; }
 .motion-expansion .new-hud [data-critical-lives="true"] { border: 1px solid #e8a68b; border-radius: 8px; padding: 4px 7px; background: #472d2d; color: #ffe5d9; }
 .motion-expansion .new-hud [data-critical-lives="true"] strong { color: #fff0dc; }
+
+/* Keep feedback from moving the sorting controls between taps. */
+@media (max-width:600px), (max-height:480px) and (orientation:landscape) {
+  .board-expansion:is([data-new-game="colorsort"],[data-new-game="watersort"]) .new-status { min-height:108px; }
+}
+@media (max-height:480px) and (orientation:landscape) {
+  .board-expansion:is([data-new-game="colorsort"],[data-new-game="watersort"]) .sort-board { gap:8px; }
+  .board-expansion:is([data-new-game="colorsort"],[data-new-game="watersort"]) .sort-board button { padding:4px; gap:2px; }
+  .board-expansion:is([data-new-game="colorsort"],[data-new-game="watersort"]) .sort-board .new-color { min-height:26px; padding:2px; line-height:1.25; }
+}

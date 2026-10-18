@@ -377,11 +377,16 @@ export function newBoard(id: BoardId, difficulty = 1, seed = 1): BoardState {
     });
     s.cells = [...s.fixed];
   } else if (id === "colorsort" || id === "watersort") {
-    s.size = 4;
-    s.cells = [
-      1, 2, 1, 2, 2, 1, 2, 1, 3, 4, 3, 4, 4, 3, 4, 3, 0, 0, 0, 0, 0, 0, 0, 0,
-    ];
-    if (seed % 2) s.cells = s.cells.map((x) => (x ? 5 - x : 0));
+    // Two empty vessels remain available at every level. Each color has four units.
+    const colors = difficulty + 2;
+    const palette = Array.from({ length: colors }, (_, i) => i + 1);
+    for (let i = palette.length - 1; i > 0; i--) {
+      const other = Math.floor(rng() * (i + 1));
+      [palette[i], palette[other]] = [palette[other], palette[i]];
+    }
+    s.cells = Array.from({ length: colors * 4 }, (_, i) =>
+      palette[(Math.floor(i / 4) + i % 4) % colors],
+    ).concat(Array(8).fill(0));
   } else if (id === "slideblock") {
     s.size = 6;
     s.cells = Array(36).fill(0);
@@ -594,7 +599,7 @@ export function boardSolved(s: BoardState): boolean {
   if (s.id === "laser") return laserPath(b, n).won;
   if (s.id === "loop") return loopValid(b, n);
   if (["colorsort", "watersort"].includes(s.id))
-    return Array.from({ length: 6 }, (_, i) => b.slice(i * 4, i * 4 + 4)).every(
+    return Array.from({ length: b.length / 4 }, (_, i) => b.slice(i * 4, i * 4 + 4)).every(
       (tube) =>
         tube.every((x) => x === 0) ||
         tube.every((x) => x === tube[0] && x !== 0),
@@ -709,22 +714,27 @@ export function boardClick(state: BoardState, index: number): BoardState {
     if (s.selected < 0) {
       if (!b.slice(to * 4, to * 4 + 4).some(Boolean)) return state;
       s.selected = to;
+      s.message = `Origem: pilha ${to + 1}. Escolha o destino; toque na origem para cancelar.`;
       return s;
     }
     const from = s.selected;
-    s.selected = -1;
-    if (from === to) return s;
+    if (from === to) {
+      s.selected = -1;
+      s.message = "Seleção cancelada. Escolha uma pilha de origem.";
+      return s;
+    }
     const src = b.slice(from * 4, from * 4 + 4).filter(Boolean),
       dst = b.slice(to * 4, to * 4 + 4).filter(Boolean),
       color = src.at(-1)!;
     if (!src.length || dst.length === 4 || (dst.length && dst.at(-1) !== color))
-      return invalid("Destino cheio ou cor incompatível.");
+      return invalid("Destino inválido. A origem continua selecionada; escolha outra pilha.");
     let count = 1;
     if (id === "watersort")
       while (count < src.length && src[src.length - 1 - count] === color)
         count++;
     count = Math.min(count, 4 - dst.length);
     for (let k = 0; k < count; k++) dst.push(src.pop()!);
+    s.selected = -1;
     b.splice(from * 4, 4, ...src, ...Array(4 - src.length).fill(0));
     b.splice(to * 4, 4, ...dst, ...Array(4 - dst.length).fill(0));
   } else if (id === "slideblock") {

@@ -26,6 +26,8 @@ test('progress loads on demand, keeps real results and exposes a records-only vi
   await page.goto('./');
   expect(progressRequests).toHaveLength(0);
   await page.goto('./#/jogar/snake');
+  // A hash-only navigation can finish before React commits the game route.
+  await expect(page.locator('.player h1')).toHaveText('Snake');
   await page.getByRole('link',{name:'Meu progresso',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Meu progresso',exact:true})).toBeFocused();
   await expect(page.getByRole('progressbar',{name:'Jogos explorados no catálogo'})).toHaveAttribute('value','1');
