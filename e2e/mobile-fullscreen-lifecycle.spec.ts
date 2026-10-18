@@ -81,3 +81,33 @@ for (const width of [320, 390]) {
     await leaveImmersiveAndReturn(page);
   });
 }
+
+for (const width of [320, 390]) {
+  test(`fullscreen keeps controls inside asymmetric safe areas at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await openImmersiveFallback(page);
+    await page.goto("./#/jogar/2048");
+    await enterImmersive(page);
+    const player = page.locator(".player");
+    // Exercise either notch edge without claiming a physical-device test.
+    for (const [left, right] of [[34, 0], [0, 34]]) {
+      await player.evaluate((element, insets) => {
+        element.style.setProperty("--player-safe-left", `${insets.left}px`);
+        element.style.setProperty("--player-safe-right", `${insets.right}px`);
+      }, { left, right });
+      const toolbar = page.locator(".player-toolbar");
+      const bounds = await toolbar.boundingBox();
+      expect(bounds).not.toBeNull();
+      expect(bounds!.x).toBeGreaterThanOrEqual(Math.max(10, left));
+      expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width - Math.max(10, right));
+      const exit = page.getByRole("button", { name: "Sair da tela cheia", exact: true });
+      expect(await exit.evaluate(element => {
+        const rect = element.getBoundingClientRect();
+        const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        return hit !== null && (hit === element || element.contains(hit));
+      })).toBe(true);
+      expect(await player.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
+    }
+    await leaveImmersiveAndReturn(page);
+  });
+}
