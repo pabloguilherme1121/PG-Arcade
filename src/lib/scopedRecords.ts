@@ -13,6 +13,7 @@ export function isScopedRecordKey(key: string) {
   if (logicRecordGames.has(game)) return /^[012]-(livre|serie)$/.test(variant ?? '') || (game === 'nim' && /^[012]-reverso$/.test(variant ?? ''));
   if (actionRecordGames.has(game)) return /^(easy|normal|hard|master|expert)-(mission|endless)$/.test(variant ?? '');
   if (casualRecordGames.has(game)) return /^[012]-(treino|classico|maratona)$/.test(variant ?? '');
+  if (game === 'links') return /^(?:[012]|paths2-[012])$/.test(variant ?? '');
   if (quizRecordGames.has(game) || boardRecordGames.has(game)) return /^[012]$/.test(variant ?? '');
   return (game === "2048" || game === "reflexo") ? /^(easy|normal|hard)$/.test(variant ?? "")
     : game === "memoria" ? /^(4|8|12)-(500|900|1500)$/.test(variant ?? "")

@@ -1,5 +1,5 @@
 import type { BoardId } from "./newCatalog";
-import { initialKnightPath, transformSquare } from './puzzleDifficulty';
+import { initialKnightPath, initialLinks, transformSquare } from './puzzleDifficulty';
 export type BoardState = {
   id: BoardId;
   size: number;
@@ -362,20 +362,7 @@ export function newBoard(id: BoardId, difficulty = 1, seed = 1): BoardState {
     if (laserPath(s.cells, n).won) s.cells[n] = 1;
   } else if (id === "loop") s.cells = Array(loopEdges(4).length).fill(0);
   else if (id === "links") {
-    s.fixed = Array(16).fill(0);
-    s.goal = Array(16).fill(0);
-    const path = [0, 1, 2, 3, 7, 6, 5, 4, 8, 9, 10, 11, 15, 14, 13, 12].map(
-        (i) => (seed % 2 ? i : 15 - i),
-      ),
-      lengths = difficulty === 0 ? [4, 4, 4, 4] : [3, 5, 3, 5];
-    let offset = 0;
-    lengths.forEach((len, k) => {
-      const segment = path.slice(offset, offset + len);
-      segment.forEach((i) => (s.goal[i] = k + 1));
-      s.fixed[segment[0]] = s.fixed[segment.at(-1)!] = k + 1;
-      offset += len;
-    });
-    s.cells = [...s.fixed];
+    Object.assign(s, initialLinks(difficulty, seed));
   } else if (id === "colorsort" || id === "watersort") {
     // Two empty vessels remain available at every level. Each color has four units.
     const colors = difficulty + 2;
@@ -604,14 +591,17 @@ export function boardSolved(s: BoardState): boolean {
         tube.every((x) => x === 0) ||
         tube.every((x) => x === tube[0] && x !== 0),
     );
-  if (s.id === "links")
+  if (s.id === "links") {
+    const colors = [...new Set(s.fixed.filter(Boolean))];
     return (
-      b.every((x) => x > 0) &&
-      [1, 2, 3, 4].every((color) => {
+      b.every((x) => x > 0 && colors.includes(x)) &&
+      colors.every((color) => {
         const terminals = s.fixed.flatMap((v, i) => (v === color ? [i] : []));
+        if (terminals.length !== 2) return false;
         const group = floodGroup(b, terminals[0], n);
         return (
           group.includes(terminals[1]) &&
+          group.length === b.filter(value => value === color).length &&
           group.every(
             (i) =>
               neighbors(i, n).filter((j) => b[j] === color).length ===
@@ -620,6 +610,7 @@ export function boardSolved(s: BoardState): boolean {
         );
       })
     );
+  }
   if (s.id === "memorypath")
     return s.phase === 2 && s.selected === s.goal.length;
   if (s.id === "slideblock") return (s.aux[0] % 6) + s.aux[1] === 6;
@@ -698,8 +689,18 @@ export function boardClick(state: BoardState, index: number): BoardState {
       s.selected = index;
       return s;
     }
-    if (s.value === 0) b[index] = 0;
-    else {
+    if (s.value === 0) {
+      if (!b[index]) return state;
+      b[index] = 0;
+      s.selected = -1;
+    } else if (b[index]) {
+      if (neighbors(index, n).filter(cell => b[cell] === b[index]).length > 1)
+        return invalid("Retome por uma ponta da trilha; use Apagar para corrigir o meio.");
+      s.value = b[index];
+      s.selected = index;
+      s.message = `Trilha ${s.value} selecionada. Continue por uma casa vizinha vazia.`;
+      return s;
+    } else {
       if (
         s.selected < 0 ||
         !neighbors(s.selected, n).includes(index) ||

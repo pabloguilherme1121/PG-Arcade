@@ -8,7 +8,8 @@ export function scopedRecordLabel(key: string) {
   const family = scopedRecordFamily(game);
   const logicModes: Record<string, string> = { livre: 'Desafio livre', serie: 'Série de 5 desafios', reverso: 'Última peça perde' };
   const casualModes: Record<string, string> = { treino: 'Treino · 5 rodadas', classico: 'Clássico · 10 rodadas', maratona: 'Maratona · 15 rodadas' };
-  const detail = family === 'logic' ? `${levels[variant.split('-')[0]]} · ${logicModes[variant.split('-')[1]]}`
+  const detail = game === 'links' ? `${['Iniciante', 'Normal', 'Avançado'][Number(variant.at(-1))]} · ${variant.startsWith('paths2-') ? 'Trilhas ampliadas' : 'Regras anteriores'}`
+    : family === 'logic' ? `${levels[variant.split('-')[0]]} · ${logicModes[variant.split('-')[1]]}`
     : family === 'action' ? `${levels[variant.split('-')[0]]} · ${variant.endsWith('-mission') ? 'Missão' : 'Resistência'}`
     : family === 'casual' ? `${levels[variant.split('-')[0]]} · ${casualModes[variant.split('-')[1]]}`
     : family === 'quiz' || family === 'board' ? ['Iniciante', 'Normal', 'Avançado'][Number(variant)]
