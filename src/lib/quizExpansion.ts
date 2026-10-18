@@ -1,4 +1,5 @@
 import { seeded } from "./boardExpansion";
+import { makeWordSearch } from './wordsearch';
 export type Question = {
   prompt: string;
   answer: string;
@@ -26,7 +27,35 @@ export const words = [
   ["MUSICA", "Arte dos sons"],
   ["ESTRELA", "Brilha no céu com luz própria"],
   ["VIAGEM", "Deslocamento para outro lugar"],
+  ["SORVETE", "Sobremesa gelada"],
+  ["ABACAXI", "Fruta com coroa e casca áspera"],
+  ["AMIZADE", "Laço de carinho entre amigos"],
+  ["PASSARINHO", "Pequena ave"],
+  ["BIBLIOTECA", "Lugar onde se consultam e emprestam livros"],
+  ["COMPUTADOR", "Máquina usada para executar programas"],
+  ["ASTRONAUTA", "Pessoa que viaja ao espaço"],
+  ["CACHOEIRA", "Queda de água de um rio"],
+  ["BORBOLETA", "Inseto de asas coloridas"],
+  ["BRINCADEIRA", "Atividade feita para se divertir"],
+  ["CHOCOLATE", "Doce feito com cacau"],
+  ["PEIXE", "Animal aquático que respira por brânquias"],
+  ["CHUVA", "Água que cai das nuvens"],
+  ["TERRA", "Solo onde crescem as plantas"],
+  ["CADERNO", "Folhas reunidas para escrever"],
+  ["DESENHO", "Imagem feita com traços"],
+  ["COZINHA", "Lugar da casa onde se prepara comida"],
+  ["TRABALHO", "Atividade feita para produzir ou realizar algo"],
+  ["GELADEIRA", "Eletrodoméstico que conserva alimentos frios"],
+  ["TARTARUGA", "Réptil com casco"],
+  ["TRAVESSEIRO", "Apoio para a cabeça na hora de dormir"],
+  ["AVENTUREIRO", "Pessoa que explora lugares e vive aventuras"],
 ] as const;
+export const wordDifficultyDescriptions = [
+  'Palavras de 5 a 6 letras. Comece com termos curtos e familiares.',
+  'Palavras de 7 a 8 letras. Mais letras para organizar ou descobrir.',
+  'Palavras de 9 a 11 letras. Vocabulário mais longo, com pistas de significado.',
+] as const;
+export const hangmanMistakeLimits = [8, 6, 5] as const;
 export const colorNames = ["Vermelho", "Azul", "Verde", "Amarelo"];
 export const colorValues = ["#ff8794", "#79b8ff", "#a5e479", "#ffe17c"];
 export function isPrime(n: number) {
@@ -133,32 +162,21 @@ export function question(
           : "As diferenças aumentam.";
   }
   if (id === "anagram" || id === "hangman") {
-    const [word, hint] =
-      words[(seed + round * 3 + difficulty * 5) % words.length];
+    const band = difficulty === 0 ? [5, 6] : difficulty === 1 ? [7, 8] : [9, 11];
+    const pool = words.filter(([word]) => word.length >= band[0] && word.length <= band[1]);
+    const [word, hint] = pool[(seed + round) % pool.length];
     q.answer = word;
+    const shuffled = shuffle([...word], rng);
+    if (shuffled.join('') === word) shuffled.push(shuffled.shift()!);
     q.prompt =
       id === "anagram"
-        ? shuffle([...word], rng).join(" · ")
+        ? shuffled.join(" · ")
         : "Descubra a palavra";
     q.hint = hint;
   }
   if (id === "wordsearch") {
-    q.words = ["SOL", "LUA", "MAR", "RIO"];
-    q.grid = Array.from(
-      { length: 36 },
-      () => "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[rand(26)],
-    );
-    const positions = [
-      [0, 1, 2],
-      [9, 15, 21],
-      [30, 31, 32],
-      [5, 10, 15],
-    ]; // RIO overlaps LUA at its O only if placed elsewhere.
-    positions[3] = [18, 19, 20];
-    q.words.forEach((w, k) =>
-      [...w].forEach((ch, j) => (q.grid[positions[k][j]] = ch)),
-    );
-    q.prompt = "SOL · LUA · MAR · RIO";
+    Object.assign(q, makeWordSearch(difficulty, rng));
+    q.prompt = q.words.join(' · ');
     q.answer = "";
   }
   if (id === "stroop") {

@@ -4,6 +4,19 @@ import { scopedRecordLabel } from './scopedRecordLabels';
 import { emptyProgress, mergeProgress, normalizeProgress } from "./progress";
 import { validateProgressBackup } from "./progressBackup";
 
+it('keeps quiz difficulty records separate and preserves unclassified history', () => {
+  const values = { 'wordsearch|free|0': 1000, 'wordsearch|free|2': 4500, 'arithmetic|sprint-hard|1': 200 };
+  expect(normalizeScopedRecords(values)).toEqual(values);
+  expect(validateProgressBackup({ favorites: [], records: {}, recordsV2: values })).toBe('valid');
+  const merged = mergeProgress({ ...emptyProgress(), records: { wordsearch: 9999 } }, { recordsV2: values });
+  expect(merged.records.wordsearch).toBe(9999);
+  expect(scopedRecordLabel('wordsearch|free|2')).toBe('Livre · Avançado');
+  for (const id of ['arithmetic', 'fractions', 'primes', 'equation', 'twentyfour', 'numsequence', 'anagram', 'hangman', 'wordsearch', 'stroop', 'oddone', 'estimate']) {
+    for (const level of [0, 1, 2]) expect(normalizeScopedRecords({ [`${id}|free|${level}`]: 100 })).toEqual({ [`${id}|free|${level}`]: 100 });
+    expect(normalizeScopedRecords({ [`${id}|free|3`]: 100 })).toEqual({});
+  }
+});
+
 it('preserves casual records by difficulty, round format and session in backups', () => {
   const ids = ['vinteum', 'dados', 'boliche', 'basquete', 'golfe', 'arco', 'pesca', 'match3'];
   for (const id of ids) {
