@@ -540,3 +540,14 @@ html[data-arcade-contrast="true"] .new-grid button[data-last-move]::before { bor
 .links-value-picker .color-6 { background:#256773; color:#fff; }
 .links-touch-hint { font-size:.875rem; line-height:1.5; color:var(--text-muted, #c7d3df); }
 html[data-arcade-contrast="true"] .links-value-picker button[aria-pressed="true"] { outline-color:#fff; }
+
+@media (max-width:760px) {
+  .board-expansion[data-new-game="links"] .new-options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  .board-expansion[data-new-game="links"] .new-options label { grid-column:1 / -1; }
+  .board-expansion[data-new-game="links"] .new-options :is(button,select) { width:100%; min-width:0; }
+  .board-expansion[data-new-game="links"] .new-actions { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
+  .board-expansion[data-new-game="links"] .new-actions button { min-width:0; padding:10px 4px; overflow-wrap:anywhere; }
+}
+/* Expanded touch targets scroll inside the board, with choices kept in reach. */
+.board-expansion[data-new-game="links"] .board-scale-expanded { max-height:75svh; overscroll-behavior:contain; scroll-padding-top:110px; }
+.board-scale-expanded .links-value-picker { position:sticky; top:0; left:0; z-index:2; background:#0b1926; padding-block:4px; }
