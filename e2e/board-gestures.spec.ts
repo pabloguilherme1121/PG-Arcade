@@ -1,6 +1,6 @@
 import {test,expect,type Page,type Locator} from '@playwright/test';
 import {swapJewels} from '../src/lib/casualCollection';
-import {selectedWord} from '../src/lib/quizExpansion';
+import {visibleWordPaths} from './wordsearch-helpers';
 test.use({hasTouch:true,viewport:{width:390,height:844}});
 
 async function drag(page:Page,from:Locator,to:Locator,browserName:string,cancel=false) {
@@ -41,19 +41,17 @@ async function drag(page:Page,from:Locator,to:Locator,browserName:string,cancel=
 test('wordsearch accepts a finger drag once, cancels safely and keeps two-tap input',async({page,browserName})=>{
   await page.goto('./#/jogar/wordsearch');
   const cells=page.locator('.wordsearch-grid button');
+  const [first, second] = await visibleWordPaths(page);
   await expect(cells).toHaveCount(36);
   await expect(page.locator('.wordsearch-grid')).toHaveCSS('touch-action','none');
-  await drag(page,cells.nth(0),cells.nth(2),browserName,true);
+  await page.locator('.wordsearch-grid').scrollIntoViewIfNeeded();
+  await drag(page,cells.nth(first.from),cells.nth(first.to),browserName,true);
   await expect(page.locator('.wordsearch-grid .found')).toHaveCount(0);
-  await drag(page,cells.nth(0),cells.nth(2),browserName);
-  await expect(page.locator('.wordsearch-grid .found')).toHaveCount(3);
+  await drag(page,cells.nth(first.from),cells.nth(first.to),browserName);
+  await expect(page.locator('.wordsearch-grid .found')).toHaveCount(first.path.length);
   await expect(page.locator('.new-hud')).toContainText('500');
-  const letters=await cells.allTextContents();
-  let next:[number,number]|null=null;
-  for(let i=0;i<36&&!next;i++) for(let j=0;j<36;j++) if(selectedWord(letters,i,j).word==='LUA') {next=[i,j];break;}
-  expect(next).not.toBeNull();
-  await cells.nth(next![0]).tap();await cells.nth(next![1]).tap();
-  await expect(page.locator('.wordsearch-grid .found')).toHaveCount(6);
+  await cells.nth(second.from).tap();await cells.nth(second.to).tap();
+  await expect(page.locator('.wordsearch-grid .found')).toHaveCount(new Set([...first.path, ...second.path]).size);
   await expect(page.locator('.new-hud')).toContainText('1000');
 });
 

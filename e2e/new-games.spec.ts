@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { visibleWordPaths } from './wordsearch-helpers';
 import { newGames, type BoardId } from "../src/lib/newCatalog";
 import {
   newBoard,
@@ -138,9 +139,10 @@ for (const game of newGames)
           .getByRole("button", { name: q.answer[0], exact: true })
           .click();
       else if (game.id === "wordsearch") {
-        await arena.locator(".wordsearch-grid button").nth(0).click();
-        await arena.locator(".wordsearch-grid button").nth(2).click();
-        await expect(arena.getByRole("status")).toContainText("SOL encontrada");
+        const [target] = await visibleWordPaths(page);
+        await arena.locator(".wordsearch-grid button").nth(target.from).click();
+        await arena.locator(".wordsearch-grid button").nth(target.to).click();
+        await expect(arena.getByRole("status")).toContainText(`${target.word} encontrada`);
       } else if (q.choices.length) {
         await arena
           .getByRole("button", { name: q.answer, exact: true })
@@ -277,12 +279,7 @@ test("hangman and word search reach actual victory without timers", async ({
   await expect(game.getByRole("status")).toHaveText("Palavra descoberta!");
   await page.goto("./#/jogar/wordsearch");
   game = page.locator('[data-new-game="wordsearch"]');
-  for (const [a, b] of [
-    [0, 2],
-    [9, 21],
-    [30, 32],
-    [18, 20],
-  ]) {
+  for (const { from: a, to: b } of await visibleWordPaths(page)) {
     await game.locator(".wordsearch-grid button").nth(a).click();
     await game.locator(".wordsearch-grid button").nth(b).click();
   }

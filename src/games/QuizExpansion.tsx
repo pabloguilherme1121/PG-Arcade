@@ -1,20 +1,24 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useScopedRecord } from './RecordScope';
 import {
   colorNames,
   colorValues,
   evaluate24,
   question,
   selectedWord,
+  wordDifficultyDescriptions,
+  hangmanMistakeLimits,
 } from "../lib/quizExpansion";
 import { newGames, type NewGameId } from "../lib/newCatalog";
 import { quizAward } from "../lib/quizScoring";
 import { useAutoPause } from "./useAutoPause";
 import "./newGames.css";
 import { useBoardGesture } from './useBoardGesture';
+import { wordSearchDescriptions } from '../lib/wordsearch';
 export default function QuizExpansion({
   gameId,
-  record,
-  onRecord,
+  record: legacyRecord,
+  onRecord: saveLegacy,
 }: {
   gameId: NewGameId;
   record: number;
@@ -36,8 +40,10 @@ export default function QuizExpansion({
     [hidden, setHidden] = useState(false);
   const awarded = useRef(false),
     lock = useRef(false),
-    q = question(gameId, difficulty, seed, round),
+    q = useMemo(() => question(gameId, difficulty, seed, round), [gameId, difficulty, seed, round]),
     meta = newGames.find((g) => g.id === gameId)!;
+  const [record, onRecord] = useScopedRecord(String(difficulty), legacyRecord, saveLegacy);
+  const mistakeLimit = hangmanMistakeLimits[difficulty];
   const [dragPath,setDragPath]=useState<number[]>([]);
   const [picked,setPicked]=useState(''), [exactAnswers,setExactAnswers]=useState(0), [lastPoints,setLastPoints]=useState(0);
   const nextAction=useRef<HTMLButtonElement>(null), prompt=useRef<HTMLHeadingElement>(null);
@@ -67,6 +73,7 @@ export default function QuizExpansion({
     setFound([]);
     setStart(-1);
     setMarks([]);
+    setDragPath([]);
     setHidden(false);
     setPicked('');setExactAnswers(0);setLastPoints(0);
     awarded.current = false;
@@ -115,17 +122,17 @@ export default function QuizExpansion({
       misses = next.filter((x) => !q.answer.includes(x)).length;
     setGuessed(next);
     if ([...q.answer].every((x) => next.includes(x))) {
-      setScore((7 - misses) * 100 * (difficulty + 1));
+      setScore((mistakeLimit + 1 - misses) * 100 * (difficulty + 1));
       setAnswered(true);
       setMessage("Palavra descoberta!");
-    } else if (misses >= 6) {
+    } else if (misses >= mistakeLimit) {
       setAnswered(true);
       setMessage(`Tentativas encerradas. A palavra era ${q.answer}.`);
     } else
       setMessage(
         q.answer.includes(ch)
           ? "Essa letra está na palavra."
-          : `Letra ausente. Restam ${6 - misses} erros.`,
+          : `Letra ausente. Restam ${mistakeLimit - misses} erros.`,
       );
   }
   function selectCell(i: number) {
@@ -172,6 +179,7 @@ export default function QuizExpansion({
           Dificuldade
           <select
             aria-label="Dificuldade"
+            aria-describedby={['wordsearch', 'hangman', 'anagram'].includes(gameId) ? 'quiz-difficulty-description' : undefined}
             value={difficulty}
             onChange={(e) => reset(Number(e.target.value))}
           >
@@ -213,6 +221,7 @@ export default function QuizExpansion({
       </div>
       <div className="new-workspace">
         <div className="quiz-stage">
+          {['hangman', 'anagram'].includes(gameId) && <p id="quiz-difficulty-description">{wordDifficultyDescriptions[difficulty]}{gameId === 'hangman' && ` Você pode errar ${mistakeLimit} vezes.`}</p>}
           {paused ? (
             <div className="new-pause">
               <p>Desafio pausado.</p>
@@ -234,7 +243,7 @@ export default function QuizExpansion({
                     : undefined
                 }
               >
-                {q.prompt}
+                {gameId === 'wordsearch' ? 'Encontre as palavras' : q.prompt}
               </h2>
               {gameId === "hangman" ? (
                 <>
@@ -247,7 +256,7 @@ export default function QuizExpansion({
                   </div>
                   <p>
                     Erros: {guessed.filter((x) => !q.answer.includes(x)).length}{" "}
-                    / 6
+                    / {mistakeLimit}
                   </p>
                   <div className="letter-picker">
                     {[..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"].map((ch) => (
@@ -262,6 +271,14 @@ export default function QuizExpansion({
                   </div>
                 </>
               ) : gameId === "wordsearch" ? (
+                <>
+                <p id="quiz-difficulty-description" className="wordsearch-rules">{wordSearchDescriptions[difficulty]} Arraste ou toque na primeira e na última letra.</p>
+                <p>Encontradas: {found.length} / {q.words.length}</p>
+                <ul className="wordsearch-list" aria-label="Palavras para encontrar">
+                  {q.words.map(word => <li key={word} data-word={word} data-found={found.includes(word)}>
+                    {word}{found.includes(word) && <span aria-label="encontrada"> ✓</span>}
+                  </li>)}
+                </ul>
                 <div
                   className="wordsearch-grid"
                   {...swipe}
@@ -287,6 +304,7 @@ export default function QuizExpansion({
                     </button>
                   ))}
                 </div>
+                </>
               ) : (
                 <>
                   {gameId === "estimate" && !hidden && !answered && (
@@ -375,7 +393,7 @@ export default function QuizExpansion({
               {answered && !special && <p className="quiz-award">+{lastPoints} pontos nesta rodada · {exactAnswers} {exactAnswers===1?'resposta exata':'respostas exatas'}</p>}
               {done && (
                 <div className="quiz-result">
-                  <h2>Sessão concluída</h2>
+                  <h2>{gameId === 'hangman' ? (score > 0 ? 'Palavra descoberta!' : 'Palavra não descoberta') : gameId === 'wordsearch' ? 'Grade concluída!' : 'Sessão concluída'}</h2>
                   <p>{score} pontos</p>
                   {!special && <p>{exactAnswers} de 10 respostas exatas · {exactAnswers*10}% de acertos</p>}
                   <button

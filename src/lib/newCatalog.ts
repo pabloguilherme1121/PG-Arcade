@@ -249,7 +249,7 @@ const entries = [
     "Forca de Palavras",
     "Inteligência",
     "quiz",
-    "Descubra a palavra escolhendo letras. Você pode errar seis vezes. Letras repetidas não gastam tentativas.",
+    "Descubra a palavra escolhendo letras. O limite de erros depende do nível e aparece no placar. Letras repetidas não gastam tentativas.",
   ],
   [
     "wordsearch",
