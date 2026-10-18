@@ -24,7 +24,9 @@ for (const id of ['queens', 'magic', 'knight']) for (const width of [320, 390, 8
     if (id === 'magic') {
       const solution = solveMagic(values), picker = game.locator('.magic-value-picker');
       const key = (await picker.locator('button').first().boundingBox())!;
-      expect(key.width).toBeGreaterThanOrEqual(44); expect(key.height).toBeGreaterThanOrEqual(44);
+      // Firefox reports 44 CSS px as 43.99998474121094 after scrolling.
+      expect(Math.round(key.width * 100) / 100).toBeGreaterThanOrEqual(44);
+      expect(Math.round(key.height * 100) / 100).toBeGreaterThanOrEqual(44);
       for (let cell = 0; cell < 9; cell++) if (!values[cell]) {
         await picker.getByRole('button', { name: String(solution[cell]), exact: true }).tap();
         await grid.locator(`[data-index="${cell}"]`).tap();
