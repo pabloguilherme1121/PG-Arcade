@@ -51,7 +51,7 @@ export default function BoardExpansion({ gameId, record: legacyRecord, onRecord:
     [history, setHistory] = useState<BoardState[]>([]),
     [paused, setPaused] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const [record, onRecord] = useScopedRecord(String(difficulty), legacyRecord, saveLegacy);
+  const [record, onRecord] = useScopedRecord(gameId === "links" ? `paths2-${difficulty}` : String(difficulty), legacyRecord, saveLegacy);
   const [focused, setFocused] = useState(0);
   const [changed, setChanged] = useState<number[]>([]);
   const board = useRef<HTMLDivElement>(null),
@@ -79,8 +79,8 @@ export default function BoardExpansion({ gameId, record: legacyRecord, onRecord:
   function update(next: BoardState) {
     if (next === state) return;
     setChanged(next.cells.flatMap((value, index) => value !== state.cells[index] ? [index] : []));
-    // Selection and rejected destinations are not turns in the sorting games.
-    if (!["colorsort", "watersort"].includes(gameId) || next.moves !== state.moves)
+    // Selection and rejected destinations are not turns in these puzzles.
+    if (!["colorsort", "watersort", "links"].includes(gameId) || next.moves !== state.moves)
       setHistory((h) => [...h.slice(-199), state]);
     setState(next);
   }
@@ -121,7 +121,7 @@ export default function BoardExpansion({ gameId, record: legacyRecord, onRecord:
     return v ? String(v) : "·";
   }
   function keys(e: React.KeyboardEvent<HTMLDivElement>) {
-    if ((e.target as HTMLElement).closest('.magic-value-picker, .sort-board')) return;
+    if ((e.target as HTMLElement).closest('.magic-value-picker, .links-value-picker, .sort-board')) return;
     const index = Number((e.target as HTMLElement).dataset.index);
     if (!Number.isFinite(index)) {
       if (
@@ -205,6 +205,7 @@ export default function BoardExpansion({ gameId, record: legacyRecord, onRecord:
         </button>
       </div>
       {puzzleDifficultyDescriptions[gameId] && <p id="board-difficulty-description">{puzzleDifficultyDescriptions[gameId][difficulty]}</p>}
+      {gameId === "links" && difficulty === 2 && !expanded && <p className="links-touch-hint">Casas pequenas? Use Ampliar tabuleiro para tocar com mais precisão e deslize dentro dele para ver as outras casas.</p>}
       <div className="new-hud">
         <span>
           Jogadas <strong>{state.moves}</strong>
@@ -227,11 +228,12 @@ export default function BoardExpansion({ gameId, record: legacyRecord, onRecord:
           ref={board}
           onKeyDown={keys}
         >
-          {gameId === 'magic' && <div className="value-picker magic-value-picker" role="group" aria-label="Escolher valor">
-            {Array.from({ length: 10 }, (_, value) => <button
+          {['magic', 'links'].includes(gameId) && <div className={`value-picker ${gameId === 'magic' ? 'magic-value-picker' : 'links-value-picker'}`} role="group" aria-label="Escolher valor">
+            {Array.from({ length: gameId === 'magic' ? 10 : n + 1 }, (_, value) => <button
               key={value}
               disabled={paused || state.status !== 'playing'}
               aria-pressed={state.value === value}
+              className={gameId === "links" && value > 0 ? `color-${value}` : undefined}
               onClick={() => update(boardValue(state, value))}
             >{value === 0 ? 'Apagar' : value}</button>)}
           </div>}
@@ -389,7 +391,7 @@ export default function BoardExpansion({ gameId, record: legacyRecord, onRecord:
           {gameId === "flood" && (
             <p>{24 - state.moves} movimentos restantes.</p>
           )}
-          {gameId !== 'magic' && (numeric || ["links", "flood"].includes(gameId)) && (
+          {!['magic', 'links'].includes(gameId) && (numeric || gameId === 'flood') && (
             <div className="value-picker" aria-label="Escolher valor">
               {Array.from(
                 {

@@ -196,6 +196,13 @@ export default function App() {
   const [category, setCategory] = useState(initialView.category);
   const [mode, setMode] = useState(initialView.mode);
   const [modeFilter, setModeFilter] = useState<DiscoveryFilter>(initialView.modeFilter);
+  useEffect(() => {
+    const chips=document.querySelectorAll('.filters .selected,.smart-mode-chips .selected');
+    const reveal=()=>chips.forEach(el=>{const row=el.parentElement!;row.scrollLeft+=el.getBoundingClientRect().left-row.getBoundingClientRect().left-8;});
+    const observer=new ResizeObserver(reveal);
+    chips.forEach(el=>{observer.observe(el);observer.observe(el.parentElement!);});
+    return ()=>observer.disconnect();
+  }, [category, modeFilter, page]);
   const [swipeOnly, setSwipeOnly] = useState(initialView.swipeOnly);
   const clearCatalogFilters = () => {
     setCategory("Todos"); setMode("Todos"); setModeFilter("todos"); setSwipeOnly(false);
@@ -635,7 +642,7 @@ export default function App() {
                 <span className="hero-eyebrow">PG ARCADE / SUA PRÓXIMA PARTIDA</span>
                 <h1 ref={heading} tabIndex={-1}>Escolha. Jogue.<br/>Faça uma pausa.</h1>
                 <p>{games.length} jogos no navegador, sem cadastro. Comece com um clássico ou encontre seu próximo desafio.</p>
-                <label className="search hero-search"><Search size={18}/><input aria-label="Encontrar jogo" placeholder="Qual jogo você procura?" value={query} onChange={e => setQuery(e.target.value)}/></label>
+                <label className="search hero-search"><Search size={18}/><input inputMode="search" enterKeyHint="search" autoCapitalize="none" onKeyDown={e => { if (e.key === "Enter" && !e.nativeEvent.isComposing) { e.currentTarget.blur(); document.getElementById("catalogo")?.scrollIntoView({block:"start"}); } }} aria-label="Encontrar jogo" placeholder="Qual jogo você procura?" value={query} onChange={e => setQuery(e.target.value)}/></label>
                 <a href="#catalogo" className="button primary" onClick={(event) => { event.preventDefault(); document.getElementById("catalogo")?.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth" }); }}>Explorar jogos <ArrowRight size={19}/></a>
                 {progress.last && <a className="last-game" href={`#/jogar/${progress.last}`} onClick={() => rememberCatalog(progress.last!)}>Iniciar nova partida: {games.find(g => g.id === progress.last)?.name}<ArrowRight size={15}/></a>}
               </div>
@@ -669,9 +676,12 @@ export default function App() {
                 <div className="search">
                   <Search size={18} />
                   <input
+                    inputMode="search"
+                    enterKeyHint="search"
+                    autoCapitalize="none"
                     aria-label="Buscar jogo"
                     ref={searchInput}
-                    onKeyDown={(event) => { if (event.key === "Escape") { setQuery(""); event.currentTarget.blur(); } }}
+                    onKeyDown={(event) => { if (event.key === "Escape") { setQuery(""); event.currentTarget.blur(); } else if (event.key === "Enter" && !event.nativeEvent.isComposing) { event.currentTarget.blur(); } }}
                     placeholder="Nome, estilo ou controle…"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
@@ -732,6 +742,7 @@ export default function App() {
                     <option value="recomendados">Para você (neste aparelho)</option>
                   </select>
                 </label>
+                <button type="button" onClick={() => searchInput.current?.focus()}>Editar busca</button>
                 <span role="status" aria-live="polite" aria-atomic="true">{searchPending ? "Atualizando jogos…" : `${visible.length} jogos encontrados`}</span>
                 <button type="button" className="clear-smart-filters" onClick={() => { setQuery(""); clearCatalogFilters(); setSort("destaques"); }}>Zerar filtros</button>
                 <button

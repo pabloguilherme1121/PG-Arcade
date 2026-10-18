@@ -36,7 +36,6 @@ summary { cursor:pointer; }
 .game-card:hover .preview, .curated-card:hover .preview { transform:none; }
 .catalog { padding-top:24px; border-top:1px solid #32414a; }
 .catalog-heading { gap:20px; }
-.filters { gap:8px; }
 .filters button { padding:10px 14px; font-size:13px; }
 .catalog-tools { display:flex; flex-wrap:wrap; align-items:center; gap:12px 18px; }
 .catalog-tools label { display:flex; flex-wrap:wrap; min-width:0; align-items:center; gap:8px; }
@@ -136,12 +135,17 @@ html[data-arcade-contrast="true"] .active-catalog-filters button {background:#00
 .catalog .swipe-filter{padding:10px 12px;border:1px solid #435b6c;border-radius:12px;background:#152432;font-size:13px}
 .catalog .swipe-filter input{accent-color:#c9f65a}
 @media(max-width:600px){
-  .catalog-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-  .catalog-tools label{display:grid;gap:6px;align-self:start}
-  .catalog-tools select{width:100%;min-width:0;margin:0;min-height:44px}
-  .catalog-tools [role="status"]{grid-column:1/-1;justify-self:start}
-  .catalog-tools button{min-width:0;width:100%;font-size:13px}
   .smart-mode-header{flex-direction:column;gap:6px}
   .smart-mode-header span{flex-basis:auto;line-height:1.5}
 }
 html[data-arcade-contrast="true"] .catalog :is(.swipe-filter,.mode-count){background:#000;color:#fff;border:1px solid #fff}
+
+/* Shared phone navigation, filters and session controls. */
+@media(max-width:700px){
+.site-header nav{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.site-header nav a{display:grid;place-items:center;min-height:44px;padding:8px 4px}
+.catalog-tools{display:grid;grid-template-columns:minmax(0,1fr)}
+.catalog-tools label{display:grid}
+.catalog-tools select,.player .new-options select{width:100%;min-width:0;font-size:16px}
+.player .new-actions>button{flex:1 1 80px;min-width:0;overflow-wrap:anywhere}
+}

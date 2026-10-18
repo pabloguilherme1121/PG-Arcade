@@ -1,10 +1,12 @@
 import { expect, test } from '@playwright/test';
 
 test('2048 separates difficulties and timed sessions, retaining old records through reload', async ({ page }) => {
-  await page.addInitScript(() => { Math.random = () => 0; });
-  await page.goto('./');
-  await page.evaluate(() => localStorage.setItem('pg-arcade-progress-v1', JSON.stringify({ records: { '2048': 9999, memoria: 4 } })));
-  await page.reload();
+  await page.addInitScript(() => {
+    Math.random = () => 0;
+    // Seed before application boot; never overwrite records saved by this test.
+    if (!localStorage.getItem('pg-arcade-progress-v1'))
+      localStorage.setItem('pg-arcade-progress-v1', JSON.stringify({ records: { '2048': 9999, memoria: 4 } }));
+  });
   await page.goto('./#/jogar/2048');
   const best = page.locator('.scores strong').nth(1);
   await expect(best).toHaveText('0');

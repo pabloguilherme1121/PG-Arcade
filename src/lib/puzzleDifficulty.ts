@@ -1,4 +1,9 @@
 export const puzzleDifficultyDescriptions: Record<string, readonly string[]> = {
+  links: [
+    '4 pares em 4×4, com 4 trechos já começados. Continue as pontas preenchidas; os trechos iniciais podem ser apagados.',
+    '4 pares em 4×4, somente com os terminais fixos. Conecte cada par e cubra todas as casas.',
+    '6 pares em 6×6. Conecte os terminais da mesma cor e número, sem cruzar trilhas; cubra as 36 casas.',
+  ],
   colorsort: [
     '2 cores em 4 pilhas, incluindo 2 vazias. Mova uma peça por vez para uma pilha vazia ou com a mesma cor no topo.',
     '3 cores em 5 pilhas, incluindo 2 vazias. Planeje a organização movendo uma peça por vez.',
@@ -45,4 +50,22 @@ export function initialKnightPath(difficulty: number, seed: number) {
   const route = knightTours[size];
   const path = ((seed - 1) & 8) ? [...route].reverse() : [...route];
   return { size, path: path.slice(0, difficulty === 0 ? 5 : 1).map(cell => transformSquare(cell, size, seed)) };
+}
+
+/** Serpentine segments overlap adjacent rows in at most one column. */
+export function initialLinks(difficulty: number, seed: number) {
+  const size = difficulty === 2 ? 6 : 4;
+  const lengths = difficulty === 0 ? [4,4,4,4] : difficulty === 1 ? [3,5,3,5] : [5,7,5,7,5,7];
+  const path = Array.from({ length:size*size }, (_, i) => transformSquare(
+    Math.floor(i / size) * size + (Math.floor(i / size) % 2 ? size - 1 - i % size : i % size), size, seed));
+  const fixed = Array(size*size).fill(0), goal = Array(size*size).fill(0), cells = Array(size*size).fill(0);
+  let offset = 0;
+  lengths.forEach((length, color) => {
+    const segment = path.slice(offset, offset + length);
+    segment.forEach(cell => { goal[cell] = color + 1; });
+    for (const cell of [segment[0], segment.at(-1)!]) fixed[cell] = cells[cell] = color + 1;
+    if (difficulty === 0) cells[segment[1]] = color + 1;
+    offset += length;
+  });
+  return { size, fixed, goal, cells };
 }

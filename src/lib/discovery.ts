@@ -6,6 +6,7 @@ import { discoveryFilters, modeTags, modeLabel, supportsSwipe, type DiscoveryFil
 export const searchText = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR").trim().replace(/\s+/g, " ");
 const searchIndex = new WeakMap<typeof games[number], string>();
 export const matchesGame = (game: typeof games[number], query: string) => {
+  if (!query.trim()) return true;
   let text = searchIndex.get(game);
   if (text === undefined) {
     text = searchText(`${game.name} ${game.description} ${gameHelp[game.id]} ${game.category} ${modeTags(game).map(modeLabel).join(" ")} ${gameMode(game.id)} ${supportsSwipe(game.id)?'deslizar gestos':''}`);

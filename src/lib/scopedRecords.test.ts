@@ -127,3 +127,12 @@ it("keeps word records independent for four and six attempts and preserves bette
   expect(addScopedRecord(records, "palavra|free|4", 300)).toBe(records);
   expect(addScopedRecord(records, "palavra|sprint-normal|4", 400)["palavra|sprint-normal|4"]).toBe(400);
 });
+
+it('keeps revised links records separate from earlier rules and backup-safe',()=>{
+  const values={'links|free|2':9999,'links|free|paths2-2':1500};
+  expect(normalizeScopedRecords(values)).toEqual(values);
+  expect(validateProgressBackup({favorites:[],records:{links:8888},recordsV2:values})).toBe('valid');
+  expect(normalizeScopedRecords({'links|free|paths2-3':10,'queens|free|paths2-2':10})).toEqual({});
+  expect(scopedRecordLabel('links|free|paths2-2')).toBe('Livre · Avançado · Trilhas ampliadas');
+  expect(scopedRecordLabel('links|free|2')).toBe('Livre · Avançado · Regras anteriores');
+});

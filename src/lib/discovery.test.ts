@@ -70,3 +70,13 @@ it("solo filtering includes games with a bot, while local duels remain restricte
   expect(supportsPlayerMode("xadrez", "Dupla local")).toBe(true);
   expect(supportsPlayerMode("snake", "Dupla local")).toBe(false);
 });
+
+it("empty search retains every title before and after a specific query", () => {
+  for (const query of ["", "   ", "\t\n"]) {
+    expect(games.filter(game => matchesGame(game, query))).toEqual(games);
+  }
+  const chess = games.find(game => game.id === "xadrez")!;
+  expect(matchesGame(chess, "XÁDREZ")).toBe(true);
+  expect(matchesGame(chess, "inexistente")).toBe(false);
+  expect(matchesGame(chess, "")).toBe(true);
+});
