@@ -1,4 +1,5 @@
 import type { BoardId } from "./newCatalog";
+import { initialKnightPath, transformSquare } from './puzzleDifficulty';
 export type BoardState = {
   id: BoardId;
   size: number;
@@ -21,6 +22,13 @@ export function seeded(seed: number) {
     x = (Math.imul(x, 1664525) + 1013904223) >>> 0;
     return x / 4294967296;
   };
+}
+export function queenConflictCells(cells: number[], size: number) {
+  const queens = cells.flatMap((value, index) => value ? [index] : []);
+  return queens.filter(a => queens.some(b => a !== b && (
+    Math.floor(a / size) === Math.floor(b / size) || a % size === b % size ||
+    Math.abs(Math.floor(a / size) - Math.floor(b / size)) === Math.abs(a % size - b % size)
+  )));
 }
 export function neighbors(i: number, n: number, diagonal = false): number[] {
   const r = Math.floor(i / n),
@@ -185,16 +193,16 @@ export function newBoard(id: BoardId, difficulty = 1, seed = 1): BoardState {
     s.cells = Array(64).fill(0);
     s.fixed = Array(64).fill(0);
     const cols = [0, 4, 7, 5, 2, 6, 1, 3];
-    if (difficulty === 0)
-      for (let r = 0; r < 2; r++) {
-        const i = r * 8 + (seed % 2 ? cols[r] : 7 - cols[r]);
-        s.cells[i] = s.fixed[i] = 1;
-      }
+    for (let r = 0; r < [3, 1, 0][difficulty]; r++) {
+      const i = transformSquare(r * 8 + cols[r], 8, seed);
+      s.cells[i] = s.fixed[i] = 1;
+    }
   } else if (id === "knight") {
-    s.size = 5;
-    s.cells = Array(25).fill(0);
-    s.cells[0] = 1;
-    s.selected = 0;
+    const { size, path } = initialKnightPath(difficulty, seed);
+    s.size = size;
+    s.cells = Array(size * size).fill(0);
+    path.forEach((cell, index) => { s.cells[cell] = index + 1; });
+    s.selected = path[path.length - 1];
   } else if (id === "peg") {
     s.size = 5;
     const geometry = Array.from({ length: 25 }, (_, i) =>
@@ -286,9 +294,10 @@ export function newBoard(id: BoardId, difficulty = 1, seed = 1): BoardState {
     s.fixed = [...s.cells];
   } else if (id === "magic") {
     s.size = 3;
-    s.goal = [8, 1, 6, 3, 5, 7, 4, 9, 2];
+    s.goal = Array(9).fill(0);
+    [8, 1, 6, 3, 5, 7, 4, 9, 2].forEach((value, index) => { s.goal[transformSquare(index, 3, seed)] = value; });
     s.cells = Array(9).fill(0);
-    s.cells[4] = 5;
+    for (const cell of [4, 0, 1, 3].slice(0, [4, 2, 0][difficulty])) s.cells[cell] = s.goal[cell];
     s.fixed = [...s.cells];
   } else if (id === "fifteen" || id === "rotate") {
     s.goal = Array.from({ length: 16 }, (_, i) =>
@@ -537,19 +546,7 @@ export function boardSolved(s: BoardState): boolean {
   if (s.id === "same") return b.every((x) => x === 0);
   if (s.id === "queens") {
     const qs = b.flatMap((x, i) => (x ? [i] : []));
-    return (
-      qs.length === 8 &&
-      qs.every((a, i) =>
-        qs.every(
-          (c, j) =>
-            i === j ||
-            (Math.floor(a / n) !== Math.floor(c / n) &&
-              a % n !== c % n &&
-              Math.abs(Math.floor(a / n) - Math.floor(c / n)) !==
-                Math.abs((a % n) - (c % n))),
-        ),
-      )
-    );
+    return qs.length === 8 && queenConflictCells(b, n).length === 0;
   }
   if (s.id === "knight") return b.every((x) => x > 0);
   if (s.id === "peg") return b.filter((x) => x === 1).length === 1;
@@ -745,6 +742,12 @@ export function boardClick(state: BoardState, index: number): BoardState {
   } else return strategyClick(state, index);
   s.moves++;
   s.message = "Jogada registrada.";
+  if (id === 'queens') {
+    const conflicts = queenConflictCells(b, n);
+    s.message = conflicts.length
+      ? `${conflicts.length} rainhas em conflito. Confira linhas, colunas e diagonais; remova uma rainha ou use Desfazer.`
+      : `${b.filter(Boolean).length} de 8 rainhas, sem conflitos.`;
+  }
   if (boardSolved(s)) end(s, true);
   else if (
     (id === "peg" && !pegMoves(s.cells, n).length) ||

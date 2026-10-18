@@ -13,6 +13,7 @@ import {
   laserPath,
   loopEdges,
   newBoard,
+  queenConflictCells,
   slideVehicle,
   type BoardState,
 } from "../lib/boardExpansion";
@@ -20,6 +21,8 @@ import { newGames, type BoardId } from "../lib/newCatalog";
 import { useAutoPause } from "./useAutoPause";
 import "./newGames.css";
 import { useBoardGesture } from './useBoardGesture';
+import { puzzleDifficultyDescriptions } from '../lib/puzzleDifficulty';
+import { useScopedRecord } from './RecordScope';
 type Props = { gameId: BoardId; record: number; onRecord: (n: number) => void };
 const pipeChars: Record<number, string> = {
   3: "┌",
@@ -41,13 +44,14 @@ const strategic = [
   "breakthrough",
   "territory",
 ];
-export default function BoardExpansion({ gameId, record, onRecord }: Props) {
+export default function BoardExpansion({ gameId, record: legacyRecord, onRecord: saveLegacy }: Props) {
   const [difficulty, setDifficulty] = useState(1),
     [seed, setSeed] = useState(1);
   const [state, setState] = useState(() => newBoard(gameId, 1, 1)),
     [history, setHistory] = useState<BoardState[]>([]),
     [paused, setPaused] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [record, onRecord] = useScopedRecord(String(difficulty), legacyRecord, saveLegacy);
   const [focused, setFocused] = useState(0);
   const [changed, setChanged] = useState<number[]>([]);
   const board = useRef<HTMLDivElement>(null),
@@ -64,10 +68,11 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
   function reset(d = difficulty, next = seed) {
     setDifficulty(d);
     setSeed(next);
-    setState(newBoard(gameId, d, next));
+    const initial = newBoard(gameId, d, next);
+    setState(initial);
     setHistory([]);
     setChanged([]);
-    setFocused(0);
+    setFocused(gameId === 'knight' ? initial.selected : 0);
     setPaused(false);
     awarded.current = false;
   }
@@ -80,6 +85,7 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
   const n = state.size,
     numeric = ["latin", "sky", "futoshiki", "magic", "takuzu"].includes(gameId),
     sort = ["colorsort", "watersort"].includes(gameId);
+  const conflicts = gameId === 'queens' ? queenConflictCells(state.cells, n) : [];
   const swipe=useBoardGesture((from,_to,gesture)=>{
     if(from<0 || state.cells[from]<=0 || paused || state.status!=='playing') return;
     const selected=boardClick(state,from);
@@ -113,6 +119,7 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
     return v ? String(v) : "·";
   }
   function keys(e: React.KeyboardEvent<HTMLDivElement>) {
+    if ((e.target as HTMLElement).closest('.magic-value-picker')) return;
     const index = Number((e.target as HTMLElement).dataset.index);
     if (!Number.isFinite(index)) {
       if (
@@ -179,6 +186,7 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
           Dificuldade
           <select
             aria-label="Dificuldade"
+            aria-describedby={puzzleDifficultyDescriptions[gameId] ? 'board-difficulty-description' : undefined}
             value={difficulty}
             onChange={(e) => reset(Number(e.target.value), seed)}
           >
@@ -194,6 +202,7 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
           Novo desafio
         </button>
       </div>
+      {puzzleDifficultyDescriptions[gameId] && <p id="board-difficulty-description">{puzzleDifficultyDescriptions[gameId][difficulty]}</p>}
       <div className="new-hud">
         <span>
           Jogadas <strong>{state.moves}</strong>
@@ -216,6 +225,14 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
           ref={board}
           onKeyDown={keys}
         >
+          {gameId === 'magic' && <div className="value-picker magic-value-picker" role="group" aria-label="Escolher valor">
+            {Array.from({ length: 10 }, (_, value) => <button
+              key={value}
+              disabled={paused || state.status !== 'playing'}
+              aria-pressed={state.value === value}
+              onClick={() => update(boardValue(state, value))}
+            >{value === 0 ? 'Apagar' : value}</button>)}
+          </div>}
           {paused ? (
             <div className="new-pause">
               <p>O tabuleiro está pausado.</p>
@@ -301,6 +318,7 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
                   data-drag-index={i}
                   data-value={v}
                   data-last-move={changed.includes(i) || undefined}
+                  data-conflict={conflicts.includes(i) || undefined}
                   tabIndex={
                     i ===
                     (state.cells[focused] === -1
@@ -312,10 +330,11 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
                   onFocus={() => setFocused(i)}
                   className={`${["same", "flood", "links", "slideblock"].includes(gameId) ? `color-${v}` : ""} ${state.selected === i ? "selected" : ""} ${state.fixed[i] ? "fixed" : ""}`}
                   disabled={state.status !== "playing" || v === -1}
-                  aria-label={`Linha ${Math.floor(i / n) + 1}, coluna ${(i % n) + 1}: ${cellText(i, v) || "vazia"}${state.fixed[i] ? ", pista fixa" : ""}`}
+                  aria-label={`Linha ${Math.floor(i / n) + 1}, coluna ${(i % n) + 1}: ${gameId === 'queens' ? (v ? 'rainha' : 'vazia') : cellText(i, v) || "vazia"}${state.fixed[i] ? ", pista fixa" : ""}${conflicts.includes(i) ? ', em conflito' : ''}`}
                   onClick={() => update(boardClick(state, i))}
                 >
                   {cellText(i, v)}
+                  {conflicts.includes(i) && <span className="queen-conflict-mark" aria-hidden="true">!</span>}
                 </button>
               ))}
               {path && (
@@ -365,14 +384,12 @@ export default function BoardExpansion({ gameId, record, onRecord }: Props) {
           {gameId === "flood" && (
             <p>{24 - state.moves} movimentos restantes.</p>
           )}
-          {(numeric || ["links", "flood"].includes(gameId)) && (
+          {gameId !== 'magic' && (numeric || ["links", "flood"].includes(gameId)) && (
             <div className="value-picker" aria-label="Escolher valor">
               {Array.from(
                 {
                   length:
-                    gameId === "magic"
-                      ? 10
-                      : gameId === "flood"
+                    gameId === "flood"
                         ? 4 + difficulty
                         : gameId === "takuzu"
                           ? 3
