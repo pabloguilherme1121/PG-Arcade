@@ -11,6 +11,9 @@ test('revised links records preserve previous rules across reload and progress v
   await expect(cells).toHaveCount(36);
   const values=await cells.evaluateAll(nodes=>nodes.map(node=>Number(node.getAttribute('data-value'))));
   const fixed=await cells.evaluateAll(nodes=>nodes.map(node=>node.classList.contains('fixed')?Number(node.getAttribute('data-value')):0));
+  const wrap=game.locator('.new-board-wrap');
+  expect((await wrap.boundingBox())!.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+  await wrap.scrollIntoViewIfNeeded();
   for(const route of solveLinks(values,fixed,6)) {
     await cells.nth(route[0]).click();
     for(const cell of route.slice(1,-1)) await cells.nth(cell).click();

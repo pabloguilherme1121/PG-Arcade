@@ -27,8 +27,8 @@ for (const setting of ['format', 'difficulty'] as const) {
   });
 }
 
-test('dice difficulty limits the available rolls without blocking registration', async ({ page }) => {
-  for (const [level, limit] of [['0', 4], ['1', 3], ['2', 2]] as const) {
+for (const [level, limit] of [['0', 4], ['1', 3], ['2', 2]] as const)
+  test(`dice difficulty ${level} limits rolls to ${limit} without blocking registration`, async ({ page }) => {
     await page.goto('./#/jogar/dados');
     await page.getByLabel('Dificuldade', { exact: true }).selectOption(level);
     await page.getByRole('button', { name: 'Iniciar sessão', exact: true }).click();
@@ -40,8 +40,6 @@ test('dice difficulty limits the available rolls without blocking registration',
     }
     await expect(roll).toBeDisabled();
     await expect(page.getByRole('button', { name: 'Registrar combinação', exact: true })).toBeEnabled();
-    await page.goto('./');
-  }
 });
 
 test('casual records separate completed formats and difficulties without rewriting legacy scores', async ({ page }, testInfo) => {
