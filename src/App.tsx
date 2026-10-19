@@ -21,7 +21,6 @@ import {
   Maximize,
   Minimize,
   ExternalLink,
-  Link as LinkIcon,
 } from "lucide-react";
 import { games, isGameId, type GameId } from "./lib/catalog";
 import {
@@ -49,6 +48,7 @@ import { searchText, matchesGame, supportsPlayerMode, recommended, readCatalogVi
 import { catalogCategories, selectCatalog, sortCatalog } from "./lib/catalogSelection";
 import { useReducedMotion } from "./useReducedMotion";
 import { useImmersivePlayer } from "./lib/useImmersivePlayer";
+const ShareGameButton = lazy(() => import("./ShareGameButton").catch(() => ({default: () => <span role="status">Copie o endereço da barra do navegador para compartilhar este jogo.</span>})));
 const ProgressPage = lazy(() => import("./ProgressPage"));
 const CatalogSpotlight = lazy(() => import("./CatalogSpotlight").catch(() => ({default: () => null})));
 const SessionChallenge = lazy(() => import("./games/SessionChallenge"));
@@ -321,16 +321,6 @@ export default function App() {
         : [...p.favorites, id],
     }));
   }, [update]);
-  async function copyLink() {
-    try {
-      await navigator.clipboard.writeText(location.href);
-      setMessage("Link do jogo copiado.");
-    } catch {
-      setMessage(
-        "Copie o endereço da barra do navegador para compartilhar este jogo.",
-      );
-    }
-  }
   useEffect(() => {
     if (isGameId(page) || page === "progresso") return;
     const onShortcut = (event: KeyboardEvent) => {
@@ -471,10 +461,9 @@ export default function App() {
                     ? "Favoritado"
                     : "Favoritar"}
                 </button>
-                <button onClick={copyLink} aria-label="Copiar link do jogo">
-                  <LinkIcon size={19} />
-                  <span className="hide-small">Compartilhar</span>
-                </button>
+                <Suspense fallback={<button disabled aria-label="Compartilhar jogo">Carregando compartilhamento…</button>}>
+                  <ShareGameButton id={game.id} name={game.name} onMessage={setMessage}/>
+                </Suspense>
                 <a className="button" href="#conforto" onClick={(e) => { e.preventDefault(); const el=document.getElementById("conforto") as HTMLDetailsElement; el.open=true; el.scrollIntoView({block:"start"}); el.querySelector("summary")?.focus(); }}>Ajustar conforto</a>
                 <button ref={restartTrigger} onClick={askRestart} aria-keyshortcuts="Alt+Shift+R">Reiniciar com confirmação</button>
                 </div>
