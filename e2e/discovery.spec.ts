@@ -66,10 +66,10 @@ test("secondary utilities remain keyboard accessible and solo help stays correct
   await page.goto("./#/jogar/peg");
   await expect(page.locator("[data-arcade-arena] .new-grid")).toBeVisible();
   await expect(page.getByRole("button",{name:"Reiniciar",exact:true})).toHaveCount(1);
-  await expect(page.getByRole("button",{name:"Copiar link do jogo"})).toBeHidden();
+  await expect(page.getByRole("button",{name:"Compartilhar jogo"})).toBeHidden();
   await page.locator(".player-utilities summary").focus();
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("button",{name:"Copiar link do jogo"})).toBeVisible();
+  await expect(page.getByRole("button",{name:"Compartilhar jogo"})).toBeVisible();
   await expect(page.getByText("última jogada e a resposta do adversário.", {exact:false})).toHaveCount(0);
   await page.getByRole("link",{name:"Ajustar conforto",exact:true}).click();
   await expect(page.getByLabel("Movimento da interface")).toBeVisible();
