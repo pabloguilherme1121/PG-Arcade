@@ -1,7 +1,7 @@
 import { gzipSync } from "node:zlib";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { calculateHeadroom } from "./bundle-headroom.mjs";
+import { calculateHeadroom, formatAssetBreakdown } from "./bundle-headroom.mjs";
 
 const root = "dist/assets";
 const assetLimits = { ".js": 450 * 1024, ".css": 250 * 1024 };
@@ -34,10 +34,13 @@ if (!initialAssets.length) {
 
 let initialRaw = 0;
 let initialGzip = 0;
+const initialDetails = [];
 for (const file of initialAssets) {
   const asset = readFileSync(join(root, file));
+  const gzipBytes = gzipSync(asset).byteLength;
   initialRaw += asset.byteLength;
-  initialGzip += gzipSync(asset).byteLength;
+  initialGzip += gzipBytes;
+  initialDetails.push({ name: file, raw: asset.byteLength, gzip: gzipBytes });
 }
 
 if (initialRaw > initialLimits.raw) {
@@ -54,6 +57,8 @@ if (initialGzip > initialLimits.gzip) {
 console.log(
   `Initial JS/CSS payload: ${(initialRaw / 1024).toFixed(1)} KiB raw / ${(initialGzip / 1024).toFixed(1)} KiB gzip (${initialAssets.join(", ")})`,
 );
+
+console.log("Initial bundle assets, largest first:\n" + formatAssetBreakdown(initialDetails));
 
 if (violations.length) {
   console.error("Bundle budget exceeded:\n" + violations.join("\n"));
