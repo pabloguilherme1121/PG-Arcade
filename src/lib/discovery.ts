@@ -1,4 +1,5 @@
 import { games, type GameId } from "./catalog";
+import { gameCapabilities } from "./gameCapabilities";
 import { gameHelp } from './gameHelp';
 import { discoveryFilters, modeTags, modeLabel, supportsSwipe, type DiscoveryFilter } from "./smartDiscovery";
 
@@ -18,11 +19,12 @@ export const categoryGroup = (category: string) => ["Corrida", "Carros"].include
 export const recommended: GameId[] = ["snake", "flood", "liga4", "basquete", "palavra", "rhythm"];
 
 export function gameMode(id: GameId) {
-  return ["liga4", "velha", "xadrez", "damas", "domino"].includes(id) ? "Solo ou dupla local" : "Solo";
+  return gameCapabilities(id).localPlayers === 2 ? "Solo ou dupla local" : "Solo";
 }
 /** Every current title supports solo play, including local duels with a bot. */
 export function supportsPlayerMode(id: GameId, mode: string) {
-  return mode !== "Dupla local" || gameMode(id).includes("dupla");
+  return mode === "Todos" || (mode === "Solo" && gameCapabilities(id).solo) ||
+    (mode === "Dupla local" && gameCapabilities(id).localPlayers === 2);
 }
 export type CatalogView = { query: string; swipeOnly: boolean; category: string; sort: string; mode: string; modeFilter: DiscoveryFilter; scroll: number; returnPage: string; focusId: GameId | null };
 export const defaultView: CatalogView = { query: "", swipeOnly: false, category: "Todos", sort: "destaques", mode: "Todos", modeFilter: "todos", scroll: 0, returnPage: "catalogo", focusId: null };
