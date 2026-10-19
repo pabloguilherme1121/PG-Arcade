@@ -18,9 +18,9 @@ for (const width of [320, 390]) {
     expect(bounds!.width).toBeGreaterThan(1);
     expect(bounds!.height).toBeGreaterThan(1);
 
+    const id = await last.getAttribute("data-catalog-game");
     await link.focus();
     await expect(link).toBeFocused();
-    const id = await last.getAttribute("data-catalog-game");
     expect(id).toBeTruthy();
     await link.click();
     await expect(page.locator("[data-arcade-arena][data-game-id='" + id + "']")).toBeVisible();
