@@ -29,6 +29,8 @@ Jogo e CSS são lazy-loaded. Unidades de recordes foram separadas das instruçõ
 
 ## Dependências de integração
 
-A PR #145 depende da #144. O CI da #144 revelou um teste antigo ainda procurando “Copiar link do jogo”, embora o botão agora se chame “Compartilhar jogo”. A base deve receber essa correção sem remover a verificação de teclado; não integrar a expansão sobre gate vermelho. Nenhum fornecedor, pagamento, analytics ou biblioteca de rede foi acrescentado.
+A PR #145 depende da #144. O CI da #144 revelou um teste antigo ainda procurando “Copiar link do jogo”, embora o botão agora se chame “Compartilhar jogo”. A base recebeu a correção no commit f717ed7, preservando a verificação de teclado; o cenário passou em Chromium e Firefox e foi incorporado nesta branch. Os novos gates ainda são necessários; não integrar a expansão sobre gate vermelho. Nenhum fornecedor, pagamento, analytics ou biblioteca de rede foi acrescentado.
 
 Os demais 49 candidatos permanecem no roadmap; não são jogos prontos. Próxima prioridade: prototipar Leilão de Relíquias com solo/local após validar esta entrega. A qualidade de mercado e o interesse dos consumidores precisam de playtests humanos; contagem de testes não comprova diversão ou viralidade.
+
+Verificação após incorporar f717ed7: 441 unitários e 11 cenários E2E integrados aprovados; um skip previsto do service worker em Firefox. Inclui as partidas completas por toque, teclado/axe/pausa, reload offline e a regressão de abertura das utilidades por teclado. Sem retries. Build, orçamento e npm audit aprovados no estado integrado.
