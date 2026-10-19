@@ -1,4 +1,4 @@
-import { recordUnits } from "../lib/gameHelp";
+import { recordUnits } from "../lib/recordUnits";
 import OrientationControl from "./OrientationControl";
 import { RecordScopeProvider } from "./RecordScope";
 import { addScopedRecord } from "../lib/scopedRecords";

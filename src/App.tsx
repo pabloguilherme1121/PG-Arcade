@@ -34,7 +34,7 @@ import {
 } from "./lib/expandedCatalog";
 
 import { discoveryFilters, filterByMode, modeTags, modeLabel, type DiscoveryFilter } from "./lib/smartDiscovery";
-import { gameHelp, recordUnits } from "./lib/gameHelp";
+import { gameHelp } from "./lib/gameHelp";
 import GameCover from "./GameCover";
 import CatalogGameCard from "./CatalogGameCard";
 import {
@@ -49,6 +49,8 @@ import { catalogCategories, selectCatalog, sortCatalog } from "./lib/catalogSele
 import { useReducedMotion } from "./useReducedMotion";
 import { useImmersivePlayer } from "./lib/useImmersivePlayer";
 const ShareGameButton = lazy(() => import("./ShareGameButton").catch(() => ({default: () => <span role="status">Copie o endereço da barra do navegador para compartilhar este jogo.</span>})));
+const QuickHelpText = lazy(() => import("./QuickHelpText").catch(() => ({default: ({help}:{help:string}) => <p>{help}</p>})));
+const PlayerRecordHint = lazy(() => import("./PlayerRecordHint").catch(() => ({default: () => <small data-player-record>Consulte os resultados no jogo.</small>})));
 const ProgressPage = lazy(() => import("./ProgressPage"));
 const CatalogSpotlight = lazy(() => import("./CatalogSpotlight").catch(() => ({default: () => null})));
 const SessionChallenge = lazy(() => import("./games/SessionChallenge"));
@@ -72,6 +74,7 @@ const collectionPlayers = Object.fromEntries(
   ]),
 ) as unknown as Record<ExpandedId, ComponentType<PlayerProps>>;
 const players = {
+  comum: lazy(() => import("./games/commonWord/CommonWord")),
   ...(Object.fromEntries(
     newGames.map((g) => [
       g.id,
@@ -489,7 +492,7 @@ export default function App() {
             <div className="player-gameplay-orientation" data-gameplay-orientation>
               <strong>Como jogar {game.name}</strong>
               <span>{gameHelp[game.id].split(". ")[0]}</span>
-              <small data-player-record>{["snake", "2048", "memoria", "blocos", "reflexo", "minas", "puzzle", "palavra"].includes(game.id) ? "Recorde por configuração no placar do jogo" : progress.records[game.id] ? `Recorde histórico geral: ${progress.records[game.id]} ${recordUnits[game.id] ?? "pontos"}` : "Primeira partida — faça sua marca"}</small>
+              <Suspense fallback={<small data-player-record>Carregando resultados…</small>}><PlayerRecordHint id={game.id} record={progress.records[game.id]}/></Suspense>
               <button
                 type="button"
                 className="gameplay-control-toggle"
@@ -537,16 +540,7 @@ export default function App() {
                 <summary aria-keyshortcuts="Alt+Shift+H">
                   Ajuda rápida e controles
                 </summary>
-                <p>{gameHelp[game.id]}</p>
-                <p>
-                  Atalhos globais: Alt + Shift + B leva ao tabuleiro; Alt +
-                  Shift + H abre a ajuda; Alt + Shift + R pede confirmação para
-                  reiniciar. Eles ficam inativos enquanto você edita um campo.
-                </p>
-                <p>
-                  Favoritos e recordes ficam neste navegador. Trocar de jogo
-                  inicia outra partida.
-                </p>
+                <Suspense fallback={<p>{gameHelp[game.id]}</p>}><QuickHelpText help={gameHelp[game.id]}/></Suspense>
               </details>
             </div>
             <dialog

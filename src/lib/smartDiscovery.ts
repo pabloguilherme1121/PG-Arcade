@@ -41,7 +41,7 @@ export function modeTags(game:GameInfo):GameModeTag[] {
   const result:GameModeTag[]=["classico"];
   if(quick.has(game.id)) result.push("rapido");
   if(untimed.has(game.id)) result.push("sem-pressa");
-  if(gameCapabilities(game.id).localPlayers === 2) result.push("dupla");
+  if(gameCapabilities(game.id).localPlayers >= 2) result.push("dupla");
   if(gameCapabilities(game.id).bot) result.push("bot");
   if(training.has(game.id)) result.push("treino");
   if(survival.has(game.id)) result.push("sobrevivencia");

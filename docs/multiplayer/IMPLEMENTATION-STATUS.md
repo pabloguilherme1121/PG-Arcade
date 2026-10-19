@@ -48,3 +48,7 @@ A tentativa de corrigir a descrição pública via API retornou HTTP 403 (Resour
 Primeira execução Chromium/Firefox: 17 aprovações E2E e 3 skips preexistentes dos cenários de service worker no Firefox. Execução final do compartilhamento, incluindo falha do chunk: 8 aprovações. São 25 execuções aprovadas ao todo, com repetição de cenários, não 25 cenários únicos. Sem retries ou aumento de timeout. Native share/clipboard foram substituídos por adaptadores no E2E para verificar integração, payload e mensagens; isso não certifica a folha do sistema operacional em Android físico.
 
 WebKit depende do gate oficial. A entrega não está certificada no Android real. Não há multiplayer online implementado nem serviços contratados. Integração condicionada aos cinco gates no HEAD final.
+
+## Entrega 2 em desenvolvimento: jogo local completo
+
+O usuário confirmou solo/dupla local primeiro; online depois. Palavra em Comum passa a ter interface e integração de catálogo na branch da PR #145. Nenhum dos outros 49 candidatos foi adicionado. A main só passará a 102 jogos após integração validada. O núcleo anterior já testado é reutilizado, e nenhum fornecedor ou dependência foi acrescentado.

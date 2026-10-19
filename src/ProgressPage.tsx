@@ -4,7 +4,7 @@ import { scopedRecordLabel } from "./lib/scopedRecordLabels";
 import { useState, useEffect, type RefObject } from "react";
 import { ArrowRight, Heart, Trophy } from "lucide-react";
 import { games, type GameId } from "./lib/catalog";
-import { recordUnits } from "./lib/gameHelp";
+import { recordUnits } from "./lib/recordUnits";
 import { mergeProgress, type Progress } from "./lib/progress";
 import { readDailyActivity, restoreDailyActivity, summarizeDailyActivity } from "./lib/dailyProgress";
 import "./ProgressPage.css";

@@ -24,7 +24,7 @@ test("solo mode keeps bot games and resolves incompatible local-duel styles", as
   await page.getByRole("button", { name: "Zerar filtros", exact: true }).click();
   await page.getByRole("button", { name: "Sobrevivência", exact: true }).click();
   await page.getByLabel("Filtrar por modo").selectOption("Dupla local");
-  await expect(page.locator(".game-card")).toHaveCount(5);
+  await expect(page.locator(".game-card")).toHaveCount(6);
   await expect(page.getByRole("button", { name: "Sobrevivência", exact: true })).toBeDisabled();
 });
 test("puzzle exposes real swipe handling and configuration-specific records", async ({ page }) => {

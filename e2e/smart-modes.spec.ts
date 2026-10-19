@@ -9,9 +9,9 @@ test("Filtro de modos reais, reset e capas continuam íntegros no celular",async
   const mode=page.getByRole("combobox",{name:"Filtrar por modo",exact:true});
   await mode.selectOption("Dupla local");
   await expect(mode).toHaveValue("Dupla local");
-  await expect(cards).toHaveCount(5);
-  await expect(page.locator(".game-card [data-game-cover]")).toHaveCount(5);
-  await expect(page.getByRole("status").filter({hasText:"5 jogos encontrados"})).toBeVisible();
+  await expect(cards).toHaveCount(6);
+  await expect(page.locator(".game-card [data-game-cover]")).toHaveCount(6);
+  await expect(page.getByRole("status").filter({hasText:"6 jogos encontrados"})).toBeVisible();
   await page.getByRole("button",{name:"Zerar filtros",exact:true}).click();
   await expect(cards).toHaveCount(games.length);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
@@ -84,13 +84,13 @@ test("modo inteligente e ordem personalizada sobrevivem ao reload da partida", a
   await page.goto("./");
   await page.getByRole("combobox", { name: "Filtrar por modo", exact: true }).selectOption("Dupla local");
   await page.getByRole("combobox", { name: "Ordenar jogos" }).selectOption("recomendados");
-  await expect(page.locator(".game-card")).toHaveCount(5);
+  await expect(page.locator(".game-card")).toHaveCount(6);
   await page.getByRole("link", { name: "Jogar Xadrez", exact: true }).click();
   await page.reload();
   await page.getByRole("link", { name: "Voltar aos jogos", exact: true }).click();
   await expect(page.getByRole("combobox", { name: "Filtrar por modo", exact: true })).toHaveValue("Dupla local");
   await expect(page.getByRole("combobox", { name: "Ordenar jogos" })).toHaveValue("recomendados");
-  await expect(page.locator(".game-card")).toHaveCount(5);
+  await expect(page.locator(".game-card")).toHaveCount(6);
 });
 
 for (const width of [320, 390]) {
@@ -104,7 +104,7 @@ for (const width of [320, 390]) {
     await expect(page.locator(".game-grid")).toHaveAttribute("aria-busy", "false");
     await expect(page.getByRole("link", { name: "Jogar Xadrez", exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Limpar busca", exact: true }).click();
-    // Poll inside the browser: repeated protocol assertions snapshot all 101
+    // Poll inside the browser: repeated protocol assertions snapshot all 102
     // SVG cards and can spend the entire deadline in Firefox instrumentation.
     await page.waitForFunction(expectedCards => {
       const input = document.querySelector<HTMLInputElement>('input[aria-label="Buscar jogo"]');

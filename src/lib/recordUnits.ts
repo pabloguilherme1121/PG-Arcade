@@ -1,0 +1,24 @@
+import type { GameId } from "./catalog";
+import { newGames } from "./newCatalog";
+import { expandedGames } from "./expandedCatalog";
+export const recordUnits: Partial<Record<GameId, "pontos" | "jogadas">> = {
+  ...Object.fromEntries(newGames.map(g => [g.id, "pontos" as const])),
+  ...Object.fromEntries(expandedGames.map((g) => [g.id, "pontos" as const])),
+  blocos: "pontos",
+  sequencia: "pontos",
+  palavra: "pontos",
+  rally: "pontos",
+  coleta: "pontos",
+  orbital: "pontos",
+  minas: "pontos",
+  reflexo: "pontos",
+  corrida: "pontos",
+  estacionamento: "pontos",
+  tiro: "pontos",
+  luzes: "pontos",
+  estrelas: "pontos",
+  "2048": "pontos",
+  snake: "pontos",
+  memoria: "jogadas",
+  puzzle: "jogadas",
+};

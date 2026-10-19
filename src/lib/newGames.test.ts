@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { games } from "./catalog";
-import { gameHelp, recordUnits } from "./gameHelp";
+import { gameHelp } from "./gameHelp";
+import { recordUnits } from "./recordUnits";
 import { newGames, type BoardId } from "./newCatalog";
 import {
   boardClick,
@@ -23,12 +24,12 @@ import {
   newMotion,
 } from "./motionExpansion";
 import { normalizeProgress } from "./progress";
-describe("101-game catalog contract", () => {
+describe("102-game catalog contract", () => {
   it("registers fifty additional unique games, with help and persistent progress", () => {
-    expect(games).toHaveLength(101);
+    expect(games).toHaveLength(102);
     expect(newGames).toHaveLength(50);
-    expect(new Set(games.map((g) => g.id)).size).toBe(101);
-    expect(new Set(games.map((g) => g.name)).size).toBe(101);
+    expect(new Set(games.map((g) => g.id)).size).toBe(102);
+    expect(new Set(games.map((g) => g.name)).size).toBe(102);
     for (const g of newGames) {
       expect(gameHelp[g.id].length).toBeGreaterThan(65);
       expect(recordUnits[g.id]).toBe("pontos");

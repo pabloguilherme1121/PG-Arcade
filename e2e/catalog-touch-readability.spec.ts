@@ -9,7 +9,7 @@ test.describe("catalog touch readability", () => {
     await page.setViewportSize({ width: 320, height: 800 });
     await page.goto("./");
     const cards = page.locator(".game-grid .game-card");
-    await expect(cards).toHaveCount(101);
+    await expect(cards).toHaveCount(102);
     for (const width of [320, 390, 430]) {
       if (width !== 320) await page.setViewportSize({ width, height: 800 });
       const metrics = await cards.evaluateAll((elements) => elements.map(card => {
