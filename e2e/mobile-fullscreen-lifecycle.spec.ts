@@ -35,7 +35,7 @@ async function leaveImmersiveAndReturn(page: Page) {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
 }
 
-for (const width of [320, 390]) {
+for (const width of [320, 360, 390, 430]) {
   test(`Snake retains touch controls through fullscreen, pause, restart and catalog at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: width === 320 ? 740 : 844 });
     await openImmersiveFallback(page);
@@ -82,7 +82,7 @@ for (const width of [320, 390]) {
   });
 }
 
-for (const width of [320, 390]) {
+for (const width of [320, 360, 390, 430]) {
   test(`fullscreen keeps controls inside asymmetric safe areas at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     await openImmersiveFallback(page);
