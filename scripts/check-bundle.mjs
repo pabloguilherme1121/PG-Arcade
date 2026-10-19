@@ -1,6 +1,7 @@
 import { gzipSync } from "node:zlib";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { calculateHeadroom } from "./bundle-headroom.mjs";
 
 const root = "dist/assets";
 const assetLimits = { ".js": 450 * 1024, ".css": 250 * 1024 };
@@ -57,5 +58,15 @@ console.log(
 if (violations.length) {
   console.error("Bundle budget exceeded:\n" + violations.join("\n"));
   process.exit(1);
+}
+const margin = calculateHeadroom({ raw: initialRaw, gzip: initialGzip }, initialLimits);
+console.log(`Bundle remaining: ${margin.headroomRawKiB} KiB raw / ${margin.headroomGzipKiB} KiB gzip.`);
+if (margin.warnRaw || margin.warnGzip) {
+  const message = `Less than 10 KiB remaining before one or both initial bundle limits. Investigate eager imports before adding runtime SDKs.`;
+  if (process.env.GITHUB_ACTIONS === "true") {
+    console.log(`::warning title=PG-Arcade bundle headroom::${message}`);
+  } else {
+    console.warn(message);
+  }
 }
 console.log("Bundle budget OK.");
