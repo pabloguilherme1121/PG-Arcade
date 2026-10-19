@@ -1,3 +1,4 @@
+import { localDiagnostics, diagnosticsStatus, startDiagnostics, stopDiagnostics } from "./lib/localDiagnostics";
 import { MAX_PROGRESS_BACKUP_BYTES, validateProgressBackup } from "./lib/progressBackup";
 import { searchText } from "./lib/discovery";
 import { scopedRecordLabel } from "./lib/scopedRecordLabels";
@@ -15,6 +16,7 @@ type Props = {
  update: (fn: (p: Progress) => Progress) => void;
 };
 export default function ProgressPage({progress, heading, update}:Props) {
+ const [collecting,setCollecting]=useState(()=>diagnosticsStatus().collecting);
  const [recordQuery,setRecordQuery]=useState("");
  const [message,setMessage]=useState("");
  const [recordView,setRecordView]=useState("todos");
@@ -24,6 +26,12 @@ export default function ProgressPage({progress, heading, update}:Props) {
   const link=document.createElement("a");link.href=url;link.download="pg-arcade-progresso.json";link.click();
   setTimeout(()=>URL.revokeObjectURL(url),1000);
   setMessage("Cópia de progresso preparada. Guarde o arquivo para restaurar em outro navegador.");
+ }
+ function exportDiagnostics() {
+  const url=URL.createObjectURL(new Blob([JSON.stringify(localDiagnostics(),null,2)],{type:"application/json"}));
+  const link=document.createElement("a");link.href=url;link.download="pg-arcade-diagnostico.json";link.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  setMessage("Diagnóstico local preparado, sem URL, favoritos ou recordes. Nenhum dado foi enviado.");
  }
  const hasRecord = (id: GameId) => !!progress.records[id] || Object.keys(progress.recordsV2 || {}).some(key => key.startsWith(`${id}|`));
  const recordCount=games.filter(g=>hasRecord(g.id)).length;
@@ -71,6 +79,12 @@ export default function ProgressPage({progress, heading, update}:Props) {
               <button onClick={exportProgress}>
                 Salvar cópia do progresso
               </button>
+              <p>Para investigar lentidão, inicie uma coleta, teste o catálogo e volte para salvar o diagnóstico. A coleta fica apenas neste aparelho.</p>
+              <button aria-pressed={collecting} onClick={()=>{
+                if(collecting){stopDiagnostics();setCollecting(false);setMessage("Coleta interrompida. Você pode salvar o diagnóstico local.");}
+                else {const started=startDiagnostics();setCollecting(started);setMessage(started?"Coleta local iniciada. Teste o catálogo e volte para salvar o diagnóstico. Nenhum dado é enviado.":"Este navegador não oferece medição de tarefas longas. O diagnóstico básico continua disponível.");}
+              }}>{collecting?"Parar coleta local":"Iniciar coleta local"}</button>
+              <button onClick={exportDiagnostics}>Salvar diagnóstico local</button>
               <label>
                 Restaurar cópia
                 <input

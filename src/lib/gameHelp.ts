@@ -56,7 +56,7 @@ const expandedHelp: Record<ExpandedId, string> = {
     "Troque duas peças vizinhas para formar linhas de três ou mais. Combinações desaparecem e novas peças caem, criando cascatas e pontos.",
 };
 export const gameHelp: Record<GameId, string> = {
-  comum: "Associe palavras. Solo com bot aleatório ou 2 a 4 pessoas no mesmo aparelho.",
+  comum: "Associe palavras. Solo por pistas ou 2 a 4 pessoas no mesmo aparelho.",
   ...Object.fromEntries(newGames.map(g => [g.id, g.help])) as Record<typeof newGames[number]["id"],string>,
   ...expandedHelp,
   blocos: "Escolha uma das três peças e toque na casa de origem. Preencha linhas ou colunas para limpá-las. Setas movem o foco e Enter posiciona. Ao usar as três peças, outras aparecem. A partida termina quando nenhuma restante cabe.",

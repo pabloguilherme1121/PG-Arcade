@@ -19,6 +19,6 @@ test('previously visited common word plays after offline reload',async({page,con
   await game.getByRole('button',{name:'Começar partida',exact:true}).click();
   await game.locator('.cw-options button').first().click();
   await expect(game.getByRole('heading',{name:'Revelação',exact:true})).toBeVisible();
-  await expect(game.locator('.cw-results')).toContainText('Bot aleatório');
+  await expect(game.locator('.cw-results')).toContainText('Bot de pistas');
  }finally{await context.setOffline(false);}
 });

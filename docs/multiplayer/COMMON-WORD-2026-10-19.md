@@ -4,9 +4,9 @@ Escopo confirmado: solo e dupla local primeiro; online depois. Custo financeiro 
 
 ## Experiência entregue
 
-Treino solo com bot aleatório identificado ou grupo presencial de 2–4 participantes. Cada pessoa escolhe uma associação; coincidências rendem 100 pontos por outro participante. Vinte temas curados, partidas de 5/10/20 rodadas sem tema repetido dentro da mesma partida. Duração não é anunciada como dificuldade.
+Solo por pistas com resposta definida antes da escolha ou grupo presencial de 2–4 participantes. Cada pessoa escolhe uma associação; coincidências rendem 100 pontos por outro participante. Vinte temas curados, partidas de 5/10/20 rodadas sem tema repetido dentro da mesma partida. Duração não é anunciada como dificuldade.
 
-No grupo, uma cortina esconde a resposta anterior antes de passar o aparelho. Revelação conjunta, placar acumulado, resultado e nova partida/configuração. As escolhas permanecem no estado do navegador: a cortina oferece privacidade visual, não segurança contra inspeção do aparelho. O bot decide independentemente da escolha humana; não é descrito como inteligência estratégica. Não há cronômetro nem ranking artificial entre sessões de tamanhos distintos.
+No grupo, uma cortina esconde a resposta anterior antes de passar o aparelho. Revelação conjunta, placar acumulado, resultado e nova partida/configuração. As escolhas permanecem no estado do navegador: a cortina oferece privacidade visual, não segurança contra inspeção do aparelho. O bot de pistas define uma associação antes da escolha humana e fornece uma descrição para interpretá-la; não é anunciado como inteligência estratégica. Não há cronômetro nem ranking artificial entre sessões de tamanhos distintos.
 
 Pausa manual e por perda de atividade, preservando escolhas; retomada sem pontuação duplicada. Botões nativos, foco de título nas transições, seletores com nomes acessíveis e alvos de pelo menos 44×44 px. Arte SVG original local, sem downloads de terceiros.
 
@@ -34,3 +34,7 @@ A PR #145 depende da #144. O CI da #144 revelou um teste antigo ainda procurando
 Os demais 49 candidatos permanecem no roadmap; não são jogos prontos. Próxima prioridade: prototipar Leilão de Relíquias com solo/local após validar esta entrega. A qualidade de mercado e o interesse dos consumidores precisam de playtests humanos; contagem de testes não comprova diversão ou viralidade.
 
 Verificação após incorporar f717ed7: 441 unitários e 11 cenários E2E integrados aprovados; um skip previsto do service worker em Firefox. Inclui as partidas completas por toque, teclado/axe/pausa, reload offline e a regressão de abertura das utilidades por teclado. Sem retries. Build, orçamento e npm audit aprovados no estado integrado.
+
+## Refinamento atual
+
+O treino solo foi substituído por desafio de pistas interpretáveis, corrigindo o ciclo de quatro rodadas. Há repetição do desafio com a mesma semente e áudio opcional desligado por padrão. A verificação atualizada, integrações locais e limites estão em ../REFINEMENT-2026-10-19.md. Os resultados anteriores deste documento são históricos; não substituem os gates do HEAD final.

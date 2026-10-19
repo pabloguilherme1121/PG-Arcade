@@ -13,7 +13,7 @@ const positiveInteger = (key, fallback, maximum) => {
   if (!Number.isInteger(value) || value < 1 || value > maximum) throw new Error("Invalid --" + key);
   return value;
 };
-const samples = positiveInteger("samples", "3", 30);
+const samples = positiveInteger("samples", "5", 30);
 const frameCount = positiveInteger("frames", "120", 600);
 const width = positiveInteger("width", "390", 2560);
 const height = positiveInteger("height", "844", 2560);
@@ -194,7 +194,7 @@ async function run() {
     }));
     await context.close();
     const catalogViewportSamples = [];
-    for (const viewportWidth of [320, 390]) {
+    for (const viewportWidth of [320, 360, 390, 430]) {
       for (let index = 0; index < samples; index++) {
         const row = await sampleCatalogScroll(browser, viewportWidth, ids.length);
         if (row.cardCount !== ids.length || row.cardCounts.some(count => count !== ids.length) || row.overflowX) {
@@ -203,7 +203,7 @@ async function run() {
         catalogViewportSamples.push(row);
       }
     }
-    const catalogViewportSummary = Object.fromEntries([320, 390].map(viewportWidth => {
+    const catalogViewportSummary = Object.fromEntries([320, 360, 390, 430].map(viewportWidth => {
       const rows = catalogViewportSamples.filter(row => row.viewportWidth === viewportWidth);
       return [String(viewportWidth), {
         cardCount: ids.length,
@@ -232,7 +232,7 @@ async function run() {
       metadata: { timestamp: new Date().toISOString(), baseURL: root.href,
         browser: "chromium", browserVersion: browser.version(), profile: cpu === 1 ? "unthrottled-desktop" : "emulated-cpu-" + cpu + "x",
         warning: "CPU throttling is not a physical mid-range Android measurement.",
-        viewport: { width, height }, samples, frameCount, frameMetric: "requestAnimationFrame intervals after a reference action; not GPU render time or sustained gameplay FPS", catalogMetric: "two animation frames after each programmed scroll over 101-card catalog; diagnostic proxy, not INP, sustained FPS or physical Android", cache: "new-context-per-sample; service-worker-blocked" },
+        viewport: { width, height }, samples, frameCount, frameMetric: "requestAnimationFrame intervals after a reference action; not GPU render time or sustained gameplay FPS", catalogMetric: `two animation frames after each programmed scroll over ${ids.length}-card catalog; diagnostic proxy, not INP, sustained FPS or physical Android`, cache: "new-context-per-sample; service-worker-blocked" },
       catalog, catalogViewportSummary, catalogViewportSamples, perGame, rows,
     };
     await mkdir(dirname(output), { recursive: true });

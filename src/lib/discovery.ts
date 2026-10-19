@@ -5,6 +5,8 @@ import { discoveryFilters, modeTags, modeLabel, supportsSwipe, type DiscoveryFil
 
 /** Names and descriptions are searched as words, ignoring accents and excess spaces. */
 export const searchText = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR").trim().replace(/\s+/g, " ");
+let lastQuery: string | undefined;
+let queryWords: string[] = [];
 const searchIndex = new WeakMap<typeof games[number], string>();
 export const matchesGame = (game: typeof games[number], query: string) => {
   if (!query.trim()) return true;
@@ -13,7 +15,8 @@ export const matchesGame = (game: typeof games[number], query: string) => {
     text = searchText(`${game.name} ${game.description} ${gameHelp[game.id]} ${game.category} ${modeTags(game).map(modeLabel).join(" ")} ${gameMode(game.id)} ${supportsSwipe(game.id)?'deslizar gestos':''}`);
     searchIndex.set(game, text);
   }
-  return searchText(query).split(" ").every(word => text.includes(word));
+  if (query !== lastQuery) { lastQuery = query; queryWords = searchText(query).split(" "); }
+  return queryWords.every(word => text.includes(word));
 };
 export const categoryGroup = (category: string) => ["Corrida", "Carros"].includes(category) ? "Carros e corrida" : category;
 export const recommended: GameId[] = ["snake", "flood", "liga4", "basquete", "palavra", "rhythm"];

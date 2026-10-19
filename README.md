@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **101 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **102 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -34,7 +34,7 @@ Os novos jogos incluem Cinco em Linha, Hex, Ataxx, Mancala, Chomp, Oito Rainhas,
 
 Os controles compartilhados usam alvos de pelo menos 44×48 px; direções e controles de movimento usam 56 px, preservando o tamanho das casas dos tabuleiros. Campos em celulares usam texto de 16 px. O foco de teclado permanece visível, os botões respondem ao pressionar e as ações principais têm destaque verde. Nos jogos de movimento, toques rápidos são guardados até a próxima etapa da física; cancelar o ponteiro libera a direção, e soltar Ação não produz uma segunda ativação por clique.
 
-- Todos os 101 jogos oferecem sessões Livre, Sprint e Maratona. Livre preserva as regras e os limites próprios do jogo. Sprint dura 3, 2 ou 1 minuto; Maratona dura 10, 5 ou 3 minutos, conforme a pressão de tempo Fácil, Normal ou Difícil. Iniciar um desafio abre uma nova partida. Ao expirar, a sessão bloqueia os controles; pausar a sessão ou sair da janela congela o relógio e pausa o jogo. Retome a sessão e, quando necessário, use Continuar no jogo. Esses níveis alteram o tempo da sessão; a dificuldade das regras continua nos controles específicos de cada jogo.
+- Os jogos oferecem sessões Livre, Sprint e Maratona. Livre preserva as regras e os limites próprios do jogo. Sprint dura 3, 2 ou 1 minuto; Maratona dura 10, 5 ou 3 minutos, conforme a pressão de tempo Fácil, Normal ou Difícil. Iniciar um desafio abre uma nova partida. Ao expirar, a sessão bloqueia os controles; pausar a sessão ou sair da janela congela o relógio e pausa o jogo. Retome a sessão e, quando necessário, use Continuar no jogo. Esses níveis alteram o tempo da sessão; a dificuldade das regras continua nos controles específicos de cada jogo.
 - Snake tem Clássico e Portal: no Portal, atravessar a borda leva ao lado oposto, mas tocar o próprio corpo continua encerrando a partida. As três velocidades valem para ambos.
 - 2048 tem Fácil (98% de peças 2), Normal (90%) e Difícil (70%, sem desfazer). Reflexo Rápido muda a janela de pontuação entre 1,4, 1 e 0,6 segundo. Quebra-cabeça oferece embaralhamentos por 12, 40 ou 100 movimentos legais; todos são solucionáveis, e a distância mínima da solução varia entre partidas.
 - Memória oferece 4, 8 ou 12 pares. Pausar ou sair da janela mantém as cartas abertas e o tempo restante de observação; Continuar retoma esse tempo. Trocar a dificuldade inicia uma partida nova. Novos recordes separam tamanho do tabuleiro, tempo de observação e modo de sessão. O tempo de observação é escolhido antes da primeira carta.
@@ -73,7 +73,7 @@ Sem conta, publicidade ou envio de dados das partidas a servidores. Progresso é
 
 Node.js 24: `npm ci`, `npm run dev`, `npm run audit`, `npm test`, `npm run build`, `npm run check:bundle`, `npm run test:e2e`.
 
-Instalável como PWA, com fallback offline da navegação e cache local de assets já usados. Carregamento sob demanda por jogo/coleção. GitHub Actions valida regras e partidas em Chromium, Firefox e WebKit contra o build de produção servido por `npm run preview`, incluindo o prefixo `/PG-Arcade/`, antes de publicar no GitHub Pages. Falhas preservam traces e capturas para diagnóstico. `npm run test:e2e` reconstrói a aplicação antes da execução, evitando testar artefatos antigos. A suíte inclui auditoria automatizada WCAG com axe-core nos 101 jogos. Rotas com hash funcionam em hospedagem estática.
+Instalável como PWA, com fallback offline da navegação e cache local de assets já usados. Carregamento sob demanda por jogo/coleção. GitHub Actions valida regras e partidas em Chromium, Firefox e WebKit contra o build de produção servido por `npm run preview`, incluindo o prefixo `/PG-Arcade/`, antes de publicar no GitHub Pages. Falhas preservam traces e capturas para diagnóstico. `npm run test:e2e` reconstrói a aplicação antes da execução, evitando testar artefatos antigos. A suíte inclui auditorias automatizadas com axe-core; isso não substitui avaliação manual de acessibilidade. Rotas com hash funcionam em hospedagem estática.
 
 ## Origem e licença
 
@@ -85,3 +85,9 @@ Licença MIT.
 O job Chromium publica `arcade-reference-performance` com três amostras frias de Snake, 2048, Memória, Xadrez, Corrida e Futebol, viewport 390×844 e CPU simulada em 4×. O JSON inclui carregamento, DOM, tarefas longas e intervalos de 120 frames após uma ação definida. Intervalo de `requestAnimationFrame` não é tempo de renderização da GPU nem prova de FPS sustentado em partida; cenários discretos podem ficar ociosos após a ação.
 
 Para repetir localmente com Chromium instalado e o preview iniciado: `npm run perf:benchmark -- --base-url=http://127.0.0.1:5173/ --samples=3 --frames=120`. Em aparelho físico, repetir início, 60 segundos de jogo, pausa/retomada e rotação nos seis jogos, anotando modelo, navegador, aquecimento e falhas de controle. Os resultados simulados não substituem essa verificação.
+
+## Palavra em Comum e diagnóstico local
+
+Palavra em Comum oferece solo por pistas e 2–4 participantes no mesmo aparelho. No solo, leia a descrição e escolha a associação correspondente; no grupo, passe a tela entre escolhas. Sons são opcionais e desligados por padrão. Resultados pertencem à partida, sem ranking entre formatos.
+
+Em Progresso, “Iniciar coleta local” permite medir tarefas longas enquanto você testa o catálogo, quando o navegador oferece a API. Volte para interromper e exportar o diagnóstico JSON. A coleta mantém até 128 durações recentes em memória; não registra URL, favoritos ou recordes, não persiste em storage e não envia dados. Medições do navegador não certificam FPS sustentado ou Android físico.

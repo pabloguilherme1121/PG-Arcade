@@ -29,7 +29,7 @@ for(const width of [320,390,844]) test(`common word local complete match at ${wi
  await game.getByRole('button',{name:'Continuar partida',exact:true}).tap();
  for(let round=0;round<5;round++){
   await game.locator('.cw-options button').first().tap();
-  await expect(game.locator('.cw-results')).toContainText('Bot aleatório');
+  await expect(game.locator('.cw-results')).toContainText('Bot de pistas');
   await game.getByRole('button',{name:round===4?'Ver resultado':'Próxima rodada',exact:true}).tap();
  }
  await expect(game.getByRole('heading',{name:'Partida concluída',exact:true})).toBeVisible();
