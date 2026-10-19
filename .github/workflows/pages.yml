@@ -24,6 +24,8 @@ jobs:
       - run: npm ci
       - run: npm run audit
       - run: npm test
+      - name: Validate performance summary reporting
+        run: node --test scripts/summarize-performance.test.mjs
       - run: npm run build
       - run: npm run check:bundle
       - uses: actions/upload-artifact@v7
@@ -59,6 +61,9 @@ jobs:
           trap 'kill "$PREVIEW_PID" 2>/dev/null || true' EXIT
           node --input-type=module -e 'for(let i=0;i<60;i++){try{const r=await fetch("http://127.0.0.1:5191/PG-Arcade/");if(r.ok)process.exit(0)}catch{}await new Promise(r=>setTimeout(r,500))}process.exit(1)'
           npm run perf:benchmark -- --base-url=http://127.0.0.1:5191/PG-Arcade/ --samples=3 --frames=120 --output=artifacts/arcade-performance.json
+      - name: Publish catalog performance diagnostics
+        if: matrix.browser == 'chromium'
+        run: node scripts/summarize-performance.mjs artifacts/arcade-performance.json docs/performance/catalog-2026-10-17.json
       - uses: actions/upload-artifact@v7
         if: always() && matrix.browser == 'chromium'
         with:
