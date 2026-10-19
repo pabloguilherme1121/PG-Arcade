@@ -7,11 +7,17 @@ O [run 39163561353](https://github.com/pabloguilherme1121/PG-Arcade/actions/runs
 passou quality, Chromium, Firefox, WebKit, validate, pages-artifact e deploy.
 Essa evidência vale para a base, não certifica alterações posteriores.
 
-O catálogo contém 101 IDs únicos, exigidos por `src/lib/newGames.test.ts`.
-O commit `f727889bdcb757aa0c98f727ede9709380689c51` acrescentou `blocos`
-(Blocos Infinito) ao catálogo de 100. Em 19/10/2026, o responsável decidiu explicitamente manter os 101 jogos e
-atualizar o requisito da #79 para exatamente 101 IDs únicos. Preservar todos os
-jogos, incluindo `blocos`, suas URLs e dados locais existentes.
+O inventário de referência contém 101 IDs únicos no SHA acima, incluindo
+Blocos Infinito (`blocos`). Esse número identifica a base auditada, não um teto
+permanente do produto. A expansão autorizada do catálogo adiciona novos jogos
+em PRs próprias, preservando todos os IDs, URLs e dados locais da base.
+
+Para integrar a PR #145, atualizar explicitamente o inventário de aceite para
+102 IDs únicos, acrescentando `comum`, sem remover os 101 anteriores. As
+asserções de contagem, metadados e documentação devem concordar com o HEAD a
+integrar. Manter separadas as evidências de QA dos 101 jogos de referência e as
+do novo jogo: CI da base não certifica o novo título. Expansões futuras seguem
+a mesma regra de inventário versionado e validação no HEAD final.
 
 ## Ordem de execução
 
