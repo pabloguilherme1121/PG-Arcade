@@ -23,8 +23,8 @@ export function calculateHeadroom(
 export function formatAssetBreakdown(entries) {
   return [...entries].sort((a, b) => b.raw - a.raw || a.name.localeCompare(b.name)).map(({ name, raw, gzip }) => {
     if (!name || !Number.isFinite(raw) || raw < 0 || !Number.isFinite(gzip) || gzip < 0) {
-      throw new Error(`Invalid initial asset: \${name || "unnamed"}`);
+      throw new Error(`Invalid initial asset: ${name || "unnamed"}`);
     }
-    return `\${name}: \${(raw / 1024).toFixed(1)} KiB raw / \${(gzip / 1024).toFixed(1)} KiB gzip`;
-  }).join("\\n");
+    return `${name}: ${(raw / 1024).toFixed(1)} KiB raw / ${(gzip / 1024).toFixed(1)} KiB gzip`;
+  }).join("\n");
 }
