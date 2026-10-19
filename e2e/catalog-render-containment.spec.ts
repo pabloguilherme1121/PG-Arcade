@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 for (const width of [320, 390]) {
-  test("render containment preserves all cards, keyboard focus and covers at " + width + "px", async ({ page }) => {
+  test("catalog preserves 101 covers and keyboard activation at " + width + "px", async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     await page.goto("./");
 
@@ -22,7 +22,9 @@ for (const width of [320, 390]) {
     await link.focus();
     await expect(link).toBeFocused();
     expect(id).toBeTruthy();
-    await link.click();
+    // Activate the focused link like a keyboard user. Firefox may detach the
+    // old locator during navigation; do not issue a second pointer click.
+    await page.keyboard.press("Enter");
     await expect(page.locator("[data-arcade-arena][data-game-id='" + id + "']")).toBeVisible();
 
     await page.goto("./");
