@@ -101,6 +101,35 @@ jobs:
           path: test-results
           retention-days: 7
 
+  lighthouse:
+    name: lighthouse (diagnostic)
+    if: github.event_name != 'workflow_dispatch'
+    needs: quality
+    runs-on: ubuntu-latest
+    # The first measured baseline is informative, not a new required check.
+    # Existing bundle, unit and three-browser gates remain strict.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v8
+        with:
+          name: arcade-dist
+          path: dist
+      - name: Audit catalog and one playable arena
+        run: npx --yes @lhci/cli@0.15.1 autorun
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: arcade-lighthouse-reports
+          path: .lighthouseci/reports
+          if-no-files-found: warn
+          retention-days: 7
+
   validate:
     name: validate
     if: ${{ always() }}
