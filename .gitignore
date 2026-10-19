@@ -4,3 +4,6 @@ test-results/
 playwright-report/
 *.local
 work/
+
+# Local Lighthouse CI reports (CI uploads as an artifact)
+.lighthouseci/
