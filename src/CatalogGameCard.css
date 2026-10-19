@@ -1,24 +1,18 @@
 /* One card surface for search results, collections and recent favorites.
    Decorative layers stay CSS-only: no extra cover DOM or mobile animations. */
-.game-grid .game-card,
-.curated-grid .curated-card,
-.personal-grid .curated-card {
+:is(.game-grid .game-card, .curated-grid .curated-card, .personal-grid .curated-card) {
   border-color: color-mix(in srgb, var(--card-accent, #98c1d9) 22%, #455269);
   background: linear-gradient(160deg, rgba(51, 73, 96, .33), rgba(12, 19, 29, .92) 65%), #101923;
   box-shadow: inset 0 1px 0 #ffffff16;
 }
 
-.game-grid .game-card .game-link,
-.curated-grid .curated-card .game-link,
-.personal-grid .curated-card .game-link {
+:is(.game-grid .game-card, .curated-grid .curated-card, .personal-grid .curated-card) .game-link {
   display: flex;
   flex-direction: column;
   min-height: 100%;
 }
 
-.game-grid .game-card .game-metadata,
-.curated-grid .curated-card .game-metadata,
-.personal-grid .curated-card .game-metadata {
+:is(.game-grid .game-card, .curated-grid .curated-card, .personal-grid .curated-card) .game-metadata {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -33,9 +27,7 @@
   line-height: 1.5;
 }
 
-.game-grid .game-card .game-metadata::after,
-.curated-grid .curated-card .game-metadata::after,
-.personal-grid .curated-card .game-metadata::after {
+:is(.game-grid .game-card, .curated-grid .curated-card, .personal-grid .curated-card) .game-metadata::after {
   content: "Jogar ↗";
   flex: 0 0 auto;
   margin-left: auto;
@@ -44,9 +36,7 @@
   letter-spacing: .01em;
 }
 
-.game-grid .game-card:focus-within,
-.curated-grid .curated-card:focus-within,
-.personal-grid .curated-card:focus-within {
+:is(.game-grid .game-card, .curated-grid .curated-card, .personal-grid .curated-card):focus-within {
   border-color: #d1f99a;
   box-shadow: inset 0 1px 0 #ffffff22, 0 0 0 2px #c9f65a33, 0 14px 30px #0006;
 }
@@ -78,9 +68,7 @@
   }
 }
 
-html[data-arcade-contrast="true"] .game-grid .game-card,
-html[data-arcade-contrast="true"] .curated-grid .curated-card,
-html[data-arcade-contrast="true"] .personal-grid .curated-card {
+html[data-arcade-contrast="true"] :is(.game-grid .game-card, .curated-grid .curated-card, .personal-grid .curated-card) {
   background: #000;
   border-color: #fff;
   box-shadow: none;
