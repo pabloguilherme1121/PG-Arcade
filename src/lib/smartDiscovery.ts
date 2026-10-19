@@ -1,23 +1,14 @@
 import { games as catalog, type GameId } from "./catalog";
 import { newGames } from "./newCatalog";
 import { expandedGames } from "./expandedCatalog";
+import { gameCapabilities } from "./gameCapabilities";
 
 export type GameModeTag = "classico"|"rapido"|"sem-pressa"|"dupla"|"bot"|"treino"|"sobrevivencia";
 export type DiscoveryFilter = GameModeTag|"todos"|"nao-jogados"|"jogados"|"favoritos"|"deslizar";
 type GameInfo = {id: GameId;name:string;category:string;description:string};
 type DiscoveryHistory = {favorites:readonly string[];visits:Partial<Record<GameId,number>>;last:GameId|null};
 
-const duels = new Set<GameId>(["damas","domino","liga4","velha","xadrez"]);
-const botGames = new Set<GameId>([
-  ...duels, 'nim', 'reversi', 'pontes',
-  'gomoku', 'hex', 'ataxx', 'isolation', 'breakthrough', 'territory', 'mancala', 'chomp',
-]);
-const swipeGames=new Set<GameId>([
-  ...newGames.filter(g=>g.family==='motion' && !['rhythm','balloons'].includes(g.id)).map(g=>g.id),
-  ...expandedGames.filter(g=>g.family==='action').map(g=>g.id),
-  'snake','2048','puzzle','wordsearch','slideblock','labirinto','sokoban','match3',
-]);
-export const supportsSwipe=(id:GameId)=>swipeGames.has(id);
+export const supportsSwipe=(id:GameId)=>gameCapabilities(id).swipe;
 const quick = new Set<GameId>(["reflexo","estrelas","tiro","rally","corrida"]);
 const survival = new Set<GameId>(["rally","coleta","orbital","runner","voo","jetpack","esquiva","drift","invasores","asteroides","breakout","pong","pouso"]);
 const training = new Set<GameId>(["vinteum","dados","boliche","basquete","golfe","arco","pesca","match3"]);
@@ -50,8 +41,8 @@ export function modeTags(game:GameInfo):GameModeTag[] {
   const result:GameModeTag[]=["classico"];
   if(quick.has(game.id)) result.push("rapido");
   if(untimed.has(game.id)) result.push("sem-pressa");
-  if(duels.has(game.id)) result.push("dupla");
-  if(botGames.has(game.id)) result.push("bot");
+  if(gameCapabilities(game.id).localPlayers === 2) result.push("dupla");
+  if(gameCapabilities(game.id).bot) result.push("bot");
   if(training.has(game.id)) result.push("treino");
   if(survival.has(game.id)) result.push("sobrevivencia");
   return result;
