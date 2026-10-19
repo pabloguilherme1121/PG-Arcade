@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { calculateHeadroom } from "./bundle-headroom.mjs";
+import { calculateHeadroom, formatAssetBreakdown } from "./bundle-headroom.mjs";
 
 const LIMITS = { raw: 400 * 1024, gzip: 120 * 1024 };
 
@@ -25,4 +25,22 @@ test("rejects malformed values and distinguishes over-budget from near-budget", 
   assert.equal(result.warnGzip, false);
   assert.equal(result.exceedsRaw, true);
   assert.equal(result.exceedsGzip, true);
+});
+
+test("ranks initial assets by bytes and includes gzip contributions", () => {
+  const report = formatAssetBreakdown([
+    { name: "small.css", raw: 2048, gzip: 600 },
+    { name: "large.js", raw: 10240, gzip: 2048 },
+    { name: "empty.css", raw: 0, gzip: 0 },
+  ]);
+  assert.match(report, /large\.js: 10\.0 KiB raw \/ 2\.0 KiB gzip/);
+  assert.ok(report.indexOf("large.js") < report.indexOf("small.css"));
+  assert.ok(report.indexOf("small.css") < report.indexOf("empty.css"));
+});
+
+test("rejects invalid entries in initial asset breakdown", () => {
+  assert.throws(
+    () => formatAssetBreakdown([{ name: "broken.js", raw: -1, gzip: 10 }]),
+    /broken\.js/,
+  );
 });
