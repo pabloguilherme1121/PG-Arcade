@@ -53,17 +53,13 @@
 
 /* Keep the 100-card idle grid cheap on Firefox/mobile. Elevation is opt-in. */
 @media (hover: hover) and (min-width: 900px) {
-  .game-grid .game-card:hover,
-  .curated-grid .curated-card:hover,
-  .personal-grid .curated-card:hover {
+  :is(.game-grid .game-card, .curated-grid .curated-card, .personal-grid .curated-card):hover {
     box-shadow: inset 0 1px 0 #ffffff20, 0 8px 20px #0005;
   }
 }
 
 @media (hover: none) {
-  .game-grid .game-card:hover,
-  .curated-grid .curated-card:hover,
-  .personal-grid .curated-card:hover {
+  :is(.game-grid .game-card, .curated-grid .curated-card, .personal-grid .curated-card):hover {
     transform: none;
   }
 }
@@ -84,9 +80,7 @@ html[data-arcade-contrast="true"] .game-metadata::after {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .game-grid .game-card,
-  .curated-grid .curated-card,
-  .personal-grid .curated-card {
+  :is(.game-grid .game-card, .curated-grid .curated-card, .personal-grid .curated-card) {
     transition: none !important;
     transform: none !important;
   }
