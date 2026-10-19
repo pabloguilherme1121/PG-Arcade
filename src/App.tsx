@@ -200,11 +200,11 @@ export default function App() {
   const [mode, setMode] = useState(initialView.mode);
   const [modeFilter, setModeFilter] = useState<DiscoveryFilter>(initialView.modeFilter);
   useEffect(() => {
-    const chips=document.querySelectorAll('.filters .selected,.smart-mode-chips .selected');
-    const reveal=()=>chips.forEach(el=>{const row=el.parentElement!;row.scrollLeft+=el.getBoundingClientRect().left-row.getBoundingClientRect().left-8;});
-    const observer=new ResizeObserver(reveal);
-    chips.forEach(el=>{observer.observe(el);observer.observe(el.parentElement!);});
-    return ()=>observer.disconnect();
+    let disposed=false,stop:(()=>void)|undefined;
+    void import("./lib/revealSelectedFilters").then(({observeSelectedFilters})=>{
+      if(!disposed)stop=observeSelectedFilters(document.querySelectorAll('.filters .selected,.smart-mode-chips .selected'));
+    }).catch(()=>undefined);
+    return()=>{disposed=true;stop?.();};
   }, [category, modeFilter, page]);
   const [swipeOnly, setSwipeOnly] = useState(initialView.swipeOnly);
   const clearCatalogFilters = () => {
