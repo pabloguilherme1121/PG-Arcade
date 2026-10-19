@@ -272,6 +272,9 @@ for (const id of scoredQuizIds)
 test("hangman and word search reach actual victory without timers", async ({
   page,
 }) => {
+  // Run the long input sequence in the accessible reduced-motion mode.
+  // This avoids WebKit's smooth-scroll actionability waits between letters.
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./#/jogar/hangman");
   let game = page.locator('[data-new-game="hangman"]');
   for (const ch of new Set(question("hangman", 1, 1, 0).answer))
@@ -279,6 +282,8 @@ test("hangman and word search reach actual victory without timers", async ({
   await expect(game.getByRole("status")).toHaveText("Palavra descoberta!");
   await page.goto("./#/jogar/wordsearch");
   game = page.locator('[data-new-game="wordsearch"]');
+  await expect(game.locator(".wordsearch-grid button")).toHaveCount(36);
+  await game.locator(".wordsearch-grid").scrollIntoViewIfNeeded();
   for (const { from: a, to: b } of await visibleWordPaths(page)) {
     await game.locator(".wordsearch-grid button").nth(a).click();
     await game.locator(".wordsearch-grid button").nth(b).click();
