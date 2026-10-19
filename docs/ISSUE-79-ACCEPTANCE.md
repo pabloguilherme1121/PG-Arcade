@@ -9,9 +9,9 @@ Essa evidência vale para a base, não certifica alterações posteriores.
 
 O catálogo contém 101 IDs únicos, exigidos por `src/lib/newGames.test.ts`.
 O commit `f727889bdcb757aa0c98f727ede9709380689c51` acrescentou `blocos`
-(Blocos Infinito) ao catálogo de 100. A exigência de exatamente 100 IDs na #79
-permanece sem conciliação. Preservar os jogos, URLs e dados locais existentes;
-não remover `blocos` nem trocar o requisito por 101 sem decisão explícita.
+(Blocos Infinito) ao catálogo de 100. Em 19/10/2026, o responsável decidiu explicitamente manter os 101 jogos e
+atualizar o requisito da #79 para exatamente 101 IDs únicos. Preservar todos os
+jogos, incluindo `blocos`, suas URLs e dados locais existentes.
 
 ## Ordem de execução
 
@@ -55,5 +55,5 @@ Reutilizar a planilha de protocolo Android existente. E2E e emulação não assi
 esse aceite. Pausa/vitória/derrota não aplicáveis devem trazer justificativa.
 
 Governança é tratada na [issue #24](https://github.com/pabloguilherme1121/PG-Arcade/issues/24).
-A #79 permanece aberta enquanto faltarem conciliação da quantidade e evidências
+A #79 permanece aberta enquanto faltarem evidências
 por jogo/dispositivo; CI verde comprova somente a parte automatizada executada.
