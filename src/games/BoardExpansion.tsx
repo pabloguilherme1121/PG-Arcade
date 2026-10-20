@@ -17,7 +17,8 @@ import {
   slideVehicle,
   type BoardState,
 } from "../lib/boardExpansion";
-import { newGames, type BoardId } from "../lib/newCatalog";
+import { newGamesWithHelp as newGames } from "../lib/newCatalogFull";
+import type { BoardId } from "../lib/newCatalog";
 import { useAutoPause } from "./useAutoPause";
 import "./newGames.css";
 import { useBoardGesture } from './useBoardGesture';
