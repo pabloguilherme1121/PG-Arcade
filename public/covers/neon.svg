@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 150" role="img" aria-label="Aventura neon">
+<defs><linearGradient id="n" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#21ffdb"/><stop offset="1" stop-color="#dc5fa8"/></linearGradient></defs>
+<g fill="none" stroke="#71f9ed" stroke-width="2" opacity=".62"><path d="M20 35H220M20 65H220M20 95H220M20 125H220M40 10V145M80 10V145M120 10V145M160 10V145M200 10V145"/></g>
+<path d="m119 22 34 47-34 50-36-50Z" fill="#0d3148" stroke="url(#n)" stroke-width="7"/>
+<circle cx="60" cy="84" r="15" fill="#f36b9c"/><circle cx="186" cy="48" r="12" fill="#f36b9c"/>
+<circle cx="181" cy="116" r="17" fill="#ef4a8c" opacity=".8"/>
+<path d="m110 69 9-18 9 18-9 18Z" fill="#aeffe9"/>
+</svg>
