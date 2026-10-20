@@ -64,7 +64,7 @@ test("chips percorrem a tela pequena sem overflow da página", async ({ page }) 
       return false;
     if (row.scrollWidth <= row.clientWidth) return false;
     const chip = [...row.querySelectorAll<HTMLButtonElement>("button")]
-      .find(button => button.textContent?.trim() === "Sobrevivência");
+      .find(button => button.textContent?.trim().startsWith("Sobrevivência"));
     if (!chip) return false;
     chip.focus();
     return {
