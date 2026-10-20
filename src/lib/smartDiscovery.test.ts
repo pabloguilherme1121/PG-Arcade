@@ -32,13 +32,13 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
   it("mostra somente jogos com suporte real para grupo local de 3–4 pessoas", () => {
     const group = filterByMode(games, "grupo", {}, []);
     expect(group.map(game => game.id)).toEqual(["cofre", "leilao", "comum"]);
-    expect(countModes(games, {}, []).grupo).toBe(2);
+    expect(countModes(games, {}, []).grupo).toBe(3);
     for (const game of games) {
-      expect(modeTags(game).includes("grupo")).toBe(game.id === "leilao" || game.id === "comum");
+      expect(modeTags(game).includes("grupo")).toBe(game.id === "leilao" || game.id === "comum" || game.id === "cofre");
     }
   });
   it("restringe duelo e bot aos jogos com modos efetivos",()=>{
-    expect(filterByMode(games, 'dupla', {}, []).map(g=>g.id).sort()).toEqual(["comum","damas","domino","leilao","liga4","velha","xadrez"]);
+    expect(filterByMode(games, 'dupla', {}, []).map(g=>g.id).sort()).toEqual(["cofre","comum","damas","domino","leilao","liga4","velha","xadrez"]);
     expect(filterByMode(games, 'bot', {}, []).map(g=>g.id).sort()).toEqual(["ataxx","breakthrough","chomp","damas","domino","gomoku","hex","isolation","leilao","liga4","mancala","nim","pontes","reversi","territory","velha","xadrez"]);
   });
   it("classifica treino e sobrevivência sem alterar os motores",()=>{
@@ -52,7 +52,7 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
     const favorites=["xadrez"];
     expect(filterByMode(games,"nao-jogados",visited,favorites).some(g=>g.id==="xadrez")).toBe(false);
     expect(filterByMode(games,"favoritos",visited,favorites).map(g=>g.id)).toEqual(["xadrez"]);
-    expect(filterByMode(games,"dupla",visited,favorites)).toHaveLength(7);
+    expect(filterByMode(games,"dupla",visited,favorites)).toHaveLength(8);
     expect(filterByMode(games,"todos",visited,favorites)).toHaveLength(CATALOG_SIZE);
   });
   it("jogo surpresa prioriza inéditos, evita repetir o último e respeita o filtro ativo", () => {
