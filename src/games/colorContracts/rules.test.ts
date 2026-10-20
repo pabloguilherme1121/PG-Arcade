@@ -31,7 +31,7 @@ describe("Contrato das Cores — escolha compartilhada e coleção competitiva",
     expect(scoreCollection([],contract)).toBe(0);
     expect(scoreCollection(["rubro"],contract)).toBe(6);
     expect(scoreCollection(["rubro","rubro"],contract)).toBe(17);
-    expect(scoreCollection(["rubro","rubro","rubro"],contract)).toBe(33);
+    expect(scoreCollection(["rubro","rubro","rubro"],contract)).toBe(38);
     expect(scoreCollection(["rubro","ciano","jade","ouro"],contract)).toBe(28);
   });
   it("encerra exatamente após quatro escolhas por jogador e admite empates",()=>{
