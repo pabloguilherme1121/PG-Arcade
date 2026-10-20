@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **108 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **109 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -116,3 +116,7 @@ Competição no mesmo aparelho para 2–4 pessoas. Cada explorador registra em s
 ### Contrato das Cores (108º título)
 
 Draft competitivo presencial de 2–4 pessoas em um único aparelho: mercado de três cores, objetivos públicos, quatro rodadas, pares e trincas, diversidade de cores, placar e vencedor por pontos. Módulo carregado sob demanda, sem backend, bot fictício ou anúncios.
+
+### Engrenagens do Tempo (109º título)
+
+Quebra-cabeça solo, offline, com quatro a seis engrenagens conectadas. Cada giro afeta a escolhida e as vizinhas em sentidos opostos. Três dificuldades, desafios gerados por giros reversíveis, desfazer, reiniciar, nova partida, recorde e controles acessíveis por toque/teclado. Sem bot, temporizador ou multiplayer fictício. A integração depende da certificação das PRs #169 e #170.

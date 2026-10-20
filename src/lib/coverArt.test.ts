@@ -4,7 +4,7 @@ import { games } from "./catalog";
 import { coverArtFor } from "./coverArt";
 
 describe("Capas premium de todo o catálogo", () => {
-  it("gives all 108 games their own reproducible cover identity", () => {
+  it("gives all 109 games their own reproducible cover identity", () => {
     expect(games).toHaveLength(CATALOG_SIZE);
     const ids = games.map(game => coverArtFor(game));
     expect(new Set(ids.map(art => art.id)).size).toBe(games.length);

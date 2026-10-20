@@ -73,6 +73,7 @@ const collectionPlayers = Object.fromEntries(
   ]),
 ) as unknown as Record<ExpandedId, ComponentType<PlayerProps>>;
 const players = {
+  engrenagens: lazy(() => import("./games/timeGears/TimeGears")),
   contrato: lazy(() => import("./games/colorContracts/ColorContracts")),
   passagem: lazy(() => import("./games/secretPassage/SecretPassage")),
   cofre: lazy(() => import("./games/teamVault/TeamVault")),

@@ -49,3 +49,7 @@ A composição anterior passou em quality (497 testes unitários) e mediu 388,7 
 ## Aceite adicional — Contrato das Cores, 108º título
 
 PR nova empilhada sobre #169. Regras de turno 2–4, mercado com três alternativas, contratos públicos iguais para todos, bônus por coleção, quatro escolhas por participante, vencedor/empate, recorde e nova partida; UI responsiva 320/390/844×390 com E2E. Sem multiplayer online. Exigir testes unitários, três navegadores, validate, CodeQL, bundle abaixo 400 KiB raw e 120 KiB gzip no mesmo HEAD, além de deploy e aceite físico por separado. A existência do registro não comprova o aceite até os gates terminarem.
+
+## Aceite adicional — Engrenagens do Tempo, 109º título (draft)
+
+Branch dependente da PR #170. Verificar puzzles determinísticos e solucionáveis nas três dificuldades, 4–6 engrenagens, inversão/desfazer, recorde, modo solo sem prazo ou bot, controles nativos e ausência de overflow em 320/390/844×390. Exigir quality, Chromium, Firefox, WebKit, validate, CodeQL e bundle raw <400 KiB/gzip <120 KiB no mesmo HEAD antes de integrar. O aceite Android físico permanece pendente.
