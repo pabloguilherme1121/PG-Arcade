@@ -1,3 +1,4 @@
+import { CATALOG_SIZE } from "../src/lib/catalogRelease";
 import { expect, test } from "@playwright/test";
 
 test("an unavailable optional recommendation never hides the catalog or its filters", async ({ page }) => {
@@ -5,7 +6,7 @@ test("an unavailable optional recommendation never hides the catalog or its filt
   page.on("pageerror", error => errors.push(error.message));
   await page.route(/CatalogSpotlight-[^/]+\.(js|css)/, route => route.abort());
   await page.goto("./");
-  await expect(page.locator(".game-card")).toHaveCount(102);
+  await expect(page.locator(".game-card")).toHaveCount(CATALOG_SIZE);
   await page.getByLabel("Buscar jogo").fill("xadrez");
   await expect(page.locator(".game-card")).toHaveCount(1);
   await page.getByRole("link", { name: /^Jogar Xadrez/ }).click();

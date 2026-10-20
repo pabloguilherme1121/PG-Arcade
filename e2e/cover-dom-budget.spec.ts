@@ -1,3 +1,4 @@
+import { CATALOG_SIZE } from "../src/lib/catalogRelease";
 import { expect, test } from "@playwright/test";
 
 test("all 100 covers preserve artwork while keeping decorative SVG DOM lightweight", async ({ page }) => {
@@ -14,10 +15,10 @@ test("all 100 covers preserve artwork while keeping decorative SVG DOM lightweig
       decorativePaths: covers.reduce((total, cover) => total + cover.querySelectorAll("svg path").length, 0),
     };
   });
-  expect(result.covers).toBe(102);
-  expect(result.artImages).toBe(102);
-  expect(result.gradients).toBe(102);
-  expect(result.uniqueGradients).toBe(102);
+  expect(result.covers).toBe(CATALOG_SIZE);
+  expect(result.artImages).toBe(CATALOG_SIZE);
+  expect(result.gradients).toBe(CATALOG_SIZE);
+  expect(result.uniqueGradients).toBe(CATALOG_SIZE);
   // 100 covers × one ornament path + one framing path; allow small future variation.
   expect(result.decorativePaths).toBeLessThanOrEqual(300);
 });

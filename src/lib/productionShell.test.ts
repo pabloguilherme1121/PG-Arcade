@@ -1,3 +1,4 @@
+import { CATALOG_SIZE } from "./catalogRelease";
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
@@ -6,7 +7,7 @@ const read = (path: string) => readFileSync(path, "utf8");
 describe("production shell", () => {
   it("publishes accurate SEO and installable-app metadata", () => {
     const html = read("index.html");
-    expect(html).toContain("102 jogos");
+    expect(html).toContain(`${CATALOG_SIZE} jogos`);
     expect(html).toContain('rel="canonical"');
     expect(html).toContain('rel="manifest"');
     expect(html).toContain('property="og:title"');

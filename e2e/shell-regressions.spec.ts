@@ -1,3 +1,4 @@
+import { CATALOG_SIZE } from "../src/lib/catalogRelease";
 import { test, expect } from "@playwright/test";
 
 for (const width of [320, 390]) {
@@ -35,14 +36,14 @@ test("restoring records does not invent explored games", async ({ page }) => {
     buffer: Buffer.from(JSON.stringify({ favorites: [], records: { snake: 20 }, visits: {} })),
   });
   await expect(page.getByText("Progresso restaurado.", { exact: false })).toBeVisible();
-  await expect(page.locator(".progress-grid strong").first()).toHaveText("0 de 102");
+  await expect(page.locator(".progress-grid strong").first()).toHaveText(`0 de ${CATALOG_SIZE}`);
   await expect(page.locator('.record-list a[href="#/jogar/snake"]')).toContainText("20");
   await page.reload();
-  await expect(page.locator(".progress-grid strong").first()).toHaveText("0 de 102");
+  await expect(page.locator(".progress-grid strong").first()).toHaveText(`0 de ${CATALOG_SIZE}`);
   await page.locator('.record-list a[href="#/jogar/snake"]').click();
   await expect(page.locator(".snake-board")).toBeVisible();
   await page.getByRole("link", { name: "Meu progresso", exact: true }).click();
-  await expect(page.locator(".progress-grid strong").first()).toHaveText("1 de 102");
+  await expect(page.locator(".progress-grid strong").first()).toHaveText(`1 de ${CATALOG_SIZE}`);
 });
 
 test("exploring respects the in-app reduced motion preference", async ({ page, browserName }) => {
@@ -71,7 +72,7 @@ test("favorite changes persist once per action", async ({ page, browserName }) =
   // Firefox traces snapshot the 100 SVG covers before and after the reload.
   if (browserName === "firefox") test.setTimeout(60_000);
   await page.goto("./");
-  await expect(page.locator(".game-card")).toHaveCount(102);
+  await expect(page.locator(".game-card")).toHaveCount(CATALOG_SIZE);
   await page.evaluate(() => {
     const original = Storage.prototype.setItem;
     document.documentElement.dataset.progressWrites = "0";

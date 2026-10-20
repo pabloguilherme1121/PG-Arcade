@@ -47,7 +47,7 @@ for (const width of [320, 390, 1280]) {
         await test.step(`validate immersive mode: ${game.id}`, async () => {
           await page.goto(`./#/jogar/${game.id}`);
           await expect(page.locator("[data-arcade-arena]").first()).toBeVisible();
-          await expect(page.locator(".session-mode-cards button")).toHaveCount(game.id === "comum" ? 1 : 3);
+          await expect(page.locator(".session-mode-cards button")).toHaveCount(["comum","leilao"].includes(game.id) ? 1 : 3);
           if (await page.locator(".player-utilities:not([open]) summary").count()) {
             await page.locator(".player-utilities summary").click();
           }
@@ -55,7 +55,7 @@ for (const width of [320, 390, 1280]) {
           const player = page.locator(".player");
           await expect(player).toHaveAttribute("data-viewport-fullscreen", "true");
           expect(await player.evaluate((element) => element.scrollWidth <= element.clientWidth + 1), game.id).toBe(true);
-          if(game.id === "comum") {
+          if(["comum","leilao"].includes(game.id)) {
             await expect(page.locator(".session-mode-cards").getByRole("button", {name:/Sprint|Maratona/})).toHaveCount(0);
             await expect(page.getByLabel("Dificuldade do desafio de tempo")).toHaveCount(0);
           } else {

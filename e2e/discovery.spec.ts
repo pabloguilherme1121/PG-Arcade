@@ -1,3 +1,4 @@
+import { CATALOG_SIZE } from "../src/lib/catalogRelease";
 import { test, expect } from "@playwright/test";
 
 test("catalog covers and objectives remain usable without optional preview requests", async ({ page }) => {
@@ -12,7 +13,8 @@ test("catalog covers and objectives remain usable without optional preview reque
     return document.querySelectorAll('.game-card').length===count
       && document.querySelectorAll('.game-card [data-game-cover] svg').length===count
       && !!rect && rect.width>0 && rect.height>0;
-  }, 102);
+  }, CATALOG_SIZE);
+
   await page.getByLabel("Buscar jogo").fill("hanoi");
   // The unfiltered Hanoi cover already exists while deferred search commits.
   // Its visibility alone cannot establish that search has finished.
@@ -25,7 +27,7 @@ test("all catalog previews have visible contents across responsive widths", asyn
   // Firefox trace snapshots of the SVG catalog can outlast the default 5s poll.
   if (browserName === "firefox") test.setTimeout(120_000);
   await page.goto("./");
-  await expect(page.locator(".game-card")).toHaveCount(102);
+  await expect(page.locator(".game-card")).toHaveCount(CATALOG_SIZE);
   for (const width of [320,360,390,430,768,1024,1440]) {
     await page.setViewportSize({width,height:900});
     await expect.poll(() => page.locator(".game-card .preview").evaluateAll(previews => ({
@@ -38,7 +40,7 @@ test("all catalog previews have visible contents across responsive widths", asyn
       }).length,
       overflow: document.documentElement.scrollWidth > innerWidth,
     })), { message: `visible previews at ${width}px`, timeout: browserName === "firefox" ? 15_000 : 5_000 })
-      .toEqual({ count: 102, invalid: 0, overflow: false });
+      .toEqual({ count: CATALOG_SIZE, invalid: 0, overflow: false });
   }
 });
 test("combined filters and catalog position survive a game and reload", async ({page}) => {

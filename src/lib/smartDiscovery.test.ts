@@ -1,3 +1,4 @@
+import { CATALOG_SIZE } from "./catalogRelease";
 import { describe, expect, it } from "vitest";
 import { games } from "./catalog";
 import { countModes, discoveryFilters, modeTags, previewModeTags, filterByMode, recommendGames, modeLabel } from "./smartDiscovery";
@@ -19,8 +20,8 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
     for(const id of ['xadrez','rhythm','balloons','arithmetic','sudoku']) expect(supported).not.toContain(id);
     expect(new Set(supported).size).toBe(supported.length);
   });
-  it("tem classificação determinística para os 102 jogos sem inventar modos",()=>{
-    expect(games).toHaveLength(102);
+  it("tem classificação determinística para os 103 jogos sem inventar modos",()=>{
+    expect(games).toHaveLength(CATALOG_SIZE);
     for(const game of games){
       const tags=modeTags(game);
       expect(tags).toContain("classico");
@@ -29,8 +30,8 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
     }
   });
   it("restringe duelo e bot aos jogos com modos efetivos",()=>{
-    expect(filterByMode(games, 'dupla', {}, []).map(g=>g.id).sort()).toEqual(["comum","damas","domino","liga4","velha","xadrez"]);
-    expect(filterByMode(games, 'bot', {}, []).map(g=>g.id).sort()).toEqual(["ataxx","breakthrough","chomp","damas","domino","gomoku","hex","isolation","liga4","mancala","nim","pontes","reversi","territory","velha","xadrez"]);
+    expect(filterByMode(games, 'dupla', {}, []).map(g=>g.id).sort()).toEqual(["comum","damas","domino","leilao","liga4","velha","xadrez"]);
+    expect(filterByMode(games, 'bot', {}, []).map(g=>g.id).sort()).toEqual(["ataxx","breakthrough","chomp","damas","domino","gomoku","hex","isolation","leilao","liga4","mancala","nim","pontes","reversi","territory","velha","xadrez"]);
   });
   it("classifica treino e sobrevivência sem alterar os motores",()=>{
     expect(modeTags(games.find(g=>g.id==="pesca")!)).toContain("treino");
@@ -43,15 +44,15 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
     const favorites=["xadrez"];
     expect(filterByMode(games,"nao-jogados",visited,favorites).some(g=>g.id==="xadrez")).toBe(false);
     expect(filterByMode(games,"favoritos",visited,favorites).map(g=>g.id)).toEqual(["xadrez"]);
-    expect(filterByMode(games,"dupla",visited,favorites)).toHaveLength(6);
-    expect(filterByMode(games,"todos",visited,favorites)).toHaveLength(102);
+    expect(filterByMode(games,"dupla",visited,favorites)).toHaveLength(7);
+    expect(filterByMode(games,"todos",visited,favorites)).toHaveLength(CATALOG_SIZE);
   });
   it("prioriza preferências locais com desempate previsível e sem mutações",()=>{
     const input=[...games];
     const result=recommendGames(input,{favorites:["damas"],visits:{damas:3,xadrez:2},last:"xadrez"});
     expect(result[0].id).toBe("damas");
-    expect(result).toHaveLength(102);
-    expect(new Set(result.map(g=>g.id)).size).toBe(102);
+    expect(result).toHaveLength(CATALOG_SIZE);
+    expect(new Set(result.map(g=>g.id)).size).toBe(CATALOG_SIZE);
     expect(input).toEqual(games);
     expect(recommendGames(input,{favorites:[],visits:{},last:null})).toEqual(games);
   });
@@ -68,7 +69,7 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
     const visits = { xadrez: 2, domino: 0, liga4: 1 };
     const played = filterByMode(games, "jogados", visits, ["domino"]);
     expect(played.map(game => game.id)).toEqual(games.filter(game => game.id === "xadrez" || game.id === "liga4").map(game => game.id));
-    expect(filterByMode(games, "nao-jogados", visits, [])).toHaveLength(100);
+    expect(filterByMode(games, "nao-jogados", visits, [])).toHaveLength(CATALOG_SIZE - 2);
     expect(filterByMode(games, "jogados", {}, ["xadrez"])).toHaveLength(0);
     expect(visits).toEqual({ xadrez: 2, domino: 0, liga4: 1 });
   });

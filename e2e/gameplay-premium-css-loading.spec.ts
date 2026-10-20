@@ -1,3 +1,4 @@
+import { CATALOG_SIZE } from "../src/lib/catalogRelease";
 import { expect, test } from "@playwright/test";
 
 test("gameplay-only CSS arrives before a mobile arena becomes playable", async ({ page }) => {
@@ -12,10 +13,10 @@ test("gameplay-only CSS arrives before a mobile arena becomes playable", async (
   await expect(page.locator("body")).toHaveJSProperty("tagName", "BODY");
 });
 
-test("catalog keeps all 102 cards with lazy gameplay styling isolated", async ({ page }) => {
+test("catalog keeps all 103 cards with lazy gameplay styling isolated", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 844 });
   await page.goto("./");
-  await expect(page.locator("[data-catalog-game]")).toHaveCount(102);
+  await expect(page.locator("[data-catalog-game]")).toHaveCount(CATALOG_SIZE);
   const horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
   expect(horizontalOverflow).toBe(false);
 });

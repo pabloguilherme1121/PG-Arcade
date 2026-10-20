@@ -1,3 +1,4 @@
+import { CATALOG_SIZE } from "../src/lib/catalogRelease";
 import { expect, test } from '@playwright/test';
 for (const width of [320,390]) {
  test(`category counts follow players and search at ${width}px`,async({page})=>{
@@ -15,7 +16,7 @@ for (const width of [320,390]) {
   await page.setViewportSize({width,height:844});
   await page.addInitScript(()=>{if(!sessionStorage.getItem('pg-arcade-catalog-v1'))sessionStorage.setItem('pg-arcade-catalog-v1',JSON.stringify({query:'xadrez',category:'Estratégia',mode:'Dupla local'}));});
   await page.goto('./');await page.reload();await expect(page.locator('.game-grid .game-card')).toHaveCount(1);
-  await page.getByRole('button',{name:'Zerar filtros',exact:true}).click();await expect(page.locator('.game-grid .game-card')).toHaveCount(102);
+  await page.getByRole('button',{name:'Zerar filtros',exact:true}).click();await expect(page.locator('.game-grid .game-card')).toHaveCount(CATALOG_SIZE);
   await expect(page.getByRole('group',{name:'Categorias',exact:true}).getByRole('button',{name:'Carros e corrida',exact:true})).toBeEnabled();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
  });

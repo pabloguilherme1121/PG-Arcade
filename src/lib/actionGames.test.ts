@@ -1,3 +1,4 @@
+import { CATALOG_SIZE } from "./catalogRelease";
 import { describe, it, expect } from "vitest";
 import {
   initialRace,
@@ -198,7 +199,7 @@ it("shooting combos have a bounded bonus", () => {
   expect(hitScore(10, 100)).toBe(30);
 });
 it("all fifty games have specific help and valid record units", () => {
-  expect(games.length).toBe(102);
+  expect(games.length).toBe(CATALOG_SIZE);
   for (const g of games) expect(gameHelp[g.id].length).toBeGreaterThan(50);
   expect(Object.keys(recordUnits)).toHaveLength(95);
 });

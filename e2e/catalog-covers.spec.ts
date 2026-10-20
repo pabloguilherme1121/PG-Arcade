@@ -1,3 +1,4 @@
+import { CATALOG_SIZE } from "../src/lib/catalogRelease";
 import { expect, test } from "@playwright/test";
 import { games } from "../src/lib/catalog";
 
@@ -52,7 +53,7 @@ test("Busca pelo teclado e ajuda acessível sem interferir nos controles do jogo
   await page.keyboard.press("/");
   await expect(page.getByRole("textbox",{name:"Buscar jogo"})).toBeFocused();
   await page.keyboard.type("memoria");
-  await expect(page.locator(".game-card")).not.toHaveCount(102);
+  await expect(page.locator(".game-card")).not.toHaveCount(CATALOG_SIZE);
   await page.keyboard.press("Escape");
   await expect(page.getByRole("textbox",{name:"Buscar jogo"})).toHaveValue("");
   await page.goto("./#/jogar/snake");
