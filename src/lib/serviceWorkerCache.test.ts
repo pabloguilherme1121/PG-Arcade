@@ -133,6 +133,35 @@ function createHarness(blockedPutUrl?: string, unavailableCache = false) {
 }
 
 describe("service worker runtime cache policy", () => {
+  it("refreshes cached artwork without delaying the current response", async () => {
+    const url = new URL("./covers/comum.svg", root).href;
+    const harness = createHarness(url);
+    harness.seed(url, "old artwork");
+    harness.network.set(url, new Response("new artwork"));
+    const event = harness.dispatchFetch(url);
+    expect(await (await event.response).text()).toBe("old artwork");
+    harness.releasePut();
+    await Promise.all(event.background);
+    expect(await harness.entries.get(url)?.text()).toBe("new artwork");
+  });
+  it("preserves cached artwork when revalidation fails", async () => {
+    const url = new URL("./covers/comum.svg", root).href;
+    const harness = createHarness();
+    harness.seed(url, "offline artwork");
+    harness.network.set(url, new Response("unavailable", {status:503}));
+    const event = harness.dispatchFetch(url);
+    expect(await (await event.response).text()).toBe("offline artwork");
+    await Promise.all(event.background);
+    expect(await harness.entries.get(url)?.text()).toBe("offline artwork");
+  });
+  it("serves artwork online when cache storage is unavailable", async () => {
+    const harness = createHarness(undefined, true);
+    const url = new URL("./covers/comum.svg", root).href;
+    const event = harness.dispatchFetch(url);
+    expect(await (await event.response).text()).toBe(`network:${url}`);
+    await Promise.all(event.background);
+  });
+
   it("serves online assets even when cache storage cannot be read or written", async () => {
     const harness = createHarness(undefined, true);
     const url = new URL("./assets/game.js", root).href;

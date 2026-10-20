@@ -1,0 +1,36 @@
+import {expect,test} from '@playwright/test';
+test('a reloaded local match resumes paused without exposing the previous choice',async({page})=>{
+ await page.setViewportSize({width:320,height:740});
+ await page.goto('./#/jogar/comum');
+ const game=page.getByRole('region',{name:'Palavra em Comum',exact:true});
+ await game.getByLabel('Modo de jogo',{exact:true}).selectOption('local');
+ await game.getByRole('button',{name:'Começar partida',exact:true}).click();
+ await game.getByRole('button',{name:'Estou pronto',exact:true}).click();
+ await game.locator('.cw-options button').first().click();
+ await expect(game.getByRole('heading',{name:'Vez de Jogador 2',exact:true})).toBeVisible();
+ await page.reload();
+ await game.getByRole('button',{name:'Retomar partida salva',exact:true}).click();
+ await expect(game.getByRole('heading',{name:'Partida pausada',exact:true})).toBeVisible();
+ await expect(game.locator('.cw-options button')).toHaveCount(0);
+ await game.getByRole('button',{name:'Continuar partida',exact:true}).click();
+ await expect(game.getByRole('heading',{name:'Vez de Jogador 2',exact:true})).toBeVisible();
+ await game.getByRole('button',{name:'Estou pronto',exact:true}).click();
+ await game.locator('.cw-options button').first().click();
+ await expect(game.locator('.cw-results strong').first()).toHaveText('100 pontos');
+ await page.reload();
+ await game.getByRole('button',{name:'Retomar partida salva',exact:true}).click();
+ await game.getByRole('button',{name:'Continuar partida',exact:true}).click();
+ await expect(game.locator('.cw-results strong').first()).toHaveText('100 pontos');
+ await game.getByRole('button',{name:'Próxima rodada',exact:true}).click();
+ await expect(game.locator('.cw-progress')).toContainText('Rodada 2');
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
+});
+test('blocked storage keeps the game playable and explains the recovery limitation',async({page})=>{
+ await page.addInitScript(()=>{Object.defineProperty(Storage.prototype,'setItem',{value(){throw new DOMException('blocked','QuotaExceededError');}});});
+ await page.goto('./#/jogar/comum');
+ const game=page.getByRole('region',{name:'Palavra em Comum',exact:true});
+ await game.getByRole('button',{name:'Começar partida',exact:true}).click();
+ await expect(game.getByRole('status')).toContainText('Não foi possível salvar');
+ await game.locator('.cw-options button').first().click();
+ await expect(game.getByRole('heading',{name:'Revelação',exact:true})).toBeVisible();
+});
