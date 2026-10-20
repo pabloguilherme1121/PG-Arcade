@@ -29,6 +29,14 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
       expect(tags.every(t=>modeLabel(t).length>0)).toBe(true);
     }
   });
+  it("mostra somente jogos com suporte real para grupo local de 3–4 pessoas", () => {
+    const group = filterByMode(games, "grupo", {}, []);
+    expect(group.map(game => game.id)).toEqual(["leilao", "comum"]);
+    expect(countModes(games, {}, []).grupo).toBe(2);
+    for (const game of games) {
+      expect(modeTags(game).includes("grupo")).toBe(game.id === "leilao" || game.id === "comum");
+    }
+  });
   it("restringe duelo e bot aos jogos com modos efetivos",()=>{
     expect(filterByMode(games, 'dupla', {}, []).map(g=>g.id).sort()).toEqual(["comum","damas","domino","leilao","liga4","velha","xadrez"]);
     expect(filterByMode(games, 'bot', {}, []).map(g=>g.id).sort()).toEqual(["ataxx","breakthrough","chomp","damas","domino","gomoku","hex","isolation","leilao","liga4","mancala","nim","pontes","reversi","territory","velha","xadrez"]);
