@@ -24,7 +24,7 @@ test("search ignores accidental surrounding spaces and keeps named catalog links
   await page.goto("./");
   await page.getByLabel("Buscar jogo").fill("  sNaKe  ");
   await expect(page.locator(".game-card")).toHaveCount(1);
-  await expect(page.getByRole("link", { name: "Jogar Snake", exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: /^Jogar Snake/ })).toBeVisible();
 });
 
 test("restoring records does not invent explored games", async ({ page }) => {

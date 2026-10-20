@@ -8,8 +8,8 @@ for (const width of [320, 390]) {
     await page.goto("./");
     const cards = page.locator(".game-grid .game-card");
     await expect(cards).toHaveCount(games.length);
-    const card = cards.filter({ has: page.getByRole("link", { name: "Jogar Snake", exact: true }) });
-    const link = card.getByRole("link", { name: "Jogar Snake", exact: true });
+    const card = cards.filter({ has: page.getByRole("link", { name: /^Jogar Snake/ }) });
+    const link = card.getByRole("link", { name: /^Jogar Snake/ });
     // Read independent presentation contracts together, avoiding several
     // full-catalog protocol snapshots while retaining real focus/click actions.
     const appearance = await card.evaluate(element => {

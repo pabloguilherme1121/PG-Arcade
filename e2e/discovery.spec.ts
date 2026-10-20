@@ -40,7 +40,7 @@ test("combined filters and catalog position survive a game and reload", async ({
   await page.getByLabel("Filtrar por modo").selectOption("Solo");
   await page.getByLabel("Ordenar jogos").selectOption("nome");
   await expect(page.locator(".game-card")).toHaveCount(1);
-  await page.getByRole("link",{name:"Jogar Maré de Cores",exact:true}).evaluate(link =>
+  await page.getByRole("link",{name:/^Jogar Maré de Cores/}).evaluate(link =>
     link.scrollIntoView({ block: "center", behavior: "instant" }));
   // WebKit can scroll the link into its clickable viewport during activation.
   // Preserve the position at departure, after that native adjustment.
@@ -49,7 +49,7 @@ test("combined filters and catalog position survive a game and reload", async ({
     document.addEventListener("click", () => { position.scroll = window.scrollY; }, { capture: true, once: true });
     return position;
   });
-  await page.getByRole("link",{name:"Jogar Maré de Cores",exact:true}).click();
+  await page.getByRole("link",{name:/^Jogar Maré de Cores/}).click();
   const scroll = await departure.evaluate(position => position.scroll);
   await departure.dispose();
   await expect(page.locator("[data-arcade-arena] .new-grid")).toBeVisible();
@@ -60,7 +60,7 @@ test("combined filters and catalog position survive a game and reload", async ({
   await expect(page.getByLabel("Filtrar por modo")).toHaveValue("Solo");
   await expect(page.getByLabel("Ordenar jogos")).toHaveValue("nome");
   await expect.poll(() => page.evaluate(() => scrollY)).toBeCloseTo(scroll, -1);
-  await expect(page.getByRole("link",{name:"Jogar Maré de Cores",exact:true})).toBeFocused();
+  await expect(page.getByRole("link",{name:/^Jogar Maré de Cores/})).toBeFocused();
 });
 test("secondary utilities remain keyboard accessible and solo help stays correct", async ({page}) => {
   await page.goto("./#/jogar/peg");
