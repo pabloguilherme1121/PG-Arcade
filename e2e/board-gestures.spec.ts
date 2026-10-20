@@ -118,7 +118,7 @@ test('swipe discovery combines query and category and survives a reload',async({
   await page.goto('./');
   await page.getByRole('button',{name:'Deslizar na tela',exact:true}).click();
   await expect(page.locator('.game-card').filter({hasText:'Caça-Palavras'})).toHaveCount(1);
-  await expect(page.getByRole('link',{name:'Jogar Xadrez',exact:true})).toHaveCount(0);
+  await expect(page.getByRole('link',{name:/^Jogar Xadrez/})).toHaveCount(0);
   await page.getByRole('textbox',{name:'Buscar jogo'}).fill('sokoban');
   await expect(page.locator('.game-card')).toHaveCount(1);
   await page.reload();
