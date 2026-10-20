@@ -85,7 +85,7 @@ test("modo inteligente e ordem personalizada sobrevivem ao reload da partida", a
   await page.getByRole("combobox", { name: "Filtrar por modo", exact: true }).selectOption("Dupla local");
   await page.getByRole("combobox", { name: "Ordenar jogos" }).selectOption("recomendados");
   await expect(page.locator(".game-card")).toHaveCount(5);
-  await page.getByRole("link", { name: "Jogar Xadrez", exact: true }).click();
+  await page.getByRole("link", { name: /^Jogar Xadrez/ }).click();
   await page.reload();
   await page.getByRole("link", { name: "Voltar aos jogos", exact: true }).click();
   await expect(page.getByRole("combobox", { name: "Filtrar por modo", exact: true })).toHaveValue("Dupla local");
@@ -102,7 +102,7 @@ for (const width of [320, 390]) {
     await search.fill("xadrez");
     await expect(page.locator(".game-card")).toHaveCount(1);
     await expect(page.locator(".game-grid")).toHaveAttribute("aria-busy", "false");
-    await expect(page.getByRole("link", { name: "Jogar Xadrez", exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: /^Jogar Xadrez/ })).toBeVisible();
     await page.getByRole("button", { name: "Limpar busca", exact: true }).click();
     // Poll inside the browser: repeated protocol assertions snapshot all 101
     // SVG cards and can spend the entire deadline in Firefox instrumentation.

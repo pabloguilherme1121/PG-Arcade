@@ -16,7 +16,7 @@ test("catalog prioritizes visible cover images and defers the rest without omitt
   expect(images.slice(0, 4).every(image => image.loading === "eager" && image.priority === "high")).toBe(true);
   expect(images.slice(4).every(image => image.loading === "lazy" && image.priority === "low")).toBe(true);
 
-  await page.getByRole("link", { name: "Jogar Snake", exact: true }).click();
+  await page.getByRole("link", { name: /^Jogar Snake/ }).click();
   const currentCover = page.locator(".player-coverline img.cover-mechanic");
   await expect(currentCover).toHaveAttribute("loading", "eager");
   await expect(currentCover).toHaveAttribute("fetchpriority", "high");
