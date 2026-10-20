@@ -7,7 +7,12 @@ for(const viewport of [{width:320,height:740},{width:390,height:844},{width:844,
     await expect(arena).toBeVisible();
     await page.getByLabel("Dificuldade de Frutas em Fusão").selectOption("easy");
     await arena.getByRole("button",{name:"Começar fusão"}).click();
+    await expect(arena.getByRole("grid")).toBeVisible();
+    await expect(arena.getByRole("row")).toHaveCount(7);
     await expect(arena.getByRole("gridcell")).toHaveCount(42);
+    for (const row of await arena.getByRole("row").all()) {
+      await expect(row.getByRole("gridcell")).toHaveCount(6);
+    }
     await arena.getByRole("button",{name:"Jogar na coluna 2"}).click();
     await expect(arena.getByRole("gridcell",{name:/Linha 7, coluna 2: Cereja/})).toBeVisible();
     const moves=arena.getByText("1/35",{exact:true});
