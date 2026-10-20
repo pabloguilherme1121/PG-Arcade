@@ -1,5 +1,5 @@
 import type { GameId } from "./catalog";
-import { newGames } from "./newCatalog";
+import { newGameHelp } from "./newCatalogHelp";
 import { expandedGames, type ExpandedId } from "./expandedCatalog";
 const expandedHelp: Record<ExpandedId, string> = {
   sudoku:
@@ -60,7 +60,7 @@ export const gameHelp: Record<GameId, string> = {
   neon: "Sobreviva a quatro ondas de seis turnos em uma arena 9×9. Setas, WASD ou botões movem você. Ao carregar três cargas, use o pulso (espaço) para eliminar ameaças próximas. Entre ondas, escolha escudo extra ou alcance maior. Saia da aba para pausar.",
   leilao: "Dispute nove relíquias com 30 moedas. Só o vencedor paga seu lance. Pares dão +3; trios dão +8 no lugar do par. Empates de lance seguem a prioridade anunciada. Solo com três dificuldades ou 2–4 pessoas no mesmo aparelho; passe a tela pela cortina.",
   comum: "Associe palavras. Solo por pistas ou 2 a 4 pessoas no mesmo aparelho.",
-  ...Object.fromEntries(newGames.map(g => [g.id, g.help])) as Record<typeof newGames[number]["id"],string>,
+  ...newGameHelp,
   ...expandedHelp,
   blocos: "Escolha uma das três peças e toque na casa de origem. Preencha linhas ou colunas para limpá-las. Setas movem o foco e Enter posiciona. Ao usar as três peças, outras aparecem. A partida termina quando nenhuma restante cabe.",
   sequencia:
