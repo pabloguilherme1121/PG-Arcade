@@ -7,7 +7,8 @@ import {
   type MotionInput,
   type MotionState,
 } from "../lib/motionExpansion";
-import { newGames, type NewGameId } from "../lib/newCatalog";
+import { newGamesWithHelp as newGames } from "../lib/newCatalogFull";
+import type { NewGameId } from "../lib/newCatalog";
 import { useAutoPause } from "./useAutoPause";
 import { revealPlayfield } from "../lib/revealPlayfield";
 import { useResponsiveCanvas } from "./useResponsiveCanvas";
