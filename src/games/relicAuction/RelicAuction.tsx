@@ -22,7 +22,14 @@ export default function RelicAuction() {
  const active=!!match&&match.phase!=='finished';
  const pause=useCallback(()=>{if(active)setPaused(true);},[active]);
  useAutoPause(pause,active&&!paused,match?.phase==='finished',0);
- useEffect(()=>{heading.current?.focus();},[match?.phase,match?.round,current,session?.covered,paused]);
+ useEffect(()=>{
+  const title=heading.current;
+  if(!title)return;
+  // Keep the next private turn at a predictable position. Native focus can
+  // center the heading and push bidding controls below a short viewport.
+  title.focus({preventScroll:true});
+  title.scrollIntoView({block:'start',behavior:'instant'});
+ },[match?.phase,match?.round,current,session?.covered,paused]);
  useLayoutEffect(()=>{if(session)setStorageOK(saveAuction(session.match,settings));},[session,settings]);
  function start(seed=crypto.getRandomValues(new Uint32Array(1))[0]) {
   setSession(sessionFor(createAuction(seed,settings.mode==='solo'?2:settings.players),settings));setPaused(false);setBid(0);setSaved(null);
@@ -64,13 +71,13 @@ export default function RelicAuction() {
     <p className="ra-outcome" role="status">{result!.winner===null?'Todos passaram. O lote foi descartado.':`${playerName(result!.winner)} levou ${result!.relic.name} por ${result!.price} moedas.`}</p>
     <ul className="ra-bids" aria-label="Lances da rodada">{result!.bids.map((value,i)=><li key={i}>{playerName(i)}: <strong>{value} moedas</strong></li>)}</ul>
     <button onClick={()=>{setSession(s=>s&&s.match.phase==='reveal'?sessionFor(nextLot(s.match),settings):s);setBid(0);}}>{match!.round===8?'Ver resultado':'Próximo lote'}</button>
-   </>:<>
+   </>:<div className="ra-bidding">
     <div className="ra-lot" data-family={match!.lots[match!.round].family}><RelicMark family={match!.lots[match!.round].family}/><div><h3>{match!.lots[match!.round].name}</h3><p>{familyNames[match!.lots[match!.round].family]} · {match!.lots[match!.round].value} pontos</p></div></div>
     <p>Empate de lances favorece {playerName(priority(match!))}. Zero é passar.</p>
     <p>{playerName(current)} tem <strong>{match!.coins[current]} moedas</strong>. Esta peça acrescentaria {collectionScore([...match!.piles[current],match!.lots[match!.round]])-scores[current]} pontos à sua coleção.</p>
     <label>Seu lance<select aria-label="Valor do lance" value={bid} onChange={e=>setBid(Number(e.target.value))}>{Array.from({length:Math.min(10,match!.coins[current])+1},(_,i)=><option key={i} value={i}>{i===0?'0 — Passar':`${i} moedas`}</option>)}</select></label>
     <button onClick={confirm}>Confirmar lance secreto</button>
-   </>}
+   </div>}
    <div className="ra-scoreboard" aria-label="Coleções e orçamento">{match!.piles.map((pile,i)=><section key={i}><h3>{playerName(i)}</h3><p><strong>{scores[i]} pontos</strong> · {match!.coins[i]} moedas</p><ul>{pile.map(relic=><li key={relic.id}>{relic.name} · {familyNames[relic.family]} · {relic.value}</li>)}</ul>{!pile.length&&<p>Nenhuma relíquia ainda.</p>}</section>)}</div>
    {match!.phase!=='finished'&&<><details><summary>Próximos lotes e bônus</summary><p>Par da mesma família: +3. Trio: +8 no lugar do par. Grupos não se sobrepõem.</p><ol>{match!.lots.slice(match!.round+1).map(relic=><li key={relic.id}>{relic.name} · {familyNames[relic.family]} · {relic.value} pontos</li>)}</ol></details><button onClick={()=>setPaused(true)}>Pausar leilão</button></>}
   </>}

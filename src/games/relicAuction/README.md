@@ -26,3 +26,5 @@ Resultados são somente da partida, sem misturar recordes de formatos diferentes
 ## Limites de verificação
 
 Regras e recuperação têm testes unitários, incluindo 100 sementes de baralho e simulações completas. Playwright percorre partidas solo e de quatro pessoas por toque em 320/390/844 px, teclado, axe, pausa, repetição, reload e storage bloqueado. Offline é verificado em Chromium após visita/cache; não se promete todo o catálogo offline no primeiro acesso. Android físico permanece indisponível. Interesse, retenção e qualidade de mercado exigem playtests humanos; não são inferidos de testes automatizados.
+
+Em telas horizontais baixas, o lote, saldo e controles de lance usam duas colunas. O foco anuncia a nova etapa com rolagem imediata previsível; o teste exige que lote, seletor e confirmação permaneçam no viewport em 844×390. A partida completa de quatro pessoas tem 81 toques e 36 seleções nos nove lotes, além de configuração/reinício: seu cenário recebe 60 s no total, com prazo de 2 s por interação e transição. Os demais cenários mantêm o timeout padrão.

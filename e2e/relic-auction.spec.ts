@@ -4,8 +4,8 @@ const openGame=async(page:import('@playwright/test').Page)=>{
  await page.goto('./#/jogar/leilao');
  return page.getByRole('region',{name:'Leilão de Relíquias',exact:true});
 };
-// Separate complete journeys keep each fixture within the default deadline;
-// real touch actions, all nine lots and privacy assertions remain covered.
+// Keep solo and group journeys independent, with real touch actions, all
+// nine lots and privacy assertions. The full group match has its own budget.
 for(const width of [320,390,844])test.describe(`auction touch at ${width}px`,()=>{
  test.use({viewport:{width,height:width===844?390:844},hasTouch:true});
  test('completes a solo match',async({page})=>{
@@ -24,26 +24,30 @@ for(const width of [320,390,844])test.describe(`auction touch at ${width}px`,()=
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
  });
  test('completes a four-player match and restarts',async({page})=>{
+  // 36 bids require 81 real taps plus 36 selections. Budget the complete
+  // match separately while bounding every control transition to two seconds.
+  test.setTimeout(60_000);
+  const interaction={timeout:2_000};
   const game=await openGame(page);
-  await game.getByLabel('Modo de jogo',{exact:true}).selectOption('local');
-  await game.getByLabel('Participantes',{exact:true}).selectOption('4');
-  await game.getByRole('button',{name:'Começar leilão',exact:true}).tap();
+  await game.getByLabel('Modo de jogo',{exact:true}).selectOption('local',interaction);
+  await game.getByLabel('Participantes',{exact:true}).selectOption('4',interaction);
+  await game.getByRole('button',{name:'Começar leilão',exact:true}).tap(interaction);
   for(let r=0;r<9;r++){
    for(let player=0;player<4;player++){
-    await expect(game.locator('.ra-curtain')).toBeVisible();
-    await expect(game.getByLabel('Valor do lance',{exact:true})).toHaveCount(0);
-    await game.getByRole('button',{name:'Estou pronto',exact:true}).tap();
-    await game.getByLabel('Valor do lance',{exact:true}).selectOption('1');
-    await game.getByRole('button',{name:'Confirmar lance secreto',exact:true}).tap();
+    await expect(game.locator('.ra-curtain')).toBeVisible(interaction);
+    await expect(game.getByLabel('Valor do lance',{exact:true})).toHaveCount(0,interaction);
+    await game.getByRole('button',{name:'Estou pronto',exact:true}).tap(interaction);
+    await game.getByLabel('Valor do lance',{exact:true}).selectOption('1',interaction);
+    await game.getByRole('button',{name:'Confirmar lance secreto',exact:true}).tap(interaction);
    }
-   await expect(game.getByRole('heading',{name:'Lances revelados',exact:true})).toBeVisible();
-   await expect(game.getByLabel('Lances da rodada').locator('li')).toHaveCount(4);
-   await game.getByRole('button',{name:r===8?'Ver resultado':'Próximo lote',exact:true}).tap();
+   await expect(game.getByRole('heading',{name:'Lances revelados',exact:true})).toBeVisible(interaction);
+   await expect(game.getByLabel('Lances da rodada').locator('li')).toHaveCount(4,interaction);
+   await game.getByRole('button',{name:r===8?'Ver resultado':'Próximo lote',exact:true}).tap(interaction);
   }
-  await expect(game.getByRole('heading',{name:'Leilão concluído',exact:true})).toBeVisible();
+  await expect(game.getByRole('heading',{name:'Leilão concluído',exact:true})).toBeVisible(interaction);
   const outcome=await game.locator('.ra-scoreboard section').allTextContents();
-  await game.getByRole('button',{name:'Repetir os mesmos lotes',exact:true}).tap();
-  await expect(game.locator('.ra-scoreboard section')).not.toHaveText(outcome);
+  await game.getByRole('button',{name:'Repetir os mesmos lotes',exact:true}).tap(interaction);
+  await expect(game.locator('.ra-scoreboard section')).not.toHaveText(outcome,interaction);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
  });
 });
