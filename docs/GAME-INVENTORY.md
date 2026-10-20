@@ -1,4 +1,4 @@
-# Inventário dos 105 jogos
+# Inventário dos 106 jogos
 
 Inventário extraído do catálogo, gameHelp e unidades de recorde em 8 de outubro de 2026. Regras e controles abaixo descrevem a implementação; este documento não certifica uma partida completa de cada jogo. A cobertura profunda permanece nos testes de motores e famílias.
 
@@ -6,7 +6,7 @@ Todos mantêm visitas e favoritos locais. Nenhum restaura automaticamente a part
 
 | ID | Nome | Família | Modo disponível | Dificuldade | Recorde | Regras e controles específicos |
 | --- | --- | --- | --- | --- | --- | --- |
-| `frutas` | Frutas em Fusão | Casuais / lógica | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Toque numa das seis colunas ou use números 1–6. Frutas iguais adjacentes evoluem por fusão com gravidade e cascatas. Alcance o último nível antes do limite. Pausa automática e reinício. |
+| `cofre` | Cofre em Equipe | Estratégia e cooperação | Grupo local 2–4 jogadores, um celular | Quatro tentativas | pontos; maior resultado | Cada participante visualiza sua pista individualmente e esconde antes de passar o aparelho. A equipe monta uma senha de quatro dígitos diferentes, recebe feedback de posições e reinicia sem internet ou servidor. |\n| `frutas` | Frutas em Fusão | Casuais / lógica | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Toque numa das seis colunas ou use números 1–6. Frutas iguais adjacentes evoluem por fusão com gravidade e cascatas. Alcance o último nível antes do limite. Pausa automática e reinício. |
 | `neon` | Sobrevivência Neon | Estratégia e sobrevivência | Solo | Fácil / Normal / Difícil | pontos; maior resultado vence | Quatro ondas de seis turnos em grade 9×9. Setas/WASD ou botões para desviar, espaço para pulso, escudo ou alcance entre ondas. Pausa automática ao sair da aba e reinício com nova semente. |
 | `blocos` | Blocos Infinito | puzzle | Solo | Fácil / Normal / Difícil | pontos; maior resultado vence | Escolha uma peça e toque na casa de origem, ou arraste com prévia de encaixe; setas e Enter também posicionam. Complete linhas ou colunas. Três peças novas surgem após usar as anteriores. Sem espaço para as peças restantes, a partida termina. |
 | `flood` | Maré de Cores | board | Solo | Iniciante / Normal / Avançado | pontos; maior resultado vence | Escolha uma cor para expandir a região do canto superior esquerdo. Cubra o tabuleiro em até 24 movimentos. |
