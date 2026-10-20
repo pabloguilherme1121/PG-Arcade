@@ -11,13 +11,22 @@ export type PassageGame=Readonly<{
 }>;
 const rng=(seed:number)=>(Math.imul(seed,1664525)+1013904223)>>>0;
 const starts=[0,4,20,24];
-const walls=[6,8,16,18];
+const wallLayouts=[
+  [6,8,16,18],[6,8,17,18],[6,13,16,18],[8,11,16,18],
+] as const;
 export function createPassage(players:PassagePlayers=2,seed=1):PassageGame {
   if(![2,3,4].includes(players)||!Number.isSafeInteger(seed)||seed<0||seed>0xffffffff)
     throw new Error("Jogadores ou semente inválidos.");
-  const gems=[2,10,12,14,22];
-  const rotated=seed%4;
-  const chosen=[...gems.slice(0,4).slice(rotated),...gems.slice(0,4).slice(0,rotated),12];
+  const walls=[...wallLayouts[seed%wallLayouts.length]];
+  const available=[1,2,3,5,9,10,14,15,19,21,22,23]
+    .filter(pos=>!walls.includes(pos as (typeof walls)[number])&&!starts.includes(pos));
+  let current=seed;
+  for(let i=available.length-1;i>0;i--){
+    current=rng(current);
+    const index=current%(i+1);
+    [available[i],available[index]]=[available[index],available[i]];
+  }
+  const chosen=[...available.slice(0,4),12];
   return {players,seed,phase:"handoff",player:0,
     routes:Array.from({length:players},()=>[]),draft:[],positions:starts.slice(0,players),
     walls,gems:chosen,claimed:[],scores:Array(players).fill(0),collisions:0,history:[],winners:[]};
