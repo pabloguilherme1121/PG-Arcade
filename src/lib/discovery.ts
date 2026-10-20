@@ -1,18 +1,23 @@
 import { games, type GameId } from "./catalog";
 import { gameCapabilities } from "./gameCapabilities";
-import { gameHelp } from './gameHelp';
 import { discoveryFilters, modeTags, modeLabel, supportsSwipe, type DiscoveryFilter } from "./smartDiscovery";
 
 /** Names and descriptions are searched as words, ignoring accents and excess spaces. */
 export const searchText = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR").trim().replace(/\s+/g, " ");
 let lastQuery: string | undefined;
 let queryWords: string[] = [];
-const searchIndex = new WeakMap<typeof games[number], string>();
+let searchIndex = new WeakMap<typeof games[number], string>();
+let searchableHelp: Partial<Record<GameId, string>> = {};
+/** Detailed instructions augment catalog search after a first query, without increasing initial JS. */
+export function setSearchHelpIndex(help: Partial<Record<GameId, string>> | null) {
+  searchableHelp = help || {};
+  searchIndex = new WeakMap<typeof games[number], string>();
+}
 export const matchesGame = (game: typeof games[number], query: string) => {
   if (!query.trim()) return true;
   let text = searchIndex.get(game);
   if (text === undefined) {
-    text = searchText(`${game.name} ${game.description} ${gameHelp[game.id]} ${game.category} ${modeTags(game).map(modeLabel).join(" ")} ${gameMode(game.id)} ${supportsSwipe(game.id)?'deslizar gestos':''}`);
+    text = searchText(`${game.name} ${game.description} ${searchableHelp[game.id] || ''} ${game.category} ${modeTags(game).map(modeLabel).join(" ")} ${gameMode(game.id)} ${supportsSwipe(game.id)?'deslizar gestos':''}`);
     searchIndex.set(game, text);
   }
   if (query !== lastQuery) { lastQuery = query; queryWords = searchText(query).split(" "); }

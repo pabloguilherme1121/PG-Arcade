@@ -33,8 +33,7 @@ import {
   type ExpandedId,
 } from "./lib/expandedCatalog";
 
-import { discoveryFilters, filterByMode, modeTags, modeLabel, type DiscoveryFilter } from "./lib/smartDiscovery";
-import { gameHelp } from "./lib/gameHelp";
+import { discoveryFilters, filterByMode, chooseSurprise, modeTags, modeLabel, type DiscoveryFilter } from "./lib/smartDiscovery";
 import GameCover from "./GameCover";
 import CatalogGameCard from "./CatalogGameCard";
 import {
@@ -44,12 +43,12 @@ import {
 } from "./lib/progress";
 import { readPreferences, applyPreferences } from "./lib/preferences";
 
-import { searchText, matchesGame, supportsPlayerMode, recommended, readCatalogView, saveCatalogView } from "./lib/discovery";
+import { searchText, matchesGame, supportsPlayerMode, recommended, readCatalogView, saveCatalogView, setSearchHelpIndex } from "./lib/discovery";
 import { catalogCategories, selectCatalog, sortCatalog } from "./lib/catalogSelection";
 import { useReducedMotion } from "./useReducedMotion";
 import { useImmersivePlayer } from "./lib/useImmersivePlayer";
 const ShareGameButton = lazy(() => import("./ShareGameButton").catch(() => ({default: () => <span role="status">Copie o endereço da barra do navegador para compartilhar este jogo.</span>})));
-const QuickHelpText = lazy(() => import("./QuickHelpText").catch(() => ({default: ({help}:{help:string}) => <p>{help}</p>})));
+const QuickHelpText = lazy(() => import("./QuickHelpText").catch(() => ({default: ({ leadOnly }: { id: GameId; leadOnly?: boolean }) => leadOnly ? <span>Consulte os controles da arena.</span> : <p>Instruções indisponíveis nesta sessão offline. Consulte os controles do jogo.</p>})));
 const PlayerRecordHint = lazy(() => import("./PlayerRecordHint").catch(() => ({default: () => <small data-player-record>Consulte os resultados no jogo.</small>})));
 const ProgressPage = lazy(() => import("./ProgressPage"));
 const CatalogSpotlight = lazy(() => import("./CatalogSpotlight").catch(() => ({default: () => null})));
@@ -74,6 +73,8 @@ const collectionPlayers = Object.fromEntries(
   ]),
 ) as unknown as Record<ExpandedId, ComponentType<PlayerProps>>;
 const players = {
+  frutas: lazy(() => import("./games/fruitFusion/FruitFusion")),
+  neon: lazy(() => import("./games/neonSurvival/NeonSurvival")),
   leilao: lazy(() => import("./games/relicAuction/RelicAuction")),
   comum: lazy(() => import("./games/commonWord/CommonWord")),
   ...(Object.fromEntries(
@@ -151,7 +152,7 @@ function route() {
 }
 
 
-const specificStyles = new Set(["rapido", "sem-pressa", "bot", "treino", "sobrevivencia", "deslizar"]);
+const specificStyles = new Set(["rapido", "sem-pressa", "grupo", "bot", "treino", "sobrevivencia", "deslizar"]);
 // Optional panels may be absent from the first offline cache. Their load failure
 // must not unmount the catalog or a previously cached game.
 const VisualPreferences = lazy(() => import("./VisualPreferences").catch(() => ({
@@ -197,6 +198,22 @@ export default function App() {
   const catalogView = useRef(initialView);
   const [sort, setSort] = useState(initialView.sort);
   const [query, setQuery] = useState(initialView.query);
+  const [searchHelpReady, setSearchHelpReady] = useState(false);
+  const needsSearchHelp = query.trim().length > 0;
+  useEffect(() => {
+    if (!needsSearchHelp || searchHelpReady) return;
+    let active = true;
+    void import("./lib/gameHelp").then(({ gameHelp }) => {
+      if (active) {
+        setSearchHelpIndex(gameHelp);
+        setSearchHelpReady(true);
+      }
+    }).catch(() => {
+      // A temporarily unavailable offline chunk must never block name-based search.
+      if (active) setSearchHelpReady(true);
+    });
+    return () => { active = false; };
+  }, [needsSearchHelp, searchHelpReady]);
   const [category, setCategory] = useState(initialView.category);
   const [mode, setMode] = useState(initialView.mode);
   const [modeFilter, setModeFilter] = useState<DiscoveryFilter>(initialView.modeFilter);
@@ -342,11 +359,11 @@ export default function App() {
   const activeModes = game ? modeTags(game).filter(tag => tag !== "classico") : [];
   useEffect(() => { document.title = `${game ? game.name : page === "favoritos" ? "Seus favoritos" : page === "progresso" ? "Meu progresso" : `${games.length} jogos no navegador`} — PG Arcade`; }, [game, page]);
   const deferredQuery = useDeferredValue(query);
-  const searchPending = query !== deferredQuery;
+  const searchPending = query !== deferredQuery || (needsSearchHelp && !searchHelpReady);
   const normalizedQuery = useMemo(() => searchText(deferredQuery), [deferredQuery]);
   const { visible, categoryCounts, modeCounts } = useMemo(
     () => selectCatalog(games, { query: normalizedQuery, category, mode, modeFilter, swipeOnly }, progress, page === "favoritos"),
-    [normalizedQuery, category, mode, modeFilter, swipeOnly, progress, page],
+    [normalizedQuery, category, mode, modeFilter, swipeOnly, progress, page, searchHelpReady],
   );
   const curated = recommended.map(id => games.find(g => g.id === id)!);
   const visited = games.filter(g => progress.visits[g.id]).sort((a,b) => (b.id === progress.last ? 1 : 0) - (a.id === progress.last ? 1 : 0) || (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)).slice(0,4);
@@ -492,7 +509,7 @@ export default function App() {
             </div>
             <div className="player-gameplay-orientation" data-gameplay-orientation>
               <strong>Como jogar {game.name}</strong>
-              <span>{gameHelp[game.id].split(". ")[0]}</span>
+              <Suspense fallback={<span>{game.description}</span>}><QuickHelpText id={game.id} leadOnly /></Suspense>
               <Suspense fallback={<small data-player-record>Carregando resultados…</small>}><PlayerRecordHint id={game.id} record={progress.records[game.id]}/></Suspense>
               <button
                 type="button"
@@ -541,7 +558,7 @@ export default function App() {
                 <summary aria-keyshortcuts="Alt+Shift+H">
                   Ajuda rápida e controles
                 </summary>
-                <Suspense fallback={<p>{gameHelp[game.id]}</p>}><QuickHelpText help={gameHelp[game.id]}/></Suspense>
+                <Suspense fallback={<p>Carregando instruções do jogo…</p>}><QuickHelpText id={game.id}/></Suspense>
               </details>
             </div>
             <dialog
@@ -732,9 +749,10 @@ export default function App() {
                 <button
                   disabled={searchPending || !visible.length}
                   onClick={() => {
-                    const id = visible[Math.floor(Math.random() * visible.length)].id;
-                    rememberCatalog(id);
-                    location.hash = `/jogar/${id}`;
+                    const selected = chooseSurprise(visible, progress);
+                    if (!selected) return;
+                    rememberCatalog(selected.id);
+                    location.hash = `/jogar/${selected.id}`;
                   }}
                 >
                   Jogo surpresa

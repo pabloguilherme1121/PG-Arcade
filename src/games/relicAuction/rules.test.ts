@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {createAuction,submitBid,nextLot,collectionScore,botBid,auctionView,priority,type Relic} from './rules';
+import {createAuction,submitBid,nextLot,collectionScore,collectionProgress,botBid,auctionView,priority,type Relic} from './rules';
 const relic=(family:Relic['family'],value=4):Relic=>({id:family+value,name:'Relíquia',family,value});
 describe('original sealed relic auction',()=>{
  it('deals nine different lots with three of each family across 100 reproducible seeds',()=>{
@@ -16,6 +16,15 @@ describe('original sealed relic auction',()=>{
   expect(collectionScore([relic('solar'),relic('solar')])).toBe(11);
   expect(collectionScore([relic('solar'),relic('solar'),relic('solar')])).toBe(20);
   expect(collectionScore([relic('solar'),relic('solar'),relic('lunar')])).toBe(15);
+ });
+ it('reports family collection progress without changing score or piles',()=>{
+  const pile=[relic('solar'),relic('solar'),relic('lunar')];
+  const original=[...pile];
+  expect(collectionProgress(pile)).toEqual({solar:2,lunar:1,marinha:0});
+  expect(collectionProgress([])).toEqual({solar:0,lunar:0,marinha:0});
+  expect(collectionProgress([relic('marinha'),relic('marinha'),relic('marinha')]).marinha).toBe(3);
+  expect(pile).toEqual(original);
+  expect(collectionScore(pile)).toBe(15);
  });
  it('accepts the first valid bid only, hides it from others and charges only the winner',()=>{
   const state=createAuction(42);const first=submitBid(state,0,0,5);

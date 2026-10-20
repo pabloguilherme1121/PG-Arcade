@@ -9,7 +9,8 @@ import {
   wordDifficultyDescriptions,
   hangmanMistakeLimits,
 } from "../lib/quizExpansion";
-import { newGames, type NewGameId } from "../lib/newCatalog";
+import { newGamesWithHelp as newGames } from "../lib/newCatalogFull";
+import type { NewGameId } from "../lib/newCatalog";
 import { quizAward } from "../lib/quizScoring";
 import { useAutoPause } from "./useAutoPause";
 import "./newGames.css";
