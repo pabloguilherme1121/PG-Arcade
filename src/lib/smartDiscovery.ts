@@ -15,7 +15,7 @@ const training = new Set<GameId>(["vinteum","dados","boliche","basquete","golfe"
 const untimed = new Set<GameId>([
   ...newGames.filter(g=>g.family==="board").map(g=>g.id),
   ...expandedGames.filter(g=>g.family==="logic").map(g=>g.id),
-  "leilao","comum","frutas","blocos","palavra","luzes","puzzle","2048","minas","xadrez","damas","domino","velha","liga4","estacionamento",
+  "cofre","leilao","comum","frutas","blocos","palavra","luzes","puzzle","2048","minas","xadrez","damas","domino","velha","liga4","estacionamento",
 ]);
 
 export const modeNames: Record<GameModeTag,string> = {
