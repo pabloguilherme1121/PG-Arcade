@@ -5,7 +5,7 @@ for (const width of [320, 390]) {
   test(`grupo local mostra somente os jogos com 3–4 participantes a ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     await page.goto("./");
-    const group = page.getByRole("button", { name: /Grupo local \\(3–4\\)/ });
+    const group = page.getByRole("button", { name: /Grupo local \(3–4\)/ });
     await group.click();
     await expect(group).toHaveAttribute("aria-pressed", "true");
     const matching = await page.evaluate(() => ({
