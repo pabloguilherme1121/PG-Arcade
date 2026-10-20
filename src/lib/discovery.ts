@@ -5,6 +5,8 @@ import { discoveryFilters, modeTags, modeLabel, supportsSwipe, type DiscoveryFil
 
 /** Names and descriptions are searched as words, ignoring accents and excess spaces. */
 export const searchText = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR").trim().replace(/\s+/g, " ");
+let lastQuery: string | undefined;
+let queryWords: string[] = [];
 const searchIndex = new WeakMap<typeof games[number], string>();
 export const matchesGame = (game: typeof games[number], query: string) => {
   if (!query.trim()) return true;
@@ -13,18 +15,19 @@ export const matchesGame = (game: typeof games[number], query: string) => {
     text = searchText(`${game.name} ${game.description} ${gameHelp[game.id]} ${game.category} ${modeTags(game).map(modeLabel).join(" ")} ${gameMode(game.id)} ${supportsSwipe(game.id)?'deslizar gestos':''}`);
     searchIndex.set(game, text);
   }
-  return searchText(query).split(" ").every(word => text.includes(word));
+  if (query !== lastQuery) { lastQuery = query; queryWords = searchText(query).split(" "); }
+  return queryWords.every(word => text.includes(word));
 };
 export const categoryGroup = (category: string) => ["Corrida", "Carros"].includes(category) ? "Carros e corrida" : category;
 export const recommended: GameId[] = ["snake", "flood", "liga4", "basquete", "palavra", "rhythm"];
 
 export function gameMode(id: GameId) {
-  return gameCapabilities(id).localPlayers === 2 ? "Solo ou dupla local" : "Solo";
+  return gameCapabilities(id).localPlayers >= 2 ? "Solo ou dupla local" : "Solo";
 }
 /** Every current title supports solo play, including local duels with a bot. */
 export function supportsPlayerMode(id: GameId, mode: string) {
   return mode === "Todos" || (mode === "Solo" && gameCapabilities(id).solo) ||
-    (mode === "Dupla local" && gameCapabilities(id).localPlayers === 2);
+    (mode === "Dupla local" && gameCapabilities(id).localPlayers >= 2);
 }
 export type CatalogView = { query: string; swipeOnly: boolean; category: string; sort: string; mode: string; modeFilter: DiscoveryFilter; scroll: number; returnPage: string; focusId: GameId | null };
 export const defaultView: CatalogView = { query: "", swipeOnly: false, category: "Todos", sort: "destaques", mode: "Todos", modeFilter: "todos", scroll: 0, returnPage: "catalogo", focusId: null };

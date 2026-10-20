@@ -16,7 +16,8 @@ import {
 } from "./actionGames";
 import type { Direction } from "./engines";
 import { games } from "./catalog";
-import { gameHelp, recordUnits } from "./gameHelp";
+import { gameHelp } from "./gameHelp";
+import { recordUnits } from "./recordUnits";
 describe("Race", () => {
   it("steers one lane at a time and prevents instant double lane changes", () => {
     const state = initialRace();
@@ -197,7 +198,7 @@ it("shooting combos have a bounded bonus", () => {
   expect(hitScore(10, 100)).toBe(30);
 });
 it("all fifty games have specific help and valid record units", () => {
-  expect(games.length).toBe(101);
+  expect(games.length).toBe(102);
   for (const g of games) expect(gameHelp[g.id].length).toBeGreaterThan(50);
   expect(Object.keys(recordUnits)).toHaveLength(95);
 });

@@ -10,7 +10,7 @@ describe('verified catalog capabilities', () => {
       const capabilities = gameCapabilities(game.id);
       expect(capabilities.online).toBe(false);
       expect(capabilities.solo).toBe(true);
-      expect(capabilities.localPlayers).toBe(modeTags(game).includes('dupla') ? 2 : 1);
+      expect(capabilities.localPlayers).toBe(game.id === 'comum' ? 4 : modeTags(game).includes('dupla') ? 2 : 1);
       expect(capabilities.swipe).toBe(supportsSwipe(game.id));
       expect(capabilities.bot).toBe(modeTags(game).includes('bot'));
       expect(supportsPlayerMode(game.id, 'Online')).toBe(false);

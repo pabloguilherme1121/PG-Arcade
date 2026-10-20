@@ -14,12 +14,12 @@ test("an uncached offline game lets the player return and recover after reconnec
   await waitForOfflineShell(page);
   await context.setOffline(true);
   try {
-    await page.getByRole("link", { name: "Jogar 2048", exact: true }).click();
+    await page.getByRole("link", { name: /^Jogar 2048/ }).click();
     await expect(page.getByRole("heading", { name: "O jogo não carregou." })).toBeVisible();
     await page.locator(".empty").getByRole("link", { name: "Voltar aos jogos", exact: true }).click();
-    await expect(page.locator(".game-card")).toHaveCount(101);
+    await expect(page.locator(".game-card")).toHaveCount(102);
     await context.setOffline(false);
-    await page.getByRole("link", { name: "Jogar 2048", exact: true }).click();
+    await page.getByRole("link", { name: /^Jogar 2048/ }).click();
     await page.getByRole("button", { name: "Tentar novamente", exact: true }).click();
     await expect(page.locator(".board2048")).toBeVisible();
   } finally {
@@ -31,7 +31,7 @@ test("a previously loaded game remains playable after an offline reload", async 
   test.skip(browserName !== "chromium", "Service worker lifecycle is checked in Chromium.");
   await page.goto("./");
   await waitForOfflineShell(page);
-  await page.getByRole("link", { name: "Jogar 2048", exact: true }).click();
+  await page.getByRole("link", { name: /^Jogar 2048/ }).click();
   await expect(page.locator(".board2048")).toBeVisible();
   // Wait for the response's background cache write, rather than a fixed delay.
   await expect.poll(() => page.evaluate(async () => {
@@ -46,7 +46,7 @@ test("a previously loaded game remains playable after an offline reload", async 
       await page.locator(".board2048").press(key);
     await expect(page.getByRole("button", { name: "Desfazer", exact: true })).toBeEnabled();
     await page.getByRole("link", { name: "Jogos", exact: true }).click();
-    await expect(page.locator(".game-card")).toHaveCount(101);
+    await expect(page.locator(".game-card")).toHaveCount(102);
   } finally {
     await context.setOffline(false);
   }

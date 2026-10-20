@@ -48,10 +48,10 @@ test('bot discovery includes solo opponents without inventing local multiplayer'
   await page.setViewportSize({ width: 320, height: 740 });
   await page.goto('./');
   await page.getByRole('button', { name: 'Contra o bot', exact: true }).click();
-  await expect(page.locator('.game-card')).toHaveCount(16);
+  await expect(page.locator('.game-card')).toHaveCount(17);
   for (const id of ['nim', 'reversi', 'pontes', 'gomoku', 'hex', 'ataxx', 'isolation', 'breakthrough', 'territory', 'mancala', 'chomp']) await expect(page.locator(`[data-catalog-game="${id}"]`)).toBeVisible();
   await page.getByRole('combobox', { name: 'Filtrar por modo', exact: true }).selectOption('Dupla local');
-  await expect(page.locator('.game-card')).toHaveCount(5);
+  await expect(page.locator('.game-card')).toHaveCount(6);
   for (const id of ['nim', 'reversi', 'pontes', 'gomoku', 'hex', 'ataxx', 'isolation', 'breakthrough', 'territory', 'mancala', 'chomp']) await expect(page.locator(`[data-catalog-game="${id}"]`)).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
 });

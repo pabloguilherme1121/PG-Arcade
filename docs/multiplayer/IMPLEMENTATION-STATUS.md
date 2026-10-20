@@ -48,3 +48,15 @@ A tentativa de corrigir a descrição pública via API retornou HTTP 403 (Resour
 Primeira execução Chromium/Firefox: 17 aprovações E2E e 3 skips preexistentes dos cenários de service worker no Firefox. Execução final do compartilhamento, incluindo falha do chunk: 8 aprovações. São 25 execuções aprovadas ao todo, com repetição de cenários, não 25 cenários únicos. Sem retries ou aumento de timeout. Native share/clipboard foram substituídos por adaptadores no E2E para verificar integração, payload e mensagens; isso não certifica a folha do sistema operacional em Android físico.
 
 WebKit depende do gate oficial. A entrega não está certificada no Android real. Não há multiplayer online implementado nem serviços contratados. Integração condicionada aos cinco gates no HEAD final.
+
+## Entrega 2 em desenvolvimento: jogo local completo
+
+O usuário confirmou solo/dupla local primeiro; online depois. Palavra em Comum passa a ter interface e integração de catálogo na branch da PR #145. Nenhum dos outros 49 candidatos foi adicionado. A main só passará a 102 jogos após integração validada. O núcleo anterior já testado é reutilizado, e nenhum fornecedor ou dependência foi acrescentado.
+
+## Refinamento após avaliação crítica
+
+As hipóteses anteriores de rodada online de 15 segundos não descrevem a versão local: ela é sem cronômetro próprio e online permanece adiado. O solo agora exige interpretar pistas, com resposta independente da escolha humana e distribuição que evita o antigo ciclo de quatro rodadas. Há som opcional desligado por padrão.
+
+Diagnóstico voluntário em Progresso coleta apenas durações de tarefas longas, viewport e tempos de navegação quando suportado. Até 128 durações recentes ficam em memória; não há storage persistente ou envio. Exportação exclui URL e progresso pessoal. O usuário pode iniciar, parar e exportar. Sem suporte a longtask, o diagnóstico básico continua disponível. Não interpretar esses números como FPS ou métricas de público.
+
+PR #146 recebeu alinhamento de aceite no commit d853a44: os 101 jogos são a base, não teto; uma expansão deve preservar IDs/URLs/dados e apresentar evidência própria para 102 ou mais jogos. README e metadados da branch de expansão concordam em 102.

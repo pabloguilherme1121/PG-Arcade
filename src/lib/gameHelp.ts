@@ -56,6 +56,7 @@ const expandedHelp: Record<ExpandedId, string> = {
     "Troque duas peças vizinhas para formar linhas de três ou mais. Combinações desaparecem e novas peças caem, criando cascatas e pontos.",
 };
 export const gameHelp: Record<GameId, string> = {
+  comum: "Associe palavras. Solo por pistas ou 2 a 4 pessoas no mesmo aparelho.",
   ...Object.fromEntries(newGames.map(g => [g.id, g.help])) as Record<typeof newGames[number]["id"],string>,
   ...expandedHelp,
   blocos: "Escolha uma das três peças e toque na casa de origem. Preencha linhas ou colunas para limpá-las. Setas movem o foco e Enter posiciona. Ao usar as três peças, outras aparecem. A partida termina quando nenhuma restante cabe.",
@@ -102,25 +103,4 @@ export const gameHelp: Record<GameId, string> = {
     "Escolha uma casa vazia para formar três marcas em linha. Toque ou use Tab e Enter. Jogue contra o bot ou escolha Dupla para dividir o aparelho.",
   futebol:
     "Escolha pênalti ou falta, ajuste mira, força e curva e toque em Chutar. A mira aceita toque e teclado; observe a trajetória e tente melhorar sua série de cinco cobranças.",
-};
-export const recordUnits: Partial<Record<GameId, "pontos" | "jogadas">> = {
-  ...Object.fromEntries(newGames.map(g => [g.id, "pontos" as const])),
-  ...Object.fromEntries(expandedGames.map((g) => [g.id, "pontos" as const])),
-  blocos: "pontos",
-  sequencia: "pontos",
-  palavra: "pontos",
-  rally: "pontos",
-  coleta: "pontos",
-  orbital: "pontos",
-  minas: "pontos",
-  reflexo: "pontos",
-  corrida: "pontos",
-  estacionamento: "pontos",
-  tiro: "pontos",
-  luzes: "pontos",
-  estrelas: "pontos",
-  "2048": "pontos",
-  snake: "pontos",
-  memoria: "jogadas",
-  puzzle: "jogadas",
 };

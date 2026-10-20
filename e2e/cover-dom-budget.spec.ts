@@ -14,10 +14,10 @@ test("all 100 covers preserve artwork while keeping decorative SVG DOM lightweig
       decorativePaths: covers.reduce((total, cover) => total + cover.querySelectorAll("svg path").length, 0),
     };
   });
-  expect(result.covers).toBe(101);
-  expect(result.artImages).toBe(101);
-  expect(result.gradients).toBe(101);
-  expect(result.uniqueGradients).toBe(101);
+  expect(result.covers).toBe(102);
+  expect(result.artImages).toBe(102);
+  expect(result.gradients).toBe(102);
+  expect(result.uniqueGradients).toBe(102);
   // 100 covers × one ornament path + one framing path; allow small future variation.
   expect(result.decorativePaths).toBeLessThanOrEqual(300);
 });

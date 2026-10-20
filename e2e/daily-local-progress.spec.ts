@@ -27,7 +27,7 @@ test("daily progress counts actual visits, persists across reload, and preserves
   await page.goto("./#/");
   await page.getByRole("button", { name: /^Já joguei/ }).click();
   await expect(page.locator(".game-card")).toHaveCount(1);
-  await expect(page.getByRole("link", { name: "Jogar Snake", exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: /^Jogar Snake/ })).toBeVisible();
 });
 
 test("backup preserves dated visits and old records when restored into a fresh local calendar", async ({ page }) => {

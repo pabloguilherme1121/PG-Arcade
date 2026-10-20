@@ -13,7 +13,7 @@ test("loading many catalog covers never evicts an already playable offline game"
     }
   });
 
-  await page.getByRole("link", { name: "Jogar 2048", exact: true }).click();
+  await page.getByRole("link", { name: /^Jogar 2048/ }).click();
   await expect(page.locator(".board2048")).toBeVisible();
 
   async function isGameChunkCached() {

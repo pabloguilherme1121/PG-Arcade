@@ -17,7 +17,7 @@ for(const width of [320,390]) test(`active filters can be removed individually a
   await expect(catalog.getByLabel('Buscar jogo',{exact:true})).toHaveValue('xadrez');
   await expect(chips.getByRole('button')).toHaveCount(2);
   await chips.getByRole('button',{name:'Remover busca: xadrez',exact:true}).click();
-  await expect(catalog.locator('[data-catalog-game]')).toHaveCount(5);
+  await expect(catalog.locator('[data-catalog-game]')).toHaveCount(6);
   expect((await new AxeBuilder({page}).include('#catalogo').analyze()).violations).toEqual([]);
 });
 test('progress loads on demand, keeps real results and exposes a records-only view',async({page})=>{

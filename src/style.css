@@ -1,4 +1,8 @@
-@import "tailwindcss";
+/* Scan product sources only; audit documents/tests must not add runtime utilities. */
+@import "tailwindcss" source(none);
+@source "./";
+@source "../index.html";
+@source not "./**/*.test.ts";
 @theme {
   --font-display: "Space Grotesk Variable", sans-serif;
   --font-body: "Inter Variable", sans-serif;

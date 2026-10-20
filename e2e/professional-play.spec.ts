@@ -249,7 +249,7 @@ test("shared game shell focuses the arena and pauses real-time play while help i
   await expect(page.locator(".action-footer [role=\"status\"]")).toContainText("Pausado");
 
   await page.getByRole("link", { name: "Voltar aos jogos", exact: true }).click();
-  await page.getByRole("link", { name: "Jogar Snake", exact: true }).click();
+  await page.getByRole("link", { name: /^Jogar Snake/ }).click();
   await expect(page.locator(".app-focus")).toHaveCount(0);
 });
 
@@ -278,7 +278,7 @@ test("visual shell keeps clear premium hierarchy across catalog and player on mo
   const hero = page.locator(".hero");
   const firstCard = page.locator(".game-card").first();
   await expect(hero).toBeVisible();
-  await expect(hero).toContainText("101 jogos no navegador");
+  await expect(hero).toContainText("102 jogos no navegador");
   await expect(page.locator(".curated-card")).toHaveCount(6);
   await expect(firstCard.locator(".game-category")).toBeVisible();
 
