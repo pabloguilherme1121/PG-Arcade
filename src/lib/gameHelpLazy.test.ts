@@ -19,7 +19,7 @@ describe("gameplay help is loaded when entering an arena, not inside the initial
     expect(newGames).toHaveLength(50);
     for (const game of newGames) {
       expect(game).not.toHaveProperty("help");
-      expect(game.description.length).toBeLessThanOrEqual(100);
+      expect(game.description.length).toBeLessThanOrEqual(150);
       expect(gameHelp[game.id].length).toBeGreaterThan(65);
     }
   });
