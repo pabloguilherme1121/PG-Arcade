@@ -10,7 +10,7 @@ type DiscoveryHistory = {favorites:readonly string[];visits:Partial<Record<GameI
 
 export const supportsSwipe=(id:GameId)=>gameCapabilities(id).swipe;
 const quick = new Set<GameId>(["reflexo","estrelas","tiro","rally","corrida"]);
-const survival = new Set<GameId>(["rally","coleta","orbital","runner","voo","jetpack","esquiva","drift","invasores","asteroides","breakout","pong","pouso"]);
+const survival = new Set<GameId>(["neon","rally","coleta","orbital","runner","voo","jetpack","esquiva","drift","invasores","asteroides","breakout","pong","pouso"]);
 const training = new Set<GameId>(["vinteum","dados","boliche","basquete","golfe","arco","pesca","match3"]);
 const untimed = new Set<GameId>([
   ...newGames.filter(g=>g.family==="board").map(g=>g.id),
