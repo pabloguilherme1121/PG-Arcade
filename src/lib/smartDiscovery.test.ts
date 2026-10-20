@@ -1,7 +1,7 @@
 import { CATALOG_SIZE } from "./catalogRelease";
 import { describe, expect, it } from "vitest";
 import { games } from "./catalog";
-import { countModes, discoveryFilters, modeTags, previewModeTags, filterByMode, recommendGames, modeLabel } from "./smartDiscovery";
+import { countModes, discoveryFilters, modeTags, previewModeTags, filterByMode, recommendGames, chooseSurprise, modeLabel } from "./smartDiscovery";
 
 describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
   it("renders at most two honest mode chips and falls back to Clássico", () => {
@@ -54,6 +54,17 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
     expect(filterByMode(games,"favoritos",visited,favorites).map(g=>g.id)).toEqual(["xadrez"]);
     expect(filterByMode(games,"dupla",visited,favorites)).toHaveLength(7);
     expect(filterByMode(games,"todos",visited,favorites)).toHaveLength(CATALOG_SIZE);
+  });
+  it("jogo surpresa prioriza inéditos, evita repetir o último e respeita o filtro ativo", () => {
+    const options = games.filter(game => game.id === "leilao" || game.id === "comum");
+    const original = [...options];
+    expect(chooseSurprise([], { last: "leilao", visits: {} }, () => 0)).toBeNull();
+    expect(chooseSurprise(options, { last: "leilao", visits: { leilao: 1 } }, () => 0)?.id).toBe("comum");
+    expect(chooseSurprise(options, { last: "comum", visits: { leilao: 1, comum: 2 } }, () => 0)?.id).toBe("leilao");
+    expect(chooseSurprise([options[0]], { last: "leilao", visits: { leilao: 1 } }, () => 0)?.id).toBe("leilao");
+    expect(chooseSurprise(options, { last: null, visits: {} }, () => 0)?.id).toBe("leilao");
+    expect(chooseSurprise(options, { last: null, visits: {} }, () => 0.999)?.id).toBe("comum");
+    expect(options).toEqual(original);
   });
   it("prioriza preferências locais com desempate previsível e sem mutações",()=>{
     const input=[...games];
