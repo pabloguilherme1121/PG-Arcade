@@ -2,7 +2,9 @@ import {expect,test} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 const openGame=async(page:import('@playwright/test').Page)=>{
  await page.goto('./#/jogar/leilao');
- return page.getByRole('region',{name:'Leilão de Relíquias',exact:true});
+ const game=page.getByRole('region',{name:'Leilão de Relíquias',exact:true});
+ await expect(game).toBeVisible();
+ return game;
 };
 // Keep solo and group journeys independent, with real touch actions, all
 // nine lots and privacy assertions. The full group match has its own budget.
