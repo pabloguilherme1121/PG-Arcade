@@ -6,7 +6,7 @@ import { newBoard } from "./boardExpansion";
 import { question } from "./quizExpansion";
 import { expandedGames } from "./expandedCatalog";
 import { readFileSync } from "node:fs";
-import { categoryGroup, supportsPlayerMode, defaultView, gameMode, matchesGame, readCatalogView, recommended, saveCatalogView } from "./discovery";
+import { categoryGroup, supportsPlayerMode, defaultView, gameMode, matchesGame, setSearchHelpIndex, readCatalogView, recommended, saveCatalogView } from "./discovery";
 afterEach(() => vi.unstubAllGlobals());
 describe("catalog discovery", () => {
   it("finds multiword accented names despite repeated whitespace and word order", () => {
@@ -79,4 +79,15 @@ it("empty search retains every title before and after a specific query", () => {
   expect(matchesGame(chess, "XÁDREZ")).toBe(true);
   expect(matchesGame(chess, "inexistente")).toBe(false);
   expect(matchesGame(chess, "")).toBe(true);
+});
+
+
+it("reveals detailed search terms on demand and invalidates cached misses", () => {
+  const flood = games.find(g => g.id === "flood")!;
+  setSearchHelpIndex(null);
+  expect(matchesGame(flood, "ultrametamorfose")).toBe(false);
+  setSearchHelpIndex({ flood: "ultrametamorfose é um termo adicional de ajuda" });
+  expect(matchesGame(flood, "ultrametamorfose")).toBe(true);
+  setSearchHelpIndex(null);
+  expect(matchesGame(flood, "ultrametamorfose")).toBe(false);
 });
