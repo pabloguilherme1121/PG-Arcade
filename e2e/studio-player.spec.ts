@@ -19,7 +19,9 @@ test("native fullscreen or viewport fallback keeps a working exit and navigation
   await page.getByRole("button", { name: "Tela cheia", exact: true }).click();
   await page.getByRole("link", { name: "Voltar aos jogos", exact: true }).click();
   await expect(page.locator(".game-card").first()).toBeVisible();
-  await expect.poll(() => page.evaluate(() => !!document.fullscreenElement || document.body.style.overflow === "hidden")).toBe(false);
+  // Poll in the browser: a full-catalog trace snapshot can otherwise consume
+  // the assertion deadline even when the first returned value is already false.
+  await page.waitForFunction(() => !document.fullscreenElement && document.body.style.overflow !== "hidden", undefined, { timeout: 5_000 });
   await expect(page.locator(".site-header")).not.toHaveAttribute("inert");
 });
 
