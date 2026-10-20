@@ -13,13 +13,13 @@ for (const width of [320, 390]) {
         .map(card => card.dataset.catalogGame),
       noOverflow: document.documentElement.scrollWidth <= innerWidth,
     }));
-    expect(matching.ids).toEqual(["passagem", "cofre", "leilao", "comum"]);
+    expect(matching.ids).toEqual(["contrato", "passagem", "cofre", "leilao", "comum"]);
     expect(matching.noOverflow).toBe(true);
 
     await page.reload();
     await page.waitForFunction(() =>
       document.querySelector(".smart-mode-chips button[aria-pressed='true']")?.textContent?.includes("Grupo local") &&
-      document.querySelectorAll(".game-grid [data-catalog-game]").length === 4
+      document.querySelectorAll(".game-grid [data-catalog-game]").length === 5
     );
     await group.click();
     await page.waitForFunction(length =>

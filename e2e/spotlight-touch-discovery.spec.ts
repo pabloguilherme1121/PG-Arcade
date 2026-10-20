@@ -27,15 +27,15 @@ test.describe("descoberta premium mobile", () => {
 
       await page.getByRole("button", { name: "Zerar filtros", exact: true }).tap();
       await page.getByRole("combobox", { name: "Filtrar por modo", exact: true }).selectOption("Dupla local");
-      await expect(page.locator(".game-card")).toHaveCount(9);
+      await expect(page.locator(".game-card")).toHaveCount(10);
       const link = featured.getByRole("link", { name: /Jogar sugestão:/ });
       const target = await link.getAttribute("href");
-      expect(["#/jogar/cofre", "#/jogar/passagem", "#/jogar/leilao", "#/jogar/comum", "#/jogar/damas", "#/jogar/domino", "#/jogar/liga4", "#/jogar/velha", "#/jogar/xadrez"]).toContain(target);
+      expect(["#/jogar/cofre", "#/jogar/contrato", "#/jogar/passagem", "#/jogar/leilao", "#/jogar/comum", "#/jogar/damas", "#/jogar/domino", "#/jogar/liga4", "#/jogar/velha", "#/jogar/xadrez"]).toContain(target);
       await link.tap();
       await expect(page).toHaveURL(/#\/jogar\//);
       await expect(page.locator("[data-arcade-arena]")).toBeVisible();
       await page.getByRole("link", { name: "Voltar aos jogos", exact: true }).tap();
-      await expect(page.locator(".game-card")).toHaveCount(9);
+      await expect(page.locator(".game-card")).toHaveCount(10);
       await page.getByRole("button", { name: "Já joguei", exact: true }).tap();
       await expect(page.locator(".game-card")).toHaveCount(1);
       await expect(featured.getByRole("link", { name: /Jogar sugestão:/ })).toHaveAttribute("href", target!);

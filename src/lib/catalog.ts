@@ -1,6 +1,7 @@
 import { expandedGames } from "./expandedCatalog";
 import { newGames } from "./newCatalog";
 export const games = [
+  {id:"contrato",name:"Contrato das Cores",description:"Dispute um mercado de peças e complete contratos públicos de cores em grupo local.",category:"Estratégia"},
   {id:"passagem",name:"Passagem Secreta",description:"Planeje quatro passos secretos e revele trajetos simultâneos numa arena local.",category:"Estratégia"},
   {id:"cofre",name:"Cofre em Equipe",description:"Compartilhe pistas privadas, monte a senha e abra o cofre em grupo local.",category:"Estratégia"},
   {id:"frutas", name:"Frutas em Fusão", description:"Combine frutas iguais, crie reações em cadeia e descubra a fruta dourada.", category:"Casuais"},

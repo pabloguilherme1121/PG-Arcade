@@ -45,3 +45,7 @@ A base de 105 jogos foi integrada à main após sucesso dos cinco gates na PR #1
 - Cobertura E2E: 320/390/844×390, navegação, seleção dos participantes, privacidade do passe e ausência de overflow.
 
 A composição anterior passou em quality (497 testes unitários) e mediu 388,7 KiB raw / 113,5 KiB gzip de bundle inicial. **Esse resultado não substitui a verificação do HEAD reconciliado:** exigir quality, Chromium, Firefox, WebKit, validate, CodeQL no mesmo SHA, seguido de pages-artifact e deploy na main. Android físico continua pendente. Os 44 títulos ainda ausentes até 151 são backlog, não cartões implementados.
+
+## Aceite adicional — Contrato das Cores, 108º título
+
+PR nova empilhada sobre #169. Regras de turno 2–4, mercado com três alternativas, contratos públicos iguais para todos, bônus por coleção, quatro escolhas por participante, vencedor/empate, recorde e nova partida; UI responsiva 320/390/844×390 com E2E. Sem multiplayer online. Exigir testes unitários, três navegadores, validate, CodeQL, bundle abaixo 400 KiB raw e 120 KiB gzip no mesmo HEAD, além de deploy e aceite físico por separado. A existência do registro não comprova o aceite até os gates terminarem.
