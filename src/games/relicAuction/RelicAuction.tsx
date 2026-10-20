@@ -1,6 +1,6 @@
 import {useCallback,useEffect,useLayoutEffect,useRef,useState} from 'react';
 import {useAutoPause} from '../useAutoPause';
-import {botBid,collectionScore,createAuction,currentBidder,familyNames,nextLot,priority,submitBid,type Auction,type Family} from './rules';
+import {botBid,collectionScore,collectionProgress,createAuction,currentBidder,familyNames,nextLot,priority,submitBid,type Auction,type Family} from './rules';
 import {discardAuction,readAuction,saveAuction,type Settings} from './savedSession';
 import './relicAuction.css';
 type Session={match:Auction;covered:boolean;bot:number};
@@ -78,7 +78,7 @@ export default function RelicAuction() {
     <label>Seu lance<select aria-label="Valor do lance" value={bid} onChange={e=>setBid(Number(e.target.value))}>{Array.from({length:Math.min(10,match!.coins[current])+1},(_,i)=><option key={i} value={i}>{i===0?'0 — Passar':`${i} moedas`}</option>)}</select></label>
     <button onClick={confirm}>Confirmar lance secreto</button>
    </div>}
-   <div className="ra-scoreboard" aria-label="Coleções e orçamento">{match!.piles.map((pile,i)=><section key={i}><h3>{playerName(i)}</h3><p><strong>{scores[i]} pontos</strong> · {match!.coins[i]} moedas</p><ul>{pile.map(relic=><li key={relic.id}>{relic.name} · {familyNames[relic.family]} · {relic.value}</li>)}</ul>{!pile.length&&<p>Nenhuma relíquia ainda.</p>}</section>)}</div>
+   <div className="ra-scoreboard" aria-label="Coleções e orçamento">{match!.piles.map((pile,i)=><section key={i}><h3>{playerName(i)}</h3><p><strong>{scores[i]} pontos</strong> · {match!.coins[i]} moedas</p><p className="ra-family-progress" aria-label={`Famílias de ${playerName(i)}`}>{Object.entries(collectionProgress(pile)).map(([family,count])=><span key={family}>{familyNames[family as Family]}: {count}/3</span>)}</p><ul>{pile.map(relic=><li key={relic.id}>{relic.name} · {familyNames[relic.family]} · {relic.value}</li>)}</ul>{!pile.length&&<p>Nenhuma relíquia ainda.</p>}</section>)}</div>
    {match!.phase!=='finished'&&<><details><summary>Próximos lotes e bônus</summary><p>Par da mesma família: +3. Trio: +8 no lugar do par. Grupos não se sobrepõem.</p><ol>{match!.lots.slice(match!.round+1).map(relic=><li key={relic.id}>{relic.name} · {familyNames[relic.family]} · {relic.value} pontos</li>)}</ol></details><button onClick={()=>setPaused(true)}>Pausar leilão</button></>}
   </>}
  </section>;

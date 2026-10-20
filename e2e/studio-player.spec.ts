@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { calculateCanvasPixels } from "../src/lib/touchCanvas";
 import AxeBuilder from "@axe-core/playwright";
 import { games } from "../src/lib/catalog";
+import { gameCapabilities } from "../src/lib/gameCapabilities";
 
 test("native fullscreen or viewport fallback keeps a working exit and navigation", async ({ page }) => {
   await page.goto("./#/jogar/2048");
@@ -47,7 +48,7 @@ for (const width of [320, 390, 1280]) {
         await test.step(`validate immersive mode: ${game.id}`, async () => {
           await page.goto(`./#/jogar/${game.id}`);
           await expect(page.locator("[data-arcade-arena]").first()).toBeVisible();
-          await expect(page.locator(".session-mode-cards button")).toHaveCount(["comum","leilao"].includes(game.id) ? 1 : 3);
+          await expect(page.locator(".session-mode-cards button")).toHaveCount(gameCapabilities(game.id).timedSessions ? 3 : 1);
           if (await page.locator(".player-utilities:not([open]) summary").count()) {
             await page.locator(".player-utilities summary").click();
           }
@@ -55,7 +56,7 @@ for (const width of [320, 390, 1280]) {
           const player = page.locator(".player");
           await expect(player).toHaveAttribute("data-viewport-fullscreen", "true");
           expect(await player.evaluate((element) => element.scrollWidth <= element.clientWidth + 1), game.id).toBe(true);
-          if(["comum","leilao"].includes(game.id)) {
+          if(!gameCapabilities(game.id).timedSessions) {
             await expect(page.locator(".session-mode-cards").getByRole("button", {name:/Sprint|Maratona/})).toHaveCount(0);
             await expect(page.getByLabel("Dificuldade do desafio de tempo")).toHaveCount(0);
           } else {

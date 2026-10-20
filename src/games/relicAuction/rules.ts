@@ -28,6 +28,12 @@ export function collectionScore(pile:readonly Relic[]):number {
  for(const family of Object.keys(names) as Family[]){const n=pile.filter(r=>r.family===family).length;score+=Math.floor(n/3)*8+(n%3===2?3:0);}
  return score;
 }
+/** Public family counts help players plan pairs and trios; never expose sealed bids. */
+export function collectionProgress(pile: readonly Relic[]): Record<Family, number> {
+ const counts: Record<Family,number> = {solar:0,lunar:0,marinha:0};
+ for(const relic of pile) counts[relic.family]++;
+ return counts;
+}
 export const priority=(state:Auction)=>(state.seed%state.coins.length+state.round)%state.coins.length;
 export function currentBidder(state:Auction):number {
  for(let n=0;n<state.coins.length;n++){const player=(priority(state)+n)%state.coins.length;if(state.bids[player]===null)return player;}
