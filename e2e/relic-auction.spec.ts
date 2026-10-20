@@ -4,10 +4,11 @@ const openGame=async(page:import('@playwright/test').Page)=>{
  await page.goto('./#/jogar/leilao');
  return page.getByRole('region',{name:'Leilão de Relíquias',exact:true});
 };
-for(const width of [320,390,844])test(`relic auction completes solo and four-player matches by touch at ${width}px`,async({browser})=>{
- const context=await browser.newContext({viewport:{width,height:width===844?390:844},hasTouch:true});
- const page=await context.newPage();
- try{
+// Separate complete journeys keep each fixture within the default deadline;
+// real touch actions, all nine lots and privacy assertions remain covered.
+for(const width of [320,390,844])test.describe(`auction touch at ${width}px`,()=>{
+ test.use({viewport:{width,height:width===844?390:844},hasTouch:true});
+ test('completes a solo match',async({page})=>{
   const game=await openGame(page);
   await game.getByRole('button',{name:'Começar leilão',exact:true}).tap();
   for(let r=0;r<9;r++){
@@ -20,7 +21,10 @@ for(const width of [320,390,844])test(`relic auction completes solo and four-pla
   }
   await expect(game.getByRole('heading',{name:'Leilão concluído',exact:true})).toBeVisible();
   await expect(game.locator('.ra-outcome')).toContainText('Bot colecionador venceu');
-  await game.getByRole('button',{name:'Alterar configuração',exact:true}).tap();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+ });
+ test('completes a four-player match and restarts',async({page})=>{
+  const game=await openGame(page);
   await game.getByLabel('Modo de jogo',{exact:true}).selectOption('local');
   await game.getByLabel('Participantes',{exact:true}).selectOption('4');
   await game.getByRole('button',{name:'Começar leilão',exact:true}).tap();
@@ -41,7 +45,7 @@ for(const width of [320,390,844])test(`relic auction completes solo and four-pla
   await game.getByRole('button',{name:'Repetir os mesmos lotes',exact:true}).tap();
   await expect(game.locator('.ra-scoreboard section')).not.toHaveText(outcome);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
- }finally{await context.close();}
+ });
 });
 test('reload resumes a private local bid paused and charges it only once',async({page})=>{
  const game=await openGame(page);
