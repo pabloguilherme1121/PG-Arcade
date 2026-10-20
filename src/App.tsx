@@ -43,7 +43,7 @@ import {
 } from "./lib/progress";
 import { readPreferences, applyPreferences } from "./lib/preferences";
 
-import { searchText, matchesGame, supportsPlayerMode, recommended, readCatalogView, saveCatalogView } from "./lib/discovery";
+import { searchText, matchesGame, supportsPlayerMode, recommended, readCatalogView, saveCatalogView, setSearchHelpIndex } from "./lib/discovery";
 import { catalogCategories, selectCatalog, sortCatalog } from "./lib/catalogSelection";
 import { useReducedMotion } from "./useReducedMotion";
 import { useImmersivePlayer } from "./lib/useImmersivePlayer";
@@ -198,6 +198,22 @@ export default function App() {
   const catalogView = useRef(initialView);
   const [sort, setSort] = useState(initialView.sort);
   const [query, setQuery] = useState(initialView.query);
+  const [searchHelpReady, setSearchHelpReady] = useState(false);
+  const needsSearchHelp = query.trim().length > 0;
+  useEffect(() => {
+    if (!needsSearchHelp || searchHelpReady) return;
+    let active = true;
+    void import("./lib/gameHelp").then(({ gameHelp }) => {
+      if (active) {
+        setSearchHelpIndex(gameHelp);
+        setSearchHelpReady(true);
+      }
+    }).catch(() => {
+      // A temporarily unavailable offline chunk must never block name-based search.
+      if (active) setSearchHelpReady(true);
+    });
+    return () => { active = false; };
+  }, [needsSearchHelp, searchHelpReady]);
   const [category, setCategory] = useState(initialView.category);
   const [mode, setMode] = useState(initialView.mode);
   const [modeFilter, setModeFilter] = useState<DiscoveryFilter>(initialView.modeFilter);
@@ -343,11 +359,11 @@ export default function App() {
   const activeModes = game ? modeTags(game).filter(tag => tag !== "classico") : [];
   useEffect(() => { document.title = `${game ? game.name : page === "favoritos" ? "Seus favoritos" : page === "progresso" ? "Meu progresso" : `${games.length} jogos no navegador`} — PG Arcade`; }, [game, page]);
   const deferredQuery = useDeferredValue(query);
-  const searchPending = query !== deferredQuery;
+  const searchPending = query !== deferredQuery || (needsSearchHelp && !searchHelpReady);
   const normalizedQuery = useMemo(() => searchText(deferredQuery), [deferredQuery]);
   const { visible, categoryCounts, modeCounts } = useMemo(
     () => selectCatalog(games, { query: normalizedQuery, category, mode, modeFilter, swipeOnly }, progress, page === "favoritos"),
-    [normalizedQuery, category, mode, modeFilter, swipeOnly, progress, page],
+    [normalizedQuery, category, mode, modeFilter, swipeOnly, progress, page, searchHelpReady],
   );
   const curated = recommended.map(id => games.find(g => g.id === id)!);
   const visited = games.filter(g => progress.visits[g.id]).sort((a,b) => (b.id === progress.last ? 1 : 0) - (a.id === progress.last ? 1 : 0) || (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)).slice(0,4);
