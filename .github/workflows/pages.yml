@@ -74,9 +74,11 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
       - name: Focused mobile and accessibility smoke
+        env:
+          E2E_WORKERS: ${{ matrix.browser == 'firefox' && '1' || '2' }}
         run: |
-          npx playwright test e2e/accessibility-critical.spec.ts e2e/focused-polish.spec.ts e2e/mobile-functional.spec.ts e2e/project-network.spec.ts e2e/mobile-discovery-combination.spec.ts e2e/rhythm-touch-cancellation.spec.ts --project=${{ matrix.browser }}
-          npx playwright test e2e/catalog-experience.spec.ts e2e/scoped-backup.spec.ts e2e/professional-play.spec.ts e2e/studio-followups.spec.ts --grep "active filters|backup imports|visual shell|desktop immersive canvas" --project=${{ matrix.browser }}
+          npx playwright test e2e/accessibility-critical.spec.ts e2e/focused-polish.spec.ts e2e/mobile-functional.spec.ts e2e/project-network.spec.ts e2e/mobile-discovery-combination.spec.ts e2e/rhythm-touch-cancellation.spec.ts --project=${{ matrix.browser }} --workers="$E2E_WORKERS"
+          npx playwright test e2e/catalog-experience.spec.ts e2e/scoped-backup.spec.ts e2e/professional-play.spec.ts e2e/studio-followups.spec.ts --grep "active filters|backup imports|visual shell|desktop immersive canvas" --project=${{ matrix.browser }} --workers="$E2E_WORKERS"
       - name: WebKit 320px real-touch repeat regression (issue 114)
         if: matrix.browser == 'webkit'
         run: |
@@ -86,7 +88,7 @@ jobs:
         run: |
           npx playwright test e2e/offline.spec.ts e2e/offline-six-references.spec.ts e2e/cover-cache-regression.spec.ts --project=chromium
           npx playwright test e2e/rhythm-touch-cancellation.spec.ts --project=chromium --repeat-each=3 --workers=1
-      # Firefox and the 101 SVG catalog compete heavily when two parallel workers
+      # Firefox and the SVG catalog compete heavily when two parallel workers
       # decode cards and traverse every game. Run the *same full suite* serially
       # to test the contention hypothesis without skipping or relaxing assertions.
       - name: Run complete browser suite
