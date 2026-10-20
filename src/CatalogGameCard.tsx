@@ -31,11 +31,9 @@ function CatalogGameCard({
       <a
         className="game-link"
         href={`#/jogar/${game.id}`}
-        // Prefer the visible text for the accessible name (WCAG 2.5.3).
-        // The extra action text remains screen-reader-only, not a replacement label.
         onClick={() => onOpen(game.id)}
       >
-        <span className="sr-only">${contextual ? "Começar com" : "Jogar"} ${game.name}. </span>
+        <span className="sr-only">{contextual ? "Começar com" : "Jogar"} {game.name}. </span>
         <GameCover id={game.id} name={game.name} category={game.category} priority={priority} />
         <span className="game-category">{categoryGroup(game.category)}</span>
         <div className="card-mode-tags" role="group" aria-label="Estilos e modos disponíveis">
