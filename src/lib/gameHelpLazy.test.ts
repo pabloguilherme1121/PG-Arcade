@@ -1,5 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { newGames } from "./newCatalog";
+import { gameHelp } from "./gameHelp";
 
 describe("gameplay help is loaded when entering an arena, not inside the initial catalog", () => {
   it("keeps the full help module behind the existing lazy boundary", () => {
@@ -12,5 +14,13 @@ describe("gameplay help is loaded when entering an arena, not inside the initial
     expect(help).toContain("gameHelp[id]");
     expect(help).toContain("leadOnly");
     expect(help).toContain("Alt + Shift + B");
+  });
+  it("keeps detailed guidance while catalog metadata stays compact", () => {
+    expect(newGames).toHaveLength(50);
+    for (const game of newGames) {
+      expect(game).not.toHaveProperty("help");
+      expect(game.description.length).toBeLessThanOrEqual(100);
+      expect(gameHelp[game.id].length).toBeGreaterThan(65);
+    }
   });
 });
