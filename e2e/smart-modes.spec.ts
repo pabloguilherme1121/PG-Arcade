@@ -54,17 +54,34 @@ test("Destaques dos modos da arena mantêm ajuda e controls visíveis",async({pa
 test("chips percorrem a tela pequena sem overflow da página", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 740 });
   await page.goto("./");
-  const chips = page.locator(".smart-mode-chips");
-  await expect(chips).toBeVisible();
-  // Poll in the browser so resolving an element handle cannot exhaust the
-  // assertion deadline before its layout predicate runs.
-  await page.waitForFunction(() => {
-    const row=document.querySelector('.smart-mode-chips');
-    return !!row && row.scrollWidth > row.clientWidth;
-  }, undefined, {timeout:5_000});
-  await page.getByRole("button", { name: "Sobrevivência", exact: true }).focus();
-  await expect(page.getByRole("button", { name: "Sobrevivência", exact: true })).toBeFocused();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  // One in-browser observation avoids the repeated full 103-cover snapshots
+  // produced by Firefox protocol calls while retaining every layout/focus check.
+  const observation = await page.waitForFunction(() => {
+    const row = document.querySelector<HTMLElement>(".smart-mode-chips");
+    if (!row) return false;
+    const style = getComputedStyle(row);
+    if (!row.getClientRects().length || style.visibility === "hidden" || style.display === "none")
+      return false;
+    if (row.scrollWidth <= row.clientWidth) return false;
+    const chip = [...row.querySelectorAll<HTMLButtonElement>("button")]
+      .find(button => button.textContent?.trim() === "Sobrevivência");
+    if (!chip) return false;
+    chip.focus();
+    return {
+      visible: true,
+      scrollable: row.scrollWidth > row.clientWidth,
+      focused: document.activeElement === chip,
+      noPageOverflow: document.documentElement.scrollWidth <= innerWidth,
+    };
+  }, undefined, { timeout: 5_000 });
+  const facts = await observation.jsonValue();
+  await observation.dispose();
+  expect(facts).toEqual({
+    visible: true,
+    scrollable: true,
+    focused: true,
+    noPageOverflow: true,
+  });
 });
 
 test("faixa de modos não ocupa a área do canvas imersivo", async ({ page }) => {
