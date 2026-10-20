@@ -20,7 +20,7 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
     for(const id of ['xadrez','rhythm','balloons','arithmetic','sudoku']) expect(supported).not.toContain(id);
     expect(new Set(supported).size).toBe(supported.length);
   });
-  it("tem classificação determinística para os 105 jogos sem inventar modos",()=>{
+  it("tem classificação determinística para os 106 jogos sem inventar modos",()=>{
     expect(games).toHaveLength(CATALOG_SIZE);
     for(const game of games){
       const tags=modeTags(game);
@@ -31,7 +31,7 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
   });
   it("mostra somente jogos com suporte real para grupo local de 3–4 pessoas", () => {
     const group = filterByMode(games, "grupo", {}, []);
-    expect(group.map(game => game.id)).toEqual(["leilao", "comum"]);
+    expect(group.map(game => game.id)).toEqual(["cofre", "leilao", "comum"]);
     expect(countModes(games, {}, []).grupo).toBe(2);
     for (const game of games) {
       expect(modeTags(game).includes("grupo")).toBe(game.id === "leilao" || game.id === "comum");
