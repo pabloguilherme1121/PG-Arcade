@@ -26,6 +26,8 @@ jobs:
       - run: npm test
       - name: Validate performance summary reporting
         run: node --test scripts/summarize-performance.test.mjs
+      - name: Test strict budget diagnostics
+        run: node --test scripts/bundle-headroom.test.mjs
       - run: npm run build
       - run: npm run check:bundle
       - uses: actions/upload-artifact@v7

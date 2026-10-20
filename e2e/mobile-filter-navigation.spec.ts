@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 test.use({ hasTouch: true });
 
-for (const width of [320, 390]) {
+for (const width of [320, 360, 390, 430]) {
   test(`mobile search and selected filters remain reachable at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     await page.addInitScript(() => {
