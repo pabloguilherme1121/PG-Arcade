@@ -188,6 +188,11 @@ export default function App() {
       ) ||
       arenaElement;
     target?.focus({ preventScroll: true });
+    // An accessible grid cell can be non-focusable. Focus the labeled region
+    // if the chosen element did not accept keyboard focus.
+    if (arenaElement && !arenaElement.contains(document.activeElement)) {
+      arenaElement.focus({ preventScroll: true });
+    }
     (target?.closest<HTMLElement>("[data-chess-board],.football-pitch") || target)?.scrollIntoView({ block: "center", behavior: "instant" });
   }
   function askRestart() {
