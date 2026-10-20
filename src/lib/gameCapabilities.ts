@@ -19,7 +19,7 @@ export function gameCapabilities(id: GameId) {
   return {
     solo: true,
     online: false,
-    timedSessions: id !== "comum" && id !== "leilao",
+    timedSessions: id !== "comum" && id !== "leilao" && id !== "neon",
     localPlayers: id === "comum" || id === "leilao" ? 4 : localDuels.has(id) ? 2 : 1,
     bot: botGames.has(id),
     swipe: swipeGames.has(id),
