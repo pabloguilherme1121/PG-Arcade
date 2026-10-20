@@ -1,3 +1,4 @@
+import { gameCapabilities } from "../lib/gameCapabilities";
 import { recordUnits } from "../lib/recordUnits";
 import OrientationControl from "./OrientationControl";
 import { RecordScopeProvider } from "./RecordScope";
@@ -18,6 +19,7 @@ const sessionModes = [
 ] as const;
 
 export default function SessionChallenge({ children, gameId, progress, update }: { children: ReactNode; gameId: GameId; progress: Progress; update: (fn: (p: Progress) => Progress) => void }) {
+  const availableModes = gameCapabilities(gameId).timedSessions ? sessionModes : sessionModes.slice(0, 1);
   const [mode, setMode] = useState<SessionMode>("free");
   const [level, setLevel] = useState<SessionLevel>("normal");
   const [phase, setPhase] = useState<"ready" | "running" | "paused" | "done">("ready");
@@ -122,7 +124,7 @@ export default function SessionChallenge({ children, gameId, progress, update }:
   return (
     <div className="session-challenge" data-session-mode={mode} data-session-phase={phase} data-session-urgent={urgent} data-session-playing={gameActive === true}>
       <div className="session-mode-cards" role="group" aria-label="Escolha seu ritmo de partida">
-        {sessionModes.map(([value,title,description])=><button key={value} type="button" aria-label={`${title}: ${description}`} aria-pressed={mode===value}
+        {availableModes.map(([value,title,description])=><button key={value} type="button" aria-label={`${title}: ${description}`} aria-pressed={mode===value}
           disabled={phase==='running' || phase==='paused'} onClick={()=>{if(value!==mode) configure(value,level);}}>
           <strong>{title}</strong><span>{description}</span>
         </button>)}

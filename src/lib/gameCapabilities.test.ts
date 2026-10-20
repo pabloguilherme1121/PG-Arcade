@@ -16,6 +16,10 @@ describe('verified catalog capabilities', () => {
       expect(supportsPlayerMode(game.id, 'Online')).toBe(false);
     }
   });
+  it('only offers timed sessions where scores are compatible', () => {
+    expect(gameCapabilities('comum').timedSessions).toBe(false);
+    expect(gameCapabilities('2048').timedSessions).toBe(true);
+  });
   it('uses one source for player labels and local duel filtering', () => {
     expect(games.filter(g => gameCapabilities(g.id).localPlayers === 2).map(g => g.id).sort())
       .toEqual(['damas', 'domino', 'liga4', 'velha', 'xadrez']);

@@ -41,3 +41,13 @@ test('the player can repeat the same local challenge without drawing a new seed'
  await game.locator('.cw-options button').first().click();
  await expect(game.locator('.cw-results strong').first()).toHaveText('0 pontos');
 });
+
+test('local word matches do not offer incompatible timed summaries',async({page})=>{
+ await page.goto('./#/jogar/comum');
+ await expect(page.getByRole('region',{name:'Palavra em Comum',exact:true})).toBeVisible();
+ await expect(page.getByRole('button',{name:/^Livre:/})).toBeVisible();
+ await expect(page.getByRole('button',{name:/^(Sprint|Maratona):/})).toHaveCount(0);
+ await page.goto('./#/jogar/2048');
+ await expect(page.getByRole('button',{name:/^Sprint:/})).toBeVisible();
+ await expect(page.getByRole('button',{name:/^Maratona:/})).toBeVisible();
+});
