@@ -1,6 +1,7 @@
 import { expandedGames } from "./expandedCatalog";
 import { newGames } from "./newCatalog";
 export const games = [
+  { id: "leilao", name: "Leilão de Relíquias", description: "Lances secretos, coleções e estratégia com moedas limitadas.", category: "Casuais" },
   { id: "comum", name: "Palavra em Comum", description: "Associe palavras, solo ou em grupo local.", category: "Casuais" },
   ...newGames,
   ...expandedGames,

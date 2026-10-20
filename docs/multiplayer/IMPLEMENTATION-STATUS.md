@@ -1,4 +1,6 @@
-# Expansão multiplayer — estado de implementação
+# Expansão — estado de implementação
+
+> Atualização de 20/10/2026: main consultada com 101 jogos; #158 contém Palavra em Comum (102) e aguarda os gates finais. A entrega seguinte implementa Leilão de Relíquias em branch separada, com 103 na composição. Dois dos 50 novos jogos estão implementados em branches, 48 permanecem no backlog. Solo/local e R$ 0 prevalecem sobre as propostas históricas de servidor abaixo. Ver RELIC-AUCTION-2026-10-20.md para regras, testes e dependência de integração.
 
 ## Entrega 1: descoberta e compartilhamento
 

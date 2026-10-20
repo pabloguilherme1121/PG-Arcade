@@ -9,9 +9,9 @@ test("Filtro de modos reais, reset e capas continuam íntegros no celular",async
   const mode=page.getByRole("combobox",{name:"Filtrar por modo",exact:true});
   await mode.selectOption("Dupla local");
   await expect(mode).toHaveValue("Dupla local");
-  await expect(cards).toHaveCount(6);
-  await expect(page.locator(".game-card [data-game-cover]")).toHaveCount(6);
-  await expect(page.getByRole("status").filter({hasText:"6 jogos encontrados"})).toBeVisible();
+  await expect(cards).toHaveCount(7);
+  await expect(page.locator(".game-card [data-game-cover]")).toHaveCount(7);
+  await expect(page.getByRole("status").filter({hasText:"7 jogos encontrados"})).toBeVisible();
   await page.getByRole("button",{name:"Zerar filtros",exact:true}).click();
   await expect(cards).toHaveCount(games.length);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
@@ -84,13 +84,13 @@ test("modo inteligente e ordem personalizada sobrevivem ao reload da partida", a
   await page.goto("./");
   await page.getByRole("combobox", { name: "Filtrar por modo", exact: true }).selectOption("Dupla local");
   await page.getByRole("combobox", { name: "Ordenar jogos" }).selectOption("recomendados");
-  await expect(page.locator(".game-card")).toHaveCount(6);
+  await expect(page.locator(".game-card")).toHaveCount(7);
   await page.getByRole("link", { name: /^Jogar Xadrez/ }).click();
   await page.reload();
   await page.getByRole("link", { name: "Voltar aos jogos", exact: true }).click();
   await expect(page.getByRole("combobox", { name: "Filtrar por modo", exact: true })).toHaveValue("Dupla local");
   await expect(page.getByRole("combobox", { name: "Ordenar jogos" })).toHaveValue("recomendados");
-  await expect(page.locator(".game-card")).toHaveCount(6);
+  await expect(page.locator(".game-card")).toHaveCount(7);
 });
 
 for (const width of [320, 390]) {

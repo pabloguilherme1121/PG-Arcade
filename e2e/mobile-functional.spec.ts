@@ -16,15 +16,21 @@ for (const width of [320, 360, 390, 430]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   });
 }
-test("solo mode keeps bot games and resolves incompatible local-duel styles", async ({ page }) => {
+// Independent journeys retain all assertions without carrying a full-catalog
+// rerender/trace capture into the next action's deadline on Firefox.
+test("solo mode keeps bot games", async ({ page }) => {
   await page.goto("./");
-  await page.getByLabel("Filtrar por modo").selectOption("Solo");
   await page.getByLabel("Buscar jogo", { exact: true }).fill("xadrez");
   await expect(page.locator(".game-card")).toHaveCount(1);
-  await page.getByRole("button", { name: "Zerar filtros", exact: true }).click();
+  await page.getByLabel("Filtrar por modo").selectOption("Solo");
+  await expect(page.locator(".game-card")).toHaveCount(1);
+  await expect(page.getByRole("link", {name:/^Jogar Xadrez/})).toBeVisible();
+});
+test("incompatible local-duel styles reset without hiding supported games", async ({ page }) => {
+  await page.goto("./");
   await page.getByRole("button", { name: "Sobrevivência", exact: true }).click();
   await page.getByLabel("Filtrar por modo").selectOption("Dupla local");
-  await expect(page.locator(".game-card")).toHaveCount(6);
+  await expect(page.locator(".game-card")).toHaveCount(7);
   await expect(page.getByRole("button", { name: "Sobrevivência", exact: true })).toBeDisabled();
 });
 test("puzzle exposes real swipe handling and configuration-specific records", async ({ page }) => {

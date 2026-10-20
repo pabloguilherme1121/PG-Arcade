@@ -56,6 +56,7 @@ const expandedHelp: Record<ExpandedId, string> = {
     "Troque duas peças vizinhas para formar linhas de três ou mais. Combinações desaparecem e novas peças caem, criando cascatas e pontos.",
 };
 export const gameHelp: Record<GameId, string> = {
+  leilao: "Dispute nove relíquias com 30 moedas. Só o vencedor paga seu lance. Pares dão +3; trios dão +8 no lugar do par. Empates de lance seguem a prioridade anunciada. Solo com três dificuldades ou 2–4 pessoas no mesmo aparelho; passe a tela pela cortina.",
   comum: "Associe palavras. Solo por pistas ou 2 a 4 pessoas no mesmo aparelho.",
   ...Object.fromEntries(newGames.map(g => [g.id, g.help])) as Record<typeof newGames[number]["id"],string>,
   ...expandedHelp,

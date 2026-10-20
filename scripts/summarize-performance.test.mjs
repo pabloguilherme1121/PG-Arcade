@@ -1,19 +1,20 @@
+import { CATALOG_SIZE } from "../src/lib/catalogRelease.ts";
 import assert from "node:assert/strict";
 import test from "node:test";
 import { summarizePerformance } from "./summarize-performance.mjs";
 
 const fixture = (version = "156.0", p95 = 200) => ({
   metadata: { browserVersion: version, browser: "chromium", profile: "emulated-cpu-4x", samples: 3 },
-  catalog: { cardCount: 102 },
+  catalog: { cardCount: CATALOG_SIZE },
   catalogViewportSummary: {
-    "320": { cardCount: 102, samplesWithOverflow: 0, twoFrameScrollP95Ms: { p50: p95 }, longTaskTotalMs: { p50: 638 } },
-    "390": { cardCount: 102, samplesWithOverflow: 0, twoFrameScrollP95Ms: { p50: p95 }, longTaskTotalMs: { p50: 798 } },
+    "320": { cardCount: CATALOG_SIZE, samplesWithOverflow: 0, twoFrameScrollP95Ms: { p50: p95 }, longTaskTotalMs: { p50: 638 } },
+    "390": { cardCount: CATALOG_SIZE, samplesWithOverflow: 0, twoFrameScrollP95Ms: { p50: p95 }, longTaskTotalMs: { p50: 798 } },
   },
 });
 
-test("reports all 102 cards and comparable results when Chromium profile matches", () => {
+test("reports all 103 cards and comparable results when Chromium profile matches", () => {
   const report = summarizePerformance(fixture(), fixture());
-  assert.match(report.markdown, /102 cartões/);
+  assert.match(report.markdown, new RegExp(CATALOG_SIZE + " cartões"));
   assert.match(report.markdown, /320/);
   assert.match(report.markdown, /390/);
   assert.equal(report.comparable, true);
@@ -36,8 +37,8 @@ test("flags only a measured significant regression on the same environment", () 
 
 test("rejects removed or duplicated catalog counts and horizontal overflow", () => {
   const tooFew = fixture();
-  tooFew.catalog.cardCount = 101;
-  assert.throws(() => summarizePerformance(tooFew, fixture()), /102/);
+  tooFew.catalog.cardCount = CATALOG_SIZE - 1;
+  assert.throws(() => summarizePerformance(tooFew, fixture()), new RegExp(String(CATALOG_SIZE)));
   const overflow = fixture();
   overflow.catalogViewportSummary["320"].samplesWithOverflow = 1;
   assert.throws(() => summarizePerformance(overflow, fixture()), /overflow/);
@@ -51,9 +52,9 @@ test("rejects absent or malformed viewport metrics", () => {
 
 test("does not compare catalogs with different amounts of content", () => {
   const baseline = fixture();
-  baseline.catalog.cardCount = 101;
-  baseline.catalogViewportSummary["320"].cardCount = 101;
-  baseline.catalogViewportSummary["390"].cardCount = 101;
+  baseline.catalog.cardCount = CATALOG_SIZE - 1;
+  baseline.catalogViewportSummary["320"].cardCount = CATALOG_SIZE - 1;
+  baseline.catalogViewportSummary["390"].cardCount = CATALOG_SIZE - 1;
   const report = summarizePerformance(fixture(), baseline);
   assert.equal(report.comparable, false);
   assert.deepEqual(report.warnings, []);

@@ -3,7 +3,7 @@
 import { appendFile, readFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 
-const CATALOG_SIZE = 102;
+import { CATALOG_SIZE } from "../src/lib/catalogRelease.ts";
 const WIDTHS = ["320", "390"];
 
 function finiteNumber(value, label) {
@@ -15,7 +15,7 @@ function finiteNumber(value, label) {
 
 export function summarizePerformance(current, baseline) {
   if (current?.catalog?.cardCount !== CATALOG_SIZE) {
-    throw new Error("Expected exactly 102 catalog cards");
+    throw new Error(`Expected exactly ${CATALOG_SIZE} catalog cards`);
   }
 
   const comparable = Boolean(
@@ -32,7 +32,7 @@ export function summarizePerformance(current, baseline) {
   for (const width of WIDTHS) {
     const sample = current?.catalogViewportSummary?.[width];
     if (sample?.cardCount !== CATALOG_SIZE) {
-      throw new Error("Expected exactly 102 cards at " + width + "px");
+      throw new Error(`Expected exactly ${CATALOG_SIZE} cards at ${width}px`);
     }
     if (sample.samplesWithOverflow !== 0) {
       throw new Error("Catalog horizontal overflow at " + width + "px");
@@ -56,7 +56,7 @@ export function summarizePerformance(current, baseline) {
   }
 
   const markdown = [
-    "### Catálogo PG-Arcade: 102 cartões",
+    `### Catálogo PG-Arcade: ${CATALOG_SIZE} cartões`,
     "",
     "Medida: mediana do p95 de duas animações por rolagem, não FPS, INP nem Android físico.",
     "",

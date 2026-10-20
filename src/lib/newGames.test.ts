@@ -1,3 +1,4 @@
+import { CATALOG_SIZE } from "./catalogRelease";
 import { describe, it, expect } from "vitest";
 import { games } from "./catalog";
 import { gameHelp } from "./gameHelp";
@@ -24,12 +25,12 @@ import {
   newMotion,
 } from "./motionExpansion";
 import { normalizeProgress } from "./progress";
-describe("102-game catalog contract", () => {
+describe("103-game catalog contract", () => {
   it("registers fifty additional unique games, with help and persistent progress", () => {
-    expect(games).toHaveLength(102);
+    expect(games).toHaveLength(CATALOG_SIZE);
     expect(newGames).toHaveLength(50);
-    expect(new Set(games.map((g) => g.id)).size).toBe(102);
-    expect(new Set(games.map((g) => g.name)).size).toBe(102);
+    expect(new Set(games.map((g) => g.id)).size).toBe(CATALOG_SIZE);
+    expect(new Set(games.map((g) => g.name)).size).toBe(CATALOG_SIZE);
     for (const g of newGames) {
       expect(gameHelp[g.id].length).toBeGreaterThan(65);
       expect(recordUnits[g.id]).toBe("pontos");
