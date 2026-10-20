@@ -3,7 +3,7 @@ import { newGames } from './newCatalog';
 import { expandedGames } from './expandedCatalog';
 
 // Only capabilities implemented by the current engines belong here.
-const localDuels = new Set<GameId>(["leilao","comum","damas","domino","liga4","velha","xadrez"]);
+const localDuels = new Set<GameId>(["cofre","leilao","comum","damas","domino","liga4","velha","xadrez"]);
 const botGames = new Set<GameId>([
   ...Array.from(localDuels).filter(id => id !== 'comum'), 'nim', 'reversi', 'pontes',
   'gomoku', 'hex', 'ataxx', 'isolation', 'breakthrough', 'territory', 'mancala', 'chomp',
