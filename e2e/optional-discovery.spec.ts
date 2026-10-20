@@ -8,7 +8,7 @@ test("an unavailable optional recommendation never hides the catalog or its filt
   await expect(page.locator(".game-card")).toHaveCount(101);
   await page.getByLabel("Buscar jogo").fill("xadrez");
   await expect(page.locator(".game-card")).toHaveCount(1);
-  await page.getByRole("link", { name: "Jogar Xadrez", exact: true }).click();
+  await page.getByRole("link", { name: /^Jogar Xadrez/ }).click();
   await expect(page.locator("[data-chess-board]")).toBeVisible();
   await page.getByRole("link", { name: "Voltar aos jogos", exact: true }).click();
   await expect(page.getByLabel("Buscar jogo")).toHaveValue("xadrez");
