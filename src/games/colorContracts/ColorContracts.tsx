@@ -46,7 +46,7 @@ export default function ColorContracts({record,onRecord}:{record:number;onRecord
        <strong>Pessoa {i+1} — {game.scores[i]} pontos {game.winners.includes(i)?"(vencedor/a)":""}</strong>
        <div className="contract-collection" role="list" aria-label={`Peças da pessoa ${i+1}`}>
          {collection.map((color,k)=><span role="listitem" data-contract-color={color} key={k} aria-label={labels[color]}>{symbols[color]} <small>{labels[color]}</small></span>)}
-         {collection.length===0&&<span className="contract-empty">Sem peças</span>}
+         {collection.length===0&&<span role="listitem" className="contract-empty">Sem peças</span>}
        </div>
      </div>)}
    </div>
