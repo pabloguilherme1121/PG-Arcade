@@ -1,4 +1,4 @@
-import {useEffect,useState} from "react";
+import {useEffect,useState,type FormEvent} from "react";
 import {createVault,revealClue,hideClue,enterCode,submitCode,nextVault, type VaultPlayers} from "./rules";
 import "./TeamVault.css";
 
@@ -15,7 +15,7 @@ export default function TeamVault({record,onRecord}:{record:number;onRecord:(sco
     document.addEventListener("visibilitychange",hide);
     return()=>{window.removeEventListener("blur",close);document.removeEventListener("visibilitychange",hide);};
   },[game.phase]);
-  function checkGuess(event:React.FormEvent<HTMLFormElement>) {
+  function checkGuess(event:FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const candidate=entry.trim();
     if(!/^[1-9]{4}$/.test(candidate)||new Set(candidate).size!==4){
