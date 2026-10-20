@@ -190,6 +190,12 @@ export default function App() {
       ) ||
       arenaElement;
     target?.focus({ preventScroll: true });
+    // Non-interactive grid cells can be selected by the fallback query.
+    // Keep the shortcut accessible by focusing the labeled arena itself
+    // when the chosen descendant cannot receive keyboard focus.
+    if (arenaElement && !arenaElement.contains(document.activeElement)) {
+      arenaElement.focus({ preventScroll: true });
+    }
     (target?.closest<HTMLElement>("[data-chess-board],.football-pitch") || target)?.scrollIntoView({ block: "center", behavior: "instant" });
   }
   function askRestart() {
