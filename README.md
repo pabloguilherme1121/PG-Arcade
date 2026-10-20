@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **104 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **105 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -96,3 +96,8 @@ Em Progresso, “Iniciar coleta local” permite medir tarefas longas enquanto v
 ## Sobrevivência Neon (104º título)
 
 Novo jogo original e carregado sob demanda: quatro ondas táticas em grade 9×9, hordas perseguidoras limitadas, pulso que carrega a cada movimento, melhorias de escudo/alcance e três dificuldades reais. Teclado, botões mobile, pausa automática, vitória/derrota e recordes locais. Testes automatizados não substituem o aceite em Android físico.
+
+
+## Frutas em Fusão — 105º título
+
+Quebra-cabeça de fusões por gravidade em tabuleiro 6×7, com reações em cadeia, três dificuldades, modo por turnos, teclado numérico e toque nas colunas. Salva recordes sem modificar o progresso legado. O desafio é vencer criando a fruta dourada antes do limite de jogadas. A validação física Android é separada dos testes automáticos.

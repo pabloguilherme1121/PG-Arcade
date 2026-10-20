@@ -1,6 +1,7 @@
 import { expandedGames } from "./expandedCatalog";
 import { newGames } from "./newCatalog";
 export const games = [
+  {id:"frutas", name:"Frutas em Fusão", description:"Combine frutas iguais, crie reações em cadeia e descubra a fruta dourada.", category:"Casuais"},
   { id: "neon", name: "Sobrevivência Neon", description: "Enfrente quatro ondas, desvie das hordas e evolua seu pulso.", category: "Estratégia" },
   { id: "leilao", name: "Leilão de Relíquias", description: "Lances secretos, coleções e estratégia com moedas limitadas.", category: "Casuais" },
   { id: "comum", name: "Palavra em Comum", description: "Associe palavras, solo ou em grupo local.", category: "Casuais" },

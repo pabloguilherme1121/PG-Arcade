@@ -56,6 +56,7 @@ const expandedHelp: Record<ExpandedId, string> = {
     "Troque duas peças vizinhas para formar linhas de três ou mais. Combinações desaparecem e novas peças caem, criando cascatas e pontos.",
 };
 export const gameHelp: Record<GameId, string> = {
+  frutas: "Solte frutas nas seis colunas usando os botões ou as teclas de 1 a 6. Frutas iguais que se encostam se fundem e fazem as outras cair, criando reações em cadeia. Alcance a fruta dourada antes de esgotar as jogadas. Três dificuldades, pausa automática e recorde local.",
   neon: "Sobreviva a quatro ondas de seis turnos em uma arena 9×9. Setas, WASD ou botões movem você. Ao carregar três cargas, use o pulso (espaço) para eliminar ameaças próximas. Entre ondas, escolha escudo extra ou alcance maior. Saia da aba para pausar.",
   leilao: "Dispute nove relíquias com 30 moedas. Só o vencedor paga seu lance. Pares dão +3; trios dão +8 no lugar do par. Empates de lance seguem a prioridade anunciada. Solo com três dificuldades ou 2–4 pessoas no mesmo aparelho; passe a tela pela cortina.",
   comum: "Associe palavras. Solo por pistas ou 2 a 4 pessoas no mesmo aparelho.",
