@@ -85,6 +85,20 @@ export function countModes(
   return counts;
 }
 
+/** Prefer not-yet-played titles and avoid repeating the most recent game. */
+export function chooseSurprise<T extends GameInfo>(
+  candidates: readonly T[],
+  history: Pick<DiscoveryHistory, "last" | "visits">,
+  draw: () => number = Math.random,
+): T | null {
+  if (!candidates.length) return null;
+  const alternatives = candidates.filter(game => game.id !== history.last);
+  const pool = alternatives.length ? alternatives : [...candidates];
+  const unseen = pool.filter(game => !(history.visits[game.id] || 0));
+  const eligible = unseen.length ? unseen : pool;
+  return eligible[Math.min(eligible.length - 1, Math.floor(draw() * eligible.length))];
+}
+
 /** On-device ranking. Favorites first; then related and unplayed titles. No tracking/network. */
 export function recommendGames<T extends GameInfo>(
   games:readonly T[],history:DiscoveryHistory,
