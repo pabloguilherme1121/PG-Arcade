@@ -9,6 +9,11 @@ describe("Passagem Secreta: programação simultânea sem vazamento",()=>{
     expect(first.positions).toEqual([0,4,20]);
     expect(first.walls).not.toContain(12);
     expect(first.walls.every(n=>n>=0&&n<25)).toBe(true);
+    expect(first.gems).toContain(12);
+    expect(first.gems.every(n=>!first.walls.includes(n)&&!first.positions.includes(n))).toBe(true);
+    const alternative=createPassage(3,10);
+    expect(alternative.walls.join(",")+"|"+alternative.gems.join(","))
+      .not.toBe(first.walls.join(",")+"|"+first.gems.join(","));
   });
   it("não revela trajetos do jogador anterior e só aceita quatro movimentos",()=>{
     const start=createPassage(2,5);
