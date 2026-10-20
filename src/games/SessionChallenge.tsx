@@ -7,6 +7,7 @@ import type { GameId } from "../lib/catalog";
 import "../studio.css";
 import './quality.css';
 import "./playerMotion.css";
+import "../gameplay-premium.css";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { formatSessionTime, sessionSeconds, improvedSessionRecords, improvedGeneralRecord, type SessionLevel, type SessionMode } from "../lib/sessionChallenge";
 import { useAutoPause } from "./useAutoPause";
