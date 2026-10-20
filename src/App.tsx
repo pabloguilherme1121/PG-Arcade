@@ -34,7 +34,6 @@ import {
 } from "./lib/expandedCatalog";
 
 import { discoveryFilters, filterByMode, chooseSurprise, modeTags, modeLabel, type DiscoveryFilter } from "./lib/smartDiscovery";
-import { gameHelp } from "./lib/gameHelp";
 import GameCover from "./GameCover";
 import CatalogGameCard from "./CatalogGameCard";
 import {
@@ -49,7 +48,7 @@ import { catalogCategories, selectCatalog, sortCatalog } from "./lib/catalogSele
 import { useReducedMotion } from "./useReducedMotion";
 import { useImmersivePlayer } from "./lib/useImmersivePlayer";
 const ShareGameButton = lazy(() => import("./ShareGameButton").catch(() => ({default: () => <span role="status">Copie o endereço da barra do navegador para compartilhar este jogo.</span>})));
-const QuickHelpText = lazy(() => import("./QuickHelpText").catch(() => ({default: ({help}:{help:string}) => <p>{help}</p>})));
+const QuickHelpText = lazy(() => import("./QuickHelpText").catch(() => ({default: ({ leadOnly }: { id: GameId; leadOnly?: boolean }) => leadOnly ? <span>Consulte os controles da arena.</span> : <p>Instruções indisponíveis nesta sessão offline. Consulte os controles do jogo.</p>})));
 const PlayerRecordHint = lazy(() => import("./PlayerRecordHint").catch(() => ({default: () => <small data-player-record>Consulte os resultados no jogo.</small>})));
 const ProgressPage = lazy(() => import("./ProgressPage"));
 const CatalogSpotlight = lazy(() => import("./CatalogSpotlight").catch(() => ({default: () => null})));
@@ -494,7 +493,7 @@ export default function App() {
             </div>
             <div className="player-gameplay-orientation" data-gameplay-orientation>
               <strong>Como jogar {game.name}</strong>
-              <span>{gameHelp[game.id].split(". ")[0]}</span>
+              <Suspense fallback={<span>{game.description}</span>}><QuickHelpText id={game.id} leadOnly /></Suspense>
               <Suspense fallback={<small data-player-record>Carregando resultados…</small>}><PlayerRecordHint id={game.id} record={progress.records[game.id]}/></Suspense>
               <button
                 type="button"
@@ -543,7 +542,7 @@ export default function App() {
                 <summary aria-keyshortcuts="Alt+Shift+H">
                   Ajuda rápida e controles
                 </summary>
-                <Suspense fallback={<p>{gameHelp[game.id]}</p>}><QuickHelpText help={gameHelp[game.id]}/></Suspense>
+                <Suspense fallback={<p>Carregando instruções do jogo…</p>}><QuickHelpText id={game.id}/></Suspense>
               </details>
             </div>
             <dialog
