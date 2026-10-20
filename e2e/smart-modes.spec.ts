@@ -56,7 +56,12 @@ test("chips percorrem a tela pequena sem overflow da página", async ({ page }) 
   await page.goto("./");
   const chips = page.locator(".smart-mode-chips");
   await expect(chips).toBeVisible();
-  await expect.poll(() => chips.evaluate(element => element.scrollWidth > element.clientWidth)).toBe(true);
+  // Poll in the browser so resolving an element handle cannot exhaust the
+  // assertion deadline before its layout predicate runs.
+  await page.waitForFunction(() => {
+    const row=document.querySelector('.smart-mode-chips');
+    return !!row && row.scrollWidth > row.clientWidth;
+  }, undefined, {timeout:5_000});
   await page.getByRole("button", { name: "Sobrevivência", exact: true }).focus();
   await expect(page.getByRole("button", { name: "Sobrevivência", exact: true })).toBeFocused();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

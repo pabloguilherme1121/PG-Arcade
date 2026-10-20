@@ -7,12 +7,20 @@ test("catalog covers and objectives remain usable without optional preview reque
   // Covers are inline SVGs: failed preview chunks or illustrations cannot blank the catalog.
   await page.route(/\/(?:assets\/GamePreview-[^/]+\.js|previews\/[^/]+\.svg)(?:\?.*)?$/, route => route.abort());
   await page.goto("./");
-  await expect(page.locator(".game-card")).toHaveCount(CATALOG_SIZE);
-  await expect(page.locator(".game-card [data-game-cover] svg")).toHaveCount(CATALOG_SIZE);
-  await expect(page.locator('.game-card [data-game-cover="flood"]')).toBeVisible();
+  await page.waitForFunction(count => {
+    const cover=document.querySelector('[data-game-cover="flood"]');
+    const rect=cover?.getBoundingClientRect();
+    return document.querySelectorAll('.game-card').length===count
+      && document.querySelectorAll('.game-card [data-game-cover] svg').length===count
+      && !!rect && rect.width>0 && rect.height>0;
+  }, CATALOG_SIZE);
+
   await page.getByLabel("Buscar jogo").fill("hanoi");
-  await expect(page.locator('.game-card [data-game-cover="hanoi"] svg')).toBeVisible();
-  await expect(page.locator(".game-card p")).toContainText("Transfira os discos");
+  // The unfiltered Hanoi cover already exists while deferred search commits.
+  // Its visibility alone cannot establish that search has finished.
+  await page.waitForFunction(() => document.querySelectorAll('.game-card').length===1
+    && !!document.querySelector('.game-card [data-game-cover="hanoi"] svg'));
+  await expect(page.locator('.game-card[data-catalog-game="hanoi"] p')).toContainText("Transfira os discos");
   expect(pageErrors).toEqual([]);
 });
 test("all catalog previews have visible contents across responsive widths", async ({ page, browserName }) => {
