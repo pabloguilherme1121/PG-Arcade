@@ -6,10 +6,10 @@ import {filterByMode,modeTags} from "../../lib/smartDiscovery";
 import {recordUnits} from "../../lib/recordUnits";
 import {gameHelp} from "../../lib/gameHelp";
 describe("Contrato das Cores: catálogo verídico",()=>{
-  it("mantém 108 IDs únicos e permite salvar pontuação",()=>{
-    expect(CATALOG_SIZE).toBe(108);
-    expect(games).toHaveLength(108);
-    expect(new Set(games.map(g=>g.id)).size).toBe(108);
+  it("mantém 109 IDs únicos e permite salvar pontuação",()=>{
+    expect(CATALOG_SIZE).toBe(109);
+    expect(games).toHaveLength(109);
+    expect(new Set(games.map(g=>g.id)).size).toBe(109);
     expect(recordUnits.contrato).toBe("pontos");
     expect(gameHelp.contrato).toContain("quatro escolhas");
   });
