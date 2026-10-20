@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useAutoPause } from '../useAutoPause';
 import { createDeck } from './deck';
 import { soloChallenge } from './solo';
@@ -17,7 +17,7 @@ export default function CommonWord() {
  const pause=useCallback(()=>{if(active)setPaused(true);},[active]);
  useAutoPause(pause,active&&!paused,session?.match.phase==='finished',0);
  useEffect(()=>{heading.current?.focus();},[session?.match.phase,session?.match.round,session?.current,session?.covered,paused]);
- useEffect(()=>{
+ useLayoutEffect(()=>{
   if(session)setStorageAvailable(saveSession(session,mode,players,count));
  },[session,mode,players,count]);
  function resumeSaved() {
@@ -59,6 +59,7 @@ export default function CommonWord() {
    <label>Duração<select aria-label="Duração" value={count} onChange={e=>setCount(Number(e.target.value))}><option value={5}>Rápida — 5 rodadas</option><option value={10}>Clássica — 10 rodadas</option><option value={20}>Completa — 20 rodadas</option></select></label>
    <p className="cw-note">{mode==='solo'?'Leia a pista e encontre a associação correspondente. A resposta é definida antes da sua escolha: interpretar a pista vale mais que adivinhar.':'No mesmo aparelho: passe a tela entre escolhas. A cortina esconde a resposta anterior, mas não substitui confiança entre participantes.'}</p>
    <label className="cw-sound"><input type="checkbox" checked={sound} onChange={e=>setSound(e.target.checked)}/>Ativar sons de feedback (opcional)</label>
+   <p className="cw-note">As escolhas ficam salvas neste aparelho por até sete dias para retomar após recarregar. Jogar offline depende dos arquivos já armazenados pelo navegador.</p>
    <button onClick={()=>start()}>Começar partida</button>
   </> : paused ? <><p>A rodada e as respostas foram preservadas.</p><button onClick={()=>setPaused(false)}>Continuar partida</button></> : <>
    <p className="cw-progress">Rodada {match!.round+1} de {match!.rounds.length} · {mode==='solo'?'Treino solo':'Mesmo aparelho'}</p>

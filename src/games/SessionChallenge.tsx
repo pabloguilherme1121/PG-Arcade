@@ -127,7 +127,7 @@ export default function SessionChallenge({ children, gameId, progress, update }:
       <div className="session-mode-cards" role="group" aria-label="Escolha seu ritmo de partida">
         {availableModes.map(([value,title,description])=><button key={value} type="button" aria-label={`${title}: ${description}`} aria-pressed={mode===value}
           disabled={phase==='running' || phase==='paused'} onClick={()=>{if(value!==mode) configure(value,level);}}>
-          <strong>{title}</strong><span>{description}</span>
+          <strong>{title}:</strong>{" "}<span>{description}</span>
         </button>)}
       </div>
       <p className="session-selected-mode" aria-live="polite">

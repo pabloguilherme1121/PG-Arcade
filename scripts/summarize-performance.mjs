@@ -3,7 +3,7 @@
 import { appendFile, readFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 
-const CATALOG_SIZE = 101;
+const CATALOG_SIZE = 102;
 const WIDTHS = ["320", "390"];
 
 function finiteNumber(value, label) {
@@ -15,11 +15,12 @@ function finiteNumber(value, label) {
 
 export function summarizePerformance(current, baseline) {
   if (current?.catalog?.cardCount !== CATALOG_SIZE) {
-    throw new Error("Expected exactly 101 catalog cards");
+    throw new Error("Expected exactly 102 catalog cards");
   }
 
   const comparable = Boolean(
     baseline?.metadata &&
+    baseline?.catalog?.cardCount === current.catalog.cardCount &&
     current?.metadata?.browser === baseline.metadata.browser &&
     current?.metadata?.browserVersion === baseline.metadata.browserVersion &&
     current?.metadata?.profile === baseline.metadata.profile &&
@@ -31,7 +32,7 @@ export function summarizePerformance(current, baseline) {
   for (const width of WIDTHS) {
     const sample = current?.catalogViewportSummary?.[width];
     if (sample?.cardCount !== CATALOG_SIZE) {
-      throw new Error("Expected exactly 101 cards at " + width + "px");
+      throw new Error("Expected exactly 102 cards at " + width + "px");
     }
     if (sample.samplesWithOverflow !== 0) {
       throw new Error("Catalog horizontal overflow at " + width + "px");
@@ -55,7 +56,7 @@ export function summarizePerformance(current, baseline) {
   }
 
   const markdown = [
-    "### Catálogo PG-Arcade: 101 cartões",
+    "### Catálogo PG-Arcade: 102 cartões",
     "",
     "Medida: mediana do p95 de duas animações por rolagem, não FPS, INP nem Android físico.",
     "",
@@ -65,7 +66,7 @@ export function summarizePerformance(current, baseline) {
     "",
     comparable
       ? "Ambientes comparáveis (mesmo Chromium, CPU simulada e número de amostras). Alertas acima de 25% são apenas diagnósticos."
-      : "Medições **não comparáveis**: versão do navegador, perfil de CPU ou amostragem distintos. Execute a referência no mesmo ambiente antes de concluir melhora ou regressão.",
+      : "Medições **não comparáveis**: quantidade de cartões, versão do navegador, perfil de CPU ou amostragem distintos. Execute a referência no mesmo ambiente antes de concluir melhora ou regressão.",
     "",
     "O benchmark de abertura dos seis jogos, o orçamento do bundle e os testes E2E permanecem independentes.",
     "",

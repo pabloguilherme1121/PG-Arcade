@@ -24,7 +24,7 @@ test("native fullscreen or viewport fallback keeps a working exit and navigation
 });
 
 for (const width of [320, 390, 1280]) {
-  // Keep the desktop WebKit sweep split into bounded runs; all 100 games still run.
+  // Keep the desktop WebKit sweep split into bounded runs; every catalog game still runs.
   const batches = width === 1280
     ? Array.from({ length: Math.ceil(games.length / 20) }, (_, i) =>
         games.slice(i * 20, (i + 1) * 20))
@@ -32,7 +32,7 @@ for (const width of [320, 390, 1280]) {
 
   for (const [batchIndex, batch] of batches.entries()) {
     const suffix = width === 1280 ? ` (batch ${batchIndex + 1}/${batches.length})` : "";
-    test(`all 100 games expose session modes and fit immersive view at ${width}px${suffix}`, async ({ page }) => {
+    test(`all ${games.length} games expose compatible session modes and fit immersive view at ${width}px${suffix}`, async ({ page }) => {
       test.setTimeout(width === 1280 ? 120_000 : 180_000);
       const errors: string[] = [];
       page.on("pageerror", (error) => errors.push(error.message));
@@ -45,7 +45,7 @@ for (const width of [320, 390, 1280]) {
         await test.step(`validate immersive mode: ${game.id}`, async () => {
           await page.goto(`./#/jogar/${game.id}`);
           await expect(page.locator("[data-arcade-arena]").first()).toBeVisible();
-          await expect(page.locator(".session-mode-cards button")).toHaveCount(3);
+          await expect(page.locator(".session-mode-cards button")).toHaveCount(game.id === "comum" ? 1 : 3);
           if (await page.locator(".player-utilities:not([open]) summary").count()) {
             await page.locator(".player-utilities summary").click();
           }
@@ -53,8 +53,13 @@ for (const width of [320, 390, 1280]) {
           const player = page.locator(".player");
           await expect(player).toHaveAttribute("data-viewport-fullscreen", "true");
           expect(await player.evaluate((element) => element.scrollWidth <= element.clientWidth + 1), game.id).toBe(true);
-          await page.locator(".session-mode-cards").getByRole("button", { name: /Sprint/ }).click();
-          await expect(page.getByLabel("Dificuldade do desafio de tempo").locator("option")).toHaveCount(3);
+          if(game.id === "comum") {
+            await expect(page.locator(".session-mode-cards").getByRole("button", {name:/Sprint|Maratona/})).toHaveCount(0);
+            await expect(page.getByLabel("Dificuldade do desafio de tempo")).toHaveCount(0);
+          } else {
+            await page.locator(".session-mode-cards").getByRole("button", { name: /Sprint/ }).click();
+            await expect(page.getByLabel("Dificuldade do desafio de tempo").locator("option")).toHaveCount(3);
+          }
           await page.keyboard.press("Escape");
           await expect(player).toHaveAttribute("data-immersive", "false");
         });
