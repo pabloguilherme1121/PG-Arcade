@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **103 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **104 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -91,3 +91,8 @@ Para repetir localmente com Chromium instalado e o preview iniciado: `npm run pe
 Palavra em Comum oferece solo por pistas e 2–4 participantes no mesmo aparelho. No solo, leia a descrição e escolha a associação correspondente; no grupo, passe a tela entre escolhas. Sons são opcionais e desligados por padrão. Resultados pertencem à partida, sem ranking entre formatos.
 
 Em Progresso, “Iniciar coleta local” permite medir tarefas longas enquanto você testa o catálogo, quando o navegador oferece a API. Volte para interromper e exportar o diagnóstico JSON. A coleta mantém até 128 durações recentes em memória; não registra URL, favoritos ou recordes, não persiste em storage e não envia dados. Medições do navegador não certificam FPS sustentado ou Android físico.
+
+
+## Sobrevivência Neon (104º título)
+
+Novo jogo original e carregado sob demanda: quatro ondas táticas em grade 9×9, hordas perseguidoras limitadas, pulso que carrega a cada movimento, melhorias de escudo/alcance e três dificuldades reais. Teclado, botões mobile, pausa automática, vitória/derrota e recordes locais. Testes automatizados não substituem o aceite em Android físico.
