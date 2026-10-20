@@ -233,7 +233,7 @@ async function run() {
       metadata: { timestamp: new Date().toISOString(), baseURL: root.href,
         browser: "chromium", browserVersion: browser.version(), profile: cpu === 1 ? "unthrottled-desktop" : "emulated-cpu-" + cpu + "x",
         warning: "CPU throttling is not a physical mid-range Android measurement.",
-        viewport: { width, height }, samples, frameCount, frameMetric: "requestAnimationFrame intervals after a reference action; not GPU render time or sustained gameplay FPS", catalogMetric: "two animation frames after each programmed scroll over 101-card catalog; diagnostic proxy, not INP, sustained FPS or physical Android", cache: "new-context-per-sample; service-worker-blocked" },
+        viewport: { width, height }, samples, frameCount, frameMetric: "requestAnimationFrame intervals after a reference action; not GPU render time or sustained gameplay FPS", catalogMetric: `two animation frames after each programmed scroll over ${ids.length}-card catalog; diagnostic proxy, not INP, sustained FPS or physical Android`, cache: "new-context-per-sample; service-worker-blocked" },
       catalog, catalogViewportSummary, catalogViewportSamples, perGame, rows,
     };
     await mkdir(dirname(output), { recursive: true });

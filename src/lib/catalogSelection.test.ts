@@ -6,7 +6,7 @@ import { selectCatalog, sortCatalog } from './catalogSelection';
 it('counts only candidates matching other facets and preserves the category escape', () => {
   const result = selectCatalog(games, { ...defaultView, category: 'Estratégia', mode: 'Dupla local' }, emptyProgress(), false);
   expect(result.visible.map(g => g.id).sort()).toEqual(['damas','domino','liga4','velha','xadrez']);
-  expect(result.categoryCounts.Todos).toBe(5);
+  expect(result.categoryCounts.Todos).toBe(6);
   expect(result.categoryCounts['Carros e corrida']).toBe(0);
   expect(result.modeCounts.bot).toBe(5);
 });

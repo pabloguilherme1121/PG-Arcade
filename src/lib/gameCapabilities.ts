@@ -3,9 +3,9 @@ import { newGames } from './newCatalog';
 import { expandedGames } from './expandedCatalog';
 
 // Only capabilities implemented by the current engines belong here.
-const localDuels = new Set<GameId>(["damas","domino","liga4","velha","xadrez"]);
+const localDuels = new Set<GameId>(["comum","damas","domino","liga4","velha","xadrez"]);
 const botGames = new Set<GameId>([
-  ...localDuels, 'nim', 'reversi', 'pontes',
+  ...Array.from(localDuels).filter(id => id !== 'comum'), 'nim', 'reversi', 'pontes',
   'gomoku', 'hex', 'ataxx', 'isolation', 'breakthrough', 'territory', 'mancala', 'chomp',
 ]);
 const swipeGames=new Set<GameId>([
@@ -19,7 +19,8 @@ export function gameCapabilities(id: GameId) {
   return {
     solo: true,
     online: false,
-    localPlayers: localDuels.has(id) ? 2 : 1,
+    timedSessions: id !== "comum",
+    localPlayers: id === "comum" ? 4 : localDuels.has(id) ? 2 : 1,
     bot: botGames.has(id),
     swipe: swipeGames.has(id),
   } as const;

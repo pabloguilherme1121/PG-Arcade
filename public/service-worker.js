@@ -125,16 +125,17 @@ self.addEventListener("fetch", (event) => {
 
   if (url.pathname.startsWith(COVER_PATH) && url.pathname.endsWith(".svg")) {
     event.respondWith(
-      caches.open(COVER_CACHE).then(async cache => {
-        const cached = await cache.match(request);
-        if (cached) return cached;
-        const response = await fetch(request);
-        if (response.ok) {
-          event.waitUntil(
-            cacheCoverResponse(request, response.clone()).catch(() => undefined),
-          );
-        }
-        return response;
+      caches.open(COVER_CACHE).catch(() => undefined).then(async cache => {
+        const cached = await cache?.match(request).catch(() => undefined);
+        // Serve existing artwork immediately; stable URLs still receive updates.
+        const refresh = fetch(request).then(response => {
+          if (response.ok) {
+            event.waitUntil(cacheCoverResponse(request, response.clone()).catch(() => undefined));
+          }
+          return response;
+        });
+        event.waitUntil(refresh.catch(() => undefined));
+        return cached || refresh;
       }),
     );
     return;

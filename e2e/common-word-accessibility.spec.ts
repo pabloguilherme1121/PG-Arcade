@@ -1,0 +1,24 @@
+import {expect,test} from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+test('common word supports keyboard, lifecycle pause and readable mobile controls',async({page},info)=>{
+ await page.setViewportSize({width:320,height:740});
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.goto('./#/jogar/comum');
+ const game=page.getByRole('region',{name:'Palavra em Comum',exact:true});
+ await expect(game).toBeVisible();
+ expect((await new AxeBuilder({page}).include('.common-word').analyze()).violations).toEqual([]);
+ await game.getByRole('button',{name:'Começar partida',exact:true}).focus();
+ await page.keyboard.press('Enter');
+ const options=game.locator('.cw-options button');
+ const size=(await options.first().boundingBox())!;
+ expect(size.width).toBeGreaterThanOrEqual(44);expect(size.height).toBeGreaterThanOrEqual(44);
+ await page.screenshot({path:info.outputPath('common-word-320.png')});
+ await options.first().focus();await page.keyboard.press('Enter');
+ await expect(game.getByRole('heading',{name:'Revelação',exact:true})).toBeVisible();
+ const score=await game.locator('.cw-results li').allTextContents();
+ await page.evaluate(()=>window.dispatchEvent(new Event('pg-arcade-pause')));
+ await expect(game.getByRole('heading',{name:'Partida pausada',exact:true})).toBeVisible();
+ await game.getByRole('button',{name:'Continuar partida',exact:true}).click();
+ await expect(game.locator('.cw-results li')).toHaveText(score);
+ await expect(page.locator('[data-player-record]')).toHaveText('Resultados apenas desta partida');
+});

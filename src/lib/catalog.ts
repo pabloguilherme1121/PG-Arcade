@@ -1,6 +1,7 @@
 import { expandedGames } from "./expandedCatalog";
 import { newGames } from "./newCatalog";
 export const games = [
+  { id: "comum", name: "Palavra em Comum", description: "Associe palavras, solo ou em grupo local.", category: "Casuais" },
   ...newGames,
   ...expandedGames,
   {

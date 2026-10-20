@@ -6,19 +6,26 @@ test("catalog covers and objectives remain usable without optional preview reque
   // Covers are inline SVGs: failed preview chunks or illustrations cannot blank the catalog.
   await page.route(/\/(?:assets\/GamePreview-[^/]+\.js|previews\/[^/]+\.svg)(?:\?.*)?$/, route => route.abort());
   await page.goto("./");
-  await expect(page.locator(".game-card")).toHaveCount(101);
-  await expect(page.locator(".game-card [data-game-cover] svg")).toHaveCount(101);
-  await expect(page.locator('.game-card [data-game-cover="flood"]')).toBeVisible();
+  await page.waitForFunction(count => {
+    const cover=document.querySelector('[data-game-cover="flood"]');
+    const rect=cover?.getBoundingClientRect();
+    return document.querySelectorAll('.game-card').length===count
+      && document.querySelectorAll('.game-card [data-game-cover] svg').length===count
+      && !!rect && rect.width>0 && rect.height>0;
+  }, 102);
   await page.getByLabel("Buscar jogo").fill("hanoi");
-  await expect(page.locator('.game-card [data-game-cover="hanoi"] svg')).toBeVisible();
-  await expect(page.locator(".game-card p")).toContainText("Transfira os discos");
+  // The unfiltered Hanoi cover already exists while deferred search commits.
+  // Its visibility alone cannot establish that search has finished.
+  await page.waitForFunction(() => document.querySelectorAll('.game-card').length===1
+    && !!document.querySelector('.game-card [data-game-cover="hanoi"] svg'));
+  await expect(page.locator('.game-card[data-catalog-game="hanoi"] p')).toContainText("Transfira os discos");
   expect(pageErrors).toEqual([]);
 });
 test("all catalog previews have visible contents across responsive widths", async ({ page, browserName }) => {
   // Firefox trace snapshots of the SVG catalog can outlast the default 5s poll.
   if (browserName === "firefox") test.setTimeout(120_000);
   await page.goto("./");
-  await expect(page.locator(".game-card")).toHaveCount(101);
+  await expect(page.locator(".game-card")).toHaveCount(102);
   for (const width of [320,360,390,430,768,1024,1440]) {
     await page.setViewportSize({width,height:900});
     await expect.poll(() => page.locator(".game-card .preview").evaluateAll(previews => ({
@@ -31,7 +38,7 @@ test("all catalog previews have visible contents across responsive widths", asyn
       }).length,
       overflow: document.documentElement.scrollWidth > innerWidth,
     })), { message: `visible previews at ${width}px`, timeout: browserName === "firefox" ? 15_000 : 5_000 })
-      .toEqual({ count: 101, invalid: 0, overflow: false });
+      .toEqual({ count: 102, invalid: 0, overflow: false });
   }
 });
 test("combined filters and catalog position survive a game and reload", async ({page}) => {
@@ -40,7 +47,7 @@ test("combined filters and catalog position survive a game and reload", async ({
   await page.getByLabel("Filtrar por modo").selectOption("Solo");
   await page.getByLabel("Ordenar jogos").selectOption("nome");
   await expect(page.locator(".game-card")).toHaveCount(1);
-  await page.getByRole("link",{name:"Jogar Maré de Cores",exact:true}).evaluate(link =>
+  await page.getByRole("link",{name:/^Jogar Maré de Cores/}).evaluate(link =>
     link.scrollIntoView({ block: "center", behavior: "instant" }));
   // WebKit can scroll the link into its clickable viewport during activation.
   // Preserve the position at departure, after that native adjustment.
@@ -49,7 +56,7 @@ test("combined filters and catalog position survive a game and reload", async ({
     document.addEventListener("click", () => { position.scroll = window.scrollY; }, { capture: true, once: true });
     return position;
   });
-  await page.getByRole("link",{name:"Jogar Maré de Cores",exact:true}).click();
+  await page.getByRole("link",{name:/^Jogar Maré de Cores/}).click();
   const scroll = await departure.evaluate(position => position.scroll);
   await departure.dispose();
   await expect(page.locator("[data-arcade-arena] .new-grid")).toBeVisible();
@@ -60,7 +67,7 @@ test("combined filters and catalog position survive a game and reload", async ({
   await expect(page.getByLabel("Filtrar por modo")).toHaveValue("Solo");
   await expect(page.getByLabel("Ordenar jogos")).toHaveValue("nome");
   await expect.poll(() => page.evaluate(() => scrollY)).toBeCloseTo(scroll, -1);
-  await expect(page.getByRole("link",{name:"Jogar Maré de Cores",exact:true})).toBeFocused();
+  await expect(page.getByRole("link",{name:/^Jogar Maré de Cores/})).toBeFocused();
 });
 test("secondary utilities remain keyboard accessible and solo help stays correct", async ({page}) => {
   await page.goto("./#/jogar/peg");

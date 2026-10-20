@@ -90,6 +90,10 @@ export function useImmersivePlayer(player: RefObject<HTMLDivElement | null>, rou
     try {
       if (!document.fullscreenEnabled || !element.requestFullscreen) throw new Error("viewport");
       await element.requestFullscreen();
+      // A native request can settle after the user has left this route.
+      // Release only our obsolete element; never another fullscreen owner.
+      if (generation.current !== current && document.fullscreenElement === element)
+        await document.exitFullscreen().catch(() => undefined);
     } catch {
       if (generation.current === current) setViewport(true);
     } finally {
