@@ -33,7 +33,7 @@ import {
   type ExpandedId,
 } from "./lib/expandedCatalog";
 
-import { discoveryFilters, filterByMode, modeTags, modeLabel, type DiscoveryFilter } from "./lib/smartDiscovery";
+import { discoveryFilters, filterByMode, chooseSurprise, modeTags, modeLabel, type DiscoveryFilter } from "./lib/smartDiscovery";
 import { gameHelp } from "./lib/gameHelp";
 import GameCover from "./GameCover";
 import CatalogGameCard from "./CatalogGameCard";
@@ -151,7 +151,7 @@ function route() {
 }
 
 
-const specificStyles = new Set(["rapido", "sem-pressa", "bot", "treino", "sobrevivencia", "deslizar"]);
+const specificStyles = new Set(["rapido", "sem-pressa", "grupo", "bot", "treino", "sobrevivencia", "deslizar"]);
 // Optional panels may be absent from the first offline cache. Their load failure
 // must not unmount the catalog or a previously cached game.
 const VisualPreferences = lazy(() => import("./VisualPreferences").catch(() => ({
@@ -732,9 +732,10 @@ export default function App() {
                 <button
                   disabled={searchPending || !visible.length}
                   onClick={() => {
-                    const id = visible[Math.floor(Math.random() * visible.length)].id;
-                    rememberCatalog(id);
-                    location.hash = `/jogar/${id}`;
+                    const selected = chooseSurprise(visible, progress);
+                    if (!selected) return;
+                    rememberCatalog(selected.id);
+                    location.hash = `/jogar/${selected.id}`;
                   }}
                 >
                   Jogo surpresa

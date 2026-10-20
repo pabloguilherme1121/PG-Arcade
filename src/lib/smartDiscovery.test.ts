@@ -1,7 +1,7 @@
 import { CATALOG_SIZE } from "./catalogRelease";
 import { describe, expect, it } from "vitest";
 import { games } from "./catalog";
-import { countModes, discoveryFilters, modeTags, previewModeTags, filterByMode, recommendGames, modeLabel } from "./smartDiscovery";
+import { countModes, discoveryFilters, modeTags, previewModeTags, filterByMode, recommendGames, chooseSurprise, modeLabel } from "./smartDiscovery";
 
 describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
   it("renders at most two honest mode chips and falls back to Clássico", () => {
@@ -29,6 +29,14 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
       expect(tags.every(t=>modeLabel(t).length>0)).toBe(true);
     }
   });
+  it("mostra somente jogos com suporte real para grupo local de 3–4 pessoas", () => {
+    const group = filterByMode(games, "grupo", {}, []);
+    expect(group.map(game => game.id)).toEqual(["leilao", "comum"]);
+    expect(countModes(games, {}, []).grupo).toBe(2);
+    for (const game of games) {
+      expect(modeTags(game).includes("grupo")).toBe(game.id === "leilao" || game.id === "comum");
+    }
+  });
   it("restringe duelo e bot aos jogos com modos efetivos",()=>{
     expect(filterByMode(games, 'dupla', {}, []).map(g=>g.id).sort()).toEqual(["comum","damas","domino","leilao","liga4","velha","xadrez"]);
     expect(filterByMode(games, 'bot', {}, []).map(g=>g.id).sort()).toEqual(["ataxx","breakthrough","chomp","damas","domino","gomoku","hex","isolation","leilao","liga4","mancala","nim","pontes","reversi","territory","velha","xadrez"]);
@@ -46,6 +54,17 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
     expect(filterByMode(games,"favoritos",visited,favorites).map(g=>g.id)).toEqual(["xadrez"]);
     expect(filterByMode(games,"dupla",visited,favorites)).toHaveLength(7);
     expect(filterByMode(games,"todos",visited,favorites)).toHaveLength(CATALOG_SIZE);
+  });
+  it("jogo surpresa prioriza inéditos, evita repetir o último e respeita o filtro ativo", () => {
+    const options = games.filter(game => game.id === "leilao" || game.id === "comum");
+    const original = [...options];
+    expect(chooseSurprise([], { last: "leilao", visits: {} }, () => 0)).toBeNull();
+    expect(chooseSurprise(options, { last: "leilao", visits: { leilao: 1 } }, () => 0)?.id).toBe("comum");
+    expect(chooseSurprise(options, { last: "comum", visits: { leilao: 1, comum: 2 } }, () => 0)?.id).toBe("leilao");
+    expect(chooseSurprise([options[0]], { last: "leilao", visits: { leilao: 1 } }, () => 0)?.id).toBe("leilao");
+    expect(chooseSurprise(options, { last: null, visits: {} }, () => 0)?.id).toBe("leilao");
+    expect(chooseSurprise(options, { last: null, visits: {} }, () => 0.999)?.id).toBe("comum");
+    expect(options).toEqual(original);
   });
   it("prioriza preferências locais com desempate previsível e sem mutações",()=>{
     const input=[...games];

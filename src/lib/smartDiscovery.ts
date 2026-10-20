@@ -3,7 +3,7 @@ import { newGames } from "./newCatalog";
 import { expandedGames } from "./expandedCatalog";
 import { gameCapabilities } from "./gameCapabilities";
 
-export type GameModeTag = "classico"|"rapido"|"sem-pressa"|"dupla"|"bot"|"treino"|"sobrevivencia";
+export type GameModeTag = "classico"|"rapido"|"sem-pressa"|"dupla"|"bot"|"treino"|"sobrevivencia"|"grupo";
 export type DiscoveryFilter = GameModeTag|"todos"|"nao-jogados"|"jogados"|"favoritos"|"deslizar";
 type GameInfo = {id: GameId;name:string;category:string;description:string};
 type DiscoveryHistory = {favorites:readonly string[];visits:Partial<Record<GameId,number>>;last:GameId|null};
@@ -20,13 +20,14 @@ const untimed = new Set<GameId>([
 
 export const modeNames: Record<GameModeTag,string> = {
   classico:"Clássico",rapido:"Partidas rápidas","sem-pressa":"Sem pressa",
-  dupla:"Dupla local",bot:"Contra o bot",treino:"Treino",sobrevivencia:"Sobrevivência",
+  dupla:"Dupla local",bot:"Contra o bot",treino:"Treino",sobrevivencia:"Sobrevivência",grupo:"Grupo local (3–4)",
 };
 export const discoveryFilters: readonly {id:DiscoveryFilter;label:string}[] = [
   {id:"todos",label:"Todos os modos"},
   {id:"rapido",label:"Partidas rápidas"},
   {id:"sem-pressa",label:"Sem pressa"},
   {id:"dupla",label:"Dupla local"},
+  {id:"grupo",label:"Grupo local (3–4)"},
   {id:"bot",label:"Contra o bot"},
   {id:"treino",label:"Treino"},
   {id:"sobrevivencia",label:"Sobrevivência"},
@@ -42,6 +43,7 @@ export function modeTags(game:GameInfo):GameModeTag[] {
   if(quick.has(game.id)) result.push("rapido");
   if(untimed.has(game.id)) result.push("sem-pressa");
   if(gameCapabilities(game.id).localPlayers >= 2) result.push("dupla");
+  if(gameCapabilities(game.id).localPlayers >= 3) result.push("grupo");
   if(gameCapabilities(game.id).bot) result.push("bot");
   if(training.has(game.id)) result.push("treino");
   if(survival.has(game.id)) result.push("sobrevivencia");
@@ -70,7 +72,7 @@ export function countModes(
   games: readonly GameInfo[], visits: Partial<Record<GameId, number>>, favorites: readonly string[],
 ): Record<DiscoveryFilter, number> {
   const counts: Record<DiscoveryFilter, number> = {
-    todos: games.length, classico: 0, rapido: 0, "sem-pressa": 0, dupla: 0, bot: 0,
+    todos: games.length, classico: 0, rapido: 0, "sem-pressa": 0, dupla: 0, grupo: 0, bot: 0,
     treino: 0, sobrevivencia: 0, "nao-jogados": 0, jogados: 0, favoritos: 0, deslizar: 0,
   };
   const saved = new Set(favorites);
@@ -81,6 +83,20 @@ export function countModes(
     if (supportsSwipe(game.id)) counts.deslizar++;
   }
   return counts;
+}
+
+/** Prefer not-yet-played titles and avoid repeating the most recent game. */
+export function chooseSurprise<T extends GameInfo>(
+  candidates: readonly T[],
+  history: Pick<DiscoveryHistory, "last" | "visits">,
+  draw: () => number = Math.random,
+): T | null {
+  if (!candidates.length) return null;
+  const alternatives = candidates.filter(game => game.id !== history.last);
+  const pool = alternatives.length ? alternatives : [...candidates];
+  const unseen = pool.filter(game => !(history.visits[game.id] || 0));
+  const eligible = unseen.length ? unseen : pool;
+  return eligible[Math.min(eligible.length - 1, Math.floor(draw() * eligible.length))];
 }
 
 /** On-device ranking. Favorites first; then related and unplayed titles. No tracking/network. */
