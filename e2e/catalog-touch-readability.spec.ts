@@ -4,13 +4,13 @@ test.describe("catalog touch readability", () => {
   test.use({ hasTouch: true });
 
   test("all game cards retain readable labels and reachable favorites on narrow screens", async ({ page, browserName }) => {
-    // Firefox needs longer when laying out 100 SVG covers at three viewport widths.
+    // Firefox needs longer when laying out 101 SVG covers at four viewport widths.
     if (browserName === "firefox") test.setTimeout(120_000);
     await page.setViewportSize({ width: 320, height: 800 });
     await page.goto("./");
     const cards = page.locator(".game-grid .game-card");
     await expect(cards).toHaveCount(102);
-    for (const width of [320, 390, 430]) {
+    for (const width of [320, 360, 390, 430]) {
       if (width !== 320) await page.setViewportSize({ width, height: 800 });
       const metrics = await cards.evaluateAll((elements) => elements.map(card => {
         const category = card.querySelector<HTMLElement>(".game-category")!;

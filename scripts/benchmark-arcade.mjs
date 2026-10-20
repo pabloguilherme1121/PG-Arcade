@@ -21,6 +21,7 @@ const cpu = positiveInteger("cpu", "4", 20);
 const root = new URL(option("base-url", "http://127.0.0.1:5173/"));
 root.hash = "";
 const output = option("output", "artifacts/arcade-performance.json");
+const catalogWidths = [320, 360, 390, 430];
 const defaults = ["snake", "2048", "memoria", "xadrez", "corrida", "futebol"];
 const referenceFields = {
   snake: ".snake-board", "2048": ".board2048", memoria: ".memory-board",
@@ -194,7 +195,7 @@ async function run() {
     }));
     await context.close();
     const catalogViewportSamples = [];
-    for (const viewportWidth of [320, 360, 390, 430]) {
+    for (const viewportWidth of catalogWidths) {
       for (let index = 0; index < samples; index++) {
         const row = await sampleCatalogScroll(browser, viewportWidth, ids.length);
         if (row.cardCount !== ids.length || row.cardCounts.some(count => count !== ids.length) || row.overflowX) {
@@ -203,7 +204,7 @@ async function run() {
         catalogViewportSamples.push(row);
       }
     }
-    const catalogViewportSummary = Object.fromEntries([320, 360, 390, 430].map(viewportWidth => {
+    const catalogViewportSummary = Object.fromEntries(catalogWidths.map(viewportWidth => {
       const rows = catalogViewportSamples.filter(row => row.viewportWidth === viewportWidth);
       return [String(viewportWidth), {
         cardCount: ids.length,
