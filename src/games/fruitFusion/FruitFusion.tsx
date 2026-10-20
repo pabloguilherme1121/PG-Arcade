@@ -52,9 +52,12 @@ export default function FruitFusion({record,onRecord}:{record:number;onRecord:(v
     </div>}
     <p className="fruit-guidance">Junte duas frutas iguais para subir um nível. As peças caem com a gravidade; fusões em cadeia valem mais pontos. Alcance a fruta dourada antes das jogadas acabarem.</p>
     <div className="fruit-board" role="grid" aria-label="Tabuleiro de seis colunas e sete linhas">
-      {game.cells.map((tier,i)=><span role="gridcell" key={i}
-        aria-label={`Linha ${Math.floor(i/fruitSize.width)+1}, coluna ${i%fruitSize.width+1}: ${fruitNames[tier]}`}
-        data-fruit-tier={tier}>{fruitIcons[tier]}</span>)}
+      {Array.from({length:fruitSize.height},(_,row)=><div key={row} role="row" className="fruit-row">
+        {game.cells.slice(row*fruitSize.width,(row+1)*fruitSize.width).map((tier,column)=>
+          <span role="gridcell" key={column}
+            aria-label={`Linha ${row+1}, coluna ${column+1}: ${fruitNames[tier]}`}
+            data-fruit-tier={tier}>{fruitIcons[tier]}</span>)}
+      </div>)}
     </div>
     {game.phase==="playing"&&<div className="fruit-columns" role="group" aria-label="Escolher coluna para jogar">
       {Array.from({length:fruitSize.width},(_,i)=>{
