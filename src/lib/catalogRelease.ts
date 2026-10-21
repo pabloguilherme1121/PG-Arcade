@@ -1,2 +1,2 @@
 /** Release contract shared by catalog tests and Node 24 CI diagnostics. */
-export const CATALOG_SIZE = 127;
+export const CATALOG_SIZE = 128;

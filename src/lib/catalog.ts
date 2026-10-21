@@ -1,6 +1,7 @@
 import { expandedGames } from "./expandedCatalog";
 import { newGames } from "./newCatalog";
 export const games = [
+  {id:"irrigacao",name:"Zonas de Irrigação",description:"Abra canais conectados à nascente para irrigar campos sem vazamentos.",category:"Estratégia"},
   {id:"cidade",name:"Cidade em Miniatura",description:"Planeje bairros com moradias, parques, comércio, indústria e orçamento real.",category:"Estratégia"},
   {id:"alquimia",name:"Alquimia de Elementos",description:"Combine reagentes limitados em receitas encadeadas para criar artefatos.",category:"Estratégia"},
   {id:"climas",name:"Cartas de Climas",description:"Duelo local de cartas com bônus por terreno e escolhas alternadas.",category:"Estratégia"},
