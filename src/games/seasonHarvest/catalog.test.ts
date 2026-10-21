@@ -5,9 +5,9 @@ import {gameCapabilities} from "../../lib/gameCapabilities";
 import {gameHelp} from "../../lib/gameHelp";
 import {recordUnits} from "../../lib/recordUnits";
 import {modeTags} from "../../lib/smartDiscovery";
-it("Colheita das Estações registra 124 IDs, ajuda, recordes e modos verdadeiros",()=>{
- expect(CATALOG_SIZE).toBe(124);expect(games).toHaveLength(124);
- expect(new Set(games.map(g=>g.id)).size).toBe(124);
+it("Colheita das Estações registra 125 IDs, ajuda, recordes e modos verdadeiros",()=>{
+ expect(CATALOG_SIZE).toBe(125);expect(games).toHaveLength(125);
+ expect(new Set(games.map(g=>g.id)).size).toBe(125);
  expect(recordUnits.colheita).toBe("pontos");
  expect(gameHelp.colheita.length).toBeGreaterThan(100);
  expect(gameCapabilities("colheita")).toMatchObject({solo:true,online:false,bot:false,localPlayers:1,timedSessions:false,swipe:false});
