@@ -1,5 +1,5 @@
 import {useEffect,useState} from "react";
-import {changeCube,cubesSolved,getCubeViews,newHiddenCubes,nextCubes,restartCubes,undoCube,type Difficulty} from "./rules";
+import {changeCube,getCubeViews,newHiddenCubes,nextCubes,restartCubes,undoCube,type Difficulty} from "./rules";
 import "./HiddenCubes.css";
 export default function HiddenCubes({record,onRecord}:{record:number;onRecord:(n:number)=>void}){
  const [game,setGame]=useState(()=>newHiddenCubes());

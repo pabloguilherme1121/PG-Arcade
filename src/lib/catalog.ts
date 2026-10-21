@@ -1,6 +1,7 @@
 import { expandedGames } from "./expandedCatalog";
 import { newGames } from "./newCatalog";
 export const games = [
+  {id:"cubos",name:"Cubos Ocultos",description:"Reconstrua uma escultura 3D a partir das vistas superior, frontal e lateral.",category:"Inteligência"},
   {id:"balancas",name:"Enigma das Balanças",description:"Descubra qual moeda tem peso diferente usando uma balança de dois pratos.",category:"Inteligência"},
   {id:"fios",name:"Fio Condutor",description:"Conecte pares de pontos com fios contínuos sem cruzamentos.",category:"Inteligência"},
   {id:"runas",name:"Código de Runas",description:"Decifre uma mensagem substituindo runas por letras e resolva o mistério.",category:"Inteligência"},
