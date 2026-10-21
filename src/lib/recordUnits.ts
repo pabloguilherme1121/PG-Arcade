@@ -2,6 +2,7 @@ import type { GameId } from "./catalog";
 import { newGames } from "./newCatalog";
 import { expandedGames } from "./expandedCatalog";
 export const recordUnits: Partial<Record<GameId, "pontos" | "jogadas">> = {
+  alquimia:"pontos",
   climas:"pontos",
   colheita:"pontos",
   resgate:"pontos",

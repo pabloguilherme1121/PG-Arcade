@@ -73,6 +73,7 @@ const collectionPlayers = Object.fromEntries(
   ]),
 ) as unknown as Record<ExpandedId, ComponentType<PlayerProps>>;
 const players = {
+  alquimia: lazy(() => import("./games/elementAlchemy/ElementAlchemy")),
   climas: lazy(() => import("./games/climateCards/ClimateCards")),
   colheita: lazy(() => import("./games/seasonHarvest/SeasonHarvest")),
   resgate: lazy(() => import("./games/rescueBoats/RescueBoats")),
