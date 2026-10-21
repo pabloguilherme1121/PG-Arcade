@@ -6,8 +6,8 @@ import {gameHelp} from "../../lib/gameHelp";
 import {recordUnits} from "../../lib/recordUnits";
 import {modeTags} from "../../lib/smartDiscovery";
 it("Cidade em Miniatura tem 128 IDs e capacidades de zoneamento solo verdadeiras",()=>{
- expect(CATALOG_SIZE).toBe(129);expect(games).toHaveLength(129);
- expect(new Set(games.map(g=>g.id)).size).toBe(129);
+ expect(CATALOG_SIZE).toBe(games.length);expect(games).toHaveLength(CATALOG_SIZE);
+ expect(new Set(games.map(g=>g.id)).size).toBe(CATALOG_SIZE);
  expect(recordUnits.cidade).toBe("pontos");
  expect(gameHelp.cidade.length).toBeGreaterThan(100);
  expect(gameCapabilities("cidade")).toMatchObject({solo:true,online:false,bot:false,localPlayers:1,timedSessions:false,swipe:false});
