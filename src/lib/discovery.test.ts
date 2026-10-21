@@ -91,3 +91,19 @@ it("reveals detailed search terms on demand and invalidates cached misses", () =
   setSearchHelpIndex(null);
   expect(matchesGame(flood, "ultrametamorfose")).toBe(false);
 });
+
+it('finds popular names and game identifiers without loading detailed help', () => {
+  setSearchHelpIndex(null);
+  for (const [id, query] of [['snake', 'COBRINHA'], ['minas', 'minesweeper'], ['velha', 'tic tac toe'], ['xadrez', 'chess'], ['liga4', 'ligue quatro']] as const) {
+    expect(matchesGame(games.find(game => game.id === id)!, query), query).toBe(true);
+  }
+  expect(games.filter(game => matchesGame(game, 'cobrinha')).map(game => game.id)).toEqual(['snake']);
+  expect(matchesGame(games.find(game => game.id === 'snake')!, 'cobrinha inexistente')).toBe(false);
+});
+
+it('filters and restores groups using implemented player counts', () => {
+  expect(games.filter(game => supportsPlayerMode(game.id, 'Grupo local (3–4)')).map(game => game.id).sort())
+    .toEqual(['cofre', 'comum', 'contrato', 'leilao', 'passagem']);
+  vi.stubGlobal('sessionStorage', { getItem: () => JSON.stringify({mode: 'Grupo local (3–4)'}) });
+  expect(readCatalogView().mode).toBe('Grupo local (3–4)');
+});

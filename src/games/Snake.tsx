@@ -1,5 +1,5 @@
 import { useScopedRecord } from "./RecordScope";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Pause, Play, RotateCcw } from "lucide-react";
 import {
   queueSnakeDirection,
@@ -41,6 +41,7 @@ export default function Snake({
   const [progressive, setProgressive] = useState(false);
   const [record, onRecord] = useScopedRecord(`${mode}-${speed}-${progressive ? "progressive" : "constant"}`, legacyRecord, saveLegacy);
   const [queuedPreview, setQueuedPreview] = useState<Direction[]>([]);
+  const occupied = useMemo(() => new Set(body.map(point => point.y * 16 + point.x)), [body]);
   const delay = snakeTickDelay(speed, score, progressive);
   const current = useRef<Direction>("right");
   const queued = useRef<Direction[]>([]);
@@ -142,6 +143,7 @@ export default function Snake({
           role="group"
           aria-label="Tabuleiro Snake. Use as setas ou WASD para mover e espaço para pausar."
           onKeyDown={(e) => {
+            if (e.altKey || e.ctrlKey || e.metaKey || e.nativeEvent.isComposing) return;
             const d = directionFromKey(e.key);
             if (d) {
               e.preventDefault();
@@ -149,6 +151,7 @@ export default function Snake({
             }
             if (e.code === "Space") {
               e.preventDefault();
+              if (e.repeat) return;
               if (status === "running") pause();
               else setStatus((s) => (s === "ready" || s === "paused" ? "running" : s));
             }
@@ -190,7 +193,7 @@ export default function Snake({
                 className={
                   samePoint(p, body[0])
                     ? "snake-head"
-                    : body.some((b) => samePoint(b, p))
+                    : occupied.has(i)
                       ? "snake-body"
                       : food && samePoint(p, food)
                         ? "snake-food"

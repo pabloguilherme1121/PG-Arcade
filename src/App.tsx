@@ -738,7 +738,7 @@ export default function App() {
                   const next = e.target.value;
                   setMode(next);
                   if (specificStyles.has(modeFilter) && !filterByMode(games.filter(g => supportsPlayerMode(g.id, next)), modeFilter, progress.visits, progress.favorites).length) setModeFilter("todos");
-                }}><option>Todos</option><option value="Solo">Somente solo</option><option>Dupla local</option></select></label>
+                }}><option>Todos</option><option value="Solo">Somente solo</option><option>Dupla local</option><option>Grupo local (3–4)</option></select></label>
                 <label>
                   Ordenar{" "}
                   <select

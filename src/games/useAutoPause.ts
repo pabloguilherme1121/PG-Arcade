@@ -1,9 +1,12 @@
 import { useGameActivity } from "./RecordScope";
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 export type PlayStatus = "ready" | "running" | "paused" | "done";
 export function useAutoPause(pause: () => void, active?: boolean, complete = false, score = 0) {
   useGameActivity(active, complete, score);
+  const latestPause = useRef(pause);
+  useLayoutEffect(() => { latestPause.current = pause; }, [pause]);
   useEffect(() => {
+    const pause = () => latestPause.current();
     const hidden = () => {
       if (document.hidden) pause();
     };
@@ -20,5 +23,5 @@ export function useAutoPause(pause: () => void, active?: boolean, complete = fal
       window.removeEventListener("pagehide", pause);
       document.removeEventListener("freeze", pause);
     };
-  }, [pause]);
+  }, []);
 }

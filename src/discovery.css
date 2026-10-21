@@ -149,3 +149,31 @@ html[data-arcade-contrast="true"] .catalog :is(.swipe-filter,.mode-count){backgr
 .catalog-tools select,.player .new-options select{width:100%;min-width:0;font-size:16px}
 .player .new-actions>button{flex:1 1 80px;min-width:0;overflow-wrap:anywhere}
 }
+
+/* Separate result actions from facets while keeping every control reachable. */
+.catalog-tools {
+  padding: 18px;
+  border: 1px solid #4b6070;
+  border-radius: 14px;
+  background: #101c27;
+}
+.catalog-tools [role="status"] {
+  padding: 8px 12px;
+  border-inline-start: 3px solid #d7ff9f;
+  background: #d7ff9f0d;
+  line-height: 1.5;
+}
+.catalog-tools button:disabled { opacity: .65; cursor: not-allowed; }
+html[data-arcade-contrast="true"] .catalog-tools {
+  border-color: #fff;
+  background: #000;
+}
+html[data-arcade-contrast="true"] .catalog-tools [role="status"] {
+  color: #fff;
+  border-color: #fff;
+  background: #000;
+}
+@media (max-width: 600px) {
+  .catalog-tools { padding: 12px; gap: 12px; }
+  .catalog-tools [role="status"] { grid-column: 1 / -1; }
+}
