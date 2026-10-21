@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **123 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **124 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -190,3 +190,8 @@ Planeje a cobertura de rotas colocando 2 a 4 faróis em até 9 locais com alcanc
 ### Barcos de Resgate (123º título — PR de expansão)
 
 Planeje resgates entre ilhas considerando marés de três fases, combustível limitado, capacidade para dois passageiros, reservas na base e limite de turnos. Resgate e desembarque 2–4 pessoas para concluir a missão. Motor por turnos reproduzível, provas unitárias de 150 cenários e vitória real em três dificuldades; UI mobile 320/390/844×390, toque/teclado, recorde, capa SVG e import lazy. Ainda sujeito à validação completa de CI e integração segura.
+
+
+### Colheita das Estações (124º jogo — PR de expansão)
+
+Estratégia agrícola em quatro canteiros com três culturas de efeitos distintos, fertilidade finita, orçamento de água, previsão de clima, descanso do solo e meta de produção. Inclui três dificuldades, desfazer, condição de vitória/derrota, recorde, reiniciar/novo cenário, SVG original, UI mobile por toque/teclado e importação lazy. A geração é reproduzível; testes cobrem 300 estados e 180 provas construtivas de vitória, mais E2E 320/390/844×390. Publicação depende de CI completo.

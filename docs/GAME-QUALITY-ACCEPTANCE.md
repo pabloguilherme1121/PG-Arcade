@@ -123,3 +123,8 @@ Cobertura ortogonal de rotas a raio dois, nove locais possíveis, limite de dois
 ## 123º título — Barcos de Resgate (a certificar)
 
 Planejamento naval com 4 ilhas, 2–4 resgates, capacidade de dois passageiros, 3 estados de maré que alteram custo, combustível finito, reabastecimento na base, limites de turno, vitória/derrota e recorde. Testes unitários de 180 seeds de geração, 150 rotas solucionáveis por movimentos reais, maré e validação de recursos; E2E em 320/390/844×390 testa navegar, resgatar, entregar e não estourar layout. CI completo e validação física Android separados.
+
+
+## 124º jogo — Colheita das Estações (a certificar)
+
+Motor de manejo de fazenda: 4 canteiros, fertilidade 0–3, cereais/raízes/leguminosas com rendimentos e custos distintos, clima seco/ameno/chuvoso, água limitada, estações finitas, descanso regenerativo, histórico reversível, vitória por produção e derrota por prazo. Testes de 300 sementes para integridade, 180 provas de vitória por rotação real, cenários de consumo/undo e E2E 320/390/844×390. Somente integrar após quality, três browsers, validate, CodeQL, bundle <400 raw/<120 gzip, artefato/deploy no HEAD composto; Android físico separado.
