@@ -1,6 +1,7 @@
 import { expandedGames } from "./expandedCatalog";
 import { newGames } from "./newCatalog";
 export const games = [
+  {id:"cidade",name:"Cidade em Miniatura",description:"Planeje bairros com moradias, parques, comércio, indústria e orçamento real.",category:"Estratégia"},
   {id:"alquimia",name:"Alquimia de Elementos",description:"Combine reagentes limitados em receitas encadeadas para criar artefatos.",category:"Estratégia"},
   {id:"climas",name:"Cartas de Climas",description:"Duelo local de cartas com bônus por terreno e escolhas alternadas.",category:"Estratégia"},
   {id:"colheita",name:"Colheita das Estações",description:"Alterne culturas, cuide do solo e da água e atinja a meta de produção.",category:"Estratégia"},
