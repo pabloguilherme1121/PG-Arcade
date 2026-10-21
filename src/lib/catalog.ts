@@ -1,6 +1,7 @@
 import { expandedGames } from "./expandedCatalog";
 import { newGames } from "./newCatalog";
 export const games = [
+  {id:"portas",name:"Portas Lógicas",description:"Monte circuitos E, OU, XOU e NÃO-E para reproduzir uma tabela-verdade.",category:"Inteligência"},
   {id:"coordenadas",name:"Coordenadas Perdidas",description:"Localize o destino por distâncias de faróis e pistas progressivas.",category:"Inteligência"},
   {id:"bordas",name:"Bordas Encantadas",description:"Gire mosaicos para conectar cores iguais em todas as bordas.",category:"Inteligência"},
   {id:"cubos",name:"Cubos Ocultos",description:"Reconstrua uma escultura 3D a partir das vistas superior, frontal e lateral.",category:"Inteligência"},
