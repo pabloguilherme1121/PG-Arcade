@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **107 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **108 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -111,3 +111,8 @@ Jogo cooperativo local para 2–4 pessoas no mesmo aparelho: repasse privado de 
 ### Passagem Secreta (107º título)
 
 Competição no mesmo aparelho para 2–4 pessoas. Cada explorador registra em segredo quatro passos, as rotas são executadas simultaneamente em tabuleiro 5×5, colisões impedem movimentos e cristais concedem pontos. Sem cadastro, anúncios, servidor ou suporte online alegado. Inclui regras determinísticas e testes de tabuleiro/controles.
+
+
+### Contrato das Cores (108º título)
+
+Draft competitivo presencial de 2–4 pessoas em um único aparelho: mercado de três cores, objetivos públicos, quatro rodadas, pares e trincas, diversidade de cores, placar e vencedor por pontos. Módulo carregado sob demanda, sem backend, bot fictício ou anúncios.

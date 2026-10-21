@@ -73,6 +73,7 @@ const collectionPlayers = Object.fromEntries(
   ]),
 ) as unknown as Record<ExpandedId, ComponentType<PlayerProps>>;
 const players = {
+  contrato: lazy(() => import("./games/colorContracts/ColorContracts")),
   passagem: lazy(() => import("./games/secretPassage/SecretPassage")),
   cofre: lazy(() => import("./games/teamVault/TeamVault")),
   frutas: lazy(() => import("./games/fruitFusion/FruitFusion")),
@@ -188,8 +189,9 @@ export default function App() {
       ) ||
       arenaElement;
     target?.focus({ preventScroll: true });
-    // An accessible grid cell can be non-focusable. Focus the labeled region
-    // if the chosen element did not accept keyboard focus.
+    // Non-interactive grid cells can be selected by the fallback query.
+    // Keep the shortcut accessible by focusing the labeled arena itself
+    // when the chosen descendant cannot receive keyboard focus.
     if (arenaElement && !arenaElement.contains(document.activeElement)) {
       arenaElement.focus({ preventScroll: true });
     }

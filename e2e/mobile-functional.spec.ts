@@ -30,11 +30,11 @@ test("incompatible local-duel styles reset without hiding supported games", asyn
   await page.goto("./");
   await page.getByRole("button", { name: "Sobrevivência", exact: true }).click();
   await page.getByLabel("Filtrar por modo").selectOption("Dupla local");
-  await expect(page.locator(".game-card")).toHaveCount(9);
+  await expect(page.locator(".game-card")).toHaveCount(10);
   const visibleIds = await page.locator(".game-card").evaluateAll(cards =>
     cards.map(card => card.getAttribute("data-catalog-game")).sort()
   );
-  expect(visibleIds).toEqual(["cofre","comum","damas","domino","leilao","liga4","passagem","velha","xadrez"]);
+  expect(visibleIds).toEqual(["cofre","comum","contrato","damas","domino","leilao","liga4","passagem","velha","xadrez"]);
   await expect(page.getByRole("button", { name: "Sobrevivência", exact: true })).toBeDisabled();
 });
 test("puzzle exposes real swipe handling and configuration-specific records", async ({ page }) => {
