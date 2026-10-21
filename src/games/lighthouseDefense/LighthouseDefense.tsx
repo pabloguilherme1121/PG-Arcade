@@ -19,21 +19,21 @@ export default function LighthouseDefense({record,onRecord}:{record:number;onRec
     <option value="2">Difícil — 9×9, 4 faróis</option>
    </select></label>
   <div className="beacon-map-scroll" role="region" aria-label="Mapa de rotas com rolagem horizontal" tabIndex={0}>
-   <div className="beacon-board" role="grid" aria-label="Posicionamento de faróis" style={{minWidth:`${game.size*45}px`}}>
-   {Array.from({length:game.size},(_,row)=><div className="beacon-row" role="row" key={row}
+   <div className="beacon-board" role="group" aria-label="Posicionamento de faróis" style={{minWidth:`${game.size*45}px`}}>
+   {Array.from({length:game.size},(_,row)=><div className="beacon-row" key={row}
      style={{gridTemplateColumns:`repeat(${game.size},minmax(0,1fr))`}}>
     {Array.from({length:game.size},(_,col)=>{
      const cell=row*game.size+col,slot=game.slots.indexOf(cell);
      const selected=game.selected.includes(slot),routeIndex=game.routes.indexOf(cell);
      const lit=routeIndex>=0&&counts[routeIndex]>0;
      return slot>=0?
-      <button key={cell} type="button" role="gridcell" data-beacon-slot={slot} data-selected={selected}
+      <button key={cell} type="button" data-beacon-slot={slot} data-selected={selected}
        disabled={game.phase==="won"} aria-pressed={selected}
        aria-label={`Ponto ${slot+1}: linha ${row+1}, coluna ${col+1}, ${selected?"farol instalado":"sem farol"}`}
        onClick={()=>setGame(g=>toggleBeacon(g,slot))}>
        <span aria-hidden="true">{selected?"◆":"◈"}</span>{routeIndex>=0&&<small aria-hidden="true">{lit?"✓":"●"}</small>}
       </button>:
-      <span key={cell} role="gridcell" data-route-cell={routeIndex>=0} data-lit={lit}
+      <span key={cell} role="img" data-route-cell={routeIndex>=0} data-lit={lit}
        aria-label={`Linha ${row+1}, coluna ${col+1}, ${routeIndex>=0?"trecho "+(lit?"iluminado":"escuro"):"sem rota"}`}>
        {routeIndex>=0?(lit?"✓":"●"):""}
       </span>;
