@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **127 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **128 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -210,3 +210,8 @@ Combinação estratégica de Fogo/Água/Terra com receitas encadeadas para obter
 ### Cidade em Miniatura (127º título — PR de expansão)
 
 Planejamento urbano em grade 3×3/4×4/5×5 com moradias, parques, lojas e indústria. Cada tipo custa parte do orçamento; casas protegidas impedem construção, as moradias precisam estar ao lado de serviços verdes/comércio sem poluição industrial, e metas de tipos são exigidas. Inclui remoção/reembolso, desfazer, três níveis com solução construtiva verificada para 360 sementes, recorde, capa SVG original, UI mobile, toque/teclado e E2E 320/390/844×390. Ainda depende de CI completo antes do merge.
+
+
+### Zonas de Irrigação (128º título — PR de expansão)
+
+Rede de irrigação com canos conectados à nascente. O jogador abre/fecha canais por pares de casas vizinhas em grades 4×4/5×5/6×6, atende demandas variáveis de 2–4 campos, respeita volume de água e limite de tubos, evita vazamentos em pontas soltas, desfaz canais e registra recorde. Soluções reais de fluxo em três níveis verificadas para 360 cenários, SVG original, lazy React, controles por toque/teclado, testes mobile 320/390/844×390. Ainda sujeito a CI e integração.

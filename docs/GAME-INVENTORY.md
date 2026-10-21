@@ -1,4 +1,4 @@
-# Inventário dos 127 jogos
+# Inventário dos 128 jogos
 
 Inventário extraído do catálogo, gameHelp e unidades de recorde em 8 de outubro de 2026. Regras e controles abaixo descrevem a implementação; este documento não certifica uma partida completa de cada jogo. A cobertura profunda permanece nos testes de motores e famílias.
 
@@ -6,6 +6,7 @@ Todos mantêm visitas e favoritos locais. Nenhum restaura automaticamente a part
 
 | ID | Nome | Família | Modo disponível | Dificuldade | Recorde | Regras e controles específicos |
 | --- | --- | --- | --- | --- | --- | --- |
+| `irrigacao` | Zonas de Irrigação | Rede hidráulica com pressão e perdas | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Conecte fonte a 2–4 campos com demanda variável, respeite capacidade de água e limite de 3–8 canais, evite vazamentos nas extremidades e desfaça ligações. |
 | `cidade` | Cidade em Miniatura | Zoneamento urbano de bairro com orçamento e vizinhança | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Distribua moradias, parques, comércio e indústria em grades 3–5, respeite lotes protegidos, orçamento e satisfação sem vizinhança industrial, undo/recorde. |
 | `alquimia` | Alquimia de Elementos | Receitas encadeadas com materiais finitos | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Combine reagentes base em intermediários e produtos finais, sem desperdiçar estoque; metas de Elixir/Cristal/Obra-prima, undo e recordes. |
 | `climas` | Cartas de Climas | Duelo local de cartas e bônus climáticos | 2 jogadores no aparelho | 3, 4 ou 5 rodadas | pontos; maior resultado | Escolhas secretas alternadas com passagem de aparelho, cartas finitas, terreno de bônus e resolução de força, pontuação por rodada e vencedor/empate. |

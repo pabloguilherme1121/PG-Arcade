@@ -143,3 +143,8 @@ Motor independente de crafting com nove recursos, seis receitas determinísticas
 ## 127º título — Cidade em Miniatura (a certificar)
 
 Zoneamento 3×3/4×4/5×5 com obstáculos protegidos determinísticos, economia de 4 classes com custo e devolução, metas mínimas, moradia satisfeita ao lado de parque/comércio e poluição proibida por vizinhança industrial ortogonal, undo, score/vitória. Provas unitárias em 360 sementes para todas as dificuldades, proteção de áreas, orçamento e undo, E2E 320/390/844×390, navegação por teclado e sem overflow. Exigir quality, Chromium/Firefox/WebKit, validate, CodeQL, bundle raw <400 KiB/gzip <120 KiB, artifact/deploy no mesmo SHA, e Android físico separado.
+
+
+## 128º título — Zonas de Irrigação (a certificar)
+
+Rede de canais reais criada por dois toques ortogonais, fluxo por BFS desde nascente, 2/3/4 campos com demanda individual, reserva de água finita, limite de arestas e perdas em pontas ligadas ao fluxo que não terminem num campo. Vitória requer todos os campos abastecidos, nenhuma perda, consumo ≤ reserva e uso ≤ orçamento. Unit tests 360 cenários demonstráveis, leaks, adjacency/undo, E2E 320/390/844×390. Quality, Chromium/Firefox/WebKit, validate, CodeQL, bundle <400 raw/<120 gzip, artefato/deploy e Android físico separadamente.
