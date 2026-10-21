@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect, useRef } from "react";
 export type PlayStatus = "ready" | "running" | "paused" | "done";
 export function useAutoPause(pause: () => void, active?: boolean, complete = false, score = 0) {
   useGameActivity(active, complete, score);
+  // Game frames may create new callbacks; keep one subscription with fresh state.
   const latestPause = useRef(pause);
   useLayoutEffect(() => { latestPause.current = pause; }, [pause]);
   useEffect(() => {
