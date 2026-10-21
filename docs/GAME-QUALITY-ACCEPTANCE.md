@@ -103,3 +103,8 @@ Motor independente de rotação de peças e encaixe ortogonal. Geração de 3×3
 ## 119º título — Coordenadas Perdidas (a certificar)
 
 Motor matemático por distâncias de Manhattan a três pontos. Grades 5×5/7×7/9×9, seleção de casa, pistas de faróis, contagem de candidatos, dicas limitadas, três palpites, vitória e derrota. Gerador determina alvo sem posicioná-lo sobre faróis, com solução única após revelação total. Testes de 360 sementes, prova de unicidade, cálculos, dica e vitória/derrota; Playwright mobile 320/390/844×390 com área rolável acessível de 46 px. Exigir gates completos antes da integração, deploy e QA Android físico separados.
+
+
+## 120º título — Portas Lógicas (a certificar)
+
+Circuitos booleanos com 1/2/3 portas encadeadas, quatro operações implementadas, inversor de saída, avaliação de quatro entradas binárias e tabela-verdade alvo gerada por solução construtiva não trivial. Testes de 300 seeds, operações booleanas, circuito completo, undo, vitória e reset; E2E mobile 320/390/844×390. Exigir quality, Chromium, Firefox, WebKit, validate, CodeQL, bundle, artifact/deploy no HEAD final. Android físico permanece separado.

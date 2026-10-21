@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **119 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **120 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -170,3 +170,8 @@ Mosaicos rotativos 3×3, 4×4 e 5×5 gerados de arestas coincidentes com ao meno
 ### Coordenadas Perdidas (119º título — PR de expansão)
 
 Encontre um destino escondido por distância de Manhattan a faróis fixos. Três dificuldades com grades 5×5/7×7/9×9, pistas iniciais progressivamente menores, revelação de pistas com penalidade, marcação e comparação de distâncias, três palpites e recorde. A geração garante que os três faróis identificam uma única coordenada; testes de 360 mapas comprovam unicidade. Mobile com rolagem interna e casas de 46 px, ARIA, teclado, lazy import e E2E 320/390/844×390. Ainda precisa de certificação de CI e merge seguro.
+
+
+### Portas Lógicas (120º título — PR de expansão)
+
+Circuitos booleanos editáveis com uma a três portas lógicas, inversor opcional, tabela-verdade de quatro combinações e metas sempre alcançáveis. O jogador altera E, OU, XOU e NÃO-E e a saída final até reproduzir o resultado esperado. Jogadas, desfazer, vitória, recorde, três dificuldades, capa SVG, motor lazy, toque e teclado. Testes de 300 desafios e E2E 320/390/844×390. Não inclui bots nem online e aguarda CI da cadeia antes da publicação.
