@@ -53,3 +53,8 @@ PR nova empilhada sobre #169. Regras de turno 2–4, mercado com três alternati
 ## Aceite adicional — Engrenagens do Tempo, 109º título (draft)
 
 Branch dependente da PR #170. Verificar puzzles determinísticos e solucionáveis nas três dificuldades, 4–6 engrenagens, inversão/desfazer, recorde, modo solo sem prazo ou bot, controles nativos e ausência de overflow em 320/390/844×390. Exigir quality, Chromium, Firefox, WebKit, validate, CodeQL e bundle raw <400 KiB/gzip <120 KiB no mesmo HEAD antes de integrar. O aceite Android físico permanece pendente.
+
+
+## 110º título — Pontes do Arquipélago (a certificar)
+
+Motor independente: 6, 8 ou 9 ilhas, até duas pontes, detecção de cruzamento, conectividade global, somas por ilha, solução garantida, desfazer, vitória, recorde e teclado/toque. Exigir CI quality, Chromium, Firefox, WebKit, validate, CodeQL, bundle <400 KiB raw / 120 KiB gzip, deploy e QA físico separado. O registro em uma branch não implica aceite nem publicação.

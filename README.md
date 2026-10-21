@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **109 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **110 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -120,3 +120,8 @@ Draft competitivo presencial de 2–4 pessoas em um único aparelho: mercado de 
 ### Engrenagens do Tempo (109º título)
 
 Quebra-cabeça solo, offline, com quatro a seis engrenagens conectadas. Cada giro afeta a escolhida e as vizinhas em sentidos opostos. Três dificuldades, desafios gerados por giros reversíveis, desfazer, reiniciar, nova partida, recorde e controles acessíveis por toque/teclado. Sem bot, temporizador ou multiplayer fictício. A integração depende da certificação das PRs #169 e #170.
+
+
+### Pontes do Arquipélago (110º título — expansão em PR)
+
+Quebra-cabeça de 6, 8 ou 9 ilhas numeradas conectadas por até duas pontes entre vizinhas. A vitória exige que todas as ilhas estejam conectadas, que a quantidade de pontes coincida com os números e que nenhuma ponte cruze outra. Geração determinística com solução verificada em testes, movimentos reversíveis, recorde, toque e teclado. Motor sob demanda, sem bot ou rede fictícios. A integração depende dos gates e da certificação das PRs anteriores.
