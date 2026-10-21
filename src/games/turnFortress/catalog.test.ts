@@ -7,8 +7,8 @@ import { recordUnits } from "../../lib/recordUnits";
 import { modeTags } from "../../lib/smartDiscovery";
 it("Fortalezas de Turnos #130 possui motor, ajuda, acessibilidade e modos verídicos", () => {
   expect(CATALOG_SIZE).toBe(games.length);
-  expect(games).toHaveLength(130);
-  expect(new Set(games.map(g => g.id)).size).toBe(130);
+  expect(games).toHaveLength(CATALOG_SIZE);
+  expect(new Set(games.map(g => g.id)).size).toBe(CATALOG_SIZE);
   expect(gameHelp.fortalezas.length).toBeGreaterThan(100);
   expect(recordUnits.fortalezas).toBe("pontos");
   expect(gameCapabilities("fortalezas")).toMatchObject({
