@@ -1,5 +1,5 @@
 import {useEffect,useState} from "react";
-import {aligned,createClocks,moveClocks,nextClocks,pointerPhase,resetClocks,undoClocks,type Difficulty} from "./rules";
+import {createClocks,moveClocks,nextClocks,pointerPhase,resetClocks,undoClocks,type Difficulty} from "./rules";
 import "./ClockPhases.css";
 export default function ClockPhases({record,onRecord}:{record:number;onRecord:(n:number)=>void}){
  const [game,setGame]=useState(()=>createClocks());

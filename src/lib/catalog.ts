@@ -1,6 +1,7 @@
 import { expandedGames } from "./expandedCatalog";
 import { newGames } from "./newCatalog";
 export const games = [
+  {id:"ponteiros",name:"Ponteiros em Fase",description:"Sincronize relógios de ciclos diferentes em um instante comum.",category:"Inteligência"},
   {id:"trilhos",name:"Trilhos Cruzados",description:"Configure desvios e envie três trens aos destinos corretos.",category:"Estratégia"},
   {id:"arquipelago",name:"Pontes do Arquipélago",description:"Conecte ilhas por pontes duplas sem cruzamentos e cumpra cada número.",category:"Estratégia"},
   {id:"engrenagens",name:"Engrenagens do Tempo",description:"Alinhe engrenagens conectadas: cada giro movimenta as vizinhas em sentido contrário.",category:"Inteligência"},

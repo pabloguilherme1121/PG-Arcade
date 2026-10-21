@@ -73,6 +73,7 @@ const collectionPlayers = Object.fromEntries(
   ]),
 ) as unknown as Record<ExpandedId, ComponentType<PlayerProps>>;
 const players = {
+  ponteiros: lazy(() => import("./games/clockPhases/ClockPhases")),
   trilhos: lazy(() => import("./games/railSwitches/RailSwitches")),
   arquipelago: lazy(() => import("./games/archipelago/Archipelago")),
   engrenagens: lazy(() => import("./games/timeGears/TimeGears")),
