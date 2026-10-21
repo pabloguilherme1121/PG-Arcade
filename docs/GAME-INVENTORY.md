@@ -1,4 +1,4 @@
-# Inventário dos 113 jogos
+# Inventário dos 114 jogos
 
 Inventário extraído do catálogo, gameHelp e unidades de recorde em 8 de outubro de 2026. Regras e controles abaixo descrevem a implementação; este documento não certifica uma partida completa de cada jogo. A cobertura profunda permanece nos testes de motores e famílias.
 
@@ -6,6 +6,7 @@ Todos mantêm visitas e favoritos locais. Nenhum restaura automaticamente a part
 
 | ID | Nome | Família | Modo disponível | Dificuldade | Recorde | Regras e controles específicos |
 | --- | --- | --- | --- | --- | --- | --- |
+| `runas` | Código de Runas | Criptogramas de substituição | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Substitua runas por letras sem repetições e decifre uma mensagem com pista temática, tradução parcial, checagem de associações, duas dicas limitadas, reinício e recorde. |
 | `sombras` | Cofre de Sombras | Silhuetas e sobreposição de máscaras | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Gire 3–5 venezianas com padrões próprios e reproduza a sombra alvo de 16 casas. Máscaras sobrepostas alternam as casas iluminadas; desafios gerados de solução válida, desfazer e reiniciar. |
 | `ponteiros` | Ponteiros em Fase | Sincronização e aritmética modular | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Sincronize 3 a 5 relógios com períodos diferentes fazendo o tempo global avançar 1, 5 ou 10 minutos, com retorno e desfazer. Vitória quando todas as fases estão em zero. |
 | `trilhos` | Trilhos Cruzados | Rotas e permutações | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Configure desvios para permutar três trilhos e conduzir cada trem à saída objetivo. Três a cinco desvios, teste de rota determinístico, feedback, reinício e teclado/toque. |

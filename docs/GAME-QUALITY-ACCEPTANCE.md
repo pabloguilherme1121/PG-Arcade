@@ -73,3 +73,8 @@ Motor aritmético de relógios com períodos diferentes, solução única até o
 ## 113º título — Cofre de Sombras (a certificar)
 
 Motor real com 3–5 máscaras, rotação de 90 graus, composição por paridade e silhueta 4×4, geração determinística com solução garantida, vitória por igualdade exata, desfazer, teclado/toque, reset, recorde e três dificuldades. Testes de 180 seeds, transições e solução; E2E mobile 320/390/844×390. Exigir gates em HEAD final.
+
+
+## 114º título — Código de Runas (a certificar)
+
+Substituição monoalfabética de 26 símbolos, dicionário de pistas por dificuldade, tradução parcialmente preenchida, mapeamento sem duplicação, dicas limitadas (máximo duas), tentativas e recorde. Geração determinística, provas de decifrabilidade com 240 combinações nos testes de regras; E2E mobile nos 3 viewports e sem overflow. Gate de qualidade + navegadores + bundle + deploy e Android físico separado.
