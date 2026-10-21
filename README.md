@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **128 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **129 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -215,3 +215,8 @@ Planejamento urbano em grade 3×3/4×4/5×5 com moradias, parques, lojas e indú
 ### Zonas de Irrigação (128º título — PR de expansão)
 
 Rede de irrigação com canos conectados à nascente. O jogador abre/fecha canais por pares de casas vizinhas em grades 4×4/5×5/6×6, atende demandas variáveis de 2–4 campos, respeita volume de água e limite de tubos, evita vazamentos em pontas soltas, desfaz canais e registra recorde. Soluções reais de fluxo em três níveis verificadas para 360 cenários, SVG original, lazy React, controles por toque/teclado, testes mobile 320/390/844×390. Ainda sujeito a CI e integração.
+
+
+### Rede de Relés (129º título — PR de expansão)
+
+Posicione 3–5 antenas em grades 5×5/6×6/7×7 para ligar 2–4 dispositivos a uma base. O sinal só atravessa relés conectados (alcance de até três quadras) e cobre aparelhos num raio de duas quadras. Torres desconectadas não transmitem, mas consomem orçamento de energia. Três níveis com soluções reais provadas em 360 cenários, undo, score/recorde, SVG original, motor lazy e testes E2E 320/390/844×390; solo e offline. Sujeito ao CI antes da publicação.

@@ -148,3 +148,8 @@ Zoneamento 3×3/4×4/5×5 com obstáculos protegidos determinísticos, economia 
 ## 128º título — Zonas de Irrigação (a certificar)
 
 Rede de canais reais criada por dois toques ortogonais, fluxo por BFS desde nascente, 2/3/4 campos com demanda individual, reserva de água finita, limite de arestas e perdas em pontas ligadas ao fluxo que não terminem num campo. Vitória requer todos os campos abastecidos, nenhuma perda, consumo ≤ reserva e uso ≤ orçamento. Unit tests 360 cenários demonstráveis, leaks, adjacency/undo, E2E 320/390/844×390. Quality, Chromium/Firefox/WebKit, validate, CodeQL, bundle <400 raw/<120 gzip, artefato/deploy e Android físico separadamente.
+
+
+## 129º título — Rede de Relés (a certificar)
+
+Motor de telecomunicações por BFS em relés selecionados: alcance Base/antena até três quadrículas Manhattan; cobertura de dispositivos até duas quadrículas; antena sem comunicação não cobre alvo; instalação consome energia, orçamento de 3/4/5 relés. Soluções reais comprovadas em 360 seeds e três tamanhos, redes isoladas, undo, recordes, testes E2E 320/390/844×390. Exigir quality, 3 browsers, validate, CodeQL, bundle inicial <400 raw/<120 gzip, artefato/deploy no HEAD final. Android físico pendente à parte.
