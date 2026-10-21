@@ -6,10 +6,10 @@ import {gameHelp} from "../../lib/gameHelp";
 import {recordUnits} from "../../lib/recordUnits";
 import {modeTags} from "../../lib/smartDiscovery";
 describe("Trilhos Cruzados: contrato de catálogo",()=>{
- it("registra 114 IDs únicos e partida local acessível",()=>{
-  expect(CATALOG_SIZE).toBe(114);
-  expect(games).toHaveLength(114);
-  expect(new Set(games.map(g=>g.id)).size).toBe(114);
+ it("registra 115 IDs únicos e partida local acessível",()=>{
+  expect(CATALOG_SIZE).toBe(115);
+  expect(games).toHaveLength(115);
+  expect(new Set(games.map(g=>g.id)).size).toBe(115);
   expect(recordUnits.trilhos).toBe("pontos");
   expect(gameHelp.trilhos.length).toBeGreaterThan(100);
  });
