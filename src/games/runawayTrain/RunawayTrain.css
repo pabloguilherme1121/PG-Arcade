@@ -1,0 +1,28 @@
+.runaway-train{width:min(100%,900px);min-width:0;margin:auto;display:grid;gap:12px;padding:clamp(10px,3vw,20px);background:#18313d;color:#f2f9ff;border:1px solid #84b0b9;border-radius:18px}
+.runaway-train p{margin:0;line-height:1.5}
+.train-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.train-stats p{padding:9px 4px;border-radius:10px;background:#2c5262;text-align:center;font-size:.8rem}
+.train-stats strong{display:block;color:#d0efad;font-size:1.08rem}
+.train-instructions,.train-legend{font-size:.92rem}
+.train-difficulty{display:grid;gap:6px;font-weight:700}
+.train-difficulty select{width:100%;min-width:0;min-height:48px;padding:8px;font:inherit;font-size:16px;border-radius:8px;border:2px solid #aad2d5;background:#eaf8fa;color:#18313d}
+.train-board{display:grid;gap:10px;min-width:0;border-radius:12px;border:1px solid #84b0b9;background:#244b5d;padding:10px}
+.train-lane{min-width:0;display:grid;gap:6px}
+.train-lane strong{font-size:.9rem}
+.train-track{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:3px}
+.train-cell{min-width:0;min-height:44px;display:grid;place-items:center;font-weight:800;border:2px solid #81adb6;border-radius:6px;background:#315968}
+.train-cell[data-train-junction="true"]{border-color:#e1d69b;background:#5c6257}
+.train-cell[data-train-position="5"]{background:#4b746d;border-color:#a6e6c6}
+.train-cell:not([data-train-count="0"]){background:#946341;color:#fff6c7;border-color:#ffcf91}
+.train-switches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.runaway-train button{min-width:0;min-height:48px;font:inherit;font-weight:700;padding:8px 5px;color:#193f3b;background:#d0eee2;border:2px solid #c5e7dc;border-radius:9px}
+.runaway-train button[aria-pressed="true"]{background:#e4d2aa;color:#4a3522;border-color:#fff0bd}
+.runaway-train button:disabled{opacity:.5}
+.train-manifest{background:#2c4d5d;border-radius:10px;border:1px solid #759baa;padding:10px;font-size:.88rem}
+.train-manifest ul{margin:6px 0 0;padding-left:22px;display:grid;gap:4px}
+.train-feedback{background:#2b5761;border:1px solid #88c5c2;border-radius:10px;padding:10px}
+.train-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.train-legend{color:#d3e5e7}
+.runaway-train :is(button,select):focus-visible{outline:3px solid #ffdc96;outline-offset:3px}
+@media(max-width:360px){.train-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.train-actions{grid-template-columns:1fr}}
+@media(min-width:740px) and (max-height:500px){.runaway-train{width:min(100%,1120px);grid-template-columns:1fr 1fr}.train-board{grid-column:2;grid-row:1/span 5}.train-stats,.train-difficulty,.train-instructions,.train-switches,.train-manifest,.train-feedback,.train-actions,.train-legend{grid-column:1}}
