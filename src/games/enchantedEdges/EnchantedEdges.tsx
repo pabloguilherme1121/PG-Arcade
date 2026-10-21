@@ -15,9 +15,9 @@ export default function EnchantedEdges({record,onRecord}:{record:number;onRecord
     <option value="0">Fácil — 3×3</option><option value="1">Normal — 4×4</option><option value="2">Difícil — 5×5</option>
    </select></label>
   <div className="edge-legend" aria-label="Legenda das bordas"><span>Fechada</span><span>Âmbar</span><span>Ciano</span><span>Jade</span></div>
-  <div className="edge-board" role="grid" aria-label="Peças giratórias" style={{gridTemplateColumns:`repeat(${game.size},minmax(0,1fr))`}}>
+  <div className="edge-board" role="group" aria-label="Peças giratórias" style={{gridTemplateColumns:`repeat(${game.size},minmax(0,1fr))`}}>
    {game.tiles.map((tile,index)=>{const edges=rotatedEdges(tile);
-    return <button type="button" role="gridcell" key={index} data-edge-tile={index} data-rotation={tile.rotation}
+    return <button type="button" key={index} data-edge-tile={index} data-rotation={tile.rotation}
       disabled={game.phase==="won"} aria-label={`Peça linha ${Math.floor(index/game.size)+1}, coluna ${index%game.size+1}: cima ${colorNames[edges[0]]}, direita ${colorNames[edges[1]]}, baixo ${colorNames[edges[2]]}, esquerda ${colorNames[edges[3]]}. Girar 90 graus`}
       onClick={()=>setGame(g=>turnEdge(g,index))}
       style={{borderTopColor:colors[edges[0]],borderRightColor:colors[edges[1]],borderBottomColor:colors[edges[2]],borderLeftColor:colors[edges[3]]}}>

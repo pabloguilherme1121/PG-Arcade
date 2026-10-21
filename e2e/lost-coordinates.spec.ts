@@ -5,6 +5,8 @@ for(const viewport of [{width:320,height:740},{width:390,height:844},{width:844,
   await page.goto("./#/jogar/coordenadas");
   const game=page.locator("[data-lost-coordinates]");
   await expect(game).toBeVisible();
+  await expect(game.getByRole("group",{name:"Selecione uma coordenada"})).toBeVisible();
+  await expect(game.getByRole("button",{name:/Linha 1, coluna 1/})).toBeVisible();
   await expect(game.locator("[data-coord-cell]")).toHaveCount(25);
   const confirm=game.getByRole("button",{name:"Confirmar coordenada"});
   await expect(confirm).toBeDisabled();
