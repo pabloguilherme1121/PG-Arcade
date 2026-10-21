@@ -1,6 +1,7 @@
 import { expandedGames } from "./expandedCatalog";
 import { newGames } from "./newCatalog";
 export const games = [
+  {id:"reles",name:"Rede de Relés",description:"Conecte antenas à base e cubra dispositivos com energia limitada.",category:"Estratégia"},
   {id:"irrigacao",name:"Zonas de Irrigação",description:"Abra canais conectados à nascente para irrigar campos sem vazamentos.",category:"Estratégia"},
   {id:"cidade",name:"Cidade em Miniatura",description:"Planeje bairros com moradias, parques, comércio, indústria e orçamento real.",category:"Estratégia"},
   {id:"alquimia",name:"Alquimia de Elementos",description:"Combine reagentes limitados em receitas encadeadas para criar artefatos.",category:"Estratégia"},
