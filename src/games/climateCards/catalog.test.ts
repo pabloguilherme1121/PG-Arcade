@@ -6,8 +6,8 @@ import {gameHelp} from "../../lib/gameHelp";
 import {recordUnits} from "../../lib/recordUnits";
 import {modeTags} from "../../lib/smartDiscovery";
 it("Cartas de Climas registra 128 jogos e dupla local sem bot",()=>{
- expect(CATALOG_SIZE).toBe(128);expect(games).toHaveLength(128);
- expect(new Set(games.map(g=>g.id)).size).toBe(128);
+ expect(CATALOG_SIZE).toBe(129);expect(games).toHaveLength(129);
+ expect(new Set(games.map(g=>g.id)).size).toBe(129);
  expect(recordUnits.climas).toBe("pontos");
  expect(gameHelp.climas.length).toBeGreaterThan(100);
  expect(gameCapabilities("climas")).toMatchObject({solo:false,online:false,bot:false,localPlayers:2,timedSessions:false,swipe:false});
