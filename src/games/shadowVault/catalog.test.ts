@@ -5,10 +5,10 @@ import {gameCapabilities} from "../../lib/gameCapabilities";
 import {gameHelp} from "../../lib/gameHelp";
 import {recordUnits} from "../../lib/recordUnits";
 import {modeTags} from "../../lib/smartDiscovery";
-it("Cofre de Sombras entrega 120 IDs e capacidades corretas",()=>{
- expect(CATALOG_SIZE).toBe(120);
- expect(games).toHaveLength(120);
- expect(new Set(games.map(g=>g.id)).size).toBe(120);
+it("Cofre de Sombras entrega 121 IDs e capacidades corretas",()=>{
+ expect(CATALOG_SIZE).toBe(121);
+ expect(games).toHaveLength(121);
+ expect(new Set(games.map(g=>g.id)).size).toBe(121);
  expect(recordUnits.sombras).toBe("pontos");
  expect(gameHelp.sombras.length).toBeGreaterThan(100);
  expect(gameCapabilities("sombras")).toMatchObject({solo:true,bot:false,online:false,timedSessions:false,swipe:false,localPlayers:1});
