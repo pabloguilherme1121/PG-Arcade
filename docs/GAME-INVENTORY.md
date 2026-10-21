@@ -1,4 +1,4 @@
-# Inventário dos 111 jogos
+# Inventário dos 112 jogos
 
 Inventário extraído do catálogo, gameHelp e unidades de recorde em 8 de outubro de 2026. Regras e controles abaixo descrevem a implementação; este documento não certifica uma partida completa de cada jogo. A cobertura profunda permanece nos testes de motores e famílias.
 
@@ -6,6 +6,7 @@ Todos mantêm visitas e favoritos locais. Nenhum restaura automaticamente a part
 
 | ID | Nome | Família | Modo disponível | Dificuldade | Recorde | Regras e controles específicos |
 | --- | --- | --- | --- | --- | --- | --- |
+| `ponteiros` | Ponteiros em Fase | Sincronização e aritmética modular | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Sincronize 3 a 5 relógios com períodos diferentes fazendo o tempo global avançar 1, 5 ou 10 minutos, com retorno e desfazer. Vitória quando todas as fases estão em zero. |
 | `trilhos` | Trilhos Cruzados | Rotas e permutações | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Configure desvios para permutar três trilhos e conduzir cada trem à saída objetivo. Três a cinco desvios, teste de rota determinístico, feedback, reinício e teclado/toque. |
 | `arquipelago` | Pontes do Arquipélago | Lógica de grafos | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Conecte todas as ilhas com até duas pontes por par alinhado, respeitando os números e evitando cruzamentos. Gerador baseado em árvore conectada, desfazer, teclado/toque e reinício. |
 | `engrenagens` | Engrenagens do Tempo | Lógica / engrenagens conectadas | Solo, sem pressa | Iniciante / Intermediário / Avançado | pontos | Girar uma engrenagem modifica a escolhida e as vizinhas em sentido inverso. Alinhe todas ao norte. Puzzle gerado por giros reversíveis, desfazer, reiniciar, novo desafio e teclado/toque. |

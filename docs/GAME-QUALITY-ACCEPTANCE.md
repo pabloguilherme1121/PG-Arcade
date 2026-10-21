@@ -63,3 +63,8 @@ Motor independente: 6, 8 ou 9 ilhas, até duas pontes, detecção de cruzamento,
 ## 111º título — Trilhos Cruzados (a certificar)
 
 Motor real de rota por permutações de três trens, 3/4/5 desvios, alvo gerado por uma sequência solucionável, validação de destino para cada trem, pontuação, feedback, reinício, três dificuldades, toque e teclado. Testes unitários de 180 instâncias de geração e busca de solução; E2E em 320/390/844×390. Publicação requer gates no mesmo HEAD e aceite físico separado.
+
+
+## 112º título — Ponteiros em Fase (a certificar)
+
+Motor aritmético de relógios com períodos diferentes, solução única até o horizonte do jogo, três dificuldades, avanço e retorno do tempo simulado, desfazer, vitória, recorde, comandos por toque e teclado. Provar por unidade 180 instâncias determinísticas, congruências e solução; E2E 320/390/844×390. Requer gates e publicação no HEAD final da cadeia para confirmar aceite.

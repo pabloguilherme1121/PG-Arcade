@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **111 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **112 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -130,3 +130,8 @@ Quebra-cabeça de 6, 8 ou 9 ilhas numeradas conectadas por até duas pontes entr
 ### Trilhos Cruzados (111º jogo — expansão em PR)
 
 Configure três, quatro ou cinco desvios entre três trilhos para que os trens A/B/C alcancem as saídas corretas. Trocas de vias preservam a ausência de colisões; os desafios são gerados por rotas alcançáveis. O motor verifica cada percurso, dá feedback individual, registra pontuação e reinicia sem custo, bot ou serviço externo. Teclado, toque e mobile 320/390/844×390 são cobertos por testes. A PR permanece draft até os gates e merge seguro da base.
+
+
+### Ponteiros em Fase (112º jogo — expansão em PR)
+
+Sincronize três a cinco relógios de ciclos diferentes com um relógio global de tempo simulado. O desafio tem uma solução matematicamente verificável por congruências, avanço de 1/5/10 minutos, retorno, desfazer, reinício, recorde, teclado e toque. Motor lazy e sem dependências externas, bots ou modos online. Precisa de CI e integração segura da cadeia anterior.

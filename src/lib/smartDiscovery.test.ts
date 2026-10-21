@@ -20,7 +20,7 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
     for(const id of ['xadrez','rhythm','balloons','arithmetic','sudoku']) expect(supported).not.toContain(id);
     expect(new Set(supported).size).toBe(supported.length);
   });
-  it("tem classificação determinística para os 111 jogos sem inventar modos",()=>{
+  it("tem classificação determinística para os 112 jogos sem inventar modos",()=>{
     expect(games).toHaveLength(CATALOG_SIZE);
     for(const game of games){
       const tags=modeTags(game);
