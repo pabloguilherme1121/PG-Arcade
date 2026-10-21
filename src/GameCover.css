@@ -28,36 +28,11 @@
   isolation: isolate;
   pointer-events: none;
 }
-
-/* Artwork stays category-themed while each catalog card avoids a replicated SVG subtree. */
-.preview.game-cover {
-  background: linear-gradient(130deg,var(--cover-base,#142942),#080d1b);
+.game-cover svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
-.preview.game-cover::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at var(--cover-orbit,82%) 24%, color-mix(in srgb,var(--cover-secondary,#8dc5e9) 11%,transparent) 0 27%,transparent 28%),
-    radial-gradient(circle at 13% 92%, color-mix(in srgb,var(--cover-accent,#d6f7a0) 13%,transparent) 0 32%,transparent 33%),
-    repeating-linear-gradient(var(--cover-angle,128deg),transparent 0 22px,color-mix(in srgb,var(--cover-secondary,#8dc5e9) 15%,transparent) 22px 23px,transparent 23px 44px);
-  pointer-events: none;
-}
-.game-cover .cover-mechanic { z-index: 1; }
-.game-cover .cover-brand,
-.game-cover .cover-chapter {
-  position: absolute;
-  z-index: 2;
-  bottom: 7.5%;
-  font-weight: 800;
-  pointer-events: none;
-  white-space: nowrap;
-  font-size: clamp(9px,1vw,12px);
-  letter-spacing: .08em;
-  text-shadow: 0 2px 4px #050d16;
-}
-.game-cover .cover-brand { left: 6%; color: #f7f9fe; }
-.game-cover .cover-chapter { right: 6%; color: var(--cover-secondary,#8dc5e9); font-family: monospace; }
 .game-card .game-cover {
   border: 1px solid #526b8d;
   box-shadow: inset 0 1px #ffffff24, 0 9px 22px #0005;
