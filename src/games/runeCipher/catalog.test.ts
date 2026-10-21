@@ -5,10 +5,10 @@ import {gameCapabilities} from "../../lib/gameCapabilities";
 import {gameHelp} from "../../lib/gameHelp";
 import {recordUnits} from "../../lib/recordUnits";
 import {modeTags} from "../../lib/smartDiscovery";
-it("122º jogo: Rune Cipher tem registro e modos reais",()=>{
- expect(CATALOG_SIZE).toBe(122);
- expect(games).toHaveLength(122);
- expect(new Set(games.map(g=>g.id)).size).toBe(122);
+it("123º jogo: Rune Cipher tem registro e modos reais",()=>{
+ expect(CATALOG_SIZE).toBe(123);
+ expect(games).toHaveLength(123);
+ expect(new Set(games.map(g=>g.id)).size).toBe(123);
  expect(recordUnits.runas).toBe("pontos");
  expect(gameHelp.runas.length).toBeGreaterThan(100);
  expect(gameCapabilities("runas")).toMatchObject({solo:true,online:false,bot:false,localPlayers:1,timedSessions:false,swipe:false});
