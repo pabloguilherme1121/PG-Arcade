@@ -1,6 +1,7 @@
 import { expandedGames } from "./expandedCatalog";
 import { newGames } from "./newCatalog";
 export const games = [
+  {id:"meteoros",name:"Defensor de Meteoros",description:"Mova um escudo para refletir meteoros antes que atinjam sua base.",category:"Reflexos"},
   {id:"trem",name:"Trem Sem Freio",description:"Controle desvios durante o movimento dos trens e evite colisões nas estações.",category:"Estratégia"},
   {id:"fortalezas",name:"Fortalezas de Turnos",description:"Proteja três linhas com defensores, economia e ondas de invasores.",category:"Estratégia"},
   {id:"reles",name:"Rede de Relés",description:"Conecte dispositivos à estação-base usando relés e orçamento limitado.",category:"Estratégia"},
