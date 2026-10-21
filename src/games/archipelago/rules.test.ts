@@ -31,6 +31,15 @@ describe("Pontes do Arquipélago — geração e jogabilidade",()=>{
   expect(setBridge(play,0)).toBe(play);
   expect(undoBridge(play).phase).toBe("playing");
  });
+ it("bloqueia pontes cruzadas antes de alterar a partida",()=>{
+  const base=createArchipelago(1,13);
+  const first=base.bridges.findIndex((a,i)=>base.bridges.some((b,j)=>i!==j&&bridgesCross(a,b,base.islands)));
+  expect(first).toBeGreaterThanOrEqual(0);
+  const second=base.bridges.findIndex((b,j)=>j!==first&&bridgesCross(base.bridges[first],b,base.islands));
+  expect(second).toBeGreaterThanOrEqual(0);
+  const active=setBridge(base,first);
+  expect(setBridge(active,second)).toBe(active);
+ });
  it("não aceita configuração inválida",()=>{
   expect(()=>createArchipelago(3 as never)).toThrow();
   expect(()=>createArchipelago(0,-1)).toThrow();

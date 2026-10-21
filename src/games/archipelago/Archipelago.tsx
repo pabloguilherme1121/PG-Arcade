@@ -21,7 +21,8 @@ export default function Archipelago({record,onRecord}:{record:number;onRecord:(n
    })}
    {game.islands.map(island=>{const current=game.bridges.reduce((n,b)=>n+((b.a===island.id||b.b===island.id)?b.count:0),0);
     return <g key={island.id} data-island={island.id}><circle cx={pad+island.x*step} cy={pad+island.y*step} r="21" stroke={current===island.goal?"#abf3c7":"#f5c97f"} strokeWidth="4" fill="#254258"/>
-      <text x={pad+island.x*step} y={pad+island.y*step+6} fontSize="19" fontWeight="bold" fill="white" textAnchor="middle">{island.goal}</text></g>;
+      <text x={pad+island.x*step} y={pad+island.y*step+6} fontSize="19" fontWeight="bold" fill="white" textAnchor="middle">{island.goal}</text>
+      <text x={pad+island.x*step+23} y={pad+island.y*step-20} fontSize="13" fontWeight="bold" fill="#ffffff" textAnchor="middle">#{island.id+1}</text></g>;
    })}
   </svg>
   <div className="archipelago-links" role="group" aria-label="Pontes disponíveis">
