@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **112 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **113 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -135,3 +135,8 @@ Configure três, quatro ou cinco desvios entre três trilhos para que os trens A
 ### Ponteiros em Fase (112º jogo — expansão em PR)
 
 Sincronize três a cinco relógios de ciclos diferentes com um relógio global de tempo simulado. O desafio tem uma solução matematicamente verificável por congruências, avanço de 1/5/10 minutos, retorno, desfazer, reinício, recorde, teclado e toque. Motor lazy e sem dependências externas, bots ou modos online. Precisa de CI e integração segura da cadeia anterior.
+
+
+### Cofre de Sombras (113º jogo — expansão em PR)
+
+Quebra-cabeça solo de camadas de máscaras giratórias e 16 células em grade 4×4: alcance a silhueta-alvo sobrepondo três a cinco máscaras de filtros ópticos alternados, com rotação de 90° a cada toque. Os enigmas são gerados a partir de uma solução, com desfazer, reiniciar, recorde e controles por toque/teclado. Módulo lazy e capa SVG, sem bots ou rede fictícios. Exige CI e integração da base.

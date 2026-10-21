@@ -68,3 +68,8 @@ Motor real de rota por permutações de três trens, 3/4/5 desvios, alvo gerado 
 ## 112º título — Ponteiros em Fase (a certificar)
 
 Motor aritmético de relógios com períodos diferentes, solução única até o horizonte do jogo, três dificuldades, avanço e retorno do tempo simulado, desfazer, vitória, recorde, comandos por toque e teclado. Provar por unidade 180 instâncias determinísticas, congruências e solução; E2E 320/390/844×390. Requer gates e publicação no HEAD final da cadeia para confirmar aceite.
+
+
+## 113º título — Cofre de Sombras (a certificar)
+
+Motor real com 3–5 máscaras, rotação de 90 graus, composição por paridade e silhueta 4×4, geração determinística com solução garantida, vitória por igualdade exata, desfazer, teclado/toque, reset, recorde e três dificuldades. Testes de 180 seeds, transições e solução; E2E mobile 320/390/844×390. Exigir gates em HEAD final.
