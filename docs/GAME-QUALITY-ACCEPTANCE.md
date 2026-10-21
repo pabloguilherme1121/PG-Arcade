@@ -108,3 +108,8 @@ Motor matemático por distâncias de Manhattan a três pontos. Grades 5×5/7×7/
 ## 120º título — Portas Lógicas (a certificar)
 
 Circuitos booleanos com 1/2/3 portas encadeadas, quatro operações implementadas, inversor de saída, avaliação de quatro entradas binárias e tabela-verdade alvo gerada por solução construtiva não trivial. Testes de 300 seeds, operações booleanas, circuito completo, undo, vitória e reset; E2E mobile 320/390/844×390. Exigir quality, Chromium, Firefox, WebKit, validate, CodeQL, bundle, artifact/deploy no HEAD final. Android físico permanece separado.
+
+
+## 121º título — Mercadores de Rotas (a certificar)
+
+Economia real de 3 produtos e 4 cidades, compras e vendas com preços e caixa finitos, capacidade máxima de três cargas, rotas de consumo fixo de combustível, reabastecimento, limites de turnos, meta de lucro, estados de vitória/derrota e registro de recordes. Provas de solução por jogadas legítimas em 120 cenários unitários e E2E 320/390/844×390 para negociar, viajar, vender e alterar dificuldade. Exigir quality, Chromium, Firefox, WebKit, validate, CodeQL e bundle raw <400 KiB / gzip <120 KiB antes de integrar.

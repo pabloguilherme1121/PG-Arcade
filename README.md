@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **120 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **121 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -175,3 +175,8 @@ Encontre um destino escondido por distância de Manhattan a faróis fixos. Três
 ### Portas Lógicas (120º título — PR de expansão)
 
 Circuitos booleanos editáveis com uma a três portas lógicas, inversor opcional, tabela-verdade de quatro combinações e metas sempre alcançáveis. O jogador altera E, OU, XOU e NÃO-E e a saída final até reproduzir o resultado esperado. Jogadas, desfazer, vitória, recorde, três dificuldades, capa SVG, motor lazy, toque e teclado. Testes de 300 desafios e E2E 320/390/844×390. Não inclui bots nem online e aguarda CI da cadeia antes da publicação.
+
+
+### Mercadores de Rotas (121º título — PR de expansão)
+
+Negocie mercadorias entre Porto, Serra, Vale e Capital em turnos limitados. Transporte três tipos de produtos com cargas e caixa finitos, pague combustível por estradas, reabasteça e venda em mercados para atingir lucro positivo em três dificuldades. Soluções construtivas verificadas em múltiplas sementes, 100% solo/offline com recordes, controles touch/teclado, capa SVG e import lazy. A PR deve passar gates E2E e integração antes da publicação.

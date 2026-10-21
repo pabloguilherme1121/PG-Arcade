@@ -25,7 +25,7 @@ import {
   newMotion,
 } from "./motionExpansion";
 import { normalizeProgress } from "./progress";
-describe("120-game catalog contract", () => {
+describe("121-game catalog contract", () => {
   it("registers fifty additional unique games, with help and persistent progress", () => {
     expect(games).toHaveLength(CATALOG_SIZE);
     expect(newGames).toHaveLength(50);
