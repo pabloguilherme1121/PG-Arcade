@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 for (const width of [320, 390, 1280]) {
   test(`project discovery remains usable at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
-    await page.goto("./");
+    await page.goto("./", { waitUntil: "domcontentloaded" });
     // Resolve, scroll and inspect in one browser call. Locator helpers resolve
     // extra handles whose full-catalog trace snapshots dominated the deadline.
     const ready = await page.waitForFunction(() => {
