@@ -201,5 +201,5 @@ it("shooting combos have a bounded bonus", () => {
 it("all fifty games have specific help and valid record units", () => {
   expect(games.length).toBe(CATALOG_SIZE);
   for (const g of games) expect(gameHelp[g.id].length).toBeGreaterThan(50);
-  expect(Object.keys(recordUnits)).toHaveLength(102);
+  expect(Object.keys(recordUnits)).toHaveLength(103);
 });
