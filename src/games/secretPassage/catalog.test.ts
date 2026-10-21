@@ -6,10 +6,10 @@ import {filterByMode,modeTags} from "../../lib/smartDiscovery";
 import {gameHelp} from "../../lib/gameHelp";
 import {recordUnits} from "../../lib/recordUnits";
 describe("Passagem Secreta catalog contracts",()=>{
-  it("preserves 125 unique real titles and records",()=>{
-    expect(CATALOG_SIZE).toBe(125);
+  it("preserves 126 unique real titles and records",()=>{
+    expect(CATALOG_SIZE).toBe(126);
     expect(games).toHaveLength(CATALOG_SIZE);
-    expect(new Set(games.map(g=>g.id)).size).toBe(125);
+    expect(new Set(games.map(g=>g.id)).size).toBe(126);
     expect(recordUnits.passagem).toBe("pontos");
     expect(gameHelp.passagem).toMatch(/simultaneamente/);
   });
