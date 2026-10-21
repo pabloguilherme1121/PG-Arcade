@@ -73,6 +73,7 @@ const collectionPlayers = Object.fromEntries(
   ]),
 ) as unknown as Record<ExpandedId, ComponentType<PlayerProps>>;
 const players = {
+  bordas: lazy(() => import("./games/enchantedEdges/EnchantedEdges")),
   cubos: lazy(() => import("./games/hiddenCubes/HiddenCubes")),
   balancas: lazy(() => import("./games/balanceRiddle/BalanceRiddle")),
   fios: lazy(() => import("./games/wirePaths/WirePaths")),
