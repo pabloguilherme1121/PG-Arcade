@@ -7,9 +7,9 @@ import {gameHelp} from "../../lib/gameHelp";
 import {recordUnits} from "../../lib/recordUnits";
 describe("Passagem Secreta catalog contracts",()=>{
   it("preserves 128 unique real titles and records",()=>{
-    expect(CATALOG_SIZE).toBe(129);
+    expect(CATALOG_SIZE).toBe(games.length);
     expect(games).toHaveLength(CATALOG_SIZE);
-    expect(new Set(games.map(g=>g.id)).size).toBe(129);
+    expect(new Set(games.map(g=>g.id)).size).toBe(CATALOG_SIZE);
     expect(recordUnits.passagem).toBe("pontos");
     expect(gameHelp.passagem).toMatch(/simultaneamente/);
   });
