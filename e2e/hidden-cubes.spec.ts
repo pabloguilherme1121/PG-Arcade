@@ -5,6 +5,10 @@ for(const viewport of [{width:320,height:740},{width:390,height:844},{width:844,
   await page.goto("./#/jogar/cubos");
   const game=page.locator("[data-hidden-cubes]");
   await expect(game).toBeVisible();
+  await expect(game.getByRole("group",{name:"Vista superior exigida"})).toBeVisible();
+  await expect(game.getByRole("group",{name:"Construir a escultura"})).toBeVisible();
+  await expect(game.getByRole("img",{name:/Linha 1, coluna 1/})).toBeVisible();
+  await expect(game.getByRole("button",{name:/Linha 1, coluna 1: altura/})).toBeVisible();
   await expect(game.locator("[data-cube-cell]")).toHaveCount(9);
   await game.locator('[data-cube-cell="0"]').click();
   await expect(game.locator('[data-cube-cell="0"]')).toHaveAttribute("data-cube-height","1");
