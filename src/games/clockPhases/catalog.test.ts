@@ -5,10 +5,10 @@ import {gameCapabilities} from "../../lib/gameCapabilities";
 import {gameHelp} from "../../lib/gameHelp";
 import {recordUnits} from "../../lib/recordUnits";
 import {modeTags} from "../../lib/smartDiscovery";
-it("Ponteiros em Fase registra 113 IDs e capacidade verdadeira",()=>{
- expect(CATALOG_SIZE).toBe(113);
- expect(games).toHaveLength(113);
- expect(new Set(games.map(g=>g.id)).size).toBe(113);
+it("Ponteiros em Fase registra 114 IDs e capacidade verdadeira",()=>{
+ expect(CATALOG_SIZE).toBe(114);
+ expect(games).toHaveLength(114);
+ expect(new Set(games.map(g=>g.id)).size).toBe(114);
  expect(recordUnits.ponteiros).toBe("pontos");
  expect(gameHelp.ponteiros.length).toBeGreaterThan(100);
  expect(gameCapabilities("ponteiros")).toMatchObject({solo:true,online:false,bot:false,localPlayers:1,timedSessions:false,swipe:false});
