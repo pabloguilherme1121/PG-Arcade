@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **117 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **118 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -160,3 +160,8 @@ Dedução de uma moeda falsa mais pesada ou leve por pesagens reais, calculadas 
 ### Cubos Ocultos (117º título — PR de expansão)
 
 Reconstrução em 3D a partir das vistas frontal, lateral e superior em tabuleiros 3×3 a 5×5. Cada casa permite 0–4 alturas; as projeções definem as metas e toda escultura é gerada a partir de uma solução válida. Inclui toque, teclado, desfazer, reiniciar, novo desafio, recorde e testes de 300 cenários de geração, conclusão real e E2E mobile. Módulo lazy e sem rede ou bots. A PR precisa ser certificada antes da integração.
+
+
+### Bordas Encantadas (118º título — PR de expansão)
+
+Mosaicos rotativos 3×3, 4×4 e 5×5 gerados de arestas coincidentes com ao menos uma solução garantida. Toque/teclado gira cada peça por 90°; a vitória exige cores internas correspondentes e paredes cinzentas voltadas à borda externa. Inclui desfazer, pontuação, recorde, capa SVG, lazy load e testes de 300 gerações/soluções e E2E 320/390/844×390. Sem bot, internet ou cronômetro; aguarda os gates de integração da cadeia.

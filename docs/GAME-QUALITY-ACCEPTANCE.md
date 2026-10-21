@@ -93,3 +93,8 @@ Sistema de pesagens de 4/6/8 moedas com exatamente uma falsa mais pesada ou leve
 ## 117º título — Cubos Ocultos (a certificar)
 
 Reconstrução 3D por vistas ortográficas reais: tabuleiros 3×3/4×4/5×5, altura máxima 2/3/4, alvo superior com ocupação e projeções frontal/lateral com máximos. Geração determinística a partir de construções solucionáveis, aceitação de qualquer reconstrução que satisfaça todas as vistas, desfazer, vitória e recorde. Testes de 300 sementes, conclusão e imutabilidade; E2E 320/390/844×390. Abertura em draft, sujeito a quality, 3 navegadores, validate, bundle, artifact/deploy e Android físico separado.
+
+
+## 118º título — Bordas Encantadas (a certificar)
+
+Motor independente de rotação de peças e encaixe ortogonal. Geração de 3×3, 4×4 e 5×5 com solução construtiva e embaralhamento de rotações; paredes fechadas externas, igualdade de cores internas, verificação de todas as conexões e condição de vitória exata. Testes 300 seeds, rotações, solução, undo, integridade; E2E de 320/390/844×390. Exigir gates em HEAD final, CodeQL, bundle, artefato, deploy e Android físico separado.
