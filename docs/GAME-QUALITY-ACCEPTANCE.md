@@ -133,3 +133,8 @@ Motor de manejo de fazenda: 4 canteiros, fertilidade 0–3, cereais/raízes/legu
 ## 125º jogo — Cartas de Climas (a certificar)
 
 Duas mãos independentes de seis cartas, 3–5 rodadas, terrain/bonus climático, fase de passagem ocultando cartas adversárias, escolhas sem repetição, resolução de força e pontos, conclusão por vencedor/empate. Gerador determinístico e 270 cenários de integridade, 105 partidas simuladas por ações legítimas, E2E em 320/390/844×390 cobrindo segredo, handoff, alternância, reinício. Somente `dupla` local: bot/online desligados. Exigir quality, 3 browsers, validate, CodeQL, bundle inicial raw <400/gzip <120 KiB, deploy e Android físico separados.
+
+
+## 126º título — Alquimia de Elementos (a certificar)
+
+Motor independente de crafting com nove recursos, seis receitas determinísticas, consumo atômico de dois ingredientes, estoque e limite de ações finitos, metas dependentes da dificuldade, undo e vitória real. Testes de 300 geradores e 180 provas construtivas, prevenção de receitas inválidas, imutabilidade/undo, E2E mobile em 320/390/844×390 com armazém, receita, desfazer e overflow. Aceite exige quality, Chromium, Firefox, WebKit, validate, CodeQL, bundle inicial <400 KiB raw/<120 KiB gzip, artifact/deploy no HEAD, Android físico separado.

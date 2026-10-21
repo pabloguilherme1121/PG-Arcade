@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **125 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **126 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -200,3 +200,8 @@ Estratégia agrícola em quatro canteiros com três culturas de efeitos distinto
 ### Cartas de Climas (125º jogo — PR de expansão)
 
 Duelo local por turnos para exatamente duas pessoas compartilhando um celular. Cada jogador tem seis cartas próprias (Sol/Chuva/Vento, forças 1–6) e escolhe em segredo; tela de passagem evita mostrar a mão adversária. Terrenos dão bônus climáticos, rodada resolve poder real e atribui 2 pontos ao vencedor ou 1 a cada em empates. Três durações (3–5 rodadas), placar/vitória/empate, recorde, SVG próprio, teclado/toque e E2E mobile. Sem bot nem multiplayer remoto.
+
+
+### Alquimia de Elementos (126º título — PR de expansão)
+
+Combinação estratégica de Fogo/Água/Terra com receitas encadeadas para obter Vapor, Argila, Metal, Elixir, Cristal e Obra-prima. Cada produção consome reagentes de estoque finito, podendo tornar uma meta inalcançável se você desperdiçar ingredientes. Três dificuldades, limite de ações, desfazer, vitória e derrota, recorde local, capa SVG, lazy load e testes unitários de 300 seeds e 180 soluções reais, E2E mobile 320/390/844×390. Offline e sem bot.
