@@ -5,10 +5,10 @@ import {gameCapabilities} from "../../lib/gameCapabilities";
 import {gameHelp} from "../../lib/gameHelp";
 import {recordUnits} from "../../lib/recordUnits";
 import {modeTags} from "../../lib/smartDiscovery";
-it("Enigma das Balanças registra 116 IDs e capacidades honestas",()=>{
- expect(CATALOG_SIZE).toBe(116);
- expect(games).toHaveLength(116);
- expect(new Set(games.map(g=>g.id)).size).toBe(116);
+it("Enigma das Balanças registra 117 IDs e capacidades honestas",()=>{
+ expect(CATALOG_SIZE).toBe(117);
+ expect(games).toHaveLength(117);
+ expect(new Set(games.map(g=>g.id)).size).toBe(117);
  expect(recordUnits.balancas).toBe("pontos");
  expect(gameHelp.balancas.length).toBeGreaterThan(100);
  expect(gameCapabilities("balancas")).toMatchObject({solo:true,online:false,bot:false,localPlayers:1,timedSessions:false,swipe:false});

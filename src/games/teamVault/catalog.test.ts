@@ -8,8 +8,8 @@ import {CATALOG_SIZE} from "../../lib/catalogRelease";
 describe("Cofre em Equipe — discovery accuracy",()=>{
   it("registers a real new playable title without claiming online, bots or solo",()=>{
     expect(games).toHaveLength(CATALOG_SIZE);
-    expect(CATALOG_SIZE).toBe(116);
-    expect(new Set(games.map(g=>g.id)).size).toBe(116);
+    expect(CATALOG_SIZE).toBe(117);
+    expect(new Set(games.map(g=>g.id)).size).toBe(117);
     const capability=gameCapabilities("cofre");
     expect(capability).toMatchObject({solo:false,online:false,localPlayers:4,bot:false,timedSessions:false});
     expect(recordUnits.cofre).toBe("pontos");
