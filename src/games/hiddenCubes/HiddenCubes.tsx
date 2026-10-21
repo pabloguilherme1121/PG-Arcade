@@ -17,8 +17,8 @@ export default function HiddenCubes({record,onRecord}:{record:number;onRecord:(n
     <option value="2">Difícil — 5×5, 4 camadas</option>
    </select></label>
   <div className="cubes-target">
-   <div><strong>Planta da escultura</strong><div className="cubes-top" role="grid" aria-label="Vista superior exigida" style={{gridTemplateColumns:`repeat(${game.size},minmax(0,1fr))`}}>
-    {game.target.top.map((cell,i)=><span key={i} data-cube-target={cell} aria-label={`Linha ${Math.floor(i/game.size)+1}, coluna ${i%game.size+1}: ${cell?"ocupada":"vazia"}`} role="gridcell">{cell?"■":"·"}</span>)}
+   <div><strong>Planta da escultura</strong><div className="cubes-top" role="group" aria-label="Vista superior exigida" style={{gridTemplateColumns:`repeat(${game.size},minmax(0,1fr))`}}>
+    {game.target.top.map((cell,i)=><span key={i} data-cube-target={cell} aria-label={`Linha ${Math.floor(i/game.size)+1}, coluna ${i%game.size+1}: ${cell?"ocupada":"vazia"}`} role="img">{cell?"■":"·"}</span>)}
    </div></div>
    <div className="cubes-projections"><strong>Alturas-alvo</strong>
     <p>Frente (colunas): <b>{game.target.front.join(" · ")}</b></p>
@@ -26,7 +26,7 @@ export default function HiddenCubes({record,onRecord}:{record:number;onRecord:(n
    </div>
   </div>
   <div className="cubes-construction">
-   <div className="cubes-board" role="grid" aria-label="Construir a escultura" style={{gridTemplateColumns:`repeat(${game.size},minmax(0,1fr))`}}>
+   <div className="cubes-board" role="group" aria-label="Construir a escultura" style={{gridTemplateColumns:`repeat(${game.size},minmax(0,1fr))`}}>
     {game.heights.map((height,i)=><button type="button" key={i} data-cube-cell={i} data-cube-height={height} disabled={game.phase==="won"}
       aria-label={`Linha ${Math.floor(i/game.size)+1}, coluna ${i%game.size+1}: altura ${height}. Aumentar pilha`}
       onClick={()=>setGame(g=>changeCube(g,i))}>
