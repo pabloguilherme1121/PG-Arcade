@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { newMeteorGame } from "../src/games/meteorShield/rules";
+import { advanceMeteor, moveShield, newMeteorGame } from "../src/games/meteorShield/rules";
 
 for (const viewport of [{width:320,height:740},{width:390,height:844},{width:844,height:390}]) {
   test(`Defensor de Meteoros responde ao toque sem overflow em ${viewport.width}px`, async ({ page }) => {
@@ -30,10 +30,10 @@ test("Defensor de Meteoros reflete toda a chuva e permite undo da vitória", asy
     if (game.shield !== target) {
       const direction = game.shield < target ? 1 : -1;
       await panel.getByRole("button", { name: direction === 1 ? "Mover escudo à direita" : "Mover escudo à esquerda" }).click();
-      game = { ...game, shield: game.shield + direction };
+      game = moveShield(game, direction);
     }
     await panel.getByRole("button", { name: "Avançar tempo" }).click();
-    game = { ...game, tick: game.tick + 1 };
+    game = advanceMeteor(game);
     if (await panel.getByText(/Vitória!/).count()) break;
   }
   await expect(panel).toContainText("Vitória!");
