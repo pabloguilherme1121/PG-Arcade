@@ -1,6 +1,7 @@
 import { expandedGames } from "./expandedCatalog";
 import { newGames } from "./newCatalog";
 export const games = [
+  {id:"runas",name:"Código de Runas",description:"Decifre uma mensagem substituindo runas por letras e resolva o mistério.",category:"Inteligência"},
   {id:"sombras",name:"Cofre de Sombras",description:"Gire máscaras e reproduza a silhueta que abre o cofre.",category:"Inteligência"},
   {id:"ponteiros",name:"Ponteiros em Fase",description:"Sincronize relógios de ciclos diferentes em um instante comum.",category:"Inteligência"},
   {id:"trilhos",name:"Trilhos Cruzados",description:"Configure desvios e envie três trens aos destinos corretos.",category:"Estratégia"},
