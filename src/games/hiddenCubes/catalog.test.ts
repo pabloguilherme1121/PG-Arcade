@@ -5,10 +5,10 @@ import {gameCapabilities} from "../../lib/gameCapabilities";
 import {gameHelp} from "../../lib/gameHelp";
 import {recordUnits} from "../../lib/recordUnits";
 import {modeTags} from "../../lib/smartDiscovery";
-it("Cubos Ocultos registra 119 jogos sem modos fictícios",()=>{
- expect(CATALOG_SIZE).toBe(119);
- expect(games).toHaveLength(119);
- expect(new Set(games.map(g=>g.id)).size).toBe(119);
+it("Cubos Ocultos registra 120 jogos sem modos fictícios",()=>{
+ expect(CATALOG_SIZE).toBe(120);
+ expect(games).toHaveLength(120);
+ expect(new Set(games.map(g=>g.id)).size).toBe(120);
  expect(recordUnits.cubos).toBe("pontos");
  expect(gameHelp.cubos.length).toBeGreaterThan(100);
  expect(gameCapabilities("cubos")).toMatchObject({solo:true,online:false,bot:false,localPlayers:1,timedSessions:false,swipe:false});
