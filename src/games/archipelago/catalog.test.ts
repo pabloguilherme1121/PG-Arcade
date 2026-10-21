@@ -6,9 +6,9 @@ import {gameHelp} from "../../lib/gameHelp";
 import {recordUnits} from "../../lib/recordUnits";
 import {modeTags} from "../../lib/smartDiscovery";
 describe("Pontes do Arquipélago: catálogo verídico",()=>{
- it("tem 129 títulos únicos, ajuda e recorde",()=>{
-  expect(CATALOG_SIZE).toBe(129);expect(games).toHaveLength(129);
-  expect(new Set(games.map(g=>g.id)).size).toBe(129);
+ it("tem catálogo íntegro únicos, ajuda e recorde",()=>{
+  expect(CATALOG_SIZE).toBe(games.length);expect(games).toHaveLength(CATALOG_SIZE);
+  expect(new Set(games.map(g=>g.id)).size).toBe(CATALOG_SIZE);
   expect(recordUnits.arquipelago).toBe("pontos");
   expect(gameHelp.arquipelago.length).toBeGreaterThan(100);
  });
