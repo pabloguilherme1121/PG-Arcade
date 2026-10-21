@@ -7,9 +7,9 @@ import {recordUnits} from "../../lib/recordUnits";
 import {modeTags} from "../../lib/smartDiscovery";
 describe("109º jogo — Engrenagens do Tempo",()=>{
   it("inclui exatamente um ID novo, capa, instruções e pontuação",()=>{
-    expect(CATALOG_SIZE).toBe(117);
+    expect(CATALOG_SIZE).toBe(118);
     expect(games).toHaveLength(CATALOG_SIZE);
-    expect(new Set(games.map(g=>g.id)).size).toBe(117);
+    expect(new Set(games.map(g=>g.id)).size).toBe(118);
     expect(games.find(g=>g.id==="engrenagens")?.name).toBe("Engrenagens do Tempo");
     expect(gameHelp.engrenagens.length).toBeGreaterThan(100);
     expect(recordUnits.engrenagens).toBe("pontos");
