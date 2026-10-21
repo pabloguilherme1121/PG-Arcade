@@ -1,0 +1,26 @@
+.relay-network{width:min(100%,850px);margin:auto;padding:clamp(10px,3vw,20px);display:grid;gap:12px;min-width:0;background:#152c43;color:#f1f8ff;border:1px solid #7aa6c5;border-radius:18px}
+.relay-network p{margin:0;line-height:1.5}
+.relay-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.relay-stats p{border-radius:10px;background:#254560;text-align:center;padding:9px 5px;font-size:.8rem}
+.relay-stats strong{display:block;color:#c2f4d6;font-size:1.1rem}
+.relay-instructions,.relay-legend{font-size:.91rem}
+.relay-difficulty{display:grid;gap:6px;font-weight:700}
+.relay-difficulty select{max-width:100%;width:100%;min-height:48px;background:#e9f6ff;color:#173149;border:2px solid #88bcd6;border-radius:9px;padding:8px;font-size:16px}
+.relay-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;border-radius:12px;border:1px solid #6b9bb9;padding:8px}
+.relay-board{display:grid;gap:4px;min-width:260px;max-width:440px;margin:auto}
+.relay-board button{min-width:0;min-height:46px;height:clamp(46px,8vw,66px);padding:2px;display:grid;place-content:center;gap:1px;border-radius:8px;border:2px solid #5b7796;background:#24465f;color:#eaf7ff;font:inherit;touch-action:manipulation}
+.relay-board button:disabled{opacity:.82}
+.relay-board button:not(:disabled){border-color:#a9d9cf;background:#38675c;cursor:pointer}
+.relay-board button[data-relay-placed="true"]{background:#7d6139;border-color:#f4dc9b}
+.relay-board button[data-relay-powered="true"]{background:#376a63;border-color:#b8f4c0}
+.relay-board button[data-relay-covered="true"]{background:#30666b;color:#c4ffd3}
+.relay-board button span{font-weight:800;font-size:1.4rem}
+.relay-board button small{font-size:.64rem}
+.relay-feedback{padding:10px;border-radius:9px;border:1px solid #8db8c9;background:#244a64}
+.relay-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.relay-actions button{min-height:48px;border:2px solid #c5f2de;border-radius:9px;background:#c5f2de;color:#173c30;font:inherit;font-weight:700;padding:8px 4px}
+.relay-actions button:disabled{opacity:.5}
+.relay-network :is(button,select,.relay-scroll):focus-visible{outline:3px solid #ffdc9c;outline-offset:3px}
+.relay-legend{color:#d0e7ef}
+@media(max-width:360px){.relay-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.relay-actions{grid-template-columns:1fr}}
+@media(min-width:740px) and (max-height:500px){.relay-network{width:min(100%,1020px);grid-template-columns:1fr 1fr}.relay-scroll,.relay-board{grid-column:2}.relay-stats,.relay-difficulty,.relay-feedback,.relay-actions,.relay-instructions,.relay-legend{grid-column:1}}
