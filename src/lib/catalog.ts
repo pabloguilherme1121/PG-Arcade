@@ -1,6 +1,7 @@
 import { expandedGames } from "./expandedCatalog";
 import { newGames } from "./newCatalog";
 export const games = [
+  {id:"colheita",name:"Colheita das Estações",description:"Alterne culturas, cuide do solo e da água e atinja a meta de produção.",category:"Estratégia"},
   {id:"resgate",name:"Barcos de Resgate",description:"Resgate pessoas entre ilhas com combustível, marés e prazos limitados.",category:"Estratégia"},
   {id:"farois",name:"Defesa de Faróis",description:"Posicione faróis para cobrir rotas com limite de sobreposição.",category:"Estratégia"},
   {id:"mercadores",name:"Mercadores de Rotas",description:"Compre, transporte e venda cargas entre cidades com combustível e turnos limitados.",category:"Estratégia"},
