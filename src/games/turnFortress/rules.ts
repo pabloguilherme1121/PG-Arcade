@@ -32,7 +32,7 @@ export function newFortressGame(difficulty: Difficulty = 0, seed = 23): Fortress
   }
   const rounds = 6 + difficulty * 2;
   const waves: Wave[] = Array.from({ length: rounds }, (_, i) => ({
-    lane: i < 3 ? (i + seed % 3) % 3 : (i + seed % 3 + Math.floor(seed / 4) % 3) % 3,
+    lane: (i + seed % 3) % 3,
     hp: 1 + ((Math.imul(i + 1, 1103515245) ^ seed) >>> 0) % 3,
   }));
   const initialHealth = 3 + (difficulty === 2 ? 0 : 1);
