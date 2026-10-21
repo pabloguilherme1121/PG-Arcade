@@ -1,4 +1,4 @@
-# Inventário dos 124 jogos
+# Inventário dos 125 jogos
 
 Inventário extraído do catálogo, gameHelp e unidades de recorde em 8 de outubro de 2026. Regras e controles abaixo descrevem a implementação; este documento não certifica uma partida completa de cada jogo. A cobertura profunda permanece nos testes de motores e famílias.
 
@@ -6,6 +6,7 @@ Todos mantêm visitas e favoritos locais. Nenhum restaura automaticamente a part
 
 | ID | Nome | Família | Modo disponível | Dificuldade | Recorde | Regras e controles específicos |
 | --- | --- | --- | --- | --- | --- | --- |
+| `climas` | Cartas de Climas | Duelo local de cartas e bônus climáticos | 2 jogadores no aparelho | 3, 4 ou 5 rodadas | pontos; maior resultado | Escolhas secretas alternadas com passagem de aparelho, cartas finitas, terreno de bônus e resolução de força, pontuação por rodada e vencedor/empate. |
 | `colheita` | Colheita das Estações | Rotação de culturas e manejo de água/solo | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Plante cereais, raízes e leguminosas em quatro canteiros considerando fertilidade, água, clima e limite de estações para atingir meta de colheita. |
 | `resgate` | Barcos de Resgate | Logística naval com marés | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Resgate 2–4 pessoas em ilhas e entregue-as à base, com combustível variável por maré, reservas de abastecimento, dois lugares no barco e limite de turnos. |
 | `farois` | Defesa de Faróis | Posicionamento e cobertura limitada | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Posicione até 2–4 faróis em 9 locais para iluminar todos os pontos de rota e limitar a redundância da cobertura, com undo, três tamanhos, score e missões solucionáveis. |

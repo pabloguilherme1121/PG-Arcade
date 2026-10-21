@@ -128,3 +128,8 @@ Planejamento naval com 4 ilhas, 2–4 resgates, capacidade de dois passageiros, 
 ## 124º jogo — Colheita das Estações (a certificar)
 
 Motor de manejo de fazenda: 4 canteiros, fertilidade 0–3, cereais/raízes/leguminosas com rendimentos e custos distintos, clima seco/ameno/chuvoso, água limitada, estações finitas, descanso regenerativo, histórico reversível, vitória por produção e derrota por prazo. Testes de 300 sementes para integridade, 180 provas de vitória por rotação real, cenários de consumo/undo e E2E 320/390/844×390. Somente integrar após quality, três browsers, validate, CodeQL, bundle <400 raw/<120 gzip, artefato/deploy no HEAD composto; Android físico separado.
+
+
+## 125º jogo — Cartas de Climas (a certificar)
+
+Duas mãos independentes de seis cartas, 3–5 rodadas, terrain/bonus climático, fase de passagem ocultando cartas adversárias, escolhas sem repetição, resolução de força e pontos, conclusão por vencedor/empate. Gerador determinístico e 270 cenários de integridade, 105 partidas simuladas por ações legítimas, E2E em 320/390/844×390 cobrindo segredo, handoff, alternância, reinício. Somente `dupla` local: bot/online desligados. Exigir quality, 3 browsers, validate, CodeQL, bundle inicial raw <400/gzip <120 KiB, deploy e Android físico separados.
