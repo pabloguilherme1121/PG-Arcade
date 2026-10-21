@@ -1,0 +1,43 @@
+import { test, expect } from "@playwright/test";
+import { newMeteorGame } from "../src/games/meteorShield/rules";
+
+for (const viewport of [{width:320,height:740},{width:390,height:844},{width:844,height:390}]) {
+  test(`Defensor de Meteoros responde ao toque sem overflow em ${viewport.width}px`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await page.goto("./#/jogar/meteoros");
+    const panel = page.locator("[data-meteor-shield]");
+    await expect(panel).toBeVisible();
+    await expect(panel.locator(".meteor-cell")).toHaveCount(42);
+    await panel.getByRole("button", { name: "Mover escudo à esquerda" }).click();
+    await expect(panel.getByRole("button", { name: "Mover escudo à direita" })).toBeDisabled();
+    await panel.getByRole("button", { name: "Avançar tempo" }).click();
+    await expect(panel.getByRole("button", { name: "Mover escudo à direita" })).toBeEnabled();
+    await panel.getByRole("button", { name: "Desfazer ação" }).click();
+    await panel.getByRole("button", { name: "Reiniciar" }).click();
+    await panel.getByLabel("Dificuldade de Defensor de Meteoros").selectOption("2");
+    await expect(panel).toContainText("0/6");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  });
+}
+
+test("Defensor de Meteoros reflete toda a chuva e permite undo da vitória", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("./#/jogar/meteoros");
+  const panel = page.locator("[data-meteor-shield]");
+  let game = newMeteorGame();
+  for (let t = 0; t < 50 && game.phase === "playing"; t++) {
+    const target = game.schedule[Math.min(Math.floor(game.tick / 7), game.schedule.length - 1)];
+    if (game.shield !== target) {
+      const direction = game.shield < target ? 1 : -1;
+      await panel.getByRole("button", { name: direction === 1 ? "Mover escudo à direita" : "Mover escudo à esquerda" }).click();
+      game = { ...game, shield: game.shield + direction };
+    }
+    await panel.getByRole("button", { name: "Avançar tempo" }).click();
+    game = { ...game, tick: game.tick + 1 };
+    if (await panel.getByText(/Vitória!/).count()) break;
+  }
+  await expect(panel).toContainText("Vitória!");
+  await expect(panel).toContainText("4/4");
+  await panel.getByRole("button", { name: "Desfazer ação" }).click();
+  await expect(panel).not.toContainText("Vitória!");
+});
