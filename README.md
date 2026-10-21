@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **116 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **117 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -155,3 +155,8 @@ Quebra-cabeça de caminhos disjuntos: toque na origem de cada cor e construa um 
 ### Enigma das Balanças (116º título — PR de expansão)
 
 Dedução de uma moeda falsa mais pesada ou leve por pesagens reais, calculadas com grupos de tamanho igual. Até 3/4/5 pesagens nas dificuldades Fácil/Normal/Difícil e duas acusações permitidas. Motor determinístico, histórico de resultados, pontuação, reinício, capa SVG e E2E em 320/390/844×390; sem backend, bot ou compras. Aceite condicionado ao CI completo, merge sequencial e Android físico.
+
+
+### Cubos Ocultos (117º título — PR de expansão)
+
+Reconstrução em 3D a partir das vistas frontal, lateral e superior em tabuleiros 3×3 a 5×5. Cada casa permite 0–4 alturas; as projeções definem as metas e toda escultura é gerada a partir de uma solução válida. Inclui toque, teclado, desfazer, reiniciar, novo desafio, recorde e testes de 300 cenários de geração, conclusão real e E2E mobile. Módulo lazy e sem rede ou bots. A PR precisa ser certificada antes da integração.

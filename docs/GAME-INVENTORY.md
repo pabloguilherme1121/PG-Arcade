@@ -1,4 +1,4 @@
-# Inventário dos 116 jogos
+# Inventário dos 117 jogos
 
 Inventário extraído do catálogo, gameHelp e unidades de recorde em 8 de outubro de 2026. Regras e controles abaixo descrevem a implementação; este documento não certifica uma partida completa de cada jogo. A cobertura profunda permanece nos testes de motores e famílias.
 
@@ -6,6 +6,7 @@ Todos mantêm visitas e favoritos locais. Nenhum restaura automaticamente a part
 
 | ID | Nome | Família | Modo disponível | Dificuldade | Recorde | Regras e controles específicos |
 | --- | --- | --- | --- | --- | --- | --- |
+| `cubos` | Cubos Ocultos | Vistas ortográficas 3D | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Recrie uma escultura em grade empilhando cubos até reproduzir planta ocupada, máximos frontais por coluna e laterais por linha. Três tamanhos, desfazer, pontuação e gerador com solução. |
 | `balancas` | Enigma das Balanças | Lógica dedutiva e pesagens | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Identifique uma moeda mais pesada ou mais leve em até 3–5 pesagens entre grupos do mesmo tamanho. Histórico completo, duas tentativas de acusação e solução gerada determinística. |
 | `fios` | Fio Condutor | Caminhos disjuntos e roteamento de grade | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Conecte 2 ou 3 pares de terminais por caminhos ortogonais sem sobreposição. Obstáculos, voltar passo, desfazer, reiniciar, pontuação e três tamanhos de tabuleiro. |
 | `runas` | Código de Runas | Criptogramas de substituição | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Substitua runas por letras sem repetições e decifre uma mensagem com pista temática, tradução parcial, checagem de associações, duas dicas limitadas, reinício e recorde. |
