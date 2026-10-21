@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **105 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **107 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -101,3 +101,13 @@ Novo jogo original e carregado sob demanda: quatro ondas táticas em grade 9×9,
 ## Frutas em Fusão — 105º título
 
 Quebra-cabeça de fusões por gravidade em tabuleiro 6×7, com reações em cadeia, três dificuldades, modo por turnos, teclado numérico e toque nas colunas. Salva recordes sem modificar o progresso legado. O desafio é vencer criando a fruta dourada antes do limite de jogadas. A validação física Android é separada dos testes automáticos.
+
+
+### Cofre em Equipe (106º título)
+
+Jogo cooperativo local para 2–4 pessoas no mesmo aparelho: repasse privado de pistas, dedução de senha em quatro tentativas, feedback posicional, dificuldade por cooperação, reinício e recordes. Não anuncia multiplayer online, salas ou dados no servidor.
+
+
+### Passagem Secreta (107º título)
+
+Competição no mesmo aparelho para 2–4 pessoas. Cada explorador registra em segredo quatro passos, as rotas são executadas simultaneamente em tabuleiro 5×5, colisões impedem movimentos e cristais concedem pontos. Sem cadastro, anúncios, servidor ou suporte online alegado. Inclui regras determinísticas e testes de tabuleiro/controles.

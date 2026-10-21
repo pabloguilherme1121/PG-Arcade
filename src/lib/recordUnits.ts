@@ -2,6 +2,8 @@ import type { GameId } from "./catalog";
 import { newGames } from "./newCatalog";
 import { expandedGames } from "./expandedCatalog";
 export const recordUnits: Partial<Record<GameId, "pontos" | "jogadas">> = {
+  passagem:"pontos",
+  cofre:"pontos",
   frutas: "pontos",
   neon: "pontos",
   ...Object.fromEntries(newGames.map(g => [g.id, "pontos" as const])),

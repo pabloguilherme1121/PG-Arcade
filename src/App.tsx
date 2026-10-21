@@ -73,6 +73,8 @@ const collectionPlayers = Object.fromEntries(
   ]),
 ) as unknown as Record<ExpandedId, ComponentType<PlayerProps>>;
 const players = {
+  passagem: lazy(() => import("./games/secretPassage/SecretPassage")),
+  cofre: lazy(() => import("./games/teamVault/TeamVault")),
   frutas: lazy(() => import("./games/fruitFusion/FruitFusion")),
   neon: lazy(() => import("./games/neonSurvival/NeonSurvival")),
   leilao: lazy(() => import("./games/relicAuction/RelicAuction")),
@@ -186,6 +188,11 @@ export default function App() {
       ) ||
       arenaElement;
     target?.focus({ preventScroll: true });
+    // An accessible grid cell can be non-focusable. Focus the labeled region
+    // if the chosen element did not accept keyboard focus.
+    if (arenaElement && !arenaElement.contains(document.activeElement)) {
+      arenaElement.focus({ preventScroll: true });
+    }
     (target?.closest<HTMLElement>("[data-chess-board],.football-pitch") || target)?.scrollIntoView({ block: "center", behavior: "instant" });
   }
   function askRestart() {

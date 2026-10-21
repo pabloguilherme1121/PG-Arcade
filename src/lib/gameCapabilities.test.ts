@@ -9,8 +9,8 @@ describe('verified catalog capabilities', () => {
     for (const game of games) {
       const capabilities = gameCapabilities(game.id);
       expect(capabilities.online).toBe(false);
-      expect(capabilities.solo).toBe(true);
-      expect(capabilities.localPlayers).toBe(['comum','leilao'].includes(game.id) ? 4 : modeTags(game).includes('dupla') ? 2 : 1);
+      expect(capabilities.solo).toBe(!['cofre','passagem'].includes(game.id));
+      expect(capabilities.localPlayers).toBe(['comum','leilao','cofre','passagem'].includes(game.id) ? 4 : modeTags(game).includes('dupla') ? 2 : 1);
       expect(capabilities.swipe).toBe(supportsSwipe(game.id));
       expect(capabilities.bot).toBe(modeTags(game).includes('bot'));
       expect(supportsPlayerMode(game.id, 'Online')).toBe(false);
@@ -20,6 +20,8 @@ describe('verified catalog capabilities', () => {
     expect(gameCapabilities('comum').timedSessions).toBe(false);
     expect(gameCapabilities('leilao').timedSessions).toBe(false);
     expect(gameCapabilities('leilao').bot).toBe(true);
+    expect(gameCapabilities('cofre')).toMatchObject({solo:false,online:false,localPlayers:4,bot:false,timedSessions:false});
+    expect(gameCapabilities('passagem')).toMatchObject({solo:false,online:false,localPlayers:4,bot:false,timedSessions:false});
     expect(gameCapabilities('2048').timedSessions).toBe(true);
   });
   it('uses one source for player labels and local duel filtering', () => {

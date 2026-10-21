@@ -6,9 +6,9 @@ for (const width of [320,390]) {
   await page.getByLabel('Filtrar por modo',{exact:true}).selectOption('Dupla local');
   const categories=page.getByRole('group',{name:'Categorias',exact:true});
   const strategy=categories.getByRole('button',{name:'Estratégia',exact:true});
-  await expect(strategy).toHaveAttribute('title','5 jogos com os outros filtros atuais');
+  await expect(strategy).toHaveAttribute('title','7 jogos com os outros filtros atuais');
   await expect(categories.getByRole('button',{name:'Carros e corrida',exact:true})).toBeDisabled();
-  await strategy.click();await expect(page.locator('.game-grid .game-card')).toHaveCount(5);
+  await strategy.click();await expect(page.locator('.game-grid .game-card')).toHaveCount(7);
   await page.getByLabel('Buscar jogo',{exact:true}).fill('xadrez');
   await expect(strategy).toHaveAttribute('title','1 jogo com os outros filtros atuais');
  });

@@ -35,3 +35,13 @@ Antes de abrir nova onda de jogos, observar 8–12 pessoas como amostra qualitat
 Cada novo jogo precisa de regras próprias, controle mobile confortável, tutorial curto, sessão completa e repetição com propósito. No modo solo de Palavra em Comum, pistas substituem a adivinhação de um bot aleatório. Duração 5/10/20 é formato da sessão, não dificuldade de raciocínio. Multiplayer presencial continua por associações livres, com cortina visual e sem alegação de segurança contra inspeção do aparelho.
 
 Não contratar analytics, banco, chat ou multiplayer online. Diagnósticos locais e exportação voluntária não enviam dados e não medem audiência global. Integração somente com quality, Chromium, Firefox, WebKit e validate aprovados no mesmo HEAD. Proteção da main e descrição pública permanecem condicionadas a acesso administrativo, já negado com HTTP 403.
+
+## Aceite da expansão local 106–107 (20/10/2026)
+
+A base de 105 jogos foi integrada à main após sucesso dos cinco gates na PR #167. A PR #169 acrescenta Cofre em Equipe (#106) e Passagem Secreta (#107) como jogos realmente locais, sem servidor ou matchmaking:
+
+- Cofre em Equipe: passagem privada de pistas para 2–4 pessoas; senha de quatro dígitos distintos, quatro tentativas, feedback por posição, vitória/derrota e recorde. Verificar que a pista anterior desapareça ao ocultar, filtro de grupo verídico e nenhum modo solo/bot inventado.
+- Passagem Secreta: quatro comandos escondidos por participante, decisão simultânea, tabuleiro 5×5 e bloqueio justo de colisões, inclusive cadeias; cristais, empate, reinício e controles acionáveis. Verificar que nunca haja posições ocupadas por mais de um participante.
+- Cobertura E2E: 320/390/844×390, navegação, seleção dos participantes, privacidade do passe e ausência de overflow.
+
+A composição anterior passou em quality (497 testes unitários) e mediu 388,7 KiB raw / 113,5 KiB gzip de bundle inicial. **Esse resultado não substitui a verificação do HEAD reconciliado:** exigir quality, Chromium, Firefox, WebKit, validate, CodeQL no mesmo SHA, seguido de pages-artifact e deploy na main. Android físico continua pendente. Os 44 títulos ainda ausentes até 151 são backlog, não cartões implementados.
