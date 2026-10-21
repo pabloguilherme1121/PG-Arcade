@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **118 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **119 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -165,3 +165,8 @@ Reconstrução em 3D a partir das vistas frontal, lateral e superior em tabuleir
 ### Bordas Encantadas (118º título — PR de expansão)
 
 Mosaicos rotativos 3×3, 4×4 e 5×5 gerados de arestas coincidentes com ao menos uma solução garantida. Toque/teclado gira cada peça por 90°; a vitória exige cores internas correspondentes e paredes cinzentas voltadas à borda externa. Inclui desfazer, pontuação, recorde, capa SVG, lazy load e testes de 300 gerações/soluções e E2E 320/390/844×390. Sem bot, internet ou cronômetro; aguarda os gates de integração da cadeia.
+
+
+### Coordenadas Perdidas (119º título — PR de expansão)
+
+Encontre um destino escondido por distância de Manhattan a faróis fixos. Três dificuldades com grades 5×5/7×7/9×9, pistas iniciais progressivamente menores, revelação de pistas com penalidade, marcação e comparação de distâncias, três palpites e recorde. A geração garante que os três faróis identificam uma única coordenada; testes de 360 mapas comprovam unicidade. Mobile com rolagem interna e casas de 46 px, ARIA, teclado, lazy import e E2E 320/390/844×390. Ainda precisa de certificação de CI e merge seguro.

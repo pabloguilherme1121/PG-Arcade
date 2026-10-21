@@ -98,3 +98,8 @@ Reconstrução 3D por vistas ortográficas reais: tabuleiros 3×3/4×4/5×5, alt
 ## 118º título — Bordas Encantadas (a certificar)
 
 Motor independente de rotação de peças e encaixe ortogonal. Geração de 3×3, 4×4 e 5×5 com solução construtiva e embaralhamento de rotações; paredes fechadas externas, igualdade de cores internas, verificação de todas as conexões e condição de vitória exata. Testes 300 seeds, rotações, solução, undo, integridade; E2E de 320/390/844×390. Exigir gates em HEAD final, CodeQL, bundle, artefato, deploy e Android físico separado.
+
+
+## 119º título — Coordenadas Perdidas (a certificar)
+
+Motor matemático por distâncias de Manhattan a três pontos. Grades 5×5/7×7/9×9, seleção de casa, pistas de faróis, contagem de candidatos, dicas limitadas, três palpites, vitória e derrota. Gerador determina alvo sem posicioná-lo sobre faróis, com solução única após revelação total. Testes de 360 sementes, prova de unicidade, cálculos, dica e vitória/derrota; Playwright mobile 320/390/844×390 com área rolável acessível de 46 px. Exigir gates completos antes da integração, deploy e QA Android físico separados.
