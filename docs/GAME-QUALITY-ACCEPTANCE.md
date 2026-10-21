@@ -78,3 +78,8 @@ Motor real com 3–5 máscaras, rotação de 90 graus, composição por paridade
 ## 114º título — Código de Runas (a certificar)
 
 Substituição monoalfabética de 26 símbolos, dicionário de pistas por dificuldade, tradução parcialmente preenchida, mapeamento sem duplicação, dicas limitadas (máximo duas), tentativas e recorde. Geração determinística, provas de decifrabilidade com 240 combinações nos testes de regras; E2E mobile nos 3 viewports e sem overflow. Gate de qualidade + navegadores + bundle + deploy e Android físico separado.
+
+
+## 115º título — Fio Condutor (a certificar)
+
+Motor de caminhos ortogonais sem cruzamentos, 2–3 pares e tabuleiros 5×5/6×6/7×7 com caminhos de solução conhecidos; seleção de origem, bloqueio de células ocupadas/obstáculos, reversão de passo, verificação de conexão e vitória completa. Testes unitários de 150 cenários determinísticos e conclusão real, E2E mobile 320/390/844×390, registro lazy e recorde. Exigir gates e deploy do HEAD composto antes da integração.

@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **114 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **115 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -145,3 +145,8 @@ Quebra-cabeça solo de camadas de máscaras giratórias e 16 células em grade 4
 ### Código de Runas (114º título — PR de expansão)
 
 Decifração de frases por substituição monoalfabética. Cada símbolo rúnico corresponde a exatamente uma letra; o painel mostra o texto cifrado e a tradução parcial, com feedback de contagem de acertos, até duas dicas penalizadas e três dificuldades. O motor garante desafio decodificável com regras de correspondência, reinício e pontuação. UI acessível com seletores e E2E 320/390/844×390; sem conta, bots, servidor ou custos. A integração depende dos gates no HEAD final da cadeia.
+
+
+### Fio Condutor (115º título — PR de expansão)
+
+Quebra-cabeça de caminhos disjuntos: toque na origem de cada cor e construa um caminho ortogonal até seu destino, sem atravessar obstáculos ou outros fios. O motor valida a adjacência, bloqueios, conexões e vitória global, com desfazer, reinício, três dificuldades, recorde e tabuleiros gerados com solução garantida. Módulo lazy, capa SVG e E2E 320/390/844×390; não promete online ou bot.
