@@ -22,12 +22,12 @@ export default function LostCoordinates({record,onRecord}:{record:number;onRecor
    </p>)}
   </div>
   <div className="coords-scroll" role="region" aria-label="Mapa de coordenadas rolável" tabIndex={0}>
-   <div className="coords-grid" role="grid" aria-label="Selecione uma coordenada" style={{minWidth:`${game.size*46}px`}}>
-    {Array.from({length:game.size},(_,row)=><div className="coords-row" role="row" key={row} style={{gridTemplateColumns:`repeat(${game.size},minmax(0,1fr))`}}>
+   <div className="coords-grid" role="group" aria-label="Selecione uma coordenada" style={{minWidth:`${game.size*46}px`}}>
+    {Array.from({length:game.size},(_,row)=><div className="coords-row" key={row} style={{gridTemplateColumns:`repeat(${game.size},minmax(0,1fr))`}}>
      {Array.from({length:game.size},(_,col)=>{
       const index=row*game.size+col,selected=game.selected===index;
       const beacon=game.beacons.findIndex(b=>b.position===index);
-      return <button role="gridcell" type="button" key={index} data-coord-cell={index} data-coord-selected={selected}
+      return <button type="button" key={index} data-coord-cell={index} data-coord-selected={selected}
        disabled={game.phase!=="playing"} aria-pressed={selected}
        aria-label={`Linha ${row+1}, coluna ${col+1}${beacon>=0?", farol "+(beacon+1):""}`}
        onClick={()=>setGame(g=>selectCoordinate(g,index))}>
