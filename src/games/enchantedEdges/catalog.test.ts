@@ -5,9 +5,9 @@ import {gameCapabilities} from "../../lib/gameCapabilities";
 import {gameHelp} from "../../lib/gameHelp";
 import {recordUnits} from "../../lib/recordUnits";
 import {modeTags} from "../../lib/smartDiscovery";
-it("Bordas Encantadas: 121 jogos com modos verdadeiros",()=>{
- expect(CATALOG_SIZE).toBe(121);expect(games).toHaveLength(121);
- expect(new Set(games.map(g=>g.id)).size).toBe(121);
+it("Bordas Encantadas: 122 jogos com modos verdadeiros",()=>{
+ expect(CATALOG_SIZE).toBe(122);expect(games).toHaveLength(122);
+ expect(new Set(games.map(g=>g.id)).size).toBe(122);
  expect(recordUnits.bordas).toBe("pontos");
  expect(gameHelp.bordas.length).toBeGreaterThan(100);
  expect(gameCapabilities("bordas")).toMatchObject({solo:true,online:false,bot:false,localPlayers:1,timedSessions:false,swipe:false});
