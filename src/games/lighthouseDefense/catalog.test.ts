@@ -5,9 +5,9 @@ import {gameCapabilities} from "../../lib/gameCapabilities";
 import {gameHelp} from "../../lib/gameHelp";
 import {recordUnits} from "../../lib/recordUnits";
 import {modeTags} from "../../lib/smartDiscovery";
-it("Defesa de Faróis #123 registra 123 jogos e capacidades reais",()=>{
- expect(CATALOG_SIZE).toBe(123);expect(games).toHaveLength(123);
- expect(new Set(games.map(g=>g.id)).size).toBe(123);
+it("Defesa de Faróis #124 registra 124 jogos e capacidades reais",()=>{
+ expect(CATALOG_SIZE).toBe(124);expect(games).toHaveLength(124);
+ expect(new Set(games.map(g=>g.id)).size).toBe(124);
  expect(recordUnits.farois).toBe("pontos");
  expect(gameHelp.farois.length).toBeGreaterThan(100);
  expect(gameCapabilities("farois")).toMatchObject({solo:true,online:false,bot:false,localPlayers:1,timedSessions:false,swipe:false});
