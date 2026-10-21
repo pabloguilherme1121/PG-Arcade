@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **121 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **122 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -180,3 +180,8 @@ Circuitos booleanos editáveis com uma a três portas lógicas, inversor opciona
 ### Mercadores de Rotas (121º título — PR de expansão)
 
 Negocie mercadorias entre Porto, Serra, Vale e Capital em turnos limitados. Transporte três tipos de produtos com cargas e caixa finitos, pague combustível por estradas, reabasteça e venda em mercados para atingir lucro positivo em três dificuldades. Soluções construtivas verificadas em múltiplas sementes, 100% solo/offline com recordes, controles touch/teclado, capa SVG e import lazy. A PR deve passar gates E2E e integração antes da publicação.
+
+
+### Defesa de Faróis (122º título — PR de expansão)
+
+Planeje a cobertura de rotas colocando 2 a 4 faróis em até 9 locais com alcance ortogonal de duas casas e limite de sobreposições. A geração cria uma missão solucionável; as decisões permitem colocar, remover e desfazer sem bot ou rede. Vitória pela cobertura completa dentro do orçamento de redundância, pontuação, três dificuldades, SVG próprio e E2E mobile 320/390/844×390; exige CI completo antes da integração.

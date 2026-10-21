@@ -1,4 +1,4 @@
-# Inventário dos 121 jogos
+# Inventário dos 122 jogos
 
 Inventário extraído do catálogo, gameHelp e unidades de recorde em 8 de outubro de 2026. Regras e controles abaixo descrevem a implementação; este documento não certifica uma partida completa de cada jogo. A cobertura profunda permanece nos testes de motores e famílias.
 
@@ -6,6 +6,7 @@ Todos mantêm visitas e favoritos locais. Nenhum restaura automaticamente a part
 
 | ID | Nome | Família | Modo disponível | Dificuldade | Recorde | Regras e controles específicos |
 | --- | --- | --- | --- | --- | --- | --- |
+| `farois` | Defesa de Faróis | Posicionamento e cobertura limitada | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Posicione até 2–4 faróis em 9 locais para iluminar todos os pontos de rota e limitar a redundância da cobertura, com undo, três tamanhos, score e missões solucionáveis. |
 | `mercadores` | Mercadores de Rotas | Estratégia de comércio e logística | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Compre três produtos nas cidades de origem, transporte mercadorias sob limite de combustível e turnos e venda na Capital para atingir metas de lucro com recordes. |
 | `portas` | Portas Lógicas | Circuitos booleanos e tabelas-verdade | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Configure de uma a três portas E/OU/XOU/NÃO-E e inversor final para reproduzir quatro resultados desejados, com histórico, desfazer e recorde. |
 | `coordenadas` | Coordenadas Perdidas | Triangulação em grade e distâncias de Manhattan | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Localize uma casa escondida pelas distâncias em quadras de três faróis, com pistas progressivas, até três palpites e penalidade por dicas; rolagem horizontal interna no mobile. |

@@ -113,3 +113,8 @@ Circuitos booleanos com 1/2/3 portas encadeadas, quatro operações implementada
 ## 121º título — Mercadores de Rotas (a certificar)
 
 Economia real de 3 produtos e 4 cidades, compras e vendas com preços e caixa finitos, capacidade máxima de três cargas, rotas de consumo fixo de combustível, reabastecimento, limites de turnos, meta de lucro, estados de vitória/derrota e registro de recordes. Provas de solução por jogadas legítimas em 120 cenários unitários e E2E 320/390/844×390 para negociar, viajar, vender e alterar dificuldade. Exigir quality, Chromium, Firefox, WebKit, validate, CodeQL e bundle raw <400 KiB / gzip <120 KiB antes de integrar.
+
+
+## 122º título — Defesa de Faróis (a certificar)
+
+Cobertura ortogonal de rotas a raio dois, nove locais possíveis, limite de dois a quatro faróis conforme nível e orçamento de redundância calculado de uma solução construtiva. Vencer apenas cobrindo todos os trechos e respeitando a sobreposição máxima. Testes unitários de 270 mapas com busca da solução real, distância, score, undo e restart; E2E 320/390/844×390 sem overflow, mapa rolável de casas tocáveis. Exigir quality, Chromium/Firefox/WebKit, validate, CodeQL e bundle 400/120 KiB no HEAD final; Android físico separado.
