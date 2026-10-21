@@ -9,7 +9,7 @@ describe('verified catalog capabilities', () => {
     for (const game of games) {
       const capabilities = gameCapabilities(game.id);
       expect(capabilities.online).toBe(false);
-      expect(capabilities.solo).toBe(!['cofre','passagem','contrato'].includes(game.id));
+      expect(capabilities.solo).toBe(!['climas','cofre','passagem','contrato'].includes(game.id));
       expect(capabilities.localPlayers).toBe(['comum','leilao','cofre','passagem','contrato'].includes(game.id) ? 4 : modeTags(game).includes('dupla') ? 2 : 1);
       expect(capabilities.swipe).toBe(supportsSwipe(game.id));
       expect(capabilities.bot).toBe(modeTags(game).includes('bot'));
@@ -27,7 +27,7 @@ describe('verified catalog capabilities', () => {
   });
   it('uses one source for player labels and local duel filtering', () => {
     expect(games.filter(g => gameCapabilities(g.id).localPlayers === 2).map(g => g.id).sort())
-      .toEqual(['damas', 'domino', 'liga4', 'velha', 'xadrez']);
+      .toEqual(['climas','damas', 'domino', 'liga4', 'velha', 'xadrez']);
     expect(gameMode('xadrez')).toBe('Solo ou dupla local');
     expect(gameMode('snake')).toBe('Solo');
     expect(supportsPlayerMode('snake', 'Dupla local')).toBe(false);

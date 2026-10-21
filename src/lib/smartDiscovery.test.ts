@@ -20,7 +20,7 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
     for(const id of ['xadrez','rhythm','balloons','arithmetic','sudoku']) expect(supported).not.toContain(id);
     expect(new Set(supported).size).toBe(supported.length);
   });
-  it("tem classificação determinística para os 108 jogos sem inventar modos",()=>{
+  it("tem classificação determinística para os 128 jogos sem inventar modos",()=>{
     expect(games).toHaveLength(CATALOG_SIZE);
     for(const game of games){
       const tags=modeTags(game);
@@ -38,7 +38,7 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
     }
   });
   it("restringe duelo e bot aos jogos com modos efetivos",()=>{
-    expect(filterByMode(games, 'dupla', {}, []).map(g=>g.id).sort()).toEqual(["cofre","comum","contrato","damas","domino","leilao","liga4","passagem","velha","xadrez"]);
+    expect(filterByMode(games, 'dupla', {}, []).map(g=>g.id).sort()).toEqual(["climas","cofre","comum","contrato","damas","domino","leilao","liga4","passagem","velha","xadrez"]);
     expect(filterByMode(games, 'bot', {}, []).map(g=>g.id).sort()).toEqual(["ataxx","breakthrough","chomp","damas","domino","gomoku","hex","isolation","leilao","liga4","mancala","nim","pontes","reversi","territory","velha","xadrez"]);
   });
   it("classifica treino e sobrevivência sem alterar os motores",()=>{
@@ -52,7 +52,7 @@ describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
     const favorites=["xadrez"];
     expect(filterByMode(games,"nao-jogados",visited,favorites).some(g=>g.id==="xadrez")).toBe(false);
     expect(filterByMode(games,"favoritos",visited,favorites).map(g=>g.id)).toEqual(["xadrez"]);
-    expect(filterByMode(games,"dupla",visited,favorites)).toHaveLength(10);
+    expect(filterByMode(games,"dupla",visited,favorites)).toHaveLength(11);
     expect(filterByMode(games,"todos",visited,favorites)).toHaveLength(CATALOG_SIZE);
   });
   it("jogo surpresa prioriza inéditos, evita repetir o último e respeita o filtro ativo", () => {
