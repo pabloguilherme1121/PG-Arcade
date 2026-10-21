@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **126 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **127 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -205,3 +205,8 @@ Duelo local por turnos para exatamente duas pessoas compartilhando um celular. C
 ### Alquimia de Elementos (126º título — PR de expansão)
 
 Combinação estratégica de Fogo/Água/Terra com receitas encadeadas para obter Vapor, Argila, Metal, Elixir, Cristal e Obra-prima. Cada produção consome reagentes de estoque finito, podendo tornar uma meta inalcançável se você desperdiçar ingredientes. Três dificuldades, limite de ações, desfazer, vitória e derrota, recorde local, capa SVG, lazy load e testes unitários de 300 seeds e 180 soluções reais, E2E mobile 320/390/844×390. Offline e sem bot.
+
+
+### Cidade em Miniatura (127º título — PR de expansão)
+
+Planejamento urbano em grade 3×3/4×4/5×5 com moradias, parques, lojas e indústria. Cada tipo custa parte do orçamento; casas protegidas impedem construção, as moradias precisam estar ao lado de serviços verdes/comércio sem poluição industrial, e metas de tipos são exigidas. Inclui remoção/reembolso, desfazer, três níveis com solução construtiva verificada para 360 sementes, recorde, capa SVG original, UI mobile, toque/teclado e E2E 320/390/844×390. Ainda depende de CI completo antes do merge.

@@ -138,3 +138,8 @@ Duas mãos independentes de seis cartas, 3–5 rodadas, terrain/bonus climático
 ## 126º título — Alquimia de Elementos (a certificar)
 
 Motor independente de crafting com nove recursos, seis receitas determinísticas, consumo atômico de dois ingredientes, estoque e limite de ações finitos, metas dependentes da dificuldade, undo e vitória real. Testes de 300 geradores e 180 provas construtivas, prevenção de receitas inválidas, imutabilidade/undo, E2E mobile em 320/390/844×390 com armazém, receita, desfazer e overflow. Aceite exige quality, Chromium, Firefox, WebKit, validate, CodeQL, bundle inicial <400 KiB raw/<120 KiB gzip, artifact/deploy no HEAD, Android físico separado.
+
+
+## 127º título — Cidade em Miniatura (a certificar)
+
+Zoneamento 3×3/4×4/5×5 com obstáculos protegidos determinísticos, economia de 4 classes com custo e devolução, metas mínimas, moradia satisfeita ao lado de parque/comércio e poluição proibida por vizinhança industrial ortogonal, undo, score/vitória. Provas unitárias em 360 sementes para todas as dificuldades, proteção de áreas, orçamento e undo, E2E 320/390/844×390, navegação por teclado e sem overflow. Exigir quality, Chromium/Firefox/WebKit, validate, CodeQL, bundle raw <400 KiB/gzip <120 KiB, artifact/deploy no mesmo SHA, e Android físico separado.
