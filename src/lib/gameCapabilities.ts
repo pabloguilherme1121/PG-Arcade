@@ -19,7 +19,7 @@ export function gameCapabilities(id: GameId) {
   return {
     solo: id !== 'cofre' && id !== 'passagem' && id !== 'contrato',
     online: false,
-    timedSessions: id !== "comum" && id !== "leilao" && id !== "neon" && id !== "frutas" && id !== "cofre" && id !== "passagem" && id !== "contrato" && id !== "engrenagens",
+    timedSessions: id !== "comum" && id !== "leilao" && id !== "neon" && id !== "frutas" && id !== "cofre" && id !== "passagem" && id !== "contrato" && id !== "engrenagens" && id !== "arquipelago",
     localPlayers: id === "comum" || id === "leilao" || id === "cofre" || id === "passagem" || id === "contrato" ? 4 : localDuels.has(id) ? 2 : 1,
     bot: botGames.has(id),
     swipe: swipeGames.has(id),
