@@ -11,7 +11,7 @@ const seedNext=(n:number)=>(Math.imul(n,1664525)+1013904223)>>>0;
 const manhattan=(size:number,a:number,b:number)=>Math.abs(Math.floor(a/size)-Math.floor(b/size))+Math.abs(a%size-b%size);
 export function createRelayGame(difficulty:Difficulty=0,seed=39):RelayGame{
  if(![0,1,2].includes(difficulty)||!Number.isSafeInteger(seed)||seed<0||seed>0xffffffff)throw Error("Parâmetros inválidos");
- const size=5+difficulty,devices=[...deviceSets[difficulty]],primary=[...solutions[difficulty]];
+ const size=5+difficulty,devices:number[]=[...deviceSets[difficulty]],primary:number[]=[...solutions[difficulty]];
  const pool=Array.from({length:size*size},(_,i)=>i).filter(i=>i!==0&&!devices.includes(i)&&!primary.includes(i));
  let rng=seed>>>0;
  for(let i=pool.length-1;i>0;i--){rng=seedNext(rng);const j=rng%(i+1);[pool[i],pool[j]]=[pool[j],pool[i]]}
