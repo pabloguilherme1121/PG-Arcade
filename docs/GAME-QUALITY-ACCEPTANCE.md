@@ -83,3 +83,8 @@ Substituição monoalfabética de 26 símbolos, dicionário de pistas por dificu
 ## 115º título — Fio Condutor (a certificar)
 
 Motor de caminhos ortogonais sem cruzamentos, 2–3 pares e tabuleiros 5×5/6×6/7×7 com caminhos de solução conhecidos; seleção de origem, bloqueio de células ocupadas/obstáculos, reversão de passo, verificação de conexão e vitória completa. Testes unitários de 150 cenários determinísticos e conclusão real, E2E mobile 320/390/844×390, registro lazy e recorde. Exigir gates e deploy do HEAD composto antes da integração.
+
+
+## 116º título — Enigma das Balanças (a certificar)
+
+Sistema de pesagens de 4/6/8 moedas com exatamente uma falsa mais pesada ou leve, comparações calculadas por massa, grupos obrigatoriamente de tamanho igual, limites 3/4/5, histórico, duas tentativas de acusação, vitória e derrota. Testes unitários de 180 gerações, resultados reais de pesagens, vitória/derrota e tentativas; E2E 320/390/844×390. Validar gates e deploy no HEAD final, Android físico separado.

@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **115 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **116 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -150,3 +150,8 @@ Decifração de frases por substituição monoalfabética. Cada símbolo rúnico
 ### Fio Condutor (115º título — PR de expansão)
 
 Quebra-cabeça de caminhos disjuntos: toque na origem de cada cor e construa um caminho ortogonal até seu destino, sem atravessar obstáculos ou outros fios. O motor valida a adjacência, bloqueios, conexões e vitória global, com desfazer, reinício, três dificuldades, recorde e tabuleiros gerados com solução garantida. Módulo lazy, capa SVG e E2E 320/390/844×390; não promete online ou bot.
+
+
+### Enigma das Balanças (116º título — PR de expansão)
+
+Dedução de uma moeda falsa mais pesada ou leve por pesagens reais, calculadas com grupos de tamanho igual. Até 3/4/5 pesagens nas dificuldades Fácil/Normal/Difícil e duas acusações permitidas. Motor determinístico, histórico de resultados, pontuação, reinício, capa SVG e E2E em 320/390/844×390; sem backend, bot ou compras. Aceite condicionado ao CI completo, merge sequencial e Android físico.

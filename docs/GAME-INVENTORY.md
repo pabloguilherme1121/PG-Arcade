@@ -1,4 +1,4 @@
-# Inventário dos 115 jogos
+# Inventário dos 116 jogos
 
 Inventário extraído do catálogo, gameHelp e unidades de recorde em 8 de outubro de 2026. Regras e controles abaixo descrevem a implementação; este documento não certifica uma partida completa de cada jogo. A cobertura profunda permanece nos testes de motores e famílias.
 
@@ -6,6 +6,7 @@ Todos mantêm visitas e favoritos locais. Nenhum restaura automaticamente a part
 
 | ID | Nome | Família | Modo disponível | Dificuldade | Recorde | Regras e controles específicos |
 | --- | --- | --- | --- | --- | --- | --- |
+| `balancas` | Enigma das Balanças | Lógica dedutiva e pesagens | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Identifique uma moeda mais pesada ou mais leve em até 3–5 pesagens entre grupos do mesmo tamanho. Histórico completo, duas tentativas de acusação e solução gerada determinística. |
 | `fios` | Fio Condutor | Caminhos disjuntos e roteamento de grade | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Conecte 2 ou 3 pares de terminais por caminhos ortogonais sem sobreposição. Obstáculos, voltar passo, desfazer, reiniciar, pontuação e três tamanhos de tabuleiro. |
 | `runas` | Código de Runas | Criptogramas de substituição | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Substitua runas por letras sem repetições e decifre uma mensagem com pista temática, tradução parcial, checagem de associações, duas dicas limitadas, reinício e recorde. |
 | `sombras` | Cofre de Sombras | Silhuetas e sobreposição de máscaras | Solo | Fácil, Normal, Difícil | pontos; maior resultado | Gire 3–5 venezianas com padrões próprios e reproduza a sombra alvo de 16 casas. Máscaras sobrepostas alternam as casas iluminadas; desafios gerados de solução válida, desfazer e reiniciar. |
