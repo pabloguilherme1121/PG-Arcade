@@ -1,21 +1,21 @@
-import {test,expect} from "@playwright/test";
-import {CATALOG_SIZE} from "../src/lib/catalogRelease";
-test("all catalog covers retain unique mechanics without a separate inline SVG scene",async({page})=>{
- await page.goto("./");
- const cards=page.locator(".game-grid [data-catalog-game]");
- await expect(cards).toHaveCount(CATALOG_SIZE);
- const covers=cards.locator(".game-cover");
- await expect(covers).toHaveCount(CATALOG_SIZE);
- await expect(covers.locator("img.cover-mechanic")).toHaveCount(CATALOG_SIZE);
- await expect(covers.locator("svg")).toHaveCount(0);
- await expect(covers.locator(".cover-brand")).toHaveCount(CATALOG_SIZE);
- await expect(covers.locator(".cover-chapter")).toHaveCount(CATALOG_SIZE);
- const data=await covers.evaluateAll(nodes=>nodes.map(node=>({
-  id:node.getAttribute("data-game-cover"),fingerprint:node.getAttribute("data-cover-fingerprint"),
-  background:getComputedStyle(node).backgroundColor,
-  width:node.getBoundingClientRect().width,height:node.getBoundingClientRect().height
- })));
- expect(new Set(data.map(x=>x.id)).size).toBe(CATALOG_SIZE);
- expect(new Set(data.map(x=>x.fingerprint)).size).toBe(CATALOG_SIZE);
- expect(data.every(item=>item.width>1&&item.height>1)).toBe(true);
+import { test, expect } from "@playwright/test";
+import { CATALOG_SIZE } from "../src/lib/catalogRelease";
+
+test("catalog keeps unique real SVG artwork and gradients for every game", async ({page}) => {
+  await page.goto("./");
+  const covers = page.locator(".game-grid [data-game-cover]");
+  await expect(covers).toHaveCount(CATALOG_SIZE);
+  const summary=await covers.evaluateAll(elements=>elements.map(el=>({
+    id:el.getAttribute("data-game-cover"),
+    fingerprint:el.getAttribute("data-cover-fingerprint"),
+    gradient:el.querySelector("linearGradient[id]")?.id,
+    image:!!el.querySelector("img.cover-mechanic"),
+    svg:!!el.querySelector("svg"),
+    width:el.getBoundingClientRect().width,
+    height:el.getBoundingClientRect().height
+  })));
+  expect(new Set(summary.map(x=>x.id)).size).toBe(CATALOG_SIZE);
+  expect(new Set(summary.map(x=>x.fingerprint)).size).toBe(CATALOG_SIZE);
+  expect(new Set(summary.map(x=>x.gradient)).size).toBe(CATALOG_SIZE);
+  expect(summary.every(x=>x.image && x.svg && x.width>20 && x.height>20)).toBe(true);
 });
