@@ -64,7 +64,7 @@ export function undoWire(g:WireGame):WireGame {
   return {...g,active:p,paths:g.paths.map((r,i)=>i===p?r.slice(0,-1):r),phase:"playing",score:0,moves:Math.max(0,g.moves-1)};
  }
  if(g.active===null){
-  const p=g.paths.findLastIndex(r=>r.length>=2);
+  let p=-1;for(let i=g.paths.length-1;i>=0;i--)if(g.paths[i].length>=2){p=i;break;}
   if(p<0)return g;
   return {...g,active:p,paths:g.paths.map((r,i)=>i===p?r.slice(0,-1):r),moves:Math.max(0,g.moves-1)};
  }
