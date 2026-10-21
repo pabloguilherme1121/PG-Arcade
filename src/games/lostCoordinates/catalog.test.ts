@@ -5,9 +5,9 @@ import {gameCapabilities} from "../../lib/gameCapabilities";
 import {gameHelp} from "../../lib/gameHelp";
 import {recordUnits} from "../../lib/recordUnits";
 import {modeTags} from "../../lib/smartDiscovery";
-it("Coordenadas Perdidas registra 123 IDs e filtros reais",()=>{
- expect(CATALOG_SIZE).toBe(123);expect(games).toHaveLength(123);
- expect(new Set(games.map(g=>g.id)).size).toBe(123);
+it("Coordenadas Perdidas registra 124 IDs e filtros reais",()=>{
+ expect(CATALOG_SIZE).toBe(124);expect(games).toHaveLength(124);
+ expect(new Set(games.map(g=>g.id)).size).toBe(124);
  expect(recordUnits.coordenadas).toBe("pontos");
  expect(gameHelp.coordenadas.length).toBeGreaterThan(100);
  expect(gameCapabilities("coordenadas")).toMatchObject({solo:true,online:false,bot:false,localPlayers:1,timedSessions:false,swipe:false});
