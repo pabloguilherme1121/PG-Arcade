@@ -1,6 +1,7 @@
 import { expandedGames } from "./expandedCatalog";
 import { newGames } from "./newCatalog";
 export const games = [
+  {id:"trilhos",name:"Trilhos Cruzados",description:"Configure desvios e envie três trens aos destinos corretos.",category:"Estratégia"},
   {id:"arquipelago",name:"Pontes do Arquipélago",description:"Conecte ilhas por pontes duplas sem cruzamentos e cumpra cada número.",category:"Estratégia"},
   {id:"engrenagens",name:"Engrenagens do Tempo",description:"Alinhe engrenagens conectadas: cada giro movimenta as vizinhas em sentido contrário.",category:"Inteligência"},
   {id:"contrato",name:"Contrato das Cores",description:"Dispute um mercado de peças e complete contratos públicos de cores em grupo local.",category:"Estratégia"},
