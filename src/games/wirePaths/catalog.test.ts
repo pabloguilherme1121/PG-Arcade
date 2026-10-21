@@ -5,10 +5,10 @@ import {gameCapabilities} from "../../lib/gameCapabilities";
 import {gameHelp} from "../../lib/gameHelp";
 import {recordUnits} from "../../lib/recordUnits";
 import {modeTags} from "../../lib/smartDiscovery";
-it("Fio Condutor registra 127 títulos e metadados honestos",()=>{
- expect(CATALOG_SIZE).toBe(127);
- expect(games).toHaveLength(127);
- expect(new Set(games.map(g=>g.id)).size).toBe(127);
+it("Fio Condutor registra 128 títulos e metadados honestos",()=>{
+ expect(CATALOG_SIZE).toBe(128);
+ expect(games).toHaveLength(128);
+ expect(new Set(games.map(g=>g.id)).size).toBe(128);
  expect(recordUnits.fios).toBe("pontos");
  expect(gameHelp.fios.length).toBeGreaterThan(100);
  expect(gameCapabilities("fios")).toMatchObject({solo:true,online:false,localPlayers:1,bot:false,swipe:false,timedSessions:false});
