@@ -58,3 +58,8 @@ Branch dependente da PR #170. Verificar puzzles determinísticos e solucionávei
 ## 110º título — Pontes do Arquipélago (a certificar)
 
 Motor independente: 6, 8 ou 9 ilhas, até duas pontes, detecção de cruzamento, conectividade global, somas por ilha, solução garantida, desfazer, vitória, recorde e teclado/toque. Exigir CI quality, Chromium, Firefox, WebKit, validate, CodeQL, bundle <400 KiB raw / 120 KiB gzip, deploy e QA físico separado. O registro em uma branch não implica aceite nem publicação.
+
+
+## 111º título — Trilhos Cruzados (a certificar)
+
+Motor real de rota por permutações de três trens, 3/4/5 desvios, alvo gerado por uma sequência solucionável, validação de destino para cada trem, pontuação, feedback, reinício, três dificuldades, toque e teclado. Testes unitários de 180 instâncias de geração e busca de solução; E2E em 320/390/844×390. Publicação requer gates no mesmo HEAD e aceite físico separado.
