@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **122 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **123 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -185,3 +185,8 @@ Negocie mercadorias entre Porto, Serra, Vale e Capital em turnos limitados. Tran
 ### Defesa de Faróis (122º título — PR de expansão)
 
 Planeje a cobertura de rotas colocando 2 a 4 faróis em até 9 locais com alcance ortogonal de duas casas e limite de sobreposições. A geração cria uma missão solucionável; as decisões permitem colocar, remover e desfazer sem bot ou rede. Vitória pela cobertura completa dentro do orçamento de redundância, pontuação, três dificuldades, SVG próprio e E2E mobile 320/390/844×390; exige CI completo antes da integração.
+
+
+### Barcos de Resgate (123º título — PR de expansão)
+
+Planeje resgates entre ilhas considerando marés de três fases, combustível limitado, capacidade para dois passageiros, reservas na base e limite de turnos. Resgate e desembarque 2–4 pessoas para concluir a missão. Motor por turnos reproduzível, provas unitárias de 150 cenários e vitória real em três dificuldades; UI mobile 320/390/844×390, toque/teclado, recorde, capa SVG e import lazy. Ainda sujeito à validação completa de CI e integração segura.

@@ -118,3 +118,8 @@ Economia real de 3 produtos e 4 cidades, compras e vendas com preços e caixa fi
 ## 122º título — Defesa de Faróis (a certificar)
 
 Cobertura ortogonal de rotas a raio dois, nove locais possíveis, limite de dois a quatro faróis conforme nível e orçamento de redundância calculado de uma solução construtiva. Vencer apenas cobrindo todos os trechos e respeitando a sobreposição máxima. Testes unitários de 270 mapas com busca da solução real, distância, score, undo e restart; E2E 320/390/844×390 sem overflow, mapa rolável de casas tocáveis. Exigir quality, Chromium/Firefox/WebKit, validate, CodeQL e bundle 400/120 KiB no HEAD final; Android físico separado.
+
+
+## 123º título — Barcos de Resgate (a certificar)
+
+Planejamento naval com 4 ilhas, 2–4 resgates, capacidade de dois passageiros, 3 estados de maré que alteram custo, combustível finito, reabastecimento na base, limites de turno, vitória/derrota e recorde. Testes unitários de 180 seeds de geração, 150 rotas solucionáveis por movimentos reais, maré e validação de recursos; E2E em 320/390/844×390 testa navegar, resgatar, entregar e não estourar layout. CI completo e validação física Android separados.
