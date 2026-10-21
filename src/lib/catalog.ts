@@ -1,6 +1,7 @@
 import { expandedGames } from "./expandedCatalog";
 import { newGames } from "./newCatalog";
 export const games = [
+  {id:"fortalezas",name:"Fortalezas de Turnos",description:"Proteja três linhas com defensores, economia e ondas de invasores.",category:"Estratégia"},
   {id:"reles",name:"Rede de Relés",description:"Conecte dispositivos à estação-base usando relés e orçamento limitado.",category:"Estratégia"},
   {id:"irrigacao",name:"Zonas de Irrigação",description:"Abra canais conectados à nascente para irrigar campos sem vazamentos.",category:"Estratégia"},
   {id:"cidade",name:"Cidade em Miniatura",description:"Planeje bairros com moradias, parques, comércio, indústria e orçamento real.",category:"Estratégia"},
