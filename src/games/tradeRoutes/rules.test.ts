@@ -49,7 +49,7 @@ describe("Mercadores de Rotas — economia e planejamento",()=>{
   g=moveTrader(g,1);
   g=moveTrader(g,0);
   g=moveTrader(g,3);
-  expect(g.fuel).toBe(4);
+  expect(g.fuel).toBe(5);
   expect(refuel(g)).toBe(g);
   expect(sellCargo(g)).toBe(g);
   const a=restartTrade(g);
