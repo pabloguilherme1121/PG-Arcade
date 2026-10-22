@@ -1,3 +1,4 @@
+import { finalGames } from './lib/finalCatalog';
 import {
   Component,
   lazy,
@@ -72,7 +73,9 @@ const collectionPlayers = Object.fromEntries(
     }),
   ]),
 ) as unknown as Record<ExpandedId, ComponentType<PlayerProps>>;
+const finalPlayers = Object.fromEntries(finalGames.map(g=>[g.id,lazy(async()=>{const module=await import('./games/finalCollection/FinalCollection');return {default:(props:PlayerProps)=><module.default {...props} gameId={g.id}/>};})])) as unknown as Record<typeof finalGames[number]['id'],ComponentType<PlayerProps>>;
 const players = {
+  ...finalPlayers,
   meteoros: lazy(() => import("./games/meteorShield/MeteorShield")),
   trem: lazy(() => import("./games/runawayTrain/RunawayTrain")),
   fortalezas: lazy(() => import("./games/turnFortress/TurnFortress")),

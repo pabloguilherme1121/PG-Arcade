@@ -6,7 +6,7 @@ import { gameHelp } from "../../lib/gameHelp";
 import { recordUnits } from "../../lib/recordUnits";
 import { modeTags } from "../../lib/smartDiscovery";
 it("Defensor de Meteoros #132 registra um motor isolado sem temporizador real", () => {
-  expect(CATALOG_SIZE).toBe(132);
+  expect(CATALOG_SIZE).toBe(150);
   expect(games).toHaveLength(CATALOG_SIZE);
   expect(new Set(games.map(g => g.id)).size).toBe(CATALOG_SIZE);
   expect(gameHelp.meteoros.length).toBeGreaterThan(100);

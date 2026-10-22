@@ -6,7 +6,7 @@ test('turn-based discovery combines search, persists and opens a playable result
  const turnFilter = page.getByRole('button',{name:/^Por turnos/});
  await turnFilter.scrollIntoViewIfNeeded();
  await turnFilter.click();
- await expect(page.locator('.game-grid .game-card')).toHaveCount(78);
+ await expect(page.locator('.game-grid .game-card')).toHaveCount(96);
  await page.getByLabel('Filtrar por modo',{exact:true}).selectOption('Dupla local');
  await expect(page.locator('.game-grid .game-card')).toHaveCount(11);
  await page.getByLabel('Buscar jogo',{exact:true}).fill('xadrez');

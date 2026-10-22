@@ -1,3 +1,4 @@
+import { isFinalId } from './finalCatalog';
 import type { GameId } from './catalog';
 import { newGames } from './newCatalog';
 import { expandedGames } from './expandedCatalog';
@@ -15,11 +16,12 @@ const swipeGames=new Set<GameId>([
 ]);
 
 
+const untimedSessions = new Set<string>(["comum","leilao","neon","frutas","cofre","passagem","contrato","engrenagens","arquipelago","trilhos","ponteiros","sombras","runas","fios","balancas","cubos","bordas","coordenadas","portas","mercadores","farois","resgate","colheita","climas","alquimia","cidade","irrigacao","reles","fortalezas","trem","meteoros"]);
 export function gameCapabilities(id: GameId) {
   return {
     solo: id !== 'climas' && id !== 'cofre' && id !== 'passagem' && id !== 'contrato',
     online: false,
-    timedSessions: id !== "comum" && id !== "leilao" && id !== "neon" && id !== "frutas" && id !== "cofre" && id !== "passagem" && id !== "contrato" && id !== "engrenagens" && id !== "arquipelago" && id !== "trilhos" && id !== "ponteiros" && id !== "sombras" && id !== "runas" && id !== "fios" && id !== "balancas" && id !== "cubos" && id !== "bordas" && id !== "coordenadas" && id !== "portas" && id !== "mercadores" && id !== "farois" && id !== "resgate" && id !== "colheita" && id !== "climas" && id !== "alquimia" && id !== "cidade" && id !== "irrigacao" && id !== "reles" && id !== "fortalezas" && id !== "trem" && id !== "meteoros",
+    timedSessions: !isFinalId(id) && !untimedSessions.has(id),
     localPlayers: id === "comum" || id === "leilao" || id === "cofre" || id === "passagem" || id === "contrato" ? 4 : localDuels.has(id) ? 2 : 1,
     bot: botGames.has(id),
     swipe: swipeGames.has(id),

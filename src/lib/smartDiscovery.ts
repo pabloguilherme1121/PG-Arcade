@@ -1,3 +1,4 @@
+import { finalGames } from './finalCatalog';
 import { games as catalog, type GameId } from "./catalog";
 import { newGames } from "./newCatalog";
 import { expandedGames } from "./expandedCatalog";
@@ -13,6 +14,7 @@ const quick = new Set<GameId>(["reflexo","estrelas","tiro","rally","corrida"]);
 const survival = new Set<GameId>(["neon","rally","coleta","orbital","runner","voo","jetpack","esquiva","drift","invasores","asteroides","breakout","pong","pouso"]);
 const training = new Set<GameId>(["vinteum","dados","boliche","basquete","golfe","arco","pesca","match3"]);
 const turnBased = new Set<GameId>([
+  ...finalGames.map(g=>g.id),
   ...newGames.filter(game => game.family === "board").map(game => game.id),
   ...expandedGames.filter(game => game.family === "logic").map(game => game.id),
   "contrato", "passagem", "cofre", "leilao", "comum", "palavra", "minas",
@@ -23,6 +25,7 @@ const turnBased = new Set<GameId>([
   "reles", "fortalezas", "trem", "meteoros",
 ]);
 const untimed = new Set<GameId>([
+  ...finalGames.map(g=>g.id),
   ...newGames.filter(g=>g.family==="board").map(g=>g.id),
   ...expandedGames.filter(g=>g.family==="logic").map(g=>g.id),
   "meteoros","trem","fortalezas","reles","irrigacao","cidade","alquimia","climas","colheita","resgate","farois","mercadores","portas","coordenadas","bordas","cubos","balancas","fios","runas","sombras","ponteiros","trilhos","arquipelago","engrenagens","contrato","passagem","cofre","leilao","comum","frutas","blocos","palavra","luzes","puzzle","2048","minas","xadrez","damas","domino","velha","liga4","estacionamento",
