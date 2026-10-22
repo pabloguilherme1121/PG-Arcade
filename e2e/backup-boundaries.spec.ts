@@ -28,9 +28,14 @@ test('the app restores and reimports its own complete calendar larger than the o
 });
 
 test('oversized backup is rejected without mutating either progress store', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('pg-arcade-progress-v1', JSON.stringify({favorites:['snake'],visits:{snake:7},records:{snake:22},last:'snake'}));
+    localStorage.setItem('pg-arcade-daily-v1', JSON.stringify({version:1,days:{[new Date().toISOString().slice(0,10)]:{snake:7}}}));
+  });
   await page.goto('./#/progresso');
+  await expect(page.getByLabel('Restaurar cópia do progresso', { exact: true })).toBeVisible();
   const before = await page.evaluate(() => [localStorage.getItem('pg-arcade-progress-v1'), localStorage.getItem('pg-arcade-daily-v1')]);
   await page.getByLabel('Restaurar cópia do progresso', { exact: true }).setInputFiles({name:'oversized.json',mimeType:'application/json',buffer:Buffer.alloc(MAX_PROGRESS_BACKUP_BYTES+1,32)});
-  await expect(page.locator('.progress-backup [role=status]')).toContainText('até 2 MiB');
+  await expect(page.locator('.progress-backup [role=status]')).toContainText('até 3 MiB');
   expect(await page.evaluate(() => [localStorage.getItem('pg-arcade-progress-v1'), localStorage.getItem('pg-arcade-daily-v1')])).toEqual(before);
 });

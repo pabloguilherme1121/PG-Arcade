@@ -1,6 +1,6 @@
 /* Scan product sources only; audit documents/tests must not add runtime utilities. */
 @import "tailwindcss" source(none);
-@source "./";
+@source "./**/*.tsx";
 @source "../index.html";
 @source not "./**/*.test.ts";
 @theme {

@@ -111,7 +111,7 @@ export default function ProgressPage({progress, heading, update}:Props) {
                       );
                     } catch {
                       setMessage(
-                        "Não foi possível restaurar. Escolha uma cópia JSON do PG Arcade de até 2 MiB.",
+                        "Não foi possível restaurar. Escolha uma cópia JSON do PG Arcade de até 3 MiB.",
                       );
                     }
                   }}

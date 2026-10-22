@@ -6,7 +6,7 @@ import { countModes, discoveryFilters, modeTags, previewModeTags, filterByMode, 
 describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
   it("discovers turn-based games with matching counts and no real-time action titles", () => {
     const filtered = filterByMode(games, "turnos", {}, []);
-    expect(filtered).toHaveLength(78);
+    expect(filtered).toHaveLength(96);
     expect(filtered.map(game => game.id)).toEqual(expect.arrayContaining(["meteoros", "trem", "portas", "climas", "xadrez", "damas", "sudoku", "liga4"]));
     expect(filtered.some(game => game.id === "runner" || game.id === "snake")).toBe(false);
     expect(countModes(games, {}, []).turnos).toBe(filtered.length);

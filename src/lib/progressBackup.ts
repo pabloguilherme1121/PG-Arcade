@@ -3,7 +3,7 @@ import { normalizeProgress } from "./progress";
 import { isScopedRecordKey } from "./scopedRecords";
 import { isDailyActivityDay, normalizeDailyActivity } from "./dailyProgress";
 // Fits the app's complete 400-day calendar, even with maximum safe counts.
-export const MAX_PROGRESS_BACKUP_BYTES = 2 * 1024 * 1024;
+export const MAX_PROGRESS_BACKUP_BYTES = 3 * 1024 * 1024;
 const object = (value: unknown): value is Record<string, unknown> => !!value && typeof value === "object" && !Array.isArray(value);
 const counts = (value: unknown, scoped = false) => object(value) && Object.entries(value).every(([key, score]) =>
   (scoped ? isScopedRecordKey(key) : isGameId(key)) && typeof score === "number" && Number.isSafeInteger(score) && score > 0);
