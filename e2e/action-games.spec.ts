@@ -43,15 +43,14 @@ test("Racing steers, pauses on blur, resets safely and saves game-over record", 
   await page.reload();
   await expect(page.locator(".scores strong").nth(1)).toHaveText(record!);
 });
-test("All parking courses finish using keyboard and touch and retain a record", async ({
-  page,
-}) => {
-  await page.goto("./#/jogar/estacionamento");
-  for (let l = 0; l < parkingLevels.length; l++) {
+// Each course keeps the full keyboard/touch journey and its own reload check,
+// instead of accumulating all three courses near a single 30-second deadline.
+for (const [l, config] of parkingLevels.entries()) {
+  test(`Parking course ${l + 1} finishes using keyboard and touch and retains a record`, async ({ page }) => {
+    await page.goto("./#/jogar/estacionamento");
     await page
       .getByLabel("Estacionamento", { exact: true })
       .selectOption(String(l));
-    const config = parkingLevels[l];
     const queue = [config.start];
     const parents = new Map<number, { prev: number; d: Direction }>();
     parents.set(config.start, { prev: -1, d: "up" });
@@ -93,11 +92,12 @@ test("All parking courses finish using keyboard and touch and retain a record", 
           .click();
     }
     await expect(page.getByText("Estacionou!", { exact: false })).toBeVisible();
-  }
-  const record = await page.locator(".scores strong").nth(2).textContent();
-  await page.reload();
-  await expect(page.locator(".scores strong").nth(2)).toHaveText(record!);
-});
+    const record = await page.locator(".scores strong").nth(2).textContent();
+    expect(Number(record)).toBeGreaterThan(0);
+    await page.reload();
+    await expect(page.locator(".scores strong").nth(2)).toHaveText(record!);
+  });
+}
 test("Lights Out solves, undoes and changes challenges", async ({ page }) => {
   await page.goto("./#/jogar/luzes");
   await page.getByRole("button", { name: "Luz 1:", exact: false }).click();
