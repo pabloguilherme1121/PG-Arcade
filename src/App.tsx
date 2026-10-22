@@ -332,6 +332,9 @@ export default function App() {
       restartDialog.current?.close();
     };
     window.addEventListener("hashchange", change);
+    // A link can change the hash between initial render and this subscription.
+    // Reconcile once after subscribing so that early navigation is never lost.
+    change();
     return () => window.removeEventListener("hashchange", change);
   }, []);
   useEffect(() => {

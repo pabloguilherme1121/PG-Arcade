@@ -1,5 +1,23 @@
 import {test,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+test('initial route reconciles navigation before the hash subscription',async({page})=>{
+  await page.addInitScript(()=>{
+    const subscribe=window.addEventListener;
+    let changed=false;
+    window.addEventListener=function(type,listener,options){
+      if(type==='hashchange'&&!changed){
+        changed=true;
+        // Model a hash change that happened before subscription, without
+        // dispatching a later event that could hide the initialization race.
+        history.replaceState(null,'','#/jogar/snake');
+      }
+      subscribe.call(window,type,listener,options);
+    };
+  });
+  await page.goto('./');
+  await expect(page.locator('.player h1')).toHaveText('Snake');
+  await expect(page.locator('[data-game-id="snake"]')).toBeVisible();
+});
 for(const width of [320,390]) test(`active filters can be removed individually at ${width}px`,async({page})=>{
   await page.setViewportSize({width,height:844});
   await page.goto('./');
