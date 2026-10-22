@@ -11,5 +11,5 @@ it("Cartas de Climas registra 128 jogos e dupla local sem bot",()=>{
  expect(recordUnits.climas).toBe("pontos");
  expect(gameHelp.climas.length).toBeGreaterThan(100);
  expect(gameCapabilities("climas")).toMatchObject({solo:false,online:false,bot:false,localPlayers:2,timedSessions:false,swipe:false});
- expect(modeTags(games.find(g=>g.id==="climas")!)).toEqual(["classico","sem-pressa", "turnos","dupla"]);
+ expect(modeTags(games.find(g=>g.id==="climas")!)).toEqual(["classico","sem-pressa","dupla", "turnos"]);
 });

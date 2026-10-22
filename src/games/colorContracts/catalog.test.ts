@@ -18,7 +18,7 @@ describe("Contrato das Cores: catálogo verídico",()=>{
     expect(gameCapabilities("contrato")).toMatchObject({
       solo:false,online:false,bot:false,localPlayers:4,timedSessions:false,
     });
-    expect(modeTags(game)).toEqual(["classico","sem-pressa","dupla","grupo"]);
+    expect(modeTags(game)).toEqual(["classico","sem-pressa","dupla","grupo","turnos"]);
     expect(filterByMode(games,"grupo",{},[]).map(g=>g.id)).toContain("contrato");
   });
 });

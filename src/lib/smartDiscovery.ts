@@ -13,6 +13,10 @@ const quick = new Set<GameId>(["reflexo","estrelas","tiro","rally","corrida"]);
 const survival = new Set<GameId>(["neon","rally","coleta","orbital","runner","voo","jetpack","esquiva","drift","invasores","asteroides","breakout","pong","pouso"]);
 const training = new Set<GameId>(["vinteum","dados","boliche","basquete","golfe","arco","pesca","match3"]);
 const turnBased = new Set<GameId>([
+  ...newGames.filter(game => game.family === "board").map(game => game.id),
+  ...expandedGames.filter(game => game.family === "logic").map(game => game.id),
+  "contrato", "passagem", "cofre", "leilao", "comum", "palavra", "minas",
+  "luzes", "liga4", "puzzle", "2048", "memoria", "xadrez", "domino", "damas", "velha",
   "engrenagens", "arquipelago", "trilhos", "ponteiros", "sombras", "runas",
   "fios", "balancas", "cubos", "bordas", "coordenadas", "portas", "mercadores",
   "farois", "resgate", "colheita", "climas", "alquimia", "cidade", "irrigacao",
@@ -50,12 +54,12 @@ export function modeTags(game:GameInfo):GameModeTag[] {
   const result:GameModeTag[]=["classico"];
   if(quick.has(game.id)) result.push("rapido");
   if(untimed.has(game.id)) result.push("sem-pressa");
-  if(turnBased.has(game.id)) result.push("turnos");
   if(capabilities.localPlayers >= 2) result.push("dupla");
   if(capabilities.localPlayers >= 3) result.push("grupo");
   if(capabilities.bot) result.push("bot");
   if(training.has(game.id)) result.push("treino");
   if(survival.has(game.id)) result.push("sobrevivencia");
+  if(turnBased.has(game.id)) result.push("turnos");
   return result;
 }
 /** Shared compact preview for catalog cards and the featured suggestion. */

@@ -16,7 +16,7 @@ describe("Passagem Secreta catalog contracts",()=>{
   it("filters precisely local groups without pretending a bot, solo or multiplayer online",()=>{
     const mode=gameCapabilities("passagem");
     expect(mode).toMatchObject({solo:false,online:false,localPlayers:4,bot:false,timedSessions:false});
-    expect(modeTags(games.find(g=>g.id==="passagem")!)).toEqual(["classico","sem-pressa","dupla","grupo"]);
+    expect(modeTags(games.find(g=>g.id==="passagem")!)).toEqual(["classico","sem-pressa","dupla","grupo","turnos"]);
     expect(filterByMode(games,"grupo",{},[]).map(g=>g.id)).toContain("passagem");
   });
 });
