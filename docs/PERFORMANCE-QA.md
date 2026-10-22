@@ -1,5 +1,17 @@
 # Medição de carregamento, DOM e resposta do PG Arcade
 
+## Diagnóstico de E2E no Firefox
+
+A suíte mantém ações, rede, screenshots e fontes nos traces de falha do Firefox,
+além do `error-context.md` gerado na falha. Cópias completas do DOM ficam
+desativadas nesse navegador: capturar repetidamente as 132 capas SVG pode
+dominar o prazo da própria automação. Os testes e suas verificações permanecem
+iguais. Para investigar uma falha com snapshots completos em Linux CI:
+
+```bash
+CI=1 E2E_FULL_DOM_TRACE=1 npx playwright test e2e/arcade.spec.ts --project=firefox --workers=1
+```
+
 Esta instrumentação é **opt-in** e não altera o bundle ou o comportamento dos jogos. Ela usa Chromium automatizado com CPU limitada para gerar **baseline emulada**, não equivalendo a um celular Android intermediário físico.
 
 ## Executar
