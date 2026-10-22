@@ -1,6 +1,9 @@
 import { test, expect } from "@playwright/test";
 for (const width of [320, 390, 1280]) {
   test(`project discovery remains usable at ${width}px`, async ({ page }) => {
+    // Firefox's retained full-catalog trace exceeds 30s at 132 games even
+    // when links, 44px targets and Shift+Tab all succeed. Keep every check.
+    test.setTimeout(60_000);
     await page.setViewportSize({ width, height: 844 });
     await page.goto("./", { waitUntil: "domcontentloaded" });
     // Resolve, scroll and inspect in one browser call. Locator helpers resolve
