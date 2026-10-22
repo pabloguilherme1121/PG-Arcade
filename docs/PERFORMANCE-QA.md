@@ -19,7 +19,7 @@ Os seis jogos de referência são o conjunto padrão: `snake`, `2048`, `memoria`
 
 ## Dados coletados
 
-- Quantidade de cards, nós DOM e SVG na abertura do catálogo dos 100 jogos.
+- Quantidade de cards, nós DOM e SVG na abertura do catálogo publicado.
 - Por jogo: tempo da navegação até arena e controle presentes (campo visível para as seis referências), quantidade de nós DOM/SVG, recursos carregados, transferência JS/CSS, long tasks observadas, uso estimado do heap quando exposto e overflow horizontal. Isso não comprova interação funcional ou gameplay. Erros de execução invalidam a coleta e encerram o comando sem gravar um novo relatório.
 - Percentis p50/p95 e máximos, junto com medições individuais em JSON.
 - Contexto novo e Service Worker bloqueado por amostra para isolar carga **fria**. Isso **não** testa cache quente nem comportamento offline; esses têm suites próprias.
@@ -28,7 +28,7 @@ Os seis jogos de referência são o conjunto padrão: `snake`, `2048`, `memoria`
 
 Registre SHA do código servido e do instrumento, versão Node/Playwright, sistema e hardware do host, versão Chromium (incluída no JSON), viewport, CPU, URL/base path e condições de rede. Refaça o build e use uma porta exclusiva com `--strictPort`. Execute sem outros testes ou tarefas pesadas, com os mesmos parâmetros e a mesma ordem de jogos. Repita lotes de cinco amostras em arquivos distintos; examine os valores individuais e a variação entre lotes antes de consolidar. Com cinco amostras o p95 é o máximo observado, não uma estimativa estável da cauda.
 
-O catálogo é uma fotografia de 100 IDs únicos, DOM e SVG na abertura, coletada uma vez por execução e sem CPU limitada; repita os lotes para verificar esses contadores. Não há percentis de carregamento do catálogo, nem garantia de que as 100 capas lazy foram carregadas. `--all` mede também a entrada das 100 rotas, não o carregamento integral das capas.
+O catálogo é uma fotografia dos IDs únicos publicados, DOM e SVG na abertura, coletada uma vez por execução e sem CPU limitada; repita os lotes para verificar esses contadores. Não há percentis de carregamento do catálogo, nem garantia de que todas as capas lazy foram carregadas. `--all` mede também a entrada de todas as rotas publicadas, não o carregamento integral das capas.
 
 `routeReadyMs` inclui espera/polling da automação; bytes JS/CSS e long tasks cobrem apenas o intervalo até essa captura, e heap é estimado, não memória isolada de cada motor. O Chromium compartilha o processo entre amostras e a rede não é limitada: contexto frio não significa host/servidor frio. Não compare preview local com produção ou execução em aparelho físico na mesma série. Overflow é apenas horizontal do documento na captura; ausência dele não certifica campo sem recortes. Separe resultados de entrada, gameplay, cache quente e offline.
 
@@ -38,6 +38,6 @@ Grave modelo, chipset, RAM, versão Android/Chrome, condição térmica, rede, b
 
 ## Gates de qualidade
 
-Acompanhe evolução por família no inventário `docs/GAME-INVENTORY.md`. Primeiro obtenha uma mediana e p95 estáveis por dispositivo, depois defina limites regressivos; não invente metas de FPS ou tempo sem baseline. Faça sessões completas de iniciar → controlar → pausar → continuar → reiniciar → concluir → persistir recorde → voltar com filtros intactos, além de acessibilidade, modo de movimento reduzido, orientação 320/390/844×390 e PWA offline/reconexão. Smoketests das rotas não certificam regras dos 100 jogos.
+Acompanhe evolução por família no inventário `docs/GAME-INVENTORY.md`. Primeiro obtenha uma mediana e p95 estáveis por dispositivo, depois defina limites regressivos; não invente metas de FPS ou tempo sem baseline. Faça sessões completas de iniciar → controlar → pausar → continuar → reiniciar → concluir → persistir recorde → voltar com filtros intactos, além de acessibilidade, modo de movimento reduzido, orientação 320/390/844×390 e PWA offline/reconexão. Smoketests das rotas não certificam regras de todos os jogos.
 
 Não registrar identificadores privados, dados pessoais, conteúdo de localStorage nem rastreamento de usuário no JSON.
