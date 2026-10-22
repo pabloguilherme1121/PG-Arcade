@@ -1,14 +1,34 @@
 import { CATALOG_SIZE } from "../src/lib/catalogRelease";
 import { expect, test } from '@playwright/test';
+test('turn-based discovery combines search, persists and opens a playable result', async ({ page }) => {
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('./');
+ const turnFilter = page.getByRole('button',{name:/^Por turnos/});
+ await turnFilter.scrollIntoViewIfNeeded();
+ await turnFilter.click();
+ await expect(page.locator('.game-grid .game-card')).toHaveCount(78);
+ await page.getByLabel('Filtrar por modo',{exact:true}).selectOption('Dupla local');
+ await expect(page.locator('.game-grid .game-card')).toHaveCount(11);
+ await page.getByLabel('Buscar jogo',{exact:true}).fill('xadrez');
+ await expect(page.locator('.game-grid .game-card')).toHaveCount(1);
+ await page.getByLabel('Filtrar por modo',{exact:true}).selectOption('Todos');
+ await page.getByLabel('Buscar jogo',{exact:true}).fill('meteoros');
+ await expect(page.locator('.game-grid .game-card')).toHaveCount(1);
+ await page.reload();
+ await expect(page.getByRole('button',{name:/^Por turnos/})).toHaveAttribute('aria-pressed','true');
+ await expect(page.locator('.game-grid .game-card')).toHaveCount(1);
+ await page.locator('.game-grid .game-link').click();
+ await expect(page.locator('[data-meteor-shield]')).toBeVisible();
+});
 for (const width of [320,390]) {
  test(`category counts follow players and search at ${width}px`,async({page})=>{
   await page.setViewportSize({width,height:844});await page.goto('./');
   await page.getByLabel('Filtrar por modo',{exact:true}).selectOption('Dupla local');
   const categories=page.getByRole('group',{name:'Categorias',exact:true});
   const strategy=categories.getByRole('button',{name:'Estratégia',exact:true});
-  await expect(strategy).toHaveAttribute('title','8 jogos com os outros filtros atuais');
+  await expect(strategy).toHaveAttribute('title','9 jogos com os outros filtros atuais');
   await expect(categories.getByRole('button',{name:'Carros e corrida',exact:true})).toBeDisabled();
-  await strategy.click();await expect(page.locator('.game-grid .game-card')).toHaveCount(8);
+  await strategy.click();await expect(page.locator('.game-grid .game-card')).toHaveCount(9);
   await page.getByLabel('Buscar jogo',{exact:true}).fill('xadrez');
   await expect(strategy).toHaveAttribute('title','1 jogo com os outros filtros atuais');
  });

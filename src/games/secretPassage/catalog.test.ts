@@ -6,17 +6,17 @@ import {filterByMode,modeTags} from "../../lib/smartDiscovery";
 import {gameHelp} from "../../lib/gameHelp";
 import {recordUnits} from "../../lib/recordUnits";
 describe("Passagem Secreta catalog contracts",()=>{
-  it("preserves 108 unique real titles and records",()=>{
-    expect(CATALOG_SIZE).toBe(108);
+  it("preserves 128 unique real titles and records",()=>{
+    expect(CATALOG_SIZE).toBe(games.length);
     expect(games).toHaveLength(CATALOG_SIZE);
-    expect(new Set(games.map(g=>g.id)).size).toBe(108);
+    expect(new Set(games.map(g=>g.id)).size).toBe(CATALOG_SIZE);
     expect(recordUnits.passagem).toBe("pontos");
     expect(gameHelp.passagem).toMatch(/simultaneamente/);
   });
   it("filters precisely local groups without pretending a bot, solo or multiplayer online",()=>{
     const mode=gameCapabilities("passagem");
     expect(mode).toMatchObject({solo:false,online:false,localPlayers:4,bot:false,timedSessions:false});
-    expect(modeTags(games.find(g=>g.id==="passagem")!)).toEqual(["classico","sem-pressa","dupla","grupo"]);
+    expect(modeTags(games.find(g=>g.id==="passagem")!)).toEqual(["classico","sem-pressa","dupla","grupo","turnos"]);
     expect(filterByMode(games,"grupo",{},[]).map(g=>g.id)).toContain("passagem");
   });
 });

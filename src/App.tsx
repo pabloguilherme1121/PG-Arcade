@@ -73,6 +73,30 @@ const collectionPlayers = Object.fromEntries(
   ]),
 ) as unknown as Record<ExpandedId, ComponentType<PlayerProps>>;
 const players = {
+  meteoros: lazy(() => import("./games/meteorShield/MeteorShield")),
+  trem: lazy(() => import("./games/runawayTrain/RunawayTrain")),
+  fortalezas: lazy(() => import("./games/turnFortress/TurnFortress")),
+  reles: lazy(() => import("./games/relayNetwork/RelayNetwork")),
+  irrigacao: lazy(() => import("./games/irrigationZones/IrrigationZones")),
+  cidade: lazy(() => import("./games/miniCity/MiniCity")),
+  alquimia: lazy(() => import("./games/elementAlchemy/ElementAlchemy")),
+  climas: lazy(() => import("./games/climateCards/ClimateCards")),
+  colheita: lazy(() => import("./games/seasonHarvest/SeasonHarvest")),
+  resgate: lazy(() => import("./games/rescueBoats/RescueBoats")),
+  farois: lazy(() => import("./games/lighthouseDefense/LighthouseDefense")),
+  mercadores: lazy(() => import("./games/tradeRoutes/TradeRoutes")),
+  portas: lazy(() => import("./games/logicGates/LogicGates")),
+  coordenadas: lazy(() => import("./games/lostCoordinates/LostCoordinates")),
+  bordas: lazy(() => import("./games/enchantedEdges/EnchantedEdges")),
+  cubos: lazy(() => import("./games/hiddenCubes/HiddenCubes")),
+  balancas: lazy(() => import("./games/balanceRiddle/BalanceRiddle")),
+  fios: lazy(() => import("./games/wirePaths/WirePaths")),
+  runas: lazy(() => import("./games/runeCipher/RuneCipher")),
+  sombras: lazy(() => import("./games/shadowVault/ShadowVault")),
+  ponteiros: lazy(() => import("./games/clockPhases/ClockPhases")),
+  trilhos: lazy(() => import("./games/railSwitches/RailSwitches")),
+  arquipelago: lazy(() => import("./games/archipelago/Archipelago")),
+  engrenagens: lazy(() => import("./games/timeGears/TimeGears")),
   contrato: lazy(() => import("./games/colorContracts/ColorContracts")),
   passagem: lazy(() => import("./games/secretPassage/SecretPassage")),
   cofre: lazy(() => import("./games/teamVault/TeamVault")),
@@ -155,7 +179,7 @@ function route() {
 }
 
 
-const specificStyles = new Set(["rapido", "sem-pressa", "grupo", "bot", "treino", "sobrevivencia", "deslizar"]);
+const specificStyles = new Set(["rapido", "sem-pressa", "turnos", "grupo", "bot", "treino", "sobrevivencia", "deslizar"]);
 // Optional panels may be absent from the first offline cache. Their load failure
 // must not unmount the catalog or a previously cached game.
 const VisualPreferences = lazy(() => import("./VisualPreferences").catch(() => ({

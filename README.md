@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **108 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **128 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -116,3 +116,102 @@ Competição no mesmo aparelho para 2–4 pessoas. Cada explorador registra em s
 ### Contrato das Cores (108º título)
 
 Draft competitivo presencial de 2–4 pessoas em um único aparelho: mercado de três cores, objetivos públicos, quatro rodadas, pares e trincas, diversidade de cores, placar e vencedor por pontos. Módulo carregado sob demanda, sem backend, bot fictício ou anúncios.
+
+### Engrenagens do Tempo (109º título)
+
+Quebra-cabeça solo, offline, com quatro a seis engrenagens conectadas. Cada giro afeta a escolhida e as vizinhas em sentidos opostos. Três dificuldades, desafios gerados por giros reversíveis, desfazer, reiniciar, nova partida, recorde e controles acessíveis por toque/teclado. Sem bot, temporizador ou multiplayer fictício. A integração depende da certificação das PRs #169 e #170.
+
+
+### Pontes do Arquipélago (110º título — expansão em PR)
+
+Quebra-cabeça de 6, 8 ou 9 ilhas numeradas conectadas por até duas pontes entre vizinhas. A vitória exige que todas as ilhas estejam conectadas, que a quantidade de pontes coincida com os números e que nenhuma ponte cruze outra. Geração determinística com solução verificada em testes, movimentos reversíveis, recorde, toque e teclado. Motor sob demanda, sem bot ou rede fictícios. A integração depende dos gates e da certificação das PRs anteriores.
+
+
+### Trilhos Cruzados (111º jogo — expansão em PR)
+
+Configure três, quatro ou cinco desvios entre três trilhos para que os trens A/B/C alcancem as saídas corretas. Trocas de vias preservam a ausência de colisões; os desafios são gerados por rotas alcançáveis. O motor verifica cada percurso, dá feedback individual, registra pontuação e reinicia sem custo, bot ou serviço externo. Teclado, toque e mobile 320/390/844×390 são cobertos por testes. A PR permanece draft até os gates e merge seguro da base.
+
+
+### Ponteiros em Fase (112º jogo — expansão em PR)
+
+Sincronize três a cinco relógios de ciclos diferentes com um relógio global de tempo simulado. O desafio tem uma solução matematicamente verificável por congruências, avanço de 1/5/10 minutos, retorno, desfazer, reinício, recorde, teclado e toque. Motor lazy e sem dependências externas, bots ou modos online. Precisa de CI e integração segura da cadeia anterior.
+
+
+### Cofre de Sombras (113º jogo — expansão em PR)
+
+Quebra-cabeça solo de camadas de máscaras giratórias e 16 células em grade 4×4: alcance a silhueta-alvo sobrepondo três a cinco máscaras de filtros ópticos alternados, com rotação de 90° a cada toque. Os enigmas são gerados a partir de uma solução, com desfazer, reiniciar, recorde e controles por toque/teclado. Módulo lazy e capa SVG, sem bots ou rede fictícios. Exige CI e integração da base.
+
+
+### Código de Runas (114º título — PR de expansão)
+
+Decifração de frases por substituição monoalfabética. Cada símbolo rúnico corresponde a exatamente uma letra; o painel mostra o texto cifrado e a tradução parcial, com feedback de contagem de acertos, até duas dicas penalizadas e três dificuldades. O motor garante desafio decodificável com regras de correspondência, reinício e pontuação. UI acessível com seletores e E2E 320/390/844×390; sem conta, bots, servidor ou custos. A integração depende dos gates no HEAD final da cadeia.
+
+
+### Fio Condutor (115º título — PR de expansão)
+
+Quebra-cabeça de caminhos disjuntos: toque na origem de cada cor e construa um caminho ortogonal até seu destino, sem atravessar obstáculos ou outros fios. O motor valida a adjacência, bloqueios, conexões e vitória global, com desfazer, reinício, três dificuldades, recorde e tabuleiros gerados com solução garantida. Módulo lazy, capa SVG e E2E 320/390/844×390; não promete online ou bot.
+
+
+### Enigma das Balanças (116º título — PR de expansão)
+
+Dedução de uma moeda falsa mais pesada ou leve por pesagens reais, calculadas com grupos de tamanho igual. Até 3/4/5 pesagens nas dificuldades Fácil/Normal/Difícil e duas acusações permitidas. Motor determinístico, histórico de resultados, pontuação, reinício, capa SVG e E2E em 320/390/844×390; sem backend, bot ou compras. Aceite condicionado ao CI completo, merge sequencial e Android físico.
+
+
+### Cubos Ocultos (117º título — PR de expansão)
+
+Reconstrução em 3D a partir das vistas frontal, lateral e superior em tabuleiros 3×3 a 5×5. Cada casa permite 0–4 alturas; as projeções definem as metas e toda escultura é gerada a partir de uma solução válida. Inclui toque, teclado, desfazer, reiniciar, novo desafio, recorde e testes de 300 cenários de geração, conclusão real e E2E mobile. Módulo lazy e sem rede ou bots. A PR precisa ser certificada antes da integração.
+
+
+### Bordas Encantadas (118º título — PR de expansão)
+
+Mosaicos rotativos 3×3, 4×4 e 5×5 gerados de arestas coincidentes com ao menos uma solução garantida. Toque/teclado gira cada peça por 90°; a vitória exige cores internas correspondentes e paredes cinzentas voltadas à borda externa. Inclui desfazer, pontuação, recorde, capa SVG, lazy load e testes de 300 gerações/soluções e E2E 320/390/844×390. Sem bot, internet ou cronômetro; aguarda os gates de integração da cadeia.
+
+
+### Coordenadas Perdidas (119º título — PR de expansão)
+
+Encontre um destino escondido por distância de Manhattan a faróis fixos. Três dificuldades com grades 5×5/7×7/9×9, pistas iniciais progressivamente menores, revelação de pistas com penalidade, marcação e comparação de distâncias, três palpites e recorde. A geração garante que os três faróis identificam uma única coordenada; testes de 360 mapas comprovam unicidade. Mobile com rolagem interna e casas de 46 px, ARIA, teclado, lazy import e E2E 320/390/844×390. Ainda precisa de certificação de CI e merge seguro.
+
+
+### Portas Lógicas (120º título — PR de expansão)
+
+Circuitos booleanos editáveis com uma a três portas lógicas, inversor opcional, tabela-verdade de quatro combinações e metas sempre alcançáveis. O jogador altera E, OU, XOU e NÃO-E e a saída final até reproduzir o resultado esperado. Jogadas, desfazer, vitória, recorde, três dificuldades, capa SVG, motor lazy, toque e teclado. Testes de 300 desafios e E2E 320/390/844×390. Não inclui bots nem online e aguarda CI da cadeia antes da publicação.
+
+
+### Mercadores de Rotas (121º título — PR de expansão)
+
+Negocie mercadorias entre Porto, Serra, Vale e Capital em turnos limitados. Transporte três tipos de produtos com cargas e caixa finitos, pague combustível por estradas, reabasteça e venda em mercados para atingir lucro positivo em três dificuldades. Soluções construtivas verificadas em múltiplas sementes, 100% solo/offline com recordes, controles touch/teclado, capa SVG e import lazy. A PR deve passar gates E2E e integração antes da publicação.
+
+
+### Defesa de Faróis (122º título — PR de expansão)
+
+Planeje a cobertura de rotas colocando 2 a 4 faróis em até 9 locais com alcance ortogonal de duas casas e limite de sobreposições. A geração cria uma missão solucionável; as decisões permitem colocar, remover e desfazer sem bot ou rede. Vitória pela cobertura completa dentro do orçamento de redundância, pontuação, três dificuldades, SVG próprio e E2E mobile 320/390/844×390; exige CI completo antes da integração.
+
+
+### Barcos de Resgate (123º título — PR de expansão)
+
+Planeje resgates entre ilhas considerando marés de três fases, combustível limitado, capacidade para dois passageiros, reservas na base e limite de turnos. Resgate e desembarque 2–4 pessoas para concluir a missão. Motor por turnos reproduzível, provas unitárias de 150 cenários e vitória real em três dificuldades; UI mobile 320/390/844×390, toque/teclado, recorde, capa SVG e import lazy. Ainda sujeito à validação completa de CI e integração segura.
+
+
+### Colheita das Estações (124º jogo — PR de expansão)
+
+Estratégia agrícola em quatro canteiros com três culturas de efeitos distintos, fertilidade finita, orçamento de água, previsão de clima, descanso do solo e meta de produção. Inclui três dificuldades, desfazer, condição de vitória/derrota, recorde, reiniciar/novo cenário, SVG original, UI mobile por toque/teclado e importação lazy. A geração é reproduzível; testes cobrem 300 estados e 180 provas construtivas de vitória, mais E2E 320/390/844×390. Publicação depende de CI completo.
+
+
+### Cartas de Climas (125º jogo — PR de expansão)
+
+Duelo local por turnos para exatamente duas pessoas compartilhando um celular. Cada jogador tem seis cartas próprias (Sol/Chuva/Vento, forças 1–6) e escolhe em segredo; tela de passagem evita mostrar a mão adversária. Terrenos dão bônus climáticos, rodada resolve poder real e atribui 2 pontos ao vencedor ou 1 a cada em empates. Três durações (3–5 rodadas), placar/vitória/empate, recorde, SVG próprio, teclado/toque e E2E mobile. Sem bot nem multiplayer remoto.
+
+
+### Alquimia de Elementos (126º título — PR de expansão)
+
+Combinação estratégica de Fogo/Água/Terra com receitas encadeadas para obter Vapor, Argila, Metal, Elixir, Cristal e Obra-prima. Cada produção consome reagentes de estoque finito, podendo tornar uma meta inalcançável se você desperdiçar ingredientes. Três dificuldades, limite de ações, desfazer, vitória e derrota, recorde local, capa SVG, lazy load e testes unitários de 300 seeds e 180 soluções reais, E2E mobile 320/390/844×390. Offline e sem bot.
+
+
+### Cidade em Miniatura (127º título — PR de expansão)
+
+Planejamento urbano em grade 3×3/4×4/5×5 com moradias, parques, lojas e indústria. Cada tipo custa parte do orçamento; casas protegidas impedem construção, as moradias precisam estar ao lado de serviços verdes/comércio sem poluição industrial, e metas de tipos são exigidas. Inclui remoção/reembolso, desfazer, três níveis com solução construtiva verificada para 360 sementes, recorde, capa SVG original, UI mobile, toque/teclado e E2E 320/390/844×390. Ainda depende de CI completo antes do merge.
+
+
+### Zonas de Irrigação (128º título — PR de expansão)
+
+Rede de irrigação com canos conectados à nascente. O jogador abre/fecha canais por pares de casas vizinhas em grades 4×4/5×5/6×6, atende demandas variáveis de 2–4 campos, respeita volume de água e limite de tubos, evita vazamentos em pontas soltas, desfaz canais e registra recorde. Soluções reais de fluxo em três níveis verificadas para 360 cenários, SVG original, lazy React, controles por toque/teclado, testes mobile 320/390/844×390. Ainda sujeito a CI e integração.

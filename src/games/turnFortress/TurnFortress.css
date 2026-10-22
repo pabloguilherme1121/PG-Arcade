@@ -1,0 +1,30 @@
+.turn-fortress{width:min(100%,940px);min-width:0;margin:auto;padding:clamp(10px,3vw,20px);display:grid;gap:12px;background:#1c2939;color:#f6f7fc;border:1px solid #8595ae;border-radius:18px}
+.turn-fortress p{margin:0;line-height:1.5}
+.fortress-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.fortress-stats p{padding:10px 4px;border-radius:9px;text-align:center;background:#34445e;font-size:.8rem}
+.fortress-stats strong{display:block;font-size:1.1rem;color:#ffdf9a}
+.fortress-instructions,.fortress-legend{font-size:.91rem}
+.fortress-difficulty{display:grid;gap:6px;font-weight:700}
+.fortress-difficulty select{width:100%;min-width:0;min-height:48px;padding:8px;border-radius:9px;border:2px solid #b7c7dc;color:#1a2a3c;background:#eef5ff;font:inherit;font-size:16px}
+.fortress-board{display:grid;gap:8px;min-width:0}
+.fortress-lane{display:grid;grid-template-columns:minmax(0,1fr);gap:5px;background:#2b3d52;border:1px solid #8495a7;border-radius:10px;padding:8px;min-width:0}
+.fortress-lane strong{font-size:.94rem}
+.fortress-lane small{font-size:.76rem;min-height:1rem;overflow-wrap:anywhere}
+.fortress-line{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;min-width:0}
+.fortress-tile,.fortress-gate{border-radius:7px;border:1px solid #899caf;min-height:38px;display:grid;place-items:center;background:#3d5062;font-size:1.1rem}
+.fortress-gate{background:#9f644f;color:#fff}
+.fortress-tile[data-fortress-enemies="1"],.fortress-tile[data-fortress-enemies="2"]{background:#9c594f;color:#fff5cf}
+.turn-fortress button{min-height:46px;padding:8px 6px;border-radius:9px;border:2px solid #d9ddb6;background:#dce9c7;color:#223a32;font:inherit;font-weight:700}
+.turn-fortress button:disabled{opacity:.55}
+.fortress-picks{display:grid;gap:7px;margin:0;border:1px solid #778faa;border-radius:10px;padding:10px;min-width:0}
+.fortress-picks legend{font-weight:700;padding:0 5px}
+.fortress-picks label{display:flex;align-items:center;gap:10px;min-height:42px;border-radius:8px;padding:5px;background:#30445d}
+.fortress-picks input{width:22px;height:22px;accent-color:#cbe69e;flex-shrink:0}
+.fortress-picks span{display:grid;gap:2px}
+.fortress-picks small{font-size:.79rem;color:#e2e7f0}
+.fortress-feedback{border-radius:9px;background:#344b63;border:1px solid #95b0c8;padding:10px}
+.fortress-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.fortress-legend{color:#cdd8e4}
+.turn-fortress :is(button,select,input):focus-visible{outline:3px solid #fff3b5;outline-offset:3px}
+@media(max-width:360px){.fortress-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.fortress-actions{grid-template-columns:1fr}}
+@media(min-width:740px) and (max-height:500px){.turn-fortress{width:min(100%,1100px);grid-template-columns:1fr 1fr}.fortress-board{grid-column:2;grid-row:1/span 5}.fortress-stats,.fortress-difficulty,.fortress-instructions,.fortress-picks,.fortress-feedback,.fortress-actions,.fortress-legend{grid-column:1}}

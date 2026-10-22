@@ -1,5 +1,11 @@
 import { defineConfig, devices } from "@playwright/test";
 const port = Number(process.env.E2E_PORT || (process.env.CI ? 5173 : 5189));
+// Repeated snapshots of 132 SVG covers dominate Firefox tracing time. Preserve
+// actions, network, source and screenshots; failures also keep error-context.md.
+// Opt into full DOM snapshots when investigating a specific Firefox failure.
+const firefoxTrace = process.env.E2E_FULL_DOM_TRACE === "1"
+  ? "retain-on-failure" as const
+  : { mode: "retain-on-failure", snapshots: false, screenshots: true, sources: true } as const;
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
@@ -16,7 +22,7 @@ export default defineConfig({
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
     { name: "webkit", use: { ...devices["Desktop Safari"] } },
     ...(process.env.CI
-      ? [{ name: "firefox", use: { ...devices["Desktop Firefox"] } }]
+      ? [{ name: "firefox", use: { ...devices["Desktop Firefox"], trace: firefoxTrace } }]
       : []),
   ],
   webServer: process.env.E2E_BASE_URL

@@ -27,16 +27,15 @@ test("native fullscreen or viewport fallback keeps a working exit and navigation
 });
 
 for (const width of [320, 390, 1280]) {
-  // Keep the desktop WebKit sweep split into bounded runs; every catalog game still runs.
-  const batches = width === 1280
-    ? Array.from({ length: Math.ceil(games.length / 20) }, (_, i) =>
-        games.slice(i * 20, (i + 1) * 20))
-    : [games];
+  // Bound every viewport sweep as the catalog grows, including mobile WebKit.
+  // Each game still runs once at each width, with the same assertions.
+  const batches = Array.from({ length: Math.ceil(games.length / 20) }, (_, i) =>
+    games.slice(i * 20, (i + 1) * 20));
 
   for (const [batchIndex, batch] of batches.entries()) {
-    const suffix = width === 1280 ? ` (batch ${batchIndex + 1}/${batches.length})` : "";
+    const suffix = ` (batch ${batchIndex + 1}/${batches.length})`;
     test(`all ${games.length} games expose compatible session modes and fit immersive view at ${width}px${suffix}`, async ({ page }) => {
-      test.setTimeout(width === 1280 ? 120_000 : 180_000);
+      test.setTimeout(120_000);
       const errors: string[] = [];
       page.on("pageerror", (error) => errors.push(error.message));
       await page.setViewportSize({ width, height: width === 1280 ? 900 : 844 });

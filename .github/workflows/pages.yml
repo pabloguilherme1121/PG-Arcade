@@ -43,6 +43,7 @@ jobs:
       fail-fast: false
       matrix:
         browser: [chromium, webkit, firefox]
+        shard: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -56,7 +57,7 @@ jobs:
           path: dist
       - run: npx playwright install --with-deps ${{ matrix.browser }}
       - name: Sample reference loading and frame intervals
-        if: matrix.browser == 'chromium'
+        if: matrix.browser == 'chromium' && matrix.shard == 1
         run: |
           npm run preview -- --port 5191 --strictPort > /tmp/arcade-preview.log 2>&1 &
           PREVIEW_PID=$!
@@ -64,44 +65,45 @@ jobs:
           node --input-type=module -e 'for(let i=0;i<60;i++){try{const r=await fetch("http://127.0.0.1:5191/PG-Arcade/");if(r.ok)process.exit(0)}catch{}await new Promise(r=>setTimeout(r,500))}process.exit(1)'
           npm run perf:benchmark -- --base-url=http://127.0.0.1:5191/PG-Arcade/ --samples=3 --frames=120 --output=artifacts/arcade-performance.json
       - name: Publish catalog performance diagnostics
-        if: matrix.browser == 'chromium'
+        if: matrix.browser == 'chromium' && matrix.shard == 1
         run: node scripts/summarize-performance.mjs artifacts/arcade-performance.json docs/performance/catalog-2026-10-17.json
       - uses: actions/upload-artifact@v7
-        if: always() && matrix.browser == 'chromium'
+        if: always() && matrix.browser == 'chromium' && matrix.shard == 1
         with:
           name: arcade-reference-performance
           path: artifacts/arcade-performance.json
           if-no-files-found: warn
           retention-days: 7
       - name: Focused mobile and accessibility smoke
+        if: matrix.shard == 1
         env:
           E2E_WORKERS: ${{ matrix.browser == 'firefox' && '1' || '2' }}
         run: |
           npx playwright test e2e/accessibility-critical.spec.ts e2e/focused-polish.spec.ts e2e/mobile-functional.spec.ts e2e/project-network.spec.ts e2e/mobile-discovery-combination.spec.ts e2e/rhythm-touch-cancellation.spec.ts --project=${{ matrix.browser }} --workers="$E2E_WORKERS"
           npx playwright test e2e/catalog-experience.spec.ts e2e/scoped-backup.spec.ts e2e/professional-play.spec.ts e2e/studio-followups.spec.ts --grep "active filters|backup imports|visual shell|desktop immersive canvas" --project=${{ matrix.browser }} --workers="$E2E_WORKERS"
       - name: WebKit 320px real-touch repeat regression (issue 114)
-        if: matrix.browser == 'webkit'
+        if: matrix.browser == 'webkit' && matrix.shard == 1
         run: |
           npx playwright test e2e/spotlight-touch-discovery.spec.ts --project=webkit --grep "320px" --repeat-each=8 --workers=1 --retries=0 --trace=retain-on-failure
       - name: Offline reload regression
-        if: matrix.browser == 'chromium'
+        if: matrix.browser == 'chromium' && matrix.shard == 1
         run: |
           npx playwright test e2e/offline.spec.ts e2e/offline-six-references.spec.ts e2e/cover-cache-regression.spec.ts --project=chromium
           npx playwright test e2e/rhythm-touch-cancellation.spec.ts --project=chromium --repeat-each=3 --workers=1
-      # Firefox and the SVG catalog compete heavily when two parallel workers
-      # decode cards and traverse every game. Run the *same full suite* serially
-      # to test the contention hypothesis without skipping or relaxing assertions.
+      # Split the complete suite across isolated runners as the catalog grows.
+      # Firefox retains one worker per runner to avoid SVG/decoder contention.
+      # validate requires every shard of every browser; no tests are omitted.
       - name: Run complete browser suite
         run: |
           if [ "${{ matrix.browser }}" = "firefox" ]; then
-            npx playwright test --project=firefox --workers=1
+            npx playwright test --project=firefox --workers=1 --shard=${{ matrix.shard }}/4
           else
-            npx playwright test --project=${{ matrix.browser }}
+            npx playwright test --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/4
           fi
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: arcade-${{ matrix.browser }}-failure-diagnostics
+          name: arcade-${{ matrix.browser }}-${{ matrix.shard }}-failure-diagnostics
           path: test-results
           retention-days: 7
 

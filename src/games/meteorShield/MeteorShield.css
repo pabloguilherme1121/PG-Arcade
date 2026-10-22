@@ -1,0 +1,24 @@
+.meteor-shield{width:min(100%,850px);min-width:0;margin:auto;display:grid;gap:12px;padding:clamp(10px,3vw,20px);background:#1a2640;color:#eef8ff;border:1px solid #879fcc;border-radius:18px}
+.meteor-shield p{margin:0;line-height:1.5}
+.meteor-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.meteor-stats p{padding:8px 4px;background:#2b4265;border-radius:9px;text-align:center;font-size:.8rem}
+.meteor-stats strong{display:block;font-size:1.08rem;color:#d5f8ad}
+.meteor-difficulty{display:grid;gap:5px;font-weight:700}
+.meteor-difficulty select{width:100%;min-width:0;min-height:48px;font:inherit;font-size:16px;padding:8px;background:#f0f4ff;color:#192943;border:2px solid #a6c4e0;border-radius:9px}
+.meteor-radar,.meteor-feedback{background:#2e4664;border:1px solid #849bc5;border-radius:9px;padding:10px}
+.meteor-arena{max-width:100%;border:1px solid #6c8ea5;border-radius:12px;padding:8px;background:#112f48}
+.meteor-grid,.meteor-shield-row{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}
+.meteor-cell{display:grid;place-items:center;min-width:0;min-height:31px;border:1px solid #3b5870;border-radius:5px;background:#1a3954;color:#597896}
+.meteor-cell[data-meteor-active="true"]{background:#91574b;border-color:#eebc83;color:#fff2b9;font-weight:800;font-size:1.1rem}
+.meteor-cell[data-meteor-path="true"]{border-color:#eebc83;border-style:dashed}
+.meteor-arena:focus-visible{outline:3px solid #ffe3a1;outline-offset:3px}
+.meteor-shield-row{margin-top:5px}
+.meteor-shield-row span{display:grid;place-items:center;min-height:29px;background:#27455c;color:#83b4c8;border-radius:5px}
+.meteor-shield-row [data-shield-active="true"]{background:#64b6a0;color:#143d38;font-weight:900;font-size:1.25rem}
+.meteor-controls,.meteor-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.meteor-shield button{min-width:0;min-height:48px;font:inherit;font-weight:700;font-size:.84rem;padding:8px 4px;border-radius:8px;border:2px solid #b9eedc;background:#cfeee4;color:#203c36}
+.meteor-shield button:disabled{opacity:.5}
+.meteor-note{font-size:.87rem;color:#d0daee}
+.meteor-shield :is(button,select):focus-visible{outline:3px solid #ffe3a1;outline-offset:3px}
+@media(max-width:360px){.meteor-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.meteor-controls,.meteor-actions{grid-template-columns:1fr}}
+@media(min-width:740px) and (max-height:500px){.meteor-shield{width:min(100%,1040px);grid-template-columns:1fr 1fr}.meteor-arena{grid-column:2;grid-row:1/span 5}.meteor-stats,.meteor-difficulty,.meteor-radar,.meteor-controls,.meteor-feedback,.meteor-actions,.meteor-note,.meteor-shield>p{grid-column:1}}

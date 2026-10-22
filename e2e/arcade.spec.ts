@@ -1,18 +1,20 @@
 import { test, expect } from "@playwright/test";
 import { games } from "../src/lib/catalog";
 import { matchesGame } from "../src/lib/discovery";
-test("catalog search, categories, favorites and direct links persist", async ({
+test("catalog favorites persist across navigation and reload", async ({
   page,
   browserName,
 }) => {
-  // Firefox/WebKit DOM snapshots of all 100 SVG covers add overhead across route changes.
+  // Firefox/WebKit DOM snapshots of the full catalog add overhead across route changes.
   // Keep tracing and the per-assertion deadlines; budget only this complete flow.
   if (browserName !== "chromium") test.setTimeout(60_000);
   await page.goto("./");
   await expect(page.locator(".game-card")).toHaveCount(games.length);
-  expect(
-    (await page.locator(".favorite svg").first().boundingBox())!.width,
-  ).toBeGreaterThanOrEqual(16);
+  // Read the icon once without resolving an extra remote element handle and
+  // recording another full-catalog snapshot in Firefox.
+  expect(await page.evaluate(() =>
+    document.querySelector(".favorite svg")?.getBoundingClientRect().width || 0,
+  )).toBeGreaterThanOrEqual(16);
   await page
     .getByRole("button", { name: "Adicionar Snake aos favoritos", exact: true })
     .click();
@@ -25,6 +27,21 @@ test("catalog search, categories, favorites and direct links persist", async ({
   await expect(
     page.getByRole("link", { name: /^Jogar Snake/ }),
   ).toBeVisible();
+});
+
+test("catalog return, search, categories and direct links persist", async ({ page, browserName }) => {
+  if (browserName !== "chromium") test.setTimeout(60_000);
+  // Continue the return journey from persisted favorites in a fresh context,
+  // keeping full DOM tracing and every original search/game assertion bounded.
+  await page.addInitScript(() => {
+    if (!localStorage.getItem("pg-arcade-progress-v1")) {
+      localStorage.setItem("pg-arcade-progress-v1", JSON.stringify({
+        favorites: ["snake"], visits: {}, records: {}, last: null,
+      }));
+    }
+  });
+  await page.goto("./#/favoritos", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("link", { name: /^Jogar Snake/ })).toBeVisible();
   await page.getByRole("link", { name: "Jogos", exact: true }).click();
   await page.getByLabel("Buscar jogo").fill("memória");
   const memoryGames = games.filter(g => matchesGame(g, "memória"));
