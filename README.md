@@ -1,6 +1,6 @@
 # PG Arcade
 
-Uma pausa. Uma nova jogada. **128 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
+Uma pausa. Uma nova jogada. **150 jogos gratuitos no navegador**, com controles por teclado e toque, modos de partida, desafios e recordes locais.
 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
@@ -215,3 +215,7 @@ Planejamento urbano em grade 3×3/4×4/5×5 com moradias, parques, lojas e indú
 ### Zonas de Irrigação (128º título — PR de expansão)
 
 Rede de irrigação com canos conectados à nascente. O jogador abre/fecha canais por pares de casas vizinhas em grades 4×4/5×5/6×6, atende demandas variáveis de 2–4 campos, respeita volume de água e limite de tubos, evita vazamentos em pontas soltas, desfaz canais e registra recorde. Soluções reais de fluxo em três níveis verificadas para 360 cenários, SVG original, lazy React, controles por toque/teclado, testes mobile 320/390/844×390. Ainda sujeito a CI e integração.
+
+### Catálogo de 150 jogos
+
+Os 18 desafios da expansão final têm instruções, capas locais, vitória, desfazer e recordes. Consulte [regras e validação da expansão](docs/CATALOG-150.md). São desafios fixos solo, sem cronômetro; o filtro Por turnos reúne 96 jogos.
