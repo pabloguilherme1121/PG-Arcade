@@ -32,13 +32,25 @@ export default function MeteorShield({ record, onRecord }: { record: number; onR
         Radar: próxima trajetória pela coluna <strong>{game.schedule[previewIndex] + 1}</strong>.
         {" "}Turno {game.tick}. {game.movedThisTick ? "Movimento já utilizado." : "Um movimento disponível."}
       </p>
-      <div className="meteor-arena" role="group" aria-label="Campo de meteoros e escudo">
+      <div className="meteor-arena" role="group" aria-label="Campo de meteoros e escudo"
+        tabIndex={0} aria-describedby="meteor-keyboard-help"
+        onKeyDown={event => {
+          if (event.altKey || event.ctrlKey || event.metaKey || event.repeat || game.phase !== "playing") return;
+          if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+            event.preventDefault();
+            setGame(previous => moveShield(previous, event.key === "ArrowLeft" ? -1 : 1));
+          } else if (event.key === " " || event.key === "Enter") {
+            event.preventDefault();
+            setGame(advanceMeteor);
+          }
+        }}>
         <div className="meteor-grid">
           {Array.from({ length: 42 }, (_, index) => {
             const column = index % 7, row = Math.floor(index / 7);
             const existing = game.meteors.filter(m => m.row === row && m.column === column);
             return <span key={index} className="meteor-cell" data-meteor-column={column} data-meteor-row={row}
-              data-meteor-active={existing.length > 0} role="img"
+              data-meteor-active={existing.length > 0}
+              data-meteor-path={column === game.schedule[previewIndex]} role="img"
               aria-label={`Linha ${row + 1}, coluna ${column + 1}: ${existing.length ? existing.map(m => m.direction === "up" ? "meteoro refletido" : "meteoro caindo").join(", ") : "livre"}`}>
               {existing.length ? existing.map(m => m.direction === "up" ? "↑" : "◆").join("") : "·"}
             </span>;
@@ -62,7 +74,7 @@ export default function MeteorShield({ record, onRecord }: { record: number; onR
         <button type="button" onClick={() => setGame(resetMeteor)}>Reiniciar</button>
         <button type="button" onClick={() => setGame(nextMeteor)}>Nova chuva</button>
       </div>
-      <p className="meteor-note">◆ queda · ↑ refletido · ▰ escudo. Desafio de habilidade por turnos, sem relógio externo, rede, compras ou bot. Funciona com toque, Tab e Enter.</p>
+      <p className="meteor-note" id="meteor-keyboard-help">◆ queda · ↑ refletido · ▰ escudo. A coluna marcada mostra a próxima trajetória. Toque nos controles ou foque o campo: ← e → movem o escudo; Espaço ou Enter avançam um turno. Sem relógio externo.</p>
     </section>
   );
 }

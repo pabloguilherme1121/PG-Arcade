@@ -12,5 +12,5 @@ it("Ponteiros em Fase registra 128 IDs e capacidade verdadeira",()=>{
  expect(recordUnits.ponteiros).toBe("pontos");
  expect(gameHelp.ponteiros.length).toBeGreaterThan(100);
  expect(gameCapabilities("ponteiros")).toMatchObject({solo:true,online:false,bot:false,localPlayers:1,timedSessions:false,swipe:false});
- expect(modeTags(games.find(g=>g.id==="ponteiros")!)).toEqual(["classico","sem-pressa"]);
+ expect(modeTags(games.find(g=>g.id==="ponteiros")!)).toEqual(["classico","sem-pressa", "turnos"]);
 });

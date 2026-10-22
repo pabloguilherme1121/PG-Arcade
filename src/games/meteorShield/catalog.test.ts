@@ -14,5 +14,5 @@ it("Defensor de Meteoros #132 registra um motor isolado sem temporizador real", 
   expect(gameCapabilities("meteoros")).toMatchObject({
     solo: true, online: false, bot: false, localPlayers: 1, timedSessions: false, swipe: false,
   });
-  expect(modeTags(games.find(g => g.id === "meteoros")!)).toEqual(["classico", "sem-pressa"]);
+  expect(modeTags(games.find(g => g.id === "meteoros")!)).toEqual(["classico", "sem-pressa", "turnos"]);
 });

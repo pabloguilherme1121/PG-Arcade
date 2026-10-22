@@ -15,6 +15,6 @@ describe("Trilhos Cruzados: contrato de catálogo",()=>{
  });
  it("expõe somente suporte real para uma pessoa",()=>{
   expect(gameCapabilities("trilhos")).toMatchObject({solo:true,online:false,localPlayers:1,bot:false,timedSessions:false,swipe:false});
-  expect(modeTags(games.find(g=>g.id==="trilhos")!)).toEqual(["classico","sem-pressa"]);
+  expect(modeTags(games.find(g=>g.id==="trilhos")!)).toEqual(["classico","sem-pressa", "turnos"]);
  });
 });

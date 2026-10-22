@@ -11,5 +11,5 @@ it("Bordas Encantadas: 128 jogos com modos verdadeiros",()=>{
  expect(recordUnits.bordas).toBe("pontos");
  expect(gameHelp.bordas.length).toBeGreaterThan(100);
  expect(gameCapabilities("bordas")).toMatchObject({solo:true,online:false,bot:false,localPlayers:1,timedSessions:false,swipe:false});
- expect(modeTags(games.find(g=>g.id==="bordas")!)).toEqual(["classico","sem-pressa"]);
+ expect(modeTags(games.find(g=>g.id==="bordas")!)).toEqual(["classico","sem-pressa", "turnos"]);
 });

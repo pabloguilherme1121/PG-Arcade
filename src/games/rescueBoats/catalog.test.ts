@@ -11,5 +11,5 @@ it("Barcos de Resgate é o 128º motor, com modos verdadeiros",()=>{
  expect(recordUnits.resgate).toBe("pontos");
  expect(gameHelp.resgate.length).toBeGreaterThan(100);
  expect(gameCapabilities("resgate")).toMatchObject({solo:true,online:false,bot:false,localPlayers:1,timedSessions:false,swipe:false});
- expect(modeTags(games.find(g=>g.id==="resgate")!)).toEqual(["classico","sem-pressa"]);
+ expect(modeTags(games.find(g=>g.id==="resgate")!)).toEqual(["classico","sem-pressa", "turnos"]);
 });

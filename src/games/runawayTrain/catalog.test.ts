@@ -14,5 +14,5 @@ it("Trem Sem Freio #131 possui modo temporal por turnos, sem bot nem cronômetro
   expect(gameCapabilities("trem")).toMatchObject({
     solo: true, online: false, bot: false, localPlayers: 1, timedSessions: false, swipe: false,
   });
-  expect(modeTags(games.find(game => game.id === "trem")!)).toEqual(["classico", "sem-pressa"]);
+  expect(modeTags(games.find(game => game.id === "trem")!)).toEqual(["classico", "sem-pressa", "turnos"]);
 });

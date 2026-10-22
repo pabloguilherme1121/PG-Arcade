@@ -10,6 +10,8 @@
 .meteor-grid,.meteor-shield-row{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}
 .meteor-cell{display:grid;place-items:center;min-width:0;min-height:31px;border:1px solid #3b5870;border-radius:5px;background:#1a3954;color:#597896}
 .meteor-cell[data-meteor-active="true"]{background:#91574b;border-color:#eebc83;color:#fff2b9;font-weight:800;font-size:1.1rem}
+.meteor-cell[data-meteor-path="true"]{border-color:#eebc83;border-style:dashed}
+.meteor-arena:focus-visible{outline:3px solid #ffe3a1;outline-offset:3px}
 .meteor-shield-row{margin-top:5px}
 .meteor-shield-row span{display:grid;place-items:center;min-height:29px;background:#27455c;color:#83b4c8;border-radius:5px}
 .meteor-shield-row [data-shield-active="true"]{background:#64b6a0;color:#143d38;font-weight:900;font-size:1.25rem}

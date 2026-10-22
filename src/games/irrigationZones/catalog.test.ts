@@ -11,5 +11,5 @@ it("Zonas de Irrigação #128 possui motor, modos e registro íntegros",()=>{
  expect(recordUnits.irrigacao).toBe("pontos");
  expect(gameHelp.irrigacao.length).toBeGreaterThan(100);
  expect(gameCapabilities("irrigacao")).toMatchObject({solo:true,online:false,bot:false,localPlayers:1,timedSessions:false,swipe:false});
- expect(modeTags(games.find(g=>g.id==="irrigacao")!)).toEqual(["classico","sem-pressa"]);
+ expect(modeTags(games.find(g=>g.id==="irrigacao")!)).toEqual(["classico","sem-pressa", "turnos"]);
 });

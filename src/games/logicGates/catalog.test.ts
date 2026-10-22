@@ -11,5 +11,5 @@ it("Portas Lógicas completa 128 IDs com capacidades verdadeiras",()=>{
  expect(recordUnits.portas).toBe("pontos");
  expect(gameHelp.portas.length).toBeGreaterThan(100);
  expect(gameCapabilities("portas")).toMatchObject({solo:true,online:false,bot:false,localPlayers:1,timedSessions:false,swipe:false});
- expect(modeTags(games.find(g=>g.id==="portas")!)).toEqual(["classico","sem-pressa"]);
+ expect(modeTags(games.find(g=>g.id==="portas")!)).toEqual(["classico","sem-pressa", "turnos"]);
 });

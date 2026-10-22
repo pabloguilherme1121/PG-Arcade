@@ -1,6 +1,22 @@
 import { test, expect } from "@playwright/test";
 import { advanceMeteor, moveShield, newMeteorGame } from "../src/games/meteorShield/rules";
 
+test("Meteoros aceita setas e Espaço sem gastar dois movimentos no mesmo turno", async ({ page }) => {
+  await page.goto("./#/jogar/meteoros");
+  const arena = page.getByRole("group", { name: "Campo de meteoros e escudo" });
+  await arena.focus();
+  await page.keyboard.press("ArrowLeft");
+  await expect(page.locator('[data-shield-active="true"]')).toHaveAttribute("data-shield-column", "2");
+  await page.keyboard.press("ArrowLeft");
+  await expect(page.locator('[data-shield-active="true"]')).toHaveAttribute("data-shield-column", "2");
+  await page.keyboard.press("Space");
+  await expect(page.locator(".meteor-radar")).toContainText("Turno 1.");
+  await page.keyboard.press("ArrowRight");
+  await expect(page.locator('[data-shield-active="true"]')).toHaveAttribute("data-shield-column", "3");
+  await expect(arena).toBeFocused();
+  await expect(page.locator('[data-meteor-path="true"]')).toHaveCount(6);
+});
+
 for (const viewport of [{width:320,height:740},{width:390,height:844},{width:844,height:390}]) {
   test(`Defensor de Meteoros responde ao toque sem overflow em ${viewport.width}px`, async ({ page }) => {
     await page.setViewportSize(viewport);

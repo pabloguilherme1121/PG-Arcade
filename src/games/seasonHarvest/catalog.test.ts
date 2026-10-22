@@ -11,5 +11,5 @@ it("Colheita das Estações registra 128 IDs, ajuda, recordes e modos verdadeiro
  expect(recordUnits.colheita).toBe("pontos");
  expect(gameHelp.colheita.length).toBeGreaterThan(100);
  expect(gameCapabilities("colheita")).toMatchObject({solo:true,online:false,bot:false,localPlayers:1,timedSessions:false,swipe:false});
- expect(modeTags(games.find(g=>g.id==="colheita")!)).toEqual(["classico","sem-pressa"]);
+ expect(modeTags(games.find(g=>g.id==="colheita")!)).toEqual(["classico","sem-pressa", "turnos"]);
 });

@@ -14,5 +14,5 @@ it("Fortalezas de Turnos #130 possui motor, ajuda, acessibilidade e modos veríd
   expect(gameCapabilities("fortalezas")).toMatchObject({
     solo: true, online: false, bot: false, localPlayers: 1, timedSessions: false, swipe: false,
   });
-  expect(modeTags(games.find(g => g.id === "fortalezas")!)).toEqual(["classico", "sem-pressa"]);
+  expect(modeTags(games.find(g => g.id === "fortalezas")!)).toEqual(["classico", "sem-pressa", "turnos"]);
 });

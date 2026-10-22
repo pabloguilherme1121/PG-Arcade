@@ -11,5 +11,5 @@ it("Cidade em Miniatura tem 128 IDs e capacidades de zoneamento solo verdadeiras
  expect(recordUnits.cidade).toBe("pontos");
  expect(gameHelp.cidade.length).toBeGreaterThan(100);
  expect(gameCapabilities("cidade")).toMatchObject({solo:true,online:false,bot:false,localPlayers:1,timedSessions:false,swipe:false});
- expect(modeTags(games.find(g=>g.id==="cidade")!)).toEqual(["classico","sem-pressa"]);
+ expect(modeTags(games.find(g=>g.id==="cidade")!)).toEqual(["classico","sem-pressa", "turnos"]);
 });

@@ -11,5 +11,5 @@ it("Alquimia de Elementos completa o 128º motor sem modos fictícios",()=>{
  expect(recordUnits.alquimia).toBe("pontos");
  expect(gameHelp.alquimia.length).toBeGreaterThan(100);
  expect(gameCapabilities("alquimia")).toMatchObject({solo:true,online:false,bot:false,localPlayers:1,timedSessions:false,swipe:false});
- expect(modeTags(games.find(g=>g.id==="alquimia")!)).toEqual(["classico","sem-pressa"]);
+ expect(modeTags(games.find(g=>g.id==="alquimia")!)).toEqual(["classico","sem-pressa", "turnos"]);
 });

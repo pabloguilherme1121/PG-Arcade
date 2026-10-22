@@ -19,6 +19,6 @@ describe("109º jogo — Engrenagens do Tempo",()=>{
     expect(gameCapabilities("engrenagens")).toMatchObject({
       solo:true,online:false,timedSessions:false,localPlayers:1,bot:false,swipe:false,
     });
-    expect(modeTags(game)).toEqual(["classico","sem-pressa"]);
+    expect(modeTags(game)).toEqual(["classico","sem-pressa", "turnos"]);
   });
 });

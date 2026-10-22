@@ -1,5 +1,7 @@
 /* Curated discovery and compact arena, sharing the existing PG lime identity. */
 :root { --pg-space-section: clamp(32px,5vw,64px); --pg-focus: #c9f65a; }
+/* Let touch scrolling move the backdrop with the document, avoiding a fixed paint layer. */
+@media (hover:none) and (pointer:coarse) { body { background-attachment:scroll; } }
 html { scroll-padding-top: 96px; scrollbar-color: #526848 #0b1119; }
 ::selection { background: #c9f65a; color: #0b1119; }
 input { caret-color: var(--pg-accent); }

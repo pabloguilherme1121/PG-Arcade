@@ -12,5 +12,5 @@ it("128º jogo: Rune Cipher tem registro e modos reais",()=>{
  expect(recordUnits.runas).toBe("pontos");
  expect(gameHelp.runas.length).toBeGreaterThan(100);
  expect(gameCapabilities("runas")).toMatchObject({solo:true,online:false,bot:false,localPlayers:1,timedSessions:false,swipe:false});
- expect(modeTags(games.find(g=>g.id==="runas")!)).toEqual(["classico","sem-pressa"]);
+ expect(modeTags(games.find(g=>g.id==="runas")!)).toEqual(["classico","sem-pressa", "turnos"]);
 });

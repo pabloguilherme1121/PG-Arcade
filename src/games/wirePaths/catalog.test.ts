@@ -12,5 +12,5 @@ it("Fio Condutor registra 128 títulos e metadados honestos",()=>{
  expect(recordUnits.fios).toBe("pontos");
  expect(gameHelp.fios.length).toBeGreaterThan(100);
  expect(gameCapabilities("fios")).toMatchObject({solo:true,online:false,localPlayers:1,bot:false,swipe:false,timedSessions:false});
- expect(modeTags(games.find(g=>g.id==="fios")!)).toEqual(["classico","sem-pressa"]);
+ expect(modeTags(games.find(g=>g.id==="fios")!)).toEqual(["classico","sem-pressa", "turnos"]);
 });

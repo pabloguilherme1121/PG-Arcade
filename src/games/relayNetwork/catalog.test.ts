@@ -15,5 +15,5 @@ it("Rede de Relés #129 é jogo único, solo e sem cronômetro", () => {
   expect(gameCapabilities("reles")).toMatchObject({
     solo: true, bot: false, online: false, localPlayers: 1, swipe: false, timedSessions: false,
   });
-  expect(modeTags(games.find(game => game.id === "reles")!)).toEqual(["classico", "sem-pressa"]);
+  expect(modeTags(games.find(game => game.id === "reles")!)).toEqual(["classico", "sem-pressa", "turnos"]);
 });

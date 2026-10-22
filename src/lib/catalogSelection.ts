@@ -5,6 +5,7 @@ import type { Progress } from './progress';
 type CatalogGame = (typeof games)[number];
 type Criteria = Pick<CatalogView, 'query' | 'category' | 'mode' | 'modeFilter' | 'swipeOnly'>;
 type History = Pick<Progress, 'favorites' | 'visits' | 'last'>;
+const nameOrder = new Intl.Collator('pt-BR');
 export const catalogCategories: readonly string[] = ['Todos', ...new Set(games.map(game => categoryGroup(game.category)))];
 /** Each facet replaces only its own selection, retaining all other constraints. */
 export function selectCatalog(source: readonly CatalogGame[], criteria: Criteria, history: History, favoritesPage: boolean) {
@@ -21,6 +22,6 @@ export function selectCatalog(source: readonly CatalogGame[], criteria: Criteria
 }
 export function sortCatalog(source: readonly CatalogGame[], order: string, history: History) {
   if (order === 'recomendados') return recommendGames(source, history);
-  return [...source].sort((a, b) => order === 'nome' ? a.name.localeCompare(b.name, 'pt-BR')
+  return [...source].sort((a, b) => order === 'nome' ? nameOrder.compare(a.name, b.name)
     : order === 'visitados' ? (history.visits[b.id] || 0) - (history.visits[a.id] || 0) : 0);
 }

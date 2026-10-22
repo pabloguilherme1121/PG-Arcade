@@ -11,5 +11,5 @@ it("Mercadores de Rotas #128 tem contratos corretos de catálogo e modos",()=>{
  expect(recordUnits.mercadores).toBe("pontos");
  expect(gameHelp.mercadores.length).toBeGreaterThan(100);
  expect(gameCapabilities("mercadores")).toMatchObject({solo:true,bot:false,online:false,localPlayers:1,timedSessions:false,swipe:false});
- expect(modeTags(games.find(g=>g.id==="mercadores")!)).toEqual(["classico","sem-pressa"]);
+ expect(modeTags(games.find(g=>g.id==="mercadores")!)).toEqual(["classico","sem-pressa", "turnos"]);
 });

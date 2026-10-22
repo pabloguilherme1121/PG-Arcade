@@ -15,6 +15,6 @@ describe("Pontes do Arquipélago: catálogo verídico",()=>{
  it("não inventa bot, rede, swipe ou sessões cronometradas",()=>{
   const game=games.find(g=>g.id==="arquipelago")!;
   expect(gameCapabilities("arquipelago")).toMatchObject({solo:true,localPlayers:1,bot:false,online:false,swipe:false,timedSessions:false});
-  expect(modeTags(game)).toEqual(["classico","sem-pressa"]);
+  expect(modeTags(game)).toEqual(["classico","sem-pressa", "turnos"]);
  });
 });

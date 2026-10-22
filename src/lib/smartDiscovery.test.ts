@@ -4,6 +4,13 @@ import { games } from "./catalog";
 import { countModes, discoveryFilters, modeTags, previewModeTags, filterByMode, recommendGames, chooseSurprise, modeLabel } from "./smartDiscovery";
 
 describe("PG Arcade: metadados dos modos e descoberta inteligente",()=>{
+  it("discovers turn-based games with matching counts and no real-time action titles", () => {
+    const filtered = filterByMode(games, "turnos", {}, []);
+    expect(filtered).toHaveLength(24);
+    expect(filtered.map(game => game.id)).toEqual(expect.arrayContaining(["meteoros", "trem", "portas", "climas"]));
+    expect(filtered.some(game => game.id === "runner" || game.id === "snake")).toBe(false);
+    expect(countModes(games, {}, []).turnos).toBe(filtered.length);
+  });
   it("renders at most two honest mode chips and falls back to Clássico", () => {
     const duel = games.find(game => game.id === "xadrez")!;
     const casual = games.find(game => game.id === "futebol")!;

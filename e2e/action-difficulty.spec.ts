@@ -33,6 +33,9 @@ for (const [width, id] of [[320, 'voo'], [390, 'jetpack']] as const) {
 }
 
 test('action results stay within their mode and difficulty without replacing legacy records', async ({ page }) => {
+  // Twelve seconds of fixed-step physics plus trace capture can exceed the
+  // default wall-clock limit on a shared WebKit runner. Keep all record checks.
+  test.setTimeout(60_000);
   await page.addInitScript(() => {
     if (!localStorage.getItem('pg-arcade-progress-v1')) localStorage.setItem('pg-arcade-progress-v1', JSON.stringify({
       records: { runner: 999 }, recordsV2: { 'runner|free|normal-mission': 25, 'runner|free|normal-endless': 500 },
@@ -45,11 +48,17 @@ test('action results stay within their mode and difficulty without replacing leg
   await page.clock.install({ time: new Date(now.getTime() - 60000) });
   await page.clock.pauseAt(now);
   await page.getByRole('button', { name: 'Começar', exact: true }).click();
-  await page.clock.runFor(12000);
-  await expect(page.getByRole('button', { name: 'Jogar novamente', exact: true })).toBeVisible();
+  const replay = page.getByRole('button', { name: 'Jogar novamente', exact: true });
+  // WebKit may throttle RAF independently of the virtual clock. Advance in
+  // bounded chunks until the actual fixed-step engine reports completion.
+  for (let step = 0; step < 8 && !await replay.isVisible(); step++) {
+    await page.clock.runFor(3000);
+  }
+  await expect(replay).toBeVisible();
   const score = Number(await page.locator('.action-hud strong').first().textContent());
   expect(score).toBeGreaterThan(25);
   await expect(record).toHaveText(String(score));
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('pg-arcade-progress-v1')!).recordsV2['runner|free|normal-mission'])).toBe(score);
   const settings = page.locator('.action-settings');
   await settings.getByLabel('Modo', { exact: true }).selectOption('endless');
   await expect(record).toHaveText('500');

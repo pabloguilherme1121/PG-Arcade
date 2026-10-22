@@ -12,5 +12,5 @@ it("Cubos Ocultos registra 128 jogos sem modos fictícios",()=>{
  expect(recordUnits.cubos).toBe("pontos");
  expect(gameHelp.cubos.length).toBeGreaterThan(100);
  expect(gameCapabilities("cubos")).toMatchObject({solo:true,online:false,bot:false,localPlayers:1,timedSessions:false,swipe:false});
- expect(modeTags(games.find(g=>g.id==="cubos")!)).toEqual(["classico","sem-pressa"]);
+ expect(modeTags(games.find(g=>g.id==="cubos")!)).toEqual(["classico","sem-pressa", "turnos"]);
 });

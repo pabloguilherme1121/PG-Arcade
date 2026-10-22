@@ -11,5 +11,5 @@ it("Defesa de Faróis #128 registra 128 jogos e capacidades reais",()=>{
  expect(recordUnits.farois).toBe("pontos");
  expect(gameHelp.farois.length).toBeGreaterThan(100);
  expect(gameCapabilities("farois")).toMatchObject({solo:true,online:false,bot:false,localPlayers:1,timedSessions:false,swipe:false});
- expect(modeTags(games.find(g=>g.id==="farois")!)).toEqual(["classico","sem-pressa"]);
+ expect(modeTags(games.find(g=>g.id==="farois")!)).toEqual(["classico","sem-pressa", "turnos"]);
 });

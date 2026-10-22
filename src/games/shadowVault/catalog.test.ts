@@ -12,5 +12,5 @@ it("Cofre de Sombras entrega 128 IDs e capacidades corretas",()=>{
  expect(recordUnits.sombras).toBe("pontos");
  expect(gameHelp.sombras.length).toBeGreaterThan(100);
  expect(gameCapabilities("sombras")).toMatchObject({solo:true,bot:false,online:false,timedSessions:false,swipe:false,localPlayers:1});
- expect(modeTags(games.find(g=>g.id==="sombras")!)).toEqual(["classico","sem-pressa"]);
+ expect(modeTags(games.find(g=>g.id==="sombras")!)).toEqual(["classico","sem-pressa", "turnos"]);
 });

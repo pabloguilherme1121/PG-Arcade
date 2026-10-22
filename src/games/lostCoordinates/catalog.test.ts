@@ -11,5 +11,5 @@ it("Coordenadas Perdidas registra 128 IDs e filtros reais",()=>{
  expect(recordUnits.coordenadas).toBe("pontos");
  expect(gameHelp.coordenadas.length).toBeGreaterThan(100);
  expect(gameCapabilities("coordenadas")).toMatchObject({solo:true,online:false,bot:false,localPlayers:1,timedSessions:false,swipe:false});
- expect(modeTags(games.find(g=>g.id==="coordenadas")!)).toEqual(["classico","sem-pressa"]);
+ expect(modeTags(games.find(g=>g.id==="coordenadas")!)).toEqual(["classico","sem-pressa", "turnos"]);
 });
