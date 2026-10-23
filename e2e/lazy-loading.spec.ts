@@ -6,7 +6,7 @@ test("new game families stay lazy until their routes are opened", async ({ page 
   page.on("response", (response) => {
     const url = response.url();
     if (
-      /BoardExpansion-|QuizExpansion-|MotionExpansion-/.test(url) &&
+      /GamePlayer-|BoardExpansion-|QuizExpansion-|MotionExpansion-/.test(url) &&
       response.ok()
     ) {
       loaded.add(url);
@@ -19,6 +19,7 @@ test("new game families stay lazy until their routes are opened", async ({ page 
 
   await page.goto("./#/jogar/latin");
   await expect(page.locator('[data-new-game="latin"]')).toBeVisible();
+  expect([...loaded].some((url) => /GamePlayer-/.test(url))).toBe(true);
   expect([...loaded].some((url) => /BoardExpansion-/.test(url))).toBe(true);
   expect([...loaded].some((url) => /QuizExpansion-|MotionExpansion-/.test(url))).toBe(false);
 
