@@ -1,0 +1,65 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { runInNewContext } from "node:vm";
+
+const origin = "https://example.test/PG-Arcade/";
+function simulate(path, scope) {
+  const handlers = new Map();
+  const store = new Map();
+  let online = true;
+  let calls = 0;
+  const self = {
+    location: { origin: new URL(origin).origin },
+    registration: { scope },
+    addEventListener(type, handler) { handlers.set(type, handler); },
+  };
+  const cache = {
+    async match(key) { return store.get(typeof key === "string" ? key : key.url)?.clone(); },
+    async put(key, value) { store.set(typeof key === "string" ? key : key.url, value.clone()); },
+  };
+  runInNewContext(readFileSync(path, "utf8"), {
+    self, URL, Response, Promise, Set,
+    caches: { open: async () => cache, match: key => cache.match(key) },
+    fetch: async () => {
+      calls++;
+      if (!online) throw Error("offline");
+      return new Response("novo-codigo", { status: 200 });
+    },
+  });
+  async function request(url, mode = "cors") {
+    let intercepted;
+    handlers.get("fetch")({
+      request: { url, mode, method: "GET" },
+      respondWith(promise) { intercepted = promise; },
+    });
+    return intercepted ? await intercepted : null;
+  }
+  return { request, cache, setOnline(value) { online = value; }, get calls() { return calls; } };
+}
+test("SW da campanha não captura os jogos originais em subpasta", async () => {
+  const root = simulate("public/estrategia/sw.js", origin + "estrategia/");
+  assert.equal(await root.request(origin + "estrategia/independentes/","navigate"), null);
+  assert.equal(await root.request(origin + "estrategia/independentes/app.js"), null);
+  assert.notEqual(await root.request(origin + "estrategia/app.js"), null);
+});
+test("SW exclusivo dos jogos não captura a campanha ou o Arcade", async () => {
+  const child = simulate("public/estrategia/independentes/sw.js", origin + "estrategia/independentes/");
+  assert.equal(await child.request(origin + "estrategia/app.js"), null);
+  assert.equal(await child.request(origin + "assets/index.js"), null);
+  assert.notEqual(await child.request(origin + "estrategia/independentes/naval.mjs"), null);
+});
+test("SW dos jogos atualiza online e reabre arena em modo offline", async () => {
+  const child = simulate("public/estrategia/independentes/sw.js", origin + "estrategia/independentes/");
+  const script = origin + "estrategia/independentes/siege.mjs";
+  assert.equal(await (await child.request(script)).text(), "novo-codigo");
+  assert.equal(child.calls, 1);
+  child.setOnline(false);
+  assert.equal(await (await child.request(script)).text(), "novo-codigo");
+  const page = origin + "estrategia/independentes/";
+  // A first successful online navigation populates the fallback HTML.
+  child.setOnline(true);
+  assert.equal(await (await child.request(page, "navigate")).text(), "novo-codigo");
+  child.setOnline(false);
+  assert.equal(await (await child.request(page, "navigate")).text(), "novo-codigo");
+});
