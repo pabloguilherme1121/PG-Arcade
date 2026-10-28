@@ -19,7 +19,7 @@ export default function MeteorShield({ record, onRecord }: { record: number; onR
         <p>Escudo <strong>Coluna {game.shield + 1}</strong></p>
         <p>Recorde <strong>{Math.max(record, game.score)}</strong></p>
       </div>
-      <p>Defenda a base com um escudo móvel. Um meteoro cai a cada sete turnos. Você só pode mover o escudo uma casa, uma vez por turno. Posicione-o na coluna do impacto e avance a simulação: o contato reflete o meteoro de volta ao espaço. Se escapar, a base perde vida.</p>
+      <p>Defenda a base com um escudo móvel. Um meteoro cai a cada sete turnos. Você só pode mover o escudo uma casa, uma vez por turno. Posicione-o na coluna do impacto e avance a simulação: o contato reflete o meteoro de volta ao espaço. Se escapar, a base perde uma vida. Vença sobrevivendo até o fim da chuva; cada reflexo aumenta a pontuação.</p>
       <label className="meteor-difficulty">Dificuldade
         <select aria-label="Dificuldade de Defensor de Meteoros" value={game.difficulty}
           onChange={event => setGame(newMeteorGame(Number(event.target.value) as Difficulty, game.seed))}>
@@ -68,7 +68,7 @@ export default function MeteorShield({ record, onRecord }: { record: number; onR
           onClick={() => setGame(previous => moveShield(previous, 1))}>Mover escudo à direita</button>
         <button type="button" disabled={game.phase !== "playing"} onClick={() => setGame(advanceMeteor)}>Avançar tempo</button>
       </div>
-      <p className="meteor-feedback" role="status">{game.message} {game.phase === "won" && `Vitória! ${game.score} pontos.`}</p>
+      <p className="meteor-feedback" role="status">{game.message} {game.phase === "won" && `${game.score} pontos.`}</p>
       <div className="meteor-actions">
         <button type="button" disabled={!game.history.length} onClick={() => setGame(undoMeteor)}>Desfazer ação</button>
         <button type="button" onClick={() => setGame(resetMeteor)}>Reiniciar</button>
