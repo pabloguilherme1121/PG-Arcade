@@ -19,7 +19,7 @@ self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys()
       .then(keys => Promise.all(
-        keys.filter(key => key.startsWith("pg-estrategia-") && key !== CACHE)
+        keys.filter(key => key.startsWith("pg-estrategia-shell-") && key !== CACHE)
           .map(key => caches.delete(key))
       ))
       .then(() => self.clients.claim())
@@ -30,6 +30,8 @@ self.addEventListener("fetch", event => {
   if (request.method !== "GET") return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin || !url.pathname.startsWith(SCOPE.pathname)) return;
+  // The independent titles run their own isolated service worker.
+  if (url.pathname.startsWith(new URL("independentes/", SCOPE).pathname)) return;
   const navigation = request.mode === "navigate";
   if (!navigation && !allowedAssets.has(url.pathname)) return;
   event.respondWith((async () => {
