@@ -111,3 +111,31 @@ test('PG Estratégia: contraste é operável no celular sem ocultar a navegaçã
   await expect(page.getByRole('navigation',{name:'Entre os sites'}).getByRole('link',{name:/PG Arcade/})).toBeVisible();
   await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
+
+
+for (const width of [320,390]) {
+  test(`PG Estratégia: retomar missão após recarga em ${width}px`, async ({page}) => {
+    await page.setViewportSize({width,height:780});
+    await page.goto('./estrategia/#est-026');
+    await expect(page.locator('#arena')).toBeVisible();
+    await page.locator('#battlefield button:enabled').first().click();
+    await expect(page.locator('#arena-turn')).toContainText('1 /');
+    await page.locator('#exit').click();
+    await page.reload();
+    await expect(page.locator('#continue')).toBeVisible();
+    await page.locator('#continue').click();
+    await expect(page.locator('#arena-turn')).toContainText('1 /');
+    await page.locator('#undo').click();
+    await expect(page.locator('#arena-turn')).toContainText('0 /');
+    await page.locator('#reset').click();
+    await expect(page.locator('#arena-turn')).toContainText('0 /');
+    await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  });
+}
+test('PG Estratégia: restauração inválida preserva catálogo',async({page})=>{
+  await page.addInitScript(()=>localStorage.setItem('pg-estrategia-session-v1',JSON.stringify({v:1,id:'est-001',actions:[{cell:24}]})));
+  await page.goto('./estrategia/');
+  await expect(page.locator('#continue')).toBeHidden();
+  await expect(page.locator('#result-count')).toHaveText('150 missões');
+  await expect(page.locator('.mission-card')).toHaveCount(18);
+});
