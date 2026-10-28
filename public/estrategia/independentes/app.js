@@ -1,6 +1,7 @@
 import { createNaval, commandNaval } from "./naval.mjs";
 import { createSiege, playSiegeCard, endSiegeTurn, SIEGE_CARDS } from "./siege.mjs";
 import { createHex, playHex } from "./hex.mjs";
+import { createSquad, commandSquad, legalSquadMoves } from "./squad.mjs";
 
 const $ = id => document.getElementById(id);
 const STORAGE = "pg-strategy-original-records-v1";
@@ -8,15 +9,16 @@ const GAMES = {
   "frota-oculta": { name: "Frota Oculta", intro: "Localize a frota inimiga num mapa 6×6. Cada disparo consome um turno; use o sonar para deduzir a posição das embarcações.", instructions: "Toque em um quadrante para atacar. Sonar revela o número de navios numa linha, mas gasta um turno. Reparos preservam sua base sob pressão.", init: createNaval },
   "cartas-de-cerco": { name: "Cartas de Cerco", intro: "Monte sua ofensiva com as cartas disponíveis, distribua energia e sobreviva aos ataques de uma fortaleza inimiga.", instructions: "Jogue cartas de sua mão gastando energia. Fortificar bloqueia o próximo ataque; Aríete causa dano elevado. Encerrar o turno permite que o rival ataque.", init: createSiege },
   "hex-conexao": { name: "Hex Conexão", intro: "Conecte de cima até embaixo num tabuleiro hexagonal de 49 casas. O rival tenta unir as bordas esquerda e direita.", instructions: "Selecione uma casa livre para colocar uma pedra. O adversário responde automaticamente. Você ganha ao criar uma cadeia contínua entre as bordas norte e sul.", init: createHex },
+  "patrulha-tatica": { name: "Patrulha Tática", intro: "Conduza um esquadrão por um mapa 5×5. Elimine drones ou recupere um sinal e volte à base.", instructions: "Toque ou use Tab/Enter nas casas livres vizinhas para mover. Ataque drones ao alcance de duas casas; também pode se defender ou curar. Troque o objetivo para uma operação de extração.", init: createSquad },
 };
-let gameId = location.hash.slice(1) in GAMES ? location.hash.slice(1) : "frota-oculta";
+let gameId = Object.hasOwn(GAMES, location.hash.slice(1)) ? location.hash.slice(1) : "frota-oculta";
 let current;
 let records = {};
 try {
   const raw = JSON.parse(localStorage.getItem(STORAGE) || "{}");
   if (raw && typeof raw === "object" && !Array.isArray(raw)) {
     records = Object.fromEntries(Object.entries(raw).filter(([key, value]) =>
-      /^(frota-oculta|cartas-de-cerco|hex-conexao):(recruta|tatico|veterano)$/.test(key) &&
+      /^(frota-oculta|cartas-de-cerco|hex-conexao):(recruta|tatico|veterano)$|^patrulha-tatica:(recruta|tatico|veterano):(combate|extracao)$/.test(key) &&
       Number.isSafeInteger(value) && value >= 0 && value < 100000));
   }
 } catch { records = {}; }
@@ -37,18 +39,18 @@ function number(seed) {
   return Math.floor((seed >>> 0) % 100000) + 31;
 }
 function newGame(id = gameId) {
-  if (!GAMES[id]) return;
+  if (!Object.hasOwn(GAMES,id)) return;
   gameId = id;
   const mode = $("difficulty").value;
   const seed = number(Math.floor(Math.random() * 0xffffffff));
-  current = GAMES[id].init({ difficulty: mode, seed });
+  current = GAMES[id].init({ difficulty: mode, seed, mission: $("squad-mode").value });
   if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
   document.querySelectorAll("[data-select]").forEach(button => {
     button.setAttribute("aria-pressed", String(button.dataset.select === id));
   });
   render();
 }
-function bestKey() { return gameId + ":" + current.mode; }
+function bestKey() { return gameId + ":" + current.mode + (gameId === "patrulha-tatica" ? ":" + current.mission : ""); }
 function update(next) {
   if (next === current) return;
   current = next;
@@ -175,14 +177,49 @@ function renderHex() {
   actions.append(el("p","intel",
     "Cada casa aceita uma pedra. As seis vizinhas hexagonais formam as conexões. Não é possível mover uma pedra já colocada. Recruta, Tático e Veterano usam estratégias rivais diferentes."));
 }
+function renderSquad() {
+  const s=current,board=$("board"),actions=$("actions");
+  board.className="board squad-board";
+  board.setAttribute("aria-label","Tabuleiro de Patrulha Tática com cinco linhas e cinco colunas");
+  board.replaceChildren();
+  const pos=s.units[0].pos,moves=legalSquadMoves(s);
+  const distance=(a,b)=>Math.abs(Math.floor(a/5)-Math.floor(b/5))+Math.abs(a%5-b%5);
+  for(let cell=0;cell<25;cell++){
+    const enemyIndex=s.enemies.findIndex(e=>e.hp>0&&e.pos===cell);
+    const shoot=enemyIndex>=0&&distance(pos,cell)<=2&&s.ammo>0;
+    const walk=moves.includes(cell);
+    const own=cell===pos,cover=s.rocks.includes(cell);
+    const rescue=s.mission==="extracao"&&cell===12&&!s.rescued;
+    const kind=own?"squad":enemyIndex>=0?"drone":cover?"cover":rescue?"rescue":walk?"move":"empty";
+    const symbol=own?"◆":enemyIndex>=0?"♟":cover?"▥":rescue?"★":cell===20?"⌂":walk?"·":"";
+    const cmd=enemyIndex>=0?{type:"attack",target:enemyIndex}:{type:"move",cell};
+    const button=action(symbol,()=>update(commandSquad(current,cmd)),"squad-cell",s.phase!=="playing"||!(walk||shoot));
+    button.dataset.kind=kind;button.dataset.squad=String(cell);
+    button.setAttribute("aria-label","Linha "+(Math.floor(cell/5)+1)+", coluna "+(cell%5+1)+": "+(own?"Seu esquadrão":enemyIndex>=0?"Drone inimigo, vida "+s.enemies[enemyIndex].hp:cover?"Terreno bloqueado":rescue?"Sinal de resgate":cell===20?"Base":walk?"Mover para cá":"Casa livre")+(shoot?", atacar":""));
+    board.append(button);
+  }
+  $("metrics").replaceChildren(
+    metric("Turnos",s.turn+" / "+s.maxTurns),
+    metric("Integridade",s.units[0].hp+" / "+s.maxHealth),
+    metric("Munição",s.ammo),
+    metric("Drones restantes",s.enemies.filter(e=>e.hp>0).length),
+  );
+  $("legend").textContent="◆ Esquadrão · ♟ Drone · ▥ Bloqueio · ★ Sinal · ⌂ Base. Use Tab e Enter ou toque para agir.";
+  actions.replaceChildren(el("h4","","Ordens do esquadrão"));
+  actions.append(action("Defender posição",()=>update(commandSquad(current,{type:"guard"})),"secondary",s.phase!=="playing"));
+  actions.append(action("Aplicar kit médico ("+s.kits+")",()=>update(commandSquad(current,{type:"heal"})),"secondary",s.phase!=="playing"||s.kits===0||s.units[0].hp>=s.maxHealth));
+  actions.append(el("p","squad-summary",s.mission==="extracao"?(s.rescued?"Sinal recolhido: retorne à base (casa inferior esquerda).":"Objetivo: recolha o sinal ★ no centro da grade, depois retorne à base."):"Objetivo: neutralize ambos os drones. Cada ataque custa uma munição."));
+}
 function render() {
   const config = GAMES[gameId];
   $("game-title").textContent = config.name;
   $("guide").textContent = config.intro;
   $("instructions").textContent = config.instructions;
+  $("squad-mode-wrap").hidden = gameId !== "patrulha-tatica";
   if (gameId === "frota-oculta") renderNaval();
   else if (gameId === "cartas-de-cerco") renderSiege();
-  else renderHex();
+  else if (gameId === "hex-conexao") renderHex();
+  else renderSquad();
   $("message").textContent = current.message;
   $("message").dataset.phase = current.phase;
   $("record").textContent = current.phase === "won"
@@ -195,10 +232,11 @@ function render() {
 document.querySelectorAll("[data-select]").forEach(button =>
   button.addEventListener("click", () => newGame(button.dataset.select)));
 $("difficulty").addEventListener("change", () => newGame());
+$("squad-mode").addEventListener("change", () => { if (gameId === "patrulha-tatica") newGame(); });
 $("restart").addEventListener("click", () => newGame());
 window.addEventListener("hashchange", () => {
   const id = location.hash.slice(1);
-  if (id in GAMES && id !== gameId) newGame(id);
+  if (Object.hasOwn(GAMES,id) && id !== gameId) newGame(id);
 });
 newGame(gameId);
 if ("serviceWorker" in navigator && location.protocol === "https:") {
