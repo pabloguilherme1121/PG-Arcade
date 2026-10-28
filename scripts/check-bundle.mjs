@@ -43,12 +43,12 @@ for (const file of initialAssets) {
   initialDetails.push({ name: file, raw: asset.byteLength, gzip: gzipBytes });
 }
 
-if (initialRaw > initialLimits.raw) {
+if (initialRaw >= initialLimits.raw) {
   violations.push(
     `Initial JS/CSS payload: ${(initialRaw / 1024).toFixed(1)} KiB > ${initialLimits.raw / 1024} KiB raw`,
   );
 }
-if (initialGzip > initialLimits.gzip) {
+if (initialGzip >= initialLimits.gzip) {
   violations.push(
     `Initial JS/CSS payload: ${(initialGzip / 1024).toFixed(1)} KiB > ${initialLimits.gzip / 1024} KiB gzip`,
   );
