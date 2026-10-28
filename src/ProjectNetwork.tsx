@@ -4,6 +4,7 @@ export default function ProjectNetwork() {
   return (
     <footer>
       <a href="#/">PG Arcade</a>
+      <a href="#/estrategia" className="strategy-footer-link">PG Estratégia · 150 operações</a>
       <span>Feito para jogar. Sem cadastro.</span>
       <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }} data-pg-bot="signature"><img src={import.meta.env.BASE_URL + "brand/pg-bot/mascot.webp"} alt="" width="40" height="46" loading="lazy" decoding="async" style={{ objectFit: "contain", flex: "none" }} /><span>PG Bot · PG Tech</span></span>
       <nav className="project-network-links" aria-label="Outros projetos de Pablo Guilherme">
