@@ -7,8 +7,9 @@
 **Concluído neste primeiro lote de desenvolvimento (ainda sujeito à PR/CI):**
 - **Frota Oculta** (`frota-oculta`): dedução naval num tabuleiro 6×6, frota inimiga variável, sonar por linhas, base com vida, reparo, ataques rivais, três dificuldades e vitória/derrota.
 - **Cartas de Cerco** (`cartas-de-cerco`): baralho com cartas de ataque, fortificação, curas, geração de energia e compra, reembaralhamento, ataques rivais, três dificuldades e vitória/derrota.
+- **Patrulha Tática** (`patrulha-tatica`): motor distinto de tática 5×5 com drones e reação do oponente, combate e extração (dois objetivos), proteção, kits médicos, munição, três dificuldades, vitória/derrota e placar próprio. Implementado em PR filha da #213; ainda requer gates completos.
 
-**Títulos independentes novos implementados neste lote:** 2.  
+**Títulos independentes novos implementados nas PRs encadeadas:** 3 (2 na #213 + 1 neste lote), ainda sujeitos a CI e integração.  
 **Títulos já classificados como Estratégia no PG Arcade:** 47 links herdados; preservados, mas requerem auditoria individual para garantir que todos satisfaçam o novo padrão de motor independente.  
 **150 missões da campanha:** permanecem em seis regras compartilhadas; **não contam como 150 títulos independentes**.
 
