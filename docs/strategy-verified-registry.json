@@ -1,0 +1,45 @@
+{
+  "target": 150,
+  "entries": [
+    {
+      "id": "frota-oculta",
+      "title": "Frota Oculta",
+      "engine": "public/estrategia/independentes/naval.mjs",
+      "factory": "createNaval",
+      "transition": "commandNaval",
+      "primaryMechanic": "deducao-naval-sonar",
+      "difficulty": [
+        "recruta",
+        "tatico",
+        "veterano"
+      ],
+      "playModes": [
+        "solo"
+      ],
+      "unitTest": "scripts/pg-estrategia-independentes.test.mjs",
+      "browserTest": "e2e/pg-estrategia-independentes.spec.ts",
+      "status": "candidate",
+      "certification": null
+    },
+    {
+      "id": "cartas-de-cerco",
+      "title": "Cartas de Cerco",
+      "engine": "public/estrategia/independentes/siege.mjs",
+      "factory": "createSiege",
+      "transition": "playSiegeCard",
+      "primaryMechanic": "combate-baralho-energia",
+      "difficulty": [
+        "recruta",
+        "tatico",
+        "veterano"
+      ],
+      "playModes": [
+        "solo"
+      ],
+      "unitTest": "scripts/pg-estrategia-independentes.test.mjs",
+      "browserTest": "e2e/pg-estrategia-independentes.spec.ts",
+      "status": "candidate",
+      "certification": null
+    }
+  ]
+}
