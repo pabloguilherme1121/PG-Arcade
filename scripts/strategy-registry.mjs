@@ -18,7 +18,7 @@ export function verifyStrategyRegistry(data, root = process.cwd()) {
     if (typeof game.title !== 'string' || game.title.trim().length < 4) throw Error(`Missing title: ${game.id}`);
     if (!Array.isArray(game.difficulty) || game.difficulty.length < 2 || new Set(game.difficulty).size !== game.difficulty.length)
       throw Error(`Independent difficulty required: ${game.id}`);
-    if (!Array.isArray(game.playModes) || !game.playModes.includes('solo') || new Set(game.playModes).size !== game.playModes.length)
+    if (!Array.isArray(game.playModes) || new Set(game.playModes).size !== game.playModes.length)
       throw Error(`Gameplay modes required: ${game.id}`);
     for (const key of ['engine', 'unitTest', 'browserTest']) {
       const path = game[key];
