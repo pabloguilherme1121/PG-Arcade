@@ -1,6 +1,6 @@
-const CACHE = "pg-estrategia-originais-shell-v1";
+const CACHE = "pg-estrategia-originais-shell-v2";
 const ROOT = new URL("./", self.registration.scope);
-const FILES = ["./", "./index.html", "./app.js", "./style.css", "./naval.mjs", "./siege.mjs", "./manifest.webmanifest"];
+const FILES = ["./", "./index.html", "./app.js", "./style.css", "./naval.mjs", "./siege.mjs", "./squad.mjs", "./manifest.webmanifest"];
 const APPROVED = new Set(FILES.map(file => new URL(file, ROOT).pathname));
 
 self.addEventListener("install", event => {
