@@ -577,6 +577,7 @@ export default function App() {
                 <p>{games.length} jogos no navegador, sem cadastro. Comece com um clássico ou encontre seu próximo desafio.</p>
                 <label className="search hero-search"><Search size={18}/><input inputMode="search" enterKeyHint="search" autoCapitalize="none" onKeyDown={e => { if (e.key === "Enter" && !e.nativeEvent.isComposing) { e.currentTarget.blur(); document.getElementById("catalogo")?.scrollIntoView({block:"start"}); } }} aria-label="Encontrar jogo" placeholder="Qual jogo você procura?" value={query} onChange={e => setQuery(e.target.value)}/></label>
                 <a href="#catalogo" className="button primary" onClick={(event) => { event.preventDefault(); document.getElementById("catalogo")?.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth" }); }}>Explorar jogos <ArrowRight size={19}/></a>
+                <a href={`${import.meta.env.BASE_URL}estrategia/`} className="button" style={{ marginTop: 8, marginRight: 8 }}>PG Estratégia · 150 missões <ArrowRight size={19}/></a>
                 {progress.last && <a className="last-game" href={`#/jogar/${progress.last}`} onClick={() => rememberCatalog(progress.last!)}>Iniciar nova partida: {games.find(g => g.id === progress.last)?.name}<ArrowRight size={15}/></a>}
               </div>
               <img src={`${import.meta.env.BASE_URL}assets/arcade-hero.webp`} alt="" width="1707" height="924" fetchPriority="high"/>
