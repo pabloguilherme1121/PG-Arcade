@@ -19,7 +19,7 @@ self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys()
       .then(keys => Promise.all(
-        keys.filter(key => key.startsWith("pg-estrategia-") && key !== CACHE)
+        keys.filter(key => key.startsWith("pg-estrategia-shell-") && key !== CACHE)
           .map(key => caches.delete(key))
       ))
       .then(() => self.clients.claim())
