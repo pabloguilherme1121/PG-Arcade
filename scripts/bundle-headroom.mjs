@@ -12,10 +12,10 @@ export function calculateHeadroom(
   return {
     headroomRawKiB: (rawLeft / 1024).toFixed(1),
     headroomGzipKiB: (gzipLeft / 1024).toFixed(1),
-    exceedsRaw: rawLeft < 0,
-    exceedsGzip: gzipLeft < 0,
-    warnRaw: rawLeft >= 0 && rawLeft < thresholdBytes,
-    warnGzip: gzipLeft >= 0 && gzipLeft < thresholdBytes,
+    exceedsRaw: rawLeft <= 0,
+    exceedsGzip: gzipLeft <= 0,
+    warnRaw: rawLeft > 0 && rawLeft < thresholdBytes,
+    warnGzip: gzipLeft > 0 && gzipLeft < thresholdBytes,
   };
 }
 
