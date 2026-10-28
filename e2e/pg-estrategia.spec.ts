@@ -1,5 +1,8 @@
 import { test, expect } from '@playwright/test';
 
+// Enable actual touch events for the mobile interaction contract.
+test.use({ hasTouch: true });
+
 test('PG Estratégia: navegação nos dois sentidos, 150 missões e controles touch', async ({page}) => {
   await page.setViewportSize({width:390,height:844});
   await page.goto('./estrategia/');
