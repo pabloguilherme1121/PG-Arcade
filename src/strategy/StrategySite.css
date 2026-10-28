@@ -31,8 +31,8 @@
 .st-hero-buttons{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:28px}
 .strategy-site .st-primary{border-radius:12px;background:var(--st-gold);border:1px solid var(--st-gold);color:#18212a;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:12px 18px;font-weight:850;box-shadow:0 9px 34px rgba(231,196,127,.12)}
 .strategy-site .st-primary:hover{background:#ffe0a4;border-color:#ffe0a4;color:#18212a}
-.st-hero-buttons>a:not(.st-primary){display:inline-flex;min-height:48px;align-items:center;color:var(--st-ink);padding:9px 13px;border-bottom:1px solid rgba(231,196,127,.35)}
-.st-hero-buttons>a:not(.st-primary):hover{color:var(--st-gold)}
+.st-hero-buttons>button:not(.st-primary){display:inline-flex;min-height:48px;align-items:center;color:var(--st-ink);padding:9px 13px;border-bottom:1px solid rgba(231,196,127,.35)}
+.st-hero-buttons>button:not(.st-primary):hover{color:var(--st-gold)}
 .st-hero-stats{display:flex;gap:clamp(20px,3vw,46px);flex-wrap:wrap;margin-top:45px}
 .st-hero-stats span{display:flex;flex-direction:column;gap:2px}
 .st-hero-stats strong{font-size:32px;letter-spacing:-.04em;font-family:var(--font-display)}
