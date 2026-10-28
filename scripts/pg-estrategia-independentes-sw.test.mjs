@@ -63,3 +63,31 @@ test("SW dos jogos atualiza online e reabre arena em modo offline", async () => 
   child.setOnline(false);
   assert.equal(await (await child.request(page, "navigate")).text(), "novo-codigo");
 });
+
+
+test("ativação do SW da campanha nunca apaga o cache do subsite independente", async () => {
+  const deleted = [];
+  const handlers = new Map();
+  const self = {
+    location: { origin: new URL(origin).origin },
+    registration: { scope: origin + "estrategia/" },
+    clients: { async claim() {} },
+    addEventListener(type, callback) { handlers.set(type, callback); },
+  };
+  runInNewContext(readFileSync("public/estrategia/sw.js", "utf8"), {
+    self, URL, Response, Promise, Set,
+    caches: {
+      async keys() {
+        return ["pg-estrategia-shell-v1", "pg-estrategia-shell-v2",
+          "pg-estrategia-originais-shell-v1", "pg-arcade-2026-10-11-v6"];
+      },
+      async delete(key) { deleted.push(key); return true; },
+    },
+    fetch: async () => new Response("ok"),
+  });
+  let pending;
+  handlers.get("activate")({ waitUntil(task) { pending = task; } });
+  await pending;
+  assert.deepEqual(deleted, ["pg-estrategia-shell-v1"],
+    "a campanha só pode limpar gerações antigas do próprio cache");
+});
