@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("PG Estratégia conecta os dois catálogos e permite jogar e voltar", async ({ page }) => {
   await page.goto("./#/");
-  await page.getByRole("navigation", { name: "Navegação principal" }).getByRole("link", { name: "Estratégia" }).click();
+  await page.getByRole("link", { name: "Conhecer PG Estratégia" }).click();
   await expect(page.getByRole("heading", { name: "PG Estratégia." })).toBeVisible();
   await expect(page.getByText("150", { exact: true }).first()).toBeVisible();
   await page.getByRole("button", { name: /Jogar missão Aurora · Conquista territorial/ }).click();
