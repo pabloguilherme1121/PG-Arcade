@@ -219,3 +219,7 @@ Rede de irrigação com canos conectados à nascente. O jogador abre/fecha canai
 ### Catálogo de 150 jogos
 
 Os 18 desafios da expansão final têm instruções, capas locais, vitória, desfazer e recordes. Consulte [regras e validação da expansão](docs/CATALOG-150.md). São desafios fixos solo, sem cronômetro; o filtro Por turnos reúne 96 jogos.
+
+### PG Estratégia: continuar missão em andamento
+
+O microsite registra uma lista curta de ações localmente e reconstitui o tabuleiro pelas regras; estados inválidos são rejeitados. O botão **Continuar** permite retomar após recarga, **Desfazer** atualiza o registro e **Reiniciar** inicia uma partida limpa. O módulo `resume.mjs` pertence ao cache offline restrito a `/estrategia/`. Não há cadastro ou sincronização entre dispositivos.
