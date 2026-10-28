@@ -5,7 +5,20 @@ const STORAGE='pg-estrategia-progress-v1';
 const accent={violet:'#b7a5ff',cyan:'#87e5f1',amber:'#ffcc7e',coral:'#ff9b83',green:'#aef3a7',blue:'#8dbdff'};
 const icons={territorio:'◆',rotas:'⌁',economia:'▤',defesa:'♜',logistica:'✦',cidade:'◈'};
 const storage = {completed:[],favorites:[],last:null};
-try{const x=JSON.parse(localStorage.getItem(STORAGE)||'{}');if(x&&typeof x==='object'){for(const field of ['completed','favorites'])storage[field]=Array.isArray(x[field])?[...new Set(x[field].filter(id=>typeof id==='string'&&getMission(id)))].slice(0,150):[];storage.last=getMission(x.last)?.id||null;}}catch{/*storage unavailable*/}
+// Parse untrusted local state without discarding valid in-memory progress on errors.
+function restoreProgress(raw) {
+  let value;
+  try { value = JSON.parse(raw ?? '{}'); } catch { return false; }
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  for (const field of ['completed','favorites']) {
+    storage[field] = Array.isArray(value[field])
+      ? [...new Set(value[field].filter(id => typeof id === 'string' && getMission(id)))].slice(0, 150)
+      : [];
+  }
+  storage.last = getMission(value.last)?.id || null;
+  return true;
+}
+try { restoreProgress(localStorage.getItem(STORAGE)); } catch { /* storage unavailable */ }
 function persist(){try{localStorage.setItem(STORAGE,JSON.stringify(storage));}catch{notify('Progresso não salvo: armazenamento indisponível.');}}
 let active=null;let filter='all';let term='';let sort='index';let pageSize=18;let toastId;
 function notify(message){const node=$('toast');node.textContent=message;node.classList.add('visible');clearTimeout(toastId);toastId=setTimeout(()=>node.classList.remove('visible'),3100);}
@@ -53,5 +66,15 @@ $('exit').addEventListener('click',closeMission);$('arena').addEventListener('ca
 $('theme-btn').addEventListener('click',()=>{document.body.dataset.highContrast=document.body.dataset.highContrast==='true'?'false':'true';$('theme-btn').setAttribute('aria-pressed',document.body.dataset.highContrast);});
 window.addEventListener('hashchange',()=>{const id=location.hash.slice(1);if(getMission(id)){if(active?.id!==id)openMission(id);}else if($('arena').open)closeMission();});
 $('classics-list').replaceChildren(...EXISTING_STRATEGY.map(([id,name])=>{const link=document.createElement('a');link.className='classic-item';link.href=`../#/jogar/${encodeURIComponent(id)}`;const icon=document.createElement('span');icon.textContent='◇';link.append(icon,document.createTextNode(name));return link;}));
+// Other tabs can update favorites and completed missions on the same origin.
+// Keep the visible catalog and its counters in sync rather than overwriting
+// changes from an older in-memory snapshot when another tab acts later.
+window.addEventListener('storage', event => {
+  if (event.key !== STORAGE) return;
+  try { if (event.storageArea !== localStorage) return; } catch { return; }
+  if (!restoreProgress(event.newValue)) return;
+  renderCatalog();
+  if (active) renderGame();
+});
 renderCatalog();const initial=location.hash.slice(1);if(getMission(initial))openMission(initial);
 if('serviceWorker'in navigator&&location.protocol==='https:')window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(()=>{});});
