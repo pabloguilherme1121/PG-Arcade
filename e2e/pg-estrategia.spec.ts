@@ -97,3 +97,17 @@ test('PG Estratégia: vitórias aparecem na outra aba e dados inválidos não de
   await expect(other.locator('#mission-list .mission-card')).toHaveCount(18);
   await other.close();
 });
+
+
+test('PG Estratégia: contraste é operável no celular sem ocultar a navegação',async ({page})=>{
+  await page.setViewportSize({width:320,height:720});
+  await page.goto('./estrategia/');
+  const contrast=page.getByRole('button',{name:'Alternar contraste'});
+  await expect(contrast).toBeVisible();
+  await expect(contrast).toHaveAttribute('aria-pressed','false');
+  await contrast.click();
+  await expect(contrast).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator('body')).toHaveAttribute('data-high-contrast','true');
+  await expect(page.getByRole('navigation',{name:'Entre os sites'}).getByRole('link',{name:/PG Arcade/})).toBeVisible();
+  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
