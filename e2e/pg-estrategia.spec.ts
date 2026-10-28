@@ -64,3 +64,36 @@ test('PG Estratégia: defesa exibe três pistas, ameaça e desfaz uma torre no c
   await expect(page.locator('#arena-turn')).toContainText('0 /');
   await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
+
+
+test('PG Estratégia: sincroniza favoritos entre duas abas sem perder escolhas', async ({page, context}) => {
+  await page.goto('./estrategia/');
+  const other = await context.newPage();
+  await other.goto('./estrategia/');
+  await page.locator('[data-star="est-001"]').click();
+  // StorageEvent is delivered to the OTHER tab on the same origin.
+  await expect(other.locator('#star-count')).toHaveText('01');
+  await expect(other.locator('[data-star="est-001"]')).toHaveAttribute('aria-pressed', 'true');
+  await other.locator('[data-star="est-002"]').click();
+  await expect(page.locator('#star-count')).toHaveText('02');
+  await expect(page.locator('[data-star="est-002"]')).toHaveAttribute('aria-pressed', 'true');
+  await page.reload();
+  await expect(page.locator('#star-count')).toHaveText('02');
+  await other.close();
+});
+
+test('PG Estratégia: vitórias aparecem na outra aba e dados inválidos não derrubam o catálogo', async ({page, context}) => {
+  await page.goto('./estrategia/');
+  const other = await context.newPage();
+  await other.goto('./estrategia/');
+  await other.getByRole('searchbox', {name: 'Pesquisar missões'}).fill('Plano da cidade');
+  await other.getByRole('button', {name: /Iniciar desafio/}).first().click();
+  for (let i=0; i<10 && !await other.locator('#next').isVisible(); i++) {
+    await other.getByRole('button', {name: /Planejamento integrado/}).click();
+  }
+  await expect(other.locator('#arena-message')).toContainText(/Vitória/);
+  await expect(page.locator('#win-count')).toHaveText('01');
+  await page.evaluate(() => localStorage.setItem('pg-estrategia-progress-v1', '{invalid'));
+  await expect(other.locator('#mission-list .mission-card')).toHaveCount(18);
+  await other.close();
+});
