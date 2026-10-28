@@ -56,6 +56,9 @@ test("Hex Conexão: bot veterano bloqueia vitória vertical iminente", () => {
   const g = createHex({ difficulty: "veterano",seed:3 });
   const b=[...g.board];
   for(let i=0;i<6;i++)b[i*7+1]=1;
+  // Row 6, col 0 also touches this axial chain. Occupy it so that
+  // col 1 is the unique one-move victory the veteran must prevent.
+  b[42]=2;
   assert.equal(getHexBotMove(b,"veterano",3),43);
 });
 test("Hex Conexão: bot detecta vitória horizontal e encerra partida com derrota", () => {
@@ -65,7 +68,7 @@ test("Hex Conexão: bot detecta vitória horizontal e encerra partida com derrot
   const near={...g,board:b};
   const lost=playHex(near,0);
   assert.equal(lost.phase,"lost");
-  assert.equal(lost.board[4*7+6],2);
+  assert.equal(getHexWinner(lost.board),2, "o bot deve formar conexão de ponta a ponta em qualquer rota hexagonal válida");
 });
 test("Hex Conexão: escolha de IA determinística para cada dificuldade", () => {
   const g=createHex({seed:2026});
