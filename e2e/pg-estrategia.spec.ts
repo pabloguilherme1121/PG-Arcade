@@ -39,3 +39,9 @@ test('PG Estratégia: busca, família, favoritos e missão de gestão concluíve
   await expect(page.locator('#win-count')).toHaveText('01');
   await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
+
+test('PG Arcade oferece link direto para o site PG Estratégia', async ({ page }) => {
+  await page.goto('./');
+  const link = page.getByRole('link', {name: /PG Estratégia · 150 missões/}).first();
+  await expect(link).toHaveAttribute('href', /\/estrategia\/$/);
+});
