@@ -47,4 +47,24 @@ describe("Defensor de Meteoros — queda, reflexão e precisão", () => {
     expect(() => newMeteorGame(6 as Difficulty)).toThrow();
     expect(() => newMeteorGame(0, -1)).toThrow();
   });
+  it("encerra em vitória após uma defesa perdida se a base ainda resistir", () => {
+    let game = newMeteorGame(0, 23);
+    expect(game.schedule[0]).not.toBe(game.shield);
+    for (let step = 0; step < 60 && game.phase === "playing"; step++) {
+      // Deixa o primeiro meteoro atingir a base; defende os três restantes.
+      if (game.tick >= 5) {
+        const target = game.schedule[Math.min(Math.floor((game.tick + 2) / 7), game.schedule.length - 1)];
+        if (game.shield !== target) game = moveShield(game, game.shield < target ? 1 : -1);
+      }
+      game = advanceMeteor(game);
+    }
+    expect(game.health).toBe(2);
+    expect(game.reflected).toBe(game.schedule.length - 1);
+    expect(game.phase).toBe("won");
+    expect(game.message).toMatch(/Vitória!/);
+    expect(game.score).toBeGreaterThan(0);
+    expect(advanceMeteor(game)).toBe(game);
+    expect(undoMeteor(game).phase).toBe("playing");
+  });
+
 });
