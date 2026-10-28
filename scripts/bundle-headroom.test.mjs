@@ -27,6 +27,17 @@ test("rejects malformed values and distinguishes over-budget from near-budget", 
   assert.equal(result.exceedsGzip, true);
 });
 
+test("rejects exact strict raw or gzip limits, not only values above them", () => {
+  const exactlyRaw = calculateHeadroom({ raw: LIMITS.raw, gzip: LIMITS.gzip - 1024 }, LIMITS);
+  assert.equal(exactlyRaw.exceedsRaw, true);
+  assert.equal(exactlyRaw.exceedsGzip, false);
+  assert.equal(exactlyRaw.warnRaw, false);
+  const exactlyGzip = calculateHeadroom({ raw: LIMITS.raw - 1024, gzip: LIMITS.gzip }, LIMITS);
+  assert.equal(exactlyGzip.exceedsRaw, false);
+  assert.equal(exactlyGzip.exceedsGzip, true);
+  assert.equal(exactlyGzip.warnGzip, false);
+});
+
 test("ranks initial assets by bytes and includes gzip contributions", () => {
   const report = formatAssetBreakdown([
     { name: "small.css", raw: 2048, gzip: 600 },
