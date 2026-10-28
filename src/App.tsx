@@ -41,6 +41,7 @@ const ShareGameButton = lazy(() => import("./ShareGameButton").catch(() => ({def
 const QuickHelpText = lazy(() => import("./QuickHelpText").catch(() => ({default: ({ leadOnly }: { id: GameId; leadOnly?: boolean }) => leadOnly ? <span>Consulte os controles da arena.</span> : <p>Instruções indisponíveis nesta sessão offline. Consulte os controles do jogo.</p>})));
 const PlayerRecordHint = lazy(() => import("./PlayerRecordHint").catch(() => ({default: () => <small data-player-record>Consulte os resultados no jogo.</small>})));
 const ProgressPage = lazy(() => import("./ProgressPage"));
+const StrategySite = lazy(() => import("./strategy/StrategySite"));
 const CatalogSpotlight = lazy(() => import("./CatalogSpotlight").catch(() => ({default: () => null})));
 const SessionChallenge = lazy(() => import("./games/SessionChallenge"));
 const GamePlayer = lazy(() => import("./GamePlayer"));
@@ -67,7 +68,9 @@ function route() {
   const id = path.replace("jogar/", "");
   return path.startsWith("jogar/") && isGameId(id)
     ? id
-    : path === "favoritos"
+    : (path === "estrategia" || path.startsWith("estrategia/"))
+      ? "estrategia"
+      : path === "favoritos"
       ? "favoritos"
       : path === "progresso"
         ? "progresso"
@@ -288,7 +291,7 @@ export default function App() {
   }, [page]);
   const game = games.find((g) => g.id === page);
   const activeModes = game ? modeTags(game).filter(tag => tag !== "classico") : [];
-  useEffect(() => { document.title = `${game ? game.name : page === "favoritos" ? "Seus favoritos" : page === "progresso" ? "Meu progresso" : `${games.length} jogos no navegador`} — PG Arcade`; }, [game, page]);
+  useEffect(() => { document.title = `${game ? game.name : page === "favoritos" ? "Seus favoritos" : page === "progresso" ? "Meu progresso" : page === "estrategia" ? "PG Estratégia — 150 operações táticas" : `${games.length} jogos no navegador`} — PG Arcade`; }, [game, page]);
   const deferredQuery = useDeferredValue(query);
   const searchPending = query !== deferredQuery || (needsSearchHelp && !searchHelpReady);
   const normalizedQuery = useMemo(() => searchText(deferredQuery), [deferredQuery]);
@@ -349,6 +352,7 @@ export default function App() {
           >
             Meu progresso
           </a>
+          <a href="#/estrategia" aria-current={page === "estrategia" ? "page" : undefined} className="strategy-header-link">Estratégia</a>
         </nav>
         <a
           className="portfolio-link"
@@ -376,7 +380,7 @@ export default function App() {
             className={`player ${focusMode ? "focus-game" : ""}`}
           >
             <div className="player-toolbar">
-              <a className="button" href={catalogView.current.returnPage === "favoritos" ? "#/favoritos" : "#/"}>
+              <a className="button" href={catalogView.current.returnPage === "favoritos" ? "#/favoritos" : catalogView.current.returnPage === "estrategia" ? "#/estrategia" : "#/"}>
                 <ArrowLeft size={19} />
                 Voltar aos jogos
               </a>
@@ -564,6 +568,10 @@ export default function App() {
             </Suspense>
             </GameError>
           </div>
+        ) : page === "estrategia" ? (
+          <Suspense fallback={<div role="status" className="empty">Preparando PG Estratégia…</div>}>
+            <StrategySite games={games.filter(g => g.category === "Estratégia")} favorites={progress.favorites} onOpen={rememberCatalog} onFavorite={favorite} headingRef={heading}/>
+          </Suspense>
         ) : page === "progresso" ? (
           <Suspense fallback={<section className="progress-section"><h1 ref={heading} tabIndex={-1}>Meu progresso</h1><p role="status">Preparando seu progresso…</p></section>}>
             <ProgressPage progress={progress} update={update} heading={heading}/>
@@ -576,6 +584,7 @@ export default function App() {
                 <h1 ref={heading} tabIndex={-1}>Escolha. Jogue.<br/>Faça uma pausa.</h1>
                 <p>{games.length} jogos no navegador, sem cadastro. Comece com um clássico ou encontre seu próximo desafio.</p>
                 <label className="search hero-search"><Search size={18}/><input inputMode="search" enterKeyHint="search" autoCapitalize="none" onKeyDown={e => { if (e.key === "Enter" && !e.nativeEvent.isComposing) { e.currentTarget.blur(); document.getElementById("catalogo")?.scrollIntoView({block:"start"}); } }} aria-label="Encontrar jogo" placeholder="Qual jogo você procura?" value={query} onChange={e => setQuery(e.target.value)}/></label>
+                <a href="#/estrategia" className="button" style={{marginRight:8}}>Conhecer PG Estratégia</a>
                 <a href="#catalogo" className="button primary" onClick={(event) => { event.preventDefault(); document.getElementById("catalogo")?.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth" }); }}>Explorar jogos <ArrowRight size={19}/></a>
                 {progress.last && <a className="last-game" href={`#/jogar/${progress.last}`} onClick={() => rememberCatalog(progress.last!)}>Iniciar nova partida: {games.find(g => g.id === progress.last)?.name}<ArrowRight size={15}/></a>}
               </div>
