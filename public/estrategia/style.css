@@ -67,3 +67,14 @@
 @media (prefers-reduced-motion: reduce) {
   .mission-art::before {transition:none}
 }
+
+
+/* Keep the high-contrast control available on small phones; the brand already
+   navigates to the current page so its redundant nav item can be hidden. */
+@media (max-width: 720px) {
+  .topnav .topnav-current { display:none }
+  .topbar .smallbtn {
+    display:grid;place-items:center;flex:none;
+    width:40px;height:44px;font-size:19px;
+  }
+}
