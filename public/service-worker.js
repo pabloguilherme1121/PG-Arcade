@@ -4,6 +4,7 @@ const ROOT = new URL("./", self.registration.scope).href;
 // covers must never evict a lazily loaded game required for offline play.
 const COVER_CACHE = "pg-arcade-covers-2026-10-11-v1";
 const COVER_PATH = new URL("covers/", ROOT).pathname;
+const STRATEGY_PATH = new URL("estrategia/", ROOT).pathname;
 const MAX_COVER_ENTRIES = 100;
 const MAX_RUNTIME_ENTRIES = 120;
 const pendingShells = new Set();
@@ -122,6 +123,8 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
   if (request.method !== "GET" || !url.href.startsWith(ROOT)) return;
+  // PG Estratégia possui shell e service worker próprios; não misturar os caches.
+  if (url.pathname.startsWith(STRATEGY_PATH)) return;
 
   if (url.pathname.startsWith(COVER_PATH) && url.pathname.endsWith(".svg")) {
     event.respondWith(

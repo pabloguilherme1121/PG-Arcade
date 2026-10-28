@@ -1,0 +1,113 @@
+import { test, expect } from '@playwright/test';
+
+// Enable actual touch events for the mobile interaction contract.
+test.use({ hasTouch: true });
+
+test('PG Estratégia: navegação nos dois sentidos, 150 missões e controles touch', async ({page}) => {
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('./estrategia/');
+  await expect(page).toHaveTitle(/PG Estratégia/);
+  await expect(page.locator('#result-count')).toHaveText('150 missões');
+  await expect(page.getByRole('navigation',{name:'Entre os sites'}).getByRole('link',{name:/PG Arcade/})).toHaveAttribute('href','../');
+  await expect(page.locator('.mission-card')).toHaveCount(18);
+  await expect(page.locator('#classics-list a')).toHaveCount(47);
+  await page.getByRole('button',{name:/Iniciar desafio/}).first().click();
+  await expect(page.locator('#arena')).toBeVisible();
+  await expect(page.locator('#battlefield button')).toHaveCount(25);
+  const available=page.locator('#battlefield button:enabled');
+  await available.first().tap();
+  await expect(page.locator('#arena-turn')).toContainText('1 /');
+  await page.getByRole('button',{name:/Desfazer/}).click();
+  await expect(page.locator('#arena-turn')).toContainText('0 /');
+  await page.locator('#exit').click();
+  await expect(page.locator('#arena')).not.toBeVisible();
+  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
+test('PG Estratégia: busca, família, favoritos e missão de gestão concluível',async({page})=>{
+  await page.setViewportSize({width:320,height:720});
+  await page.goto('./estrategia/');
+  await page.getByRole('searchbox',{name:'Pesquisar missões'}).fill('Plano da cidade');
+  await expect(page.locator('#result-count')).toHaveText('25 missões');
+  await page.getByRole('button',{name:/Iniciar desafio/}).first().click();
+  const result=page.locator('#arena');
+  await expect(result).toBeVisible();
+  for(let i=0;i<10;i++){
+    if(await page.getByRole('button',{name:/Próximo desafio/}).isVisible())break;
+    await page.getByRole('button',{name:/Planejamento integrado/}).click();
+  }
+  await expect(page.locator('#arena-message')).toContainText(/Vitória/);
+  await page.locator('#exit').click();
+  await expect(page.locator('#win-count')).toHaveText('01');
+  await page.reload();
+  await expect(page.locator('#win-count')).toHaveText('01');
+  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
+test('PG Arcade oferece link direto para o site PG Estratégia', async ({ page }) => {
+  await page.goto('./');
+  const link = page.getByRole('link', {name: /PG Estratégia · 150 missões/}).first();
+  await expect(link).toHaveAttribute('href', /\/estrategia\/$/);
+});
+
+test('PG Estratégia: defesa exibe três pistas, ameaça e desfaz uma torre no celular',async ({page}) => {
+  await page.setViewportSize({width:320,height:720});
+  await page.goto('./estrategia/#est-076');
+  await expect(page.locator('#arena')).toBeVisible();
+  await expect(page.locator('.defense-lane')).toHaveCount(3);
+  await expect(page.locator('.defense-lane[data-threat="true"]')).toHaveCount(1);
+  const build=page.locator('[data-action="lane-0"]');
+  await build.click();
+  await expect(page.locator('.defense-lane').first().locator('[data-built="true"]')).toHaveCount(1);
+  await page.getByRole('button',{name:/Desfazer/}).click();
+  await expect(page.locator('.defense-lane').first().locator('[data-built="true"]')).toHaveCount(0);
+  await expect(page.locator('#arena-turn')).toContainText('0 /');
+  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
+
+test('PG Estratégia: sincroniza favoritos entre duas abas sem perder escolhas', async ({page, context}) => {
+  await page.goto('./estrategia/');
+  const other = await context.newPage();
+  await other.goto('./estrategia/');
+  await page.locator('[data-star="est-001"]').click();
+  // StorageEvent is delivered to the OTHER tab on the same origin.
+  await expect(other.locator('#star-count')).toHaveText('01');
+  await expect(other.locator('[data-star="est-001"]')).toHaveAttribute('aria-pressed', 'true');
+  await other.locator('[data-star="est-002"]').click();
+  await expect(page.locator('#star-count')).toHaveText('02');
+  await expect(page.locator('[data-star="est-002"]')).toHaveAttribute('aria-pressed', 'true');
+  await page.reload();
+  await expect(page.locator('#star-count')).toHaveText('02');
+  await other.close();
+});
+
+test('PG Estratégia: vitórias aparecem na outra aba e dados inválidos não derrubam o catálogo', async ({page, context}) => {
+  await page.goto('./estrategia/');
+  const other = await context.newPage();
+  await other.goto('./estrategia/');
+  await other.getByRole('searchbox', {name: 'Pesquisar missões'}).fill('Plano da cidade');
+  await other.getByRole('button', {name: /Iniciar desafio/}).first().click();
+  for (let i=0; i<10 && !await other.locator('#next').isVisible(); i++) {
+    await other.getByRole('button', {name: /Planejamento integrado/}).click();
+  }
+  await expect(other.locator('#arena-message')).toContainText(/Vitória/);
+  await expect(page.locator('#win-count')).toHaveText('01');
+  await page.evaluate(() => localStorage.setItem('pg-estrategia-progress-v1', '{invalid'));
+  await expect(other.locator('#mission-list .mission-card')).toHaveCount(18);
+  await other.close();
+});
+
+
+test('PG Estratégia: contraste é operável no celular sem ocultar a navegação',async ({page})=>{
+  await page.setViewportSize({width:320,height:720});
+  await page.goto('./estrategia/');
+  const contrast=page.getByRole('button',{name:'Alternar contraste'});
+  await expect(contrast).toBeVisible();
+  await expect(contrast).toHaveAttribute('aria-pressed','false');
+  await contrast.click();
+  await expect(contrast).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator('body')).toHaveAttribute('data-high-contrast','true');
+  await expect(page.getByRole('navigation',{name:'Entre os sites'}).getByRole('link',{name:/PG Arcade/})).toBeVisible();
+  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
