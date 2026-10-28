@@ -352,7 +352,6 @@ export default function App() {
           >
             Meu progresso
           </a>
-          <a href="#/estrategia" aria-current={page === "estrategia" ? "page" : undefined} className="strategy-header-link">Estratégia</a>
         </nav>
         <a
           className="portfolio-link"
