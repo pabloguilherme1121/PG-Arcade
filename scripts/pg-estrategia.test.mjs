@@ -52,3 +52,17 @@ test('todas as 150 missões admitem uma sequência de vitória com regras reais'
   assert.equal(s.status,'won',`${m.id}: ${s.notice}`);
  }
 });
+
+
+test('torres compradas podem ser desfeitas sem gastar um turno ou perder créditos',()=>{
+ const base=initMission('est-076');const lane=base.waves[0].lane;
+ const afterBuy=play(base,{type:'build',lane});
+ assert.equal(afterBuy.turn,0);
+ assert.equal(afterBuy.towers[lane],1);
+ assert.equal(afterBuy.credits,base.credits-3);
+ const restored=undo(afterBuy);
+ assert.deepEqual(restored.towers,base.towers);
+ assert.equal(restored.credits,base.credits);
+ assert.equal(restored.turn,0);
+ assert.equal(restored.history.length,0);
+});

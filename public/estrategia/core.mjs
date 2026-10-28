@@ -58,7 +58,7 @@ export function play(s,action){if(s.status!=='playing')return fail(s,'Esta parti
     if(action.type==='build'){
       const lane=action.lane;if(!Number.isInteger(lane)||lane<0||lane>2)return fail(s,'Escolha uma pista válida.');const price=s.towers[lane]?4:3;
       if(s.credits<price||s.towers[lane]>=4)return fail(s,'Sem créditos ou torre no nível máximo.');
-      const towers=[...s.towers];towers[lane]++;next={...s,towers,credits:s.credits-price,notice:'Defesa posicionada. Inicie a próxima onda.'};
+      const towers=[...s.towers];towers[lane]++;next={...s,towers,credits:s.credits-price,history:[...s.history,snapshot(s)].slice(-30),notice:'Defesa posicionada. Inicie a próxima onda.'};
     }else if(action.type==='wave'){
       const wave=s.waves[s.turn];if(!wave)return complete(s,true,'Vitória! Todas as ondas foram vencidas.');
       const shield=s.towers[wave.lane]+Math.floor((s.towers[(wave.lane+1)%3]+s.towers[(wave.lane+2)%3])/3);

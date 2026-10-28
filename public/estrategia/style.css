@@ -2,3 +2,16 @@
 
 /* Respect native hidden even when author button styles set display. */
 [hidden]{display:none!important}
+
+/* Tactical lanes: readable threat strength, visible tower progression and touch-safe controls. */
+.defense-visual:not([hidden]){display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0 4px}
+.defense-lane{min-width:0;overflow:hidden;position:relative;border:1px solid #435a7c;border-radius:14px;padding:14px 13px 13px;background:radial-gradient(circle at 50% 105%,#31586d77,transparent 72%),repeating-linear-gradient(90deg,transparent 0 21px,#79a4bb0e 22px 23px),#122438}
+.defense-lane[data-threat="true"]{border-color:#ffa793;box-shadow:inset 0 0 0 1px #ffa79322,0 0 20px #f3916d20}
+.defense-lane-heading{display:flex;justify-content:space-between;align-items:center;gap:6px;color:#d4e5f7;font-size:11px;font-weight:850;letter-spacing:.07em}
+.defense-lane-heading span{font-size:10px;letter-spacing:0;color:#bce3ed;white-space:nowrap}
+.defense-lane[data-threat="true"] .defense-lane-heading span{color:#ffc5ad;font-weight:900}
+.defense-tower-row{height:49px;display:grid;grid-template-columns:repeat(4,1fr);align-items:end;gap:6px;margin:12px 0 7px}
+.defense-tower-row span{display:block;height:18px;border:1px solid #48617c;border-radius:5px 5px 2px 2px;background:#192e44;box-shadow:inset 0 0 9px #060f1c}
+.defense-tower-row span[data-built="true"]{height:34px;background:linear-gradient(180deg,#ceff89,#56bb80);border-color:#a7ee8f;box-shadow:0 0 18px #8ff8ad39}
+.defense-lane small{font-size:11px;color:#c4d6e8}
+@media(max-width:520px){.defense-visual:not([hidden]){gap:5px}.defense-lane{padding:10px 6px;border-radius:9px}.defense-lane-heading{flex-direction:column;align-items:start;font-size:10px;gap:2px}.defense-lane-heading span{font-size:9px}.defense-tower-row{gap:3px;height:40px;margin:7px 0}.defense-tower-row span[data-built="true"]{height:27px}.defense-lane small{font-size:10px}}

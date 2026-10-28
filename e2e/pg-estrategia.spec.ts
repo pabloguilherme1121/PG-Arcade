@@ -49,3 +49,18 @@ test('PG Arcade oferece link direto para o site PG Estratégia', async ({ page }
   const link = page.getByRole('link', {name: /PG Estratégia · 150 missões/}).first();
   await expect(link).toHaveAttribute('href', /\/estrategia\/$/);
 });
+
+test('PG Estratégia: defesa exibe três pistas, ameaça e desfaz uma torre no celular',async ({page}) => {
+  await page.setViewportSize({width:320,height:720});
+  await page.goto('./estrategia/#est-076');
+  await expect(page.locator('#arena')).toBeVisible();
+  await expect(page.locator('.defense-lane')).toHaveCount(3);
+  await expect(page.locator('.defense-lane[data-threat="true"]')).toHaveCount(1);
+  const build=page.locator('[data-action="lane-0"]');
+  await build.click();
+  await expect(page.locator('.defense-lane').first().locator('[data-built="true"]')).toHaveCount(1);
+  await page.getByRole('button',{name:/Desfazer/}).click();
+  await expect(page.locator('.defense-lane').first().locator('[data-built="true"]')).toHaveCount(0);
+  await expect(page.locator('#arena-turn')).toContainText('0 /');
+  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
