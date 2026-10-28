@@ -237,8 +237,8 @@ export default function StrategySite({ games, favorites, onOpen, onFavorite, hea
               <h1 id="st-title" ref={headingRef} tabIndex={-1}>PG <em>Estratégia.</em></h1>
               <p>Planeje o próximo movimento. Domine o tabuleiro. Vença por decisão, não por sorte.</p>
               <div className="st-hero-buttons">
-                <a className="st-primary" href="#st-campaign">Explorar 150 operações <ArrowRight size={18}/></a>
-                <a href="#st-classics">Jogos estratégicos do Arcade</a>
+                <button type="button" className="st-primary" onClick={() => document.getElementById("st-campaign")?.scrollIntoView({block:"start"})}>Explorar 150 operações <ArrowRight size={18}/></button>
+                <button type="button" onClick={() => document.getElementById("st-classics")?.scrollIntoView({block:"start"})}>Jogos estratégicos do Arcade</button>
               </div>
               <div className="st-hero-stats">
                 <span><strong>150</strong><small>missões jogáveis</small></span>
