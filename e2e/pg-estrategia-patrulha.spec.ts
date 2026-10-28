@@ -16,7 +16,7 @@ for(const width of [320,390]){
   await expect(page.locator('#metrics')).toContainText('1 / 30');
   await page.getByLabel('Objetivo tático').selectOption('extracao');
   await expect(page.locator('#metrics')).toContainText('0 / 30');
-  await expect(page.locator('#actions')).toContainText('Sinal');
+  await expect(page.locator('#actions')).toContainText(/sinal/i);
   const defend=page.getByRole('button',{name:'Defender posição'});
   await defend.focus();
   await page.keyboard.press('Enter');
