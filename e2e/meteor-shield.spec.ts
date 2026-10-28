@@ -57,3 +57,28 @@ test("Defensor de Meteoros reflete toda a chuva e permite undo da vitória", asy
   await panel.getByRole("button", { name: "Desfazer ação" }).click();
   await expect(panel).not.toContainText("Vitória!");
 });
+
+test("Defensor de Meteoros conclui a campanha com vida restante após um impacto", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("./#/jogar/meteoros");
+  const panel = page.locator("[data-meteor-shield]");
+  let game = newMeteorGame(0, 23);
+  for (let step = 0; step < 60 && game.phase === "playing"; step++) {
+    if (game.tick >= 5) {
+      const target = game.schedule[Math.min(Math.floor((game.tick + 2) / 7), game.schedule.length - 1)];
+      if (game.shield !== target) {
+        const direction = game.shield < target ? 1 : -1;
+        await panel.getByRole("button", { name: direction === 1 ? "Mover escudo à direita" : "Mover escudo à esquerda" }).click();
+        game = moveShield(game, direction);
+      }
+    }
+    await panel.getByRole("button", { name: "Avançar tempo" }).click();
+    game = advanceMeteor(game);
+  }
+  expect(game.phase).toBe("won");
+  await expect(panel).toContainText("3/4");
+  await expect(panel).toContainText("2/3");
+  await expect(panel).toContainText("Vitória!");
+  await panel.getByRole("button", { name: "Desfazer ação" }).click();
+  await expect(panel).not.toContainText("Vitória!");
+});
