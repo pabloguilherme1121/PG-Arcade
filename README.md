@@ -5,6 +5,23 @@ Uma pausa. Uma nova jogada. **150 jogos gratuitos no navegador**, com controles 
 Site: https://pabloguilherme1121.github.io/PG-Arcade/
 Portfólio: https://pabloguilherme1121.github.io/PG-portfolio/?arcade=1
 
+## PG Estratégia — universo integrado
+
+**Nova área dentro do próprio site:** [PG Estratégia](https://pabloguilherme1121.github.io/PG-Arcade/#/estrategia). Mantém o mesmo domínio gratuito, o PWA, a hospedagem GitHub Pages e o catálogo existente. A navegação é bidirecional: PG Arcade → Estratégia → jogo original → Estratégia. Favoritos dos jogos originais são compartilhados com o Arcade.
+
+A primeira campanha disponibiliza **150 missões estratégicas jogáveis**, em 5 famílias com 30 cenários determinísticos cada:
+- **Conquista territorial:** expandir posições conectadas com orçamento de movimentos.
+- **Rotas e logística:** criar uma cadeia contínua até o destino.
+- **Expedição tática:** recolher dois artefatos e atingir a saída com energia limitada.
+- **Economia e recursos:** distribuir fazendas e mercados para atingir metas de produção; bônus por proximidade.
+- **Defesa de território:** posicionar torres e proteger a base durante três ondas.
+
+Cada missão possui ID, layout, obstáculos, recursos, dificuldade e pontuação locais. Há escolha por família, busca, instruções, toque/teclado, reinício, desfazer e recorde no aparelho. **Transparência de catálogo:** são 150 **missões/variações** de 5 motores táticos, e não 150 motores independentes de gêneros distintos. A expansão futura para 150 *títulos* estratégicos distintos demanda novos motores e testes próprios; não se altera nem se renomeia o contrato dos 150 títulos históricos do PG Arcade.
+
+Código: \`src/strategy/strategyEngine.ts\` (regras), \`StrategySite.tsx\` (página), \`StrategySite.css\` (identidade visual), testes Vitest e Playwright. A rota utiliza hash para funcionar em GitHub Pages e deep links sem backend pago. O conteúdo é carregado sob demanda, preservando o orçamento inicial de JS/CSS; nenhum serviço pago ou coleta de GPS é adicionado. Recordes táticos persistem somente em \`localStorage\` e não enviam dados de jogador.
+
+**Validação antes de publicar:** \`npm ci\`, \`npm test\`, \`npm run build\`, \`npm run check:bundle\`, suíte E2E Chromium/Firefox/WebKit, gates de validação e CodeQL, depois deploy real e HTTPS. O teste físico Android permanece um aceite separado.
+
 ## Descoberta e partida
 
 Comece por seis mecânicas diferentes, volte ao último jogo visitado ou explore seus favoritos. O catálogo completo combina busca por palavras sem acentos, categorias, modo solo/dupla local e ordenação. Voltar da arena recupera busca, filtros, ordem e posição da lista. A partida começa com título, objetivo e arena; compartilhar, favorito, tela cheia e conforto ficam em opções secundárias. Abrir novamente inicia uma nova sessão, sem confundir recordes com partidas salvas.
