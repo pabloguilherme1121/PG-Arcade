@@ -23,3 +23,15 @@ h1,h2,h3,h4,p{margin-block:0}h1,h2,h3{letter-spacing:-.04em}h1{font-size:clamp(3
 @media(max-width:560px){.intro{padding:30px 0 26px}.intro-copy>p:last-child{font-size:14px}.choices{grid-template-columns:1fr}.choice{min-height:96px;padding:13px}.choice-symbol{width:51px;height:51px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.play{padding-bottom:35px}.naval-board{gap:4px}.sea-cell{border-radius:7px}.disclosure{flex-wrap:wrap}.disclosure>a{margin-left:39px}.topbar nav a{font-size:12px}}
 @media(max-width:350px){.shell{padding:0 10px}.naval-board{gap:3px}.stage{padding:10px}.sea-cell{min-height:44px}.hand{gap:6px}.hand-card{padding:9px}.topbar nav{gap:9px}.topbar nav a{font-size:11px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+
+/* Hex Conexão: six-neighbor hex geometry; local horizontal scroll at 320px
+   preserves >=44px targets without introducing document-wide overflow. */
+.choice.hex .choice-symbol {color:#c9f891;background:#385342}
+.stage {overflow-x:auto;overscroll-behavior-x:contain}
+.hex-board {grid-template-columns:repeat(7,44px);gap:3px;width:max-content;max-width:none;padding:5px}
+.hex-cell {width:44px;height:48px;min-height:44px;padding:0;background:linear-gradient(135deg,#244359,#19334c);border:1px solid #60838d;clip-path:polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%);font-size:21px;color:#d7f6f3}
+.hex-cell[data-owner="1"] {background:#a2d88e;border-color:#dcffb9;color:#172b24;opacity:1}
+.hex-cell[data-owner="2"] {background:#dbac7c;border-color:#ffdbba;color:#322222;opacity:1}
+.hex-cell:hover:not(:disabled) {background:#3e7074;border-color:#d9ffad}
+@media(max-width:560px){.hex-board{margin-left:0;margin-right:0}.choices{grid-template-columns:1fr}}

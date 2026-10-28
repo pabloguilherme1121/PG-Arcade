@@ -1,7 +1,7 @@
 {
   "name": "PG Estratégia — Jogos Originais",
   "short_name": "Estratégia Jogos",
-  "description": "Frota Oculta e Cartas de Cerco",
+  "description": "Frota Oculta, Cartas de Cerco e Hex Conexão",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

@@ -48,6 +48,7 @@ test("SW exclusivo dos jogos não captura a campanha ou o Arcade", async () => {
   assert.equal(await child.request(origin + "estrategia/app.js"), null);
   assert.equal(await child.request(origin + "assets/index.js"), null);
   assert.notEqual(await child.request(origin + "estrategia/independentes/naval.mjs"), null);
+  assert.notEqual(await child.request(origin + "estrategia/independentes/hex.mjs"), null);
 });
 test("SW dos jogos atualiza online e reabre arena em modo offline", async () => {
   const child = simulate("public/estrategia/independentes/sw.js", origin + "estrategia/independentes/");

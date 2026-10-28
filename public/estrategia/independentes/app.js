@@ -1,11 +1,13 @@
 import { createNaval, commandNaval } from "./naval.mjs";
 import { createSiege, playSiegeCard, endSiegeTurn, SIEGE_CARDS } from "./siege.mjs";
+import { createHex, playHex } from "./hex.mjs";
 
 const $ = id => document.getElementById(id);
 const STORAGE = "pg-strategy-original-records-v1";
 const GAMES = {
   "frota-oculta": { name: "Frota Oculta", intro: "Localize a frota inimiga num mapa 6×6. Cada disparo consome um turno; use o sonar para deduzir a posição das embarcações.", instructions: "Toque em um quadrante para atacar. Sonar revela o número de navios numa linha, mas gasta um turno. Reparos preservam sua base sob pressão.", init: createNaval },
   "cartas-de-cerco": { name: "Cartas de Cerco", intro: "Monte sua ofensiva com as cartas disponíveis, distribua energia e sobreviva aos ataques de uma fortaleza inimiga.", instructions: "Jogue cartas de sua mão gastando energia. Fortificar bloqueia o próximo ataque; Aríete causa dano elevado. Encerrar o turno permite que o rival ataque.", init: createSiege },
+  "hex-conexao": { name: "Hex Conexão", intro: "Conecte de cima até embaixo num tabuleiro hexagonal de 49 casas. O rival tenta unir as bordas esquerda e direita.", instructions: "Selecione uma casa livre para colocar uma pedra. O adversário responde automaticamente. Você ganha ao criar uma cadeia contínua entre as bordas norte e sul.", init: createHex },
 };
 let gameId = location.hash.slice(1) in GAMES ? location.hash.slice(1) : "frota-oculta";
 let current;
@@ -14,7 +16,7 @@ try {
   const raw = JSON.parse(localStorage.getItem(STORAGE) || "{}");
   if (raw && typeof raw === "object" && !Array.isArray(raw)) {
     records = Object.fromEntries(Object.entries(raw).filter(([key, value]) =>
-      /^(frota-oculta|cartas-de-cerco):(recruta|tatico|veterano)$/.test(key) &&
+      /^(frota-oculta|cartas-de-cerco|hex-conexao):(recruta|tatico|veterano)$/.test(key) &&
       Number.isSafeInteger(value) && value >= 0 && value < 100000));
   }
 } catch { records = {}; }
@@ -147,13 +149,40 @@ function renderSiege() {
   actions.append(action("Encerrar turno · receber ataque rival", () =>
     update(endSiegeTurn(current)), "end-turn", current.phase !== "playing"));
 }
+function renderHex() {
+  const board = $("board"), actions = $("actions");
+  board.className = "board hex-board";
+  board.setAttribute("aria-label", "Tabuleiro Hex 7 por 7, conecte norte a sul");
+  board.replaceChildren();
+  for (let cell=0;cell<49;cell++) {
+    const owner=current.board[cell];
+    const row=Math.floor(cell/7)+1,col=(cell%7)+1;
+    const button=action(owner===1?"●":owner===2?"◆":"", () =>
+      update(playHex(current,cell)), "hex-cell", owner!==0 || current.phase!=="playing");
+    button.dataset.owner=String(owner);
+    button.setAttribute("aria-label", "Linha "+row+", coluna "+col+
+      (owner===1?", sua pedra":owner===2?", pedra adversária":", livre"));
+    board.append(button);
+  }
+  $("metrics").replaceChildren(
+    metric("Turnos",current.turn),
+    metric("Suas pedras",current.board.filter(c=>c===1).length),
+    metric("Pedras rivais",current.board.filter(c=>c===2).length),
+    metric("Campo","7 × 7"),
+  );
+  $("legend").textContent="● Suas pedras: conecte norte e sul · ◆ Rival: conecta oeste e leste";
+  actions.replaceChildren(el("h4","","Regras Hex"));
+  actions.append(el("p","intel",
+    "Cada casa aceita uma pedra. As seis vizinhas hexagonais formam as conexões. Não é possível mover uma pedra já colocada. Recruta, Tático e Veterano usam estratégias rivais diferentes."));
+}
 function render() {
   const config = GAMES[gameId];
   $("game-title").textContent = config.name;
   $("guide").textContent = config.intro;
   $("instructions").textContent = config.instructions;
   if (gameId === "frota-oculta") renderNaval();
-  else renderSiege();
+  else if (gameId === "cartas-de-cerco") renderSiege();
+  else renderHex();
   $("message").textContent = current.message;
   $("message").dataset.phase = current.phase;
   $("record").textContent = current.phase === "won"
