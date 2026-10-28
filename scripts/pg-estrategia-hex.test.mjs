@@ -16,7 +16,7 @@ test("Hex Conexão: três modos e estados iniciais próprios sem efeitos globais
 });
 test("Hex Conexão: geometria hexagonal não conecta casas diagonais quadradas inválidas", () => {
   assert.deepEqual(getHexNeighbors(0).sort((a,b)=>a-b), [1,7]);
-  assert.deepEqual(getHexNeighbors(8).sort((a,b)=>a-b), [1,7,9,14,15]);
+  assert.deepEqual(getHexNeighbors(8).sort((a,b)=>a-b), [1,2,7,9,14,15]);
   assert.deepEqual(getHexNeighbors(48).sort((a,b)=>a-b), [41,47]);
 });
 test("Hex Conexão: conexão do jogador é vertical e do rival é horizontal", () => {
