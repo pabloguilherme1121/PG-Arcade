@@ -92,3 +92,13 @@ test("ativação do SW da campanha nunca apaga o cache do subsite independente",
   assert.deepEqual(deleted, ["pg-estrategia-shell-v1"],
     "a campanha só pode limpar gerações antigas do próprio cache");
 });
+
+test("SW dos jogos independentes cacheia o motor tático apenas no seu escopo",async()=>{
+  const child=simulate("public/estrategia/independentes/sw.js",origin+"estrategia/independentes/");
+  const squad=origin+"estrategia/independentes/squad.mjs";
+  assert.equal(await (await child.request(squad)).text(),"novo-codigo");
+  child.setOnline(false);
+  assert.equal(await (await child.request(squad)).text(),"novo-codigo");
+  assert.equal(await child.request(origin+"estrategia/core.mjs"),null);
+  assert.equal(await child.request(origin+"assets/index.js"),null);
+});
