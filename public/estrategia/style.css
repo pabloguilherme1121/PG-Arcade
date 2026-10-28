@@ -15,3 +15,55 @@
 .defense-tower-row span[data-built="true"]{height:34px;background:linear-gradient(180deg,#ceff89,#56bb80);border-color:#a7ee8f;box-shadow:0 0 18px #8ff8ad39}
 .defense-lane small{font-size:11px;color:#c4d6e8}
 @media(max-width:520px){.defense-visual:not([hidden]){gap:5px}.defense-lane{padding:10px 6px;border-radius:9px}.defense-lane-heading{flex-direction:column;align-items:start;font-size:10px;gap:2px}.defense-lane-heading span{font-size:9px}.defense-tower-row{gap:3px;height:40px;margin:7px 0}.defense-tower-row span[data-built="true"]{height:27px}.defense-lane small{font-size:10px}}
+
+
+/* PG ESTRATÉGIA: miniaturas táticas por mecânica, sem imagens externas ou JS pesado. */
+.mission-art { isolation:isolate }
+.mission-art::before {
+  content:"";position:absolute;inset:12px 22%;border:1px solid #e2ffe333;
+  border-radius:12px;transform:perspective(310px) rotateX(42deg) rotateZ(-19deg);
+  background:repeating-linear-gradient(0deg,#cae9f519 0 1px,transparent 1px 27px),
+    repeating-linear-gradient(90deg,#cae9f519 0 1px,transparent 1px 27px),
+    linear-gradient(145deg,#213e51,#0c1b2e);
+  box-shadow:9px 11px 0 #0004,0 0 26px #d5ffc21c;pointer-events:none;
+}
+.mission-art[data-family="territorio"]::before {
+  background:linear-gradient(135deg,transparent 42%,#b7a5ff72 43% 57%,transparent 58%),
+  repeating-linear-gradient(90deg,#8b75d634 0 31px,#263657 32px 64px);
+}
+.mission-art[data-family="rotas"]::before {
+  background:linear-gradient(135deg,transparent 43%,#87e5f1aa 44% 51%,transparent 52%),
+  repeating-linear-gradient(0deg,#87e5f122 0 24px,#19354b 25px 49px);
+}
+.mission-art[data-family="economia"]::before {
+  background:repeating-linear-gradient(90deg,#ffcc7e85 0 13px,transparent 14px 34px),
+  linear-gradient(145deg,#49392d,#172638);
+}
+.mission-art[data-family="defesa"]::before {
+  background:repeating-linear-gradient(0deg,#ff9b8345 0 10px,#422939 11px 38px),
+  linear-gradient(110deg,#342738,#172238);
+}
+.mission-art[data-family="logistica"]::before {
+  background:repeating-linear-gradient(135deg,#aef3a755 0 4px,transparent 5px 28px),
+  linear-gradient(135deg,#285b4c,#16293d);
+}
+.mission-art[data-family="cidade"]::before {
+  background:repeating-linear-gradient(90deg,#8dbdff55 0 23px,transparent 24px 33px),
+  repeating-linear-gradient(0deg,#8dbdff44 0 25px,transparent 26px 37px),#19324e;
+}
+.mission-art > span { position:relative;text-shadow:0 2px 12px #040f20 }
+.field-cell[data-kind="possible"]:not(:disabled) {
+  border-color:#b8f7a3;
+  background:radial-gradient(circle,#345e53 0,#203748 77%);
+  box-shadow:inset 0 0 0 2px #b9ff7359,0 0 13px #a7fc7220;
+}
+.field-cell[data-kind="goal"],.field-cell[data-kind="pump"] {
+  background:radial-gradient(circle at 48% 30%,#b4894a,#4c3c24 75%);
+}
+.field-cell[data-kind="enemy"] {background:linear-gradient(135deg,#644459,#37273e)}
+@media (prefers-reduced-motion: no-preference) {
+  .mission-card:hover .mission-art::before {transform:perspective(310px) rotateX(39deg) rotateZ(-14deg);transition:transform .22s ease}
+}
+@media (prefers-reduced-motion: reduce) {
+  .mission-art::before {transition:none}
+}
