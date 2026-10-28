@@ -5,6 +5,10 @@ test("PG Estratégia conecta os dois catálogos e permite jogar e voltar", async
   await page.getByRole("link", { name: "Conhecer PG Estratégia" }).click();
   await expect(page.getByRole("heading", { name: "PG Estratégia." })).toBeVisible();
   await expect(page.getByText("150", { exact: true }).first()).toBeVisible();
+  await page.getByRole("button", { name: "Explorar 150 operações" }).click();
+  await expect(page).toHaveURL(/#\/estrategia$/);
+  await page.getByRole("button", { name: "Jogos estratégicos do Arcade" }).click();
+  await expect(page).toHaveURL(/#\/estrategia$/);
   await page.getByRole("button", { name: /Jogar missão Aurora · Conquista territorial/ }).click();
   await expect(page.locator("[data-strategy-arena='territorio-01']")).toBeVisible();
   for (const [row, column] of [[1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [2, 6], [3, 6], [4, 6], [5, 6], [6, 6]]) {
