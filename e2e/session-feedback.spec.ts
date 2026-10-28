@@ -2,7 +2,8 @@ import {expect,test} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 test('session progress tracks active time, freezes on pause and explains completion',async({page})=>{
-  await page.clock.install();
+  const clockStart = new Date('2026-01-01T00:00:00.000Z');
+  await page.clock.install({ time: clockStart });
   await page.goto('./#/jogar/memoria');
   await page.locator(".session-mode-cards").getByRole("button", { name: /Sprint/ }).click();
   await page.getByLabel('Dificuldade do desafio de tempo').selectOption('hard');
@@ -25,9 +26,11 @@ test('session progress tracks active time, freezes on pause and explains complet
   await expect(page.locator('.session-checkpoint')).toContainText('Tempo de jogo nesta sessão: 1:00.');
   await expect(page.getByRole('progressbar',{name:'Tempo utilizado na sessão'})).toHaveAttribute('value','60');
   await expect(page.getByRole('button',{name:'Repetir desafio de tempo',exact:true})).toBeFocused();
-  // Stop virtual time while asserting the exact reset value. Without this,
-  // WebKit can tick again before the first assertion, turning 0 into 0.2s.
-  await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now() + 1)));
+  // We advanced 73s with runFor. Pause at a known future instant relative
+  // to the installed virtual epoch, not Date.now()+1 across two async calls.
+  // The previous implementation raced and failed in Chromium with
+  // 'Cannot fast-forward to the past'; keep the exact zero assertion below.
+  await page.clock.pauseAt(new Date(clockStart.getTime() + 120_000));
   await page.getByRole('button',{name:'Jogar outro desafio',exact:true}).click();
   await expect(page.locator('[data-session-content]')).not.toHaveAttribute('inert','');
   const elapsed = page.getByRole('progressbar',{name:'Tempo utilizado na sessão'});
