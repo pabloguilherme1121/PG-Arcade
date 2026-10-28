@@ -23,3 +23,20 @@ h1,h2,h3,h4,p{margin-block:0}h1,h2,h3{letter-spacing:-.04em}h1{font-size:clamp(3
 @media(max-width:560px){.intro{padding:30px 0 26px}.intro-copy>p:last-child{font-size:14px}.choices{grid-template-columns:1fr}.choice{min-height:96px;padding:13px}.choice-symbol{width:51px;height:51px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.play{padding-bottom:35px}.naval-board{gap:4px}.sea-cell{border-radius:7px}.disclosure{flex-wrap:wrap}.disclosure>a{margin-left:39px}.topbar nav a{font-size:12px}}
 @media(max-width:350px){.shell{padding:0 10px}.naval-board{gap:3px}.stage{padding:10px}.sea-cell{min-height:44px}.hand{gap:6px}.hand-card{padding:9px}.topbar nav{gap:9px}.topbar nav a{font-size:11px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* Third engine: standalone tactical skirmish. 5x5, keyboard/touch, no canvas SDK. */
+#squad-mode-wrap[hidden]{display:none!important}
+.choice.squad{background:linear-gradient(130deg,#2b3551,#152537)}
+.choice.squad[aria-pressed="true"]{border-color:#a5b8ff}
+.squad-board{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;max-width:410px;margin:0 auto}
+.squad-cell{min-width:0;min-height:44px;aspect-ratio:1;background:linear-gradient(145deg,#243e50,#152a3b);color:#e8f6fc;border:1px solid #486879;border-radius:8px;font-size:23px;font-weight:800}
+.squad-cell[data-kind="squad"]{background:linear-gradient(135deg,#7dbf8c,#274e42);border-color:#bcffad;color:#112219}
+.squad-cell[data-kind="drone"]{background:linear-gradient(135deg,#ae7182,#593b55);border-color:#f3a7b1}
+.squad-cell[data-kind="cover"]{background:#35415a;color:#b7c9dd}
+.squad-cell[data-kind="rescue"]{background:linear-gradient(135deg,#c9b477,#614f37);border-color:#ffdc93}
+.squad-cell[data-kind="move"]:not(:disabled){box-shadow:inset 0 0 0 2px #bdff9866;border-color:#a9e69b}
+.squad-cell:disabled{opacity:1}
+.squad-board .squad-cell:hover:not(:disabled){border-color:#dbffc0;filter:brightness(1.12)}
+.squad-summary{font-size:13px;color:var(--muted);line-height:1.5}
+@media(max-width:350px){.squad-board{gap:4px}.squad-cell{font-size:19px;border-radius:6px}}
+@media(prefers-reduced-motion:reduce){.squad-cell{transition:none}}
