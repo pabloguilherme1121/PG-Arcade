@@ -7,6 +7,7 @@ test('150 IDs estáveis, títulos únicos, seis sistemas e 25 missões por siste
  assert.equal(MISSIONS.length,150);assert.equal(new Set(MISSIONS.map(m=>m.id)).size,150);assert.equal(new Set(MISSIONS.map(m=>m.name)).size,150);
  for(const f of FAMILIES)assert.equal(MISSIONS.filter(x=>x.family===f.id).length,25);
  assert.equal(getMission('est-150').family,'cidade');assert.equal(getMission('est-000'),null);
+ assert.equal(EXISTING_STRATEGY.length,47);
  assert.equal(new Set(EXISTING_STRATEGY.map(x=>x[0])).size,EXISTING_STRATEGY.length);
 });
 test('cada missão inicia com estado válido e ao menos uma ação disponível',()=>{
