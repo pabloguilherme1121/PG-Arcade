@@ -75,14 +75,19 @@ export function advanceMeteor(game: MeteorGame): MeteorGame {
   const tick = game.tick + 1;
   const noMoreSpawns = tick > 7 * (game.schedule.length - 1);
   const timedOut = tick > game.schedule.length * 7 + 13;
-  const phase = health <= 0 || timedOut
-    ? "lost" : noMoreSpawns && meteors.length === 0 && reflected === game.schedule.length
-      ? "won" : "playing";
+  // A base vence se sobreviver até o fim da chuva: vidas extras
+  // precisam permitir absorver impactos sem tornar a vitória impossível.
+  const allResolved = noMoreSpawns && meteors.length === 0;
+  const phase = health <= 0 ? "lost"
+    : allResolved ? "won"
+      : timedOut ? "lost" : "playing";
   const score = phase === "won"
     ? Math.max(100, 1200 + game.difficulty * 200 + reflected * 220 + health * 90 - tick * 9)
     : reflected * 220;
   const message = phase === "won"
-    ? "Todos os meteoros foram refletidos. Vitória!"
+    ? reflected === game.schedule.length
+      ? "Todos os meteoros foram refletidos. Vitória!"
+      : `A base resistiu: ${reflected} de ${game.schedule.length} meteoros refletidos. Vitória!`
     : health <= 0 ? "A base foi atingida. Derrota."
       : timedOut ? "A operação foi encerrada sem proteger toda a base."
         : `Turno ${tick}: ${reflected} de ${game.schedule.length} meteoros refletidos; muralha ${health}.`;
