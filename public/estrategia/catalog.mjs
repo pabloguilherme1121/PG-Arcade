@@ -20,5 +20,192 @@ export const MISSIONS = Object.freeze(FAMILIES.flatMap((family, familyIndex) => 
 export const getMission = id => MISSIONS.find(m => m.id === id) ?? null;
 export const getFamily = id => FAMILIES.find(f => f.id === id);
 export const EXISTING_STRATEGY = Object.freeze([
-  ['xadrez','Xadrez'],['damas','Damas'],['reversi','Reversi'],['liga4','Liga 4'],['hex','Hex Conexões'],['ataxx','Colônia Ataxx'],['mancala','Mancala'],['gomoku','Cinco em Linha'],['batalha','Batalha Naval'],['sokoban','Sokoban'],['nim','Nim'],['territory','Fronteiras'],['breakthrough','Linha de Avanço'],['fortalezas','Fortalezas de Turnos'],['mercadores','Mercadores de Rotas'],['cidade','Cidade em Miniatura'],['irrigacao','Zonas de Irrigação'],['resgate','Barcos de Resgate'],['farois','Defesa de Faróis'],['trilhos','Trilhos Cruzados'],['arquipelago','Pontes do Arquipélago'],['reles','Rede de Relés'],['climas','Cartas de Climas'],['colheita','Colheita das Estações']
+  [
+    "trem",
+    "Trem Sem Freio"
+  ],
+  [
+    "fortalezas",
+    "Fortalezas de Turnos"
+  ],
+  [
+    "reles",
+    "Rede de Relés"
+  ],
+  [
+    "irrigacao",
+    "Zonas de Irrigação"
+  ],
+  [
+    "cidade",
+    "Cidade em Miniatura"
+  ],
+  [
+    "alquimia",
+    "Alquimia de Elementos"
+  ],
+  [
+    "climas",
+    "Cartas de Climas"
+  ],
+  [
+    "colheita",
+    "Colheita das Estações"
+  ],
+  [
+    "resgate",
+    "Barcos de Resgate"
+  ],
+  [
+    "farois",
+    "Defesa de Faróis"
+  ],
+  [
+    "mercadores",
+    "Mercadores de Rotas"
+  ],
+  [
+    "trilhos",
+    "Trilhos Cruzados"
+  ],
+  [
+    "arquipelago",
+    "Pontes do Arquipélago"
+  ],
+  [
+    "contrato",
+    "Contrato das Cores"
+  ],
+  [
+    "passagem",
+    "Passagem Secreta"
+  ],
+  [
+    "cofre",
+    "Cofre em Equipe"
+  ],
+  [
+    "neon",
+    "Sobrevivência Neon"
+  ],
+  [
+    "liga4",
+    "Liga 4"
+  ],
+  [
+    "puzzle",
+    "Quebra-cabeça"
+  ],
+  [
+    "2048",
+    "2048"
+  ],
+  [
+    "xadrez",
+    "Xadrez"
+  ],
+  [
+    "domino",
+    "Dominó"
+  ],
+  [
+    "damas",
+    "Damas"
+  ],
+  [
+    "velha",
+    "Jogo da velha"
+  ],
+  [
+    "peg",
+    "Resta Um"
+  ],
+  [
+    "knight",
+    "Caminho do Cavalo"
+  ],
+  [
+    "queens",
+    "Oito Rainhas"
+  ],
+  [
+    "slideblock",
+    "Saída Livre"
+  ],
+  [
+    "gomoku",
+    "Cinco em Linha"
+  ],
+  [
+    "hex",
+    "Hex Conexões"
+  ],
+  [
+    "ataxx",
+    "Colônia Ataxx"
+  ],
+  [
+    "isolation",
+    "Ilhas em Duelo"
+  ],
+  [
+    "breakthrough",
+    "Linha de Avanço"
+  ],
+  [
+    "mancala",
+    "Mancala"
+  ],
+  [
+    "chomp",
+    "Chocolate Tático"
+  ],
+  [
+    "territory",
+    "Fronteiras"
+  ],
+  [
+    "sokoban",
+    "Sokoban"
+  ],
+  [
+    "nim",
+    "Nim"
+  ],
+  [
+    "reversi",
+    "Reversi"
+  ],
+  [
+    "batalha",
+    "Batalha Naval"
+  ],
+  [
+    "pontes",
+    "Pontos e Caixas"
+  ],
+  [
+    "dados",
+    "Dados de Combinação"
+  ],
+  [
+    "tendas",
+    "Acampamento"
+  ],
+  [
+    "constelacao",
+    "Constelação"
+  ],
+  [
+    "trilha-soma",
+    "Trilha da Soma"
+  ],
+  [
+    "mochila",
+    "Mochila de Expedição"
+  ],
+  [
+    "sapos",
+    "Travessia dos Sapos"
+  ]
 ]);
