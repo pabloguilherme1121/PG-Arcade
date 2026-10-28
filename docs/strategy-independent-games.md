@@ -4,11 +4,12 @@
 
 **Meta:** 150 títulos estratégicos completos, distintos por motor de regras, não por mapa, capa, dificuldade ou missão.
 
-**Concluído neste primeiro lote de desenvolvimento (ainda sujeito à PR/CI):**
+**Implementado nos primeiros lotes (ainda sujeito à PR/CI):**
 - **Frota Oculta** (`frota-oculta`): dedução naval num tabuleiro 6×6, frota inimiga variável, sonar por linhas, base com vida, reparo, ataques rivais, três dificuldades e vitória/derrota.
+- **Hex Conexão** (`hex-conexao`): jogo de conexão hexagonal 7×7, um jogador contra IA com três modos de dificuldade, condição de vitória norte–sul e derrota leste–oeste, sem reocupação de casas.
 - **Cartas de Cerco** (`cartas-de-cerco`): baralho com cartas de ataque, fortificação, curas, geração de energia e compra, reembaralhamento, ataques rivais, três dificuldades e vitória/derrota.
 
-**Títulos independentes novos implementados neste lote:** 2.  
+**Títulos independentes novos implementados nos dois lotes:** 3.  
 **Títulos já classificados como Estratégia no PG Arcade:** 47 links herdados; preservados, mas requerem auditoria individual para garantir que todos satisfaçam o novo padrão de motor independente.  
 **150 missões da campanha:** permanecem em seis regras compartilhadas; **não contam como 150 títulos independentes**.
 
