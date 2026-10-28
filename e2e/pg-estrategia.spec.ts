@@ -7,6 +7,7 @@ test('PG Estratégia: navegação nos dois sentidos, 150 missões e controles to
   await expect(page.locator('#result-count')).toHaveText('150 missões');
   await expect(page.getByRole('navigation',{name:'Entre os sites'}).getByRole('link',{name:/PG Arcade/})).toHaveAttribute('href','../');
   await expect(page.locator('.mission-card')).toHaveCount(18);
+  await expect(page.locator('#classics-list a')).toHaveCount(47);
   await page.getByRole('button',{name:/Iniciar desafio/}).first().click();
   await expect(page.locator('#arena')).toBeVisible();
   await expect(page.locator('#battlefield button')).toHaveCount(25);
