@@ -25,7 +25,14 @@ test('session progress tracks active time, freezes on pause and explains complet
   await expect(page.locator('.session-checkpoint')).toContainText('Tempo de jogo nesta sessão: 1:00.');
   await expect(page.getByRole('progressbar',{name:'Tempo utilizado na sessão'})).toHaveAttribute('value','60');
   await expect(page.getByRole('button',{name:'Repetir desafio de tempo',exact:true})).toBeFocused();
+  // Stop virtual time while asserting the exact reset value. Without this,
+  // WebKit can tick again before the first assertion, turning 0 into 0.2s.
+  await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now() + 1)));
   await page.getByRole('button',{name:'Jogar outro desafio',exact:true}).click();
   await expect(page.locator('[data-session-content]')).not.toHaveAttribute('inert','');
-  await expect(page.getByRole('progressbar',{name:'Tempo utilizado na sessão'})).toHaveAttribute('value','0');
+  const elapsed = page.getByRole('progressbar',{name:'Tempo utilizado na sessão'});
+  await expect(elapsed).toHaveAttribute('value','0');
+  // Reset must not permanently freeze the challenge timer.
+  await page.clock.runFor(1000);
+  expect(Number(await elapsed.getAttribute('value'))).toBeGreaterThan(0);
 });
