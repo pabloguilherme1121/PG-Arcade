@@ -45,3 +45,19 @@ test('PG Arcade: aba Estratégia oferece central com 47 jogos, sem remover os fa
  await expect(page).toHaveURL(/\/estrategia\/#classicos$/);
  await expect(page.locator('#classics-list a')).toHaveCount(47);
 });
+
+
+test('Biblioteca de estratégia realmente abre o motor Arcade e preserva favoritos no mesmo domínio',async({page})=>{
+ await page.setViewportSize({width:390,height:800});
+ await page.goto('./estrategia/');
+ await page.locator('#classics-list a[data-arcade-game="xadrez"]').click();
+ const arcade=page.frameLocator('#classic-game-frame');
+ await expect(arcade.locator('[data-current-game="xadrez"]')).toBeVisible();
+ await arcade.locator('.player-utilities summary').click();
+ await arcade.getByRole('button',{name:'Favoritar',exact:true}).click();
+ await expect(arcade.getByRole('button',{name:'Favoritado',exact:true})).toBeVisible();
+ await page.locator('#classic-player-close').click();
+ await page.goto('./#/jogar/xadrez');
+ await page.locator('.player-utilities summary').click();
+ await expect(page.getByRole('button',{name:'Favoritado',exact:true})).toBeVisible();
+});
