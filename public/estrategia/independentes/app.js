@@ -2,6 +2,7 @@ import { createNaval, commandNaval } from "./naval.mjs";
 import { createSiege, playSiegeCard, endSiegeTurn, SIEGE_CARDS } from "./siege.mjs";
 import { createHex, playHex } from "./hex.mjs";
 import { createSquad, commandSquad, legalSquadMoves } from "./squad.mjs";
+import { createTowers, commandTowers, TOWER_TYPES, TOWER_PATH } from "./towers.mjs";
 
 const $ = id => document.getElementById(id);
 const STORAGE = "pg-strategy-original-records-v1";
@@ -9,6 +10,7 @@ const GAMES = {
   "frota-oculta": { name: "Frota Oculta", intro: "Localize a frota inimiga num mapa 6×6. Cada disparo consome um turno; use o sonar para deduzir a posição das embarcações.", instructions: "Toque em um quadrante para atacar. Sonar revela o número de navios numa linha, mas gasta um turno. Reparos preservam sua base sob pressão.", init: createNaval },
   "cartas-de-cerco": { name: "Cartas de Cerco", intro: "Monte sua ofensiva com as cartas disponíveis, distribua energia e sobreviva aos ataques de uma fortaleza inimiga.", instructions: "Jogue cartas de sua mão gastando energia. Fortificar bloqueia o próximo ataque; Aríete causa dano elevado. Encerrar o turno permite que o rival ataque.", init: createSiege },
   "hex-conexao": { name: "Hex Conexão", intro: "Conecte de cima até embaixo num tabuleiro hexagonal de 49 casas. O rival tenta unir as bordas esquerda e direita.", instructions: "Selecione uma casa livre para colocar uma pedra. O adversário responde automaticamente. Você ganha ao criar uma cadeia contínua entre as bordas norte e sul.", init: createHex },
+  "muralha-das-torres": { name: "Muralha das Torres", intro: "Construa torres, defenda uma rota de 11 casas e administre créditos em ondas crescentes.", instructions: "Escolha Canhão ou Gelo e toque numa casa livre para construir. Toque numa torre de nível 1 para aprimorá-la por 4 créditos. Inicie cada onda e avance os turnos para observar a defesa.", init: createTowers },
   "patrulha-tatica": { name: "Patrulha Tática", intro: "Conduza um esquadrão por um mapa 5×5. Elimine drones ou recupere um sinal e volte à base.", instructions: "Toque ou use Tab/Enter nas casas livres vizinhas para mover. Ataque drones ao alcance de duas casas; também pode se defender ou curar. Troque o objetivo para uma operação de extração.", init: createSquad },
 };
 let gameId = Object.hasOwn(GAMES, location.hash.slice(1)) ? location.hash.slice(1) : "frota-oculta";
@@ -18,7 +20,7 @@ try {
   const raw = JSON.parse(localStorage.getItem(STORAGE) || "{}");
   if (raw && typeof raw === "object" && !Array.isArray(raw)) {
     records = Object.fromEntries(Object.entries(raw).filter(([key, value]) =>
-      /^(frota-oculta|cartas-de-cerco|hex-conexao):(recruta|tatico|veterano)$|^patrulha-tatica:(recruta|tatico|veterano):(combate|extracao)$/.test(key) &&
+      /^(frota-oculta|cartas-de-cerco|hex-conexao):(recruta|tatico|veterano)$|^patrulha-tatica:(recruta|tatico|veterano):(combate|extracao)$|^muralha-das-torres:(recruta|tatico|veterano):(defesa|maratona)$/.test(key) &&
       Number.isSafeInteger(value) && value >= 0 && value < 100000));
   }
 } catch { records = {}; }
@@ -43,14 +45,14 @@ function newGame(id = gameId) {
   gameId = id;
   const mode = $("difficulty").value;
   const seed = number(Math.floor(Math.random() * 0xffffffff));
-  current = GAMES[id].init({ difficulty: mode, seed, mission: $("squad-mode").value });
+  current = GAMES[id].init({ difficulty: mode, seed, mission: id === "muralha-das-torres" ? $("tower-mode").value : $("squad-mode").value });
   if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
   document.querySelectorAll("[data-select]").forEach(button => {
     button.setAttribute("aria-pressed", String(button.dataset.select === id));
   });
   render();
 }
-function bestKey() { return gameId + ":" + current.mode + (gameId === "patrulha-tatica" ? ":" + current.mission : ""); }
+function bestKey() { return gameId + ":" + current.mode + (["patrulha-tatica","muralha-das-torres"].includes(gameId) ? ":" + current.mission : ""); }
 function update(next) {
   if (next === current) return;
   current = next;
@@ -210,16 +212,55 @@ function renderSquad() {
   actions.append(action("Aplicar kit médico ("+s.kits+")",()=>update(commandSquad(current,{type:"heal"})),"secondary",s.phase!=="playing"||s.kits===0||s.units[0].hp>=s.maxHealth));
   actions.append(el("p","squad-summary",s.mission==="extracao"?(s.rescued?"Sinal recolhido: retorne à base (casa inferior esquerda).":"Objetivo: recolha o sinal ★ no centro da grade, depois retorne à base."):"Objetivo: neutralize ambos os drones. Cada ataque custa uma munição."));
 }
+
+function renderTowers() {
+  const s=current,board=$("board"),actions=$("actions"),kind=$("tower-type").value;
+  board.className="board tower-board";
+  board.setAttribute("aria-label","Defesa de torres com seis linhas e seis colunas");
+  board.replaceChildren();
+  for(let cell=0;cell<36;cell++){
+    const path=TOWER_PATH.indexOf(cell), tower=s.towers.find(t=>t.cell===cell);
+    const enemies=s.enemies.filter(e=>TOWER_PATH[e.position]===cell).length;
+    const build=path<0&&!tower&&s.coins>=TOWER_TYPES[kind].cost;
+    const upgrade=tower&&tower.level===1&&s.coins>=4;
+    const label=path>=0?"Caminho, setor "+(path+1):tower?
+      (TOWER_TYPES[tower.kind].name+", nível "+tower.level+(upgrade?", aprimorar":"")):
+      ("Lote livre"+(build?", construir "+TOWER_TYPES[kind].name:""));
+    const symbol=tower?(tower.kind==="laser"?"♜":"❄"):enemies?"●":path>=0?"·":"+";
+    const button=action(symbol,()=>update(commandTowers(current,tower?{type:"upgrade",cell}:{type:"build",cell,kind})),"tower-cell",
+      s.paused||s.phase==="won"||s.phase==="lost"||!(build||upgrade));
+    button.dataset.tower=String(cell);
+    button.dataset.kind=tower?tower.kind:path>=0?"path":"free";
+    button.setAttribute("aria-label","Linha "+(Math.floor(cell/6)+1)+", coluna "+(cell%6+1)+": "+label+(enemies?", inimigos "+enemies:""));
+    board.append(button);
+  }
+  $("metrics").replaceChildren(
+    metric("Onda",s.wave+" / "+s.maxWaves),
+    metric("Base",s.base+" / "+s.maxBase),
+    metric("Créditos",s.coins),
+    metric("Eliminados",s.destroyed),
+  );
+  $("legend").textContent="♜ Canhão: alcance 3 · ❄ Gelo: alcance 2 e desacelera · + Construir · toque na torre para aprimorar. Inimigos: "+s.enemies.length;
+  actions.replaceChildren(el("h4","","Controle de ondas"));
+  actions.append(action("Iniciar onda "+s.wave,()=>update(commandTowers(current,{type:"start"})),"end-turn",s.phase!=="ready"||s.paused));
+  actions.append(action("Avançar combate",()=>update(commandTowers(current,{type:"tick"})),"end-turn",s.phase!=="playing"||s.paused));
+  actions.append(action(s.paused?"Retomar defesa":"Pausar defesa",()=>update(commandTowers(current,{type:s.paused?"resume":"pause"})),"secondary",!["playing","ready"].includes(s.phase)));
+  actions.append(el("p","intel","Desafio: "+(s.mission==="maratona"?"maratona com duas ondas adicionais":"defesa de "+s.maxWaves+" ondas")+". Cada inimigo que chega ao final reduz a base. Derrotar inimigos rende créditos."));
+}
+
 function render() {
   const config = GAMES[gameId];
   $("game-title").textContent = config.name;
   $("guide").textContent = config.intro;
   $("instructions").textContent = config.instructions;
   $("squad-mode-wrap").hidden = gameId !== "patrulha-tatica";
+  $("tower-mode-wrap").hidden = gameId !== "muralha-das-torres";
+  $("tower-type-wrap").hidden = gameId !== "muralha-das-torres";
   if (gameId === "frota-oculta") renderNaval();
   else if (gameId === "cartas-de-cerco") renderSiege();
   else if (gameId === "hex-conexao") renderHex();
-  else renderSquad();
+  else if (gameId === "patrulha-tatica") renderSquad();
+  else renderTowers();
   $("message").textContent = current.message;
   $("message").dataset.phase = current.phase;
   $("record").textContent = current.phase === "won"
@@ -233,6 +274,8 @@ document.querySelectorAll("[data-select]").forEach(button =>
   button.addEventListener("click", () => newGame(button.dataset.select)));
 $("difficulty").addEventListener("change", () => newGame());
 $("squad-mode").addEventListener("change", () => { if (gameId === "patrulha-tatica") newGame(); });
+$("tower-mode").addEventListener("change", () => { if (gameId === "muralha-das-torres") newGame(); });
+$("tower-type").addEventListener("change", () => { if (gameId === "muralha-das-torres") render(); });
 $("restart").addEventListener("click", () => newGame());
 window.addEventListener("hashchange", () => {
   const id = location.hash.slice(1);
