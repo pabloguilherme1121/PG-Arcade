@@ -1,5 +1,6 @@
 import { FAMILIES, MISSIONS, EXISTING_STRATEGY, getMission, getFamily } from './catalog.mjs';
 import { initMission, play, undo, legalMoves, progressValue } from './core.mjs';
+import { mountPgBot } from './pg-bot.mjs';
 const $ = id => document.getElementById(id);
 const STORAGE='pg-estrategia-progress-v1';
 const accent={violet:'#b7a5ff',cyan:'#87e5f1',amber:'#ffcc7e',coral:'#ff9b83',green:'#aef3a7',blue:'#8dbdff'};
@@ -23,7 +24,7 @@ function persist(){try{localStorage.setItem(STORAGE,JSON.stringify(storage));}ca
 let active=null;let filter='all';let term='';let sort='index';let pageSize=18;let toastId;
 function notify(message){const node=$('toast');node.textContent=message;node.classList.add('visible');clearTimeout(toastId);toastId=setTimeout(()=>node.classList.remove('visible'),3100);}
 function labelMission(m){return `${m.id.toUpperCase()} · ${getFamily(m.family).tag}`;}
-function renderStats(){$('win-count').textContent=String(storage.completed.length).padStart(2,'0');$('star-count').textContent=String(storage.favorites.length).padStart(2,'0');}
+function renderStats(){$('win-count').textContent=String(storage.completed.length).padStart(2,'0');$('star-count').textContent=String(storage.favorites.length).padStart(2,'0');$('resume').hidden=!storage.last;}
 function renderTabs(){const tabs=[{id:'all',title:'Todas (150)'},...FAMILIES.map(f=>({id:f.id,title:f.title})),{id:'favorites',title:'☆ Favoritas'}];$('family-tabs').replaceChildren(...tabs.map(t=>{const b=document.createElement('button');b.type='button';b.textContent=t.title;b.dataset.filter=t.id;b.setAttribute('aria-pressed',String(filter===t.id));return b;}));}
 function matches(m){return (filter==='all'||m.family===filter||(filter==='favorites'&&storage.favorites.includes(m.id)))&&(`${m.id} ${m.name} ${getFamily(m.family).tag} ${m.difficulty}`).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().includes(term.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase());}
 function filtered(){let missions=MISSIONS.filter(matches);if(sort==='level')missions=[...missions].sort((a,b)=>b.level-a.level||a.id.localeCompare(b.id));if(sort==='won')missions=[...missions].sort((a,b)=>Number(storage.completed.includes(a.id))-Number(storage.completed.includes(b.id))||a.id.localeCompare(b.id));return missions;}
@@ -59,6 +60,7 @@ $('family-tabs').addEventListener('click',e=>{const b=e.target.closest('button[d
 $('mission-list').addEventListener('click',e=>{const open=e.target.closest('[data-open]');const star=e.target.closest('[data-star]');if(open)openMission(open.dataset.open);else if(star)toggleFavorite(star.dataset.star);});
 $('search').addEventListener('input',e=>{term=e.target.value.trim().toLowerCase();pageSize=18;renderCatalog();});$('sort').addEventListener('change',e=>{sort=e.target.value;renderCatalog();});$('more').addEventListener('click',()=>{pageSize+=18;renderCatalog();});
 $('surprise').addEventListener('click',()=>openMission(MISSIONS[Math.floor(Math.random()*MISSIONS.length)].id));
+$('resume').addEventListener('click',()=>{if(storage.last&&getMission(storage.last))openMission(storage.last);});
 $('arena-actions').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;if(b.dataset.action.startsWith('lane-'))apply({type:'build',lane:Number(b.dataset.action.slice(5))});else if(b.dataset.action==='wave')apply({type:'wave'});else apply({type:b.dataset.action});});
 $('battlefield').addEventListener('click',e=>{const b=e.target.closest('button[data-cell]');if(b)apply({cell:Number(b.dataset.cell)});});
 $('battlefield').addEventListener('keydown',e=>{const keys={ArrowUp:-5,ArrowDown:5,ArrowLeft:-1,ArrowRight:1};if(!(e.key in keys))return;const b=e.target.closest('button[data-cell]');if(!b)return;const id=Number(b.dataset.cell),next=id+keys[e.key];if(next<0||next>=25||(e.key==='ArrowLeft'&&id%5===0)||(e.key==='ArrowRight'&&id%5===4))return;e.preventDefault();$('battlefield').querySelector(`[data-cell="${next}"]`)?.focus();});
@@ -76,5 +78,7 @@ window.addEventListener('storage', event => {
   renderCatalog();
   if (active) renderGame();
 });
+mountPgBot($('pg-bot-portal'));
+mountPgBot($('pg-bot-arena'), {getContext:()=>active?{family:active.family}:{}});
 renderCatalog();const initial=location.hash.slice(1);if(getMission(initial))openMission(initial);
 if('serviceWorker'in navigator&&location.protocol==='https:')window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(()=>{});});
