@@ -38,7 +38,6 @@ test("Portal Estratégia expõe os dez motores originais sem inflar as 150 miss�
  await page.setViewportSize({width:320,height:720});
  await page.goto("./estrategia/");
  await expect(page.locator("#result-count")).toHaveText("150 missões");
- const section=page.getByRole("region",{name:"Novos jogos estratégicos originais"});
  await expect(page.getByRole("link",{name:/Mercado de Rotas/i})).toHaveAttribute("href","./independentes/mercado-de-rotas/");
  await expect(page.getByRole("link",{name:/Conselho dos Reinos/i})).toHaveAttribute("href","./independentes/conselho-de-reinos/");
  await page.getByRole("link",{name:/Conselho dos Reinos/i}).click();
