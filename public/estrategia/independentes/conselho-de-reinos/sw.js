@@ -1,6 +1,6 @@
-const CACHE="pg-estrategia-conselho-v1";
+const CACHE="pg-estrategia-conselho-v2";
 const ROOT=new URL("./",self.registration.scope);
-const FILES=["./","./index.html","./app.js","./engine.mjs","./style.css"];
+const FILES=["./","./index.html","./app.js","./engine.mjs","./pg-bot.mjs","./style.css"];
 const ALLOWED=new Set(FILES.map(file=>new URL(file,ROOT).pathname));
 self.addEventListener("install",event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting()));
