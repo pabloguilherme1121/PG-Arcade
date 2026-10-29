@@ -34,3 +34,16 @@ test('PG Arcade encaminha para o PG Bot do Estratégia sem novo serviço', async
   await expect(page).toHaveURL(/estrategia\/\?ajuda=1$/);
   await expect(page.getByRole('dialog', { name: 'PG Bot, suporte do jogo' })).toBeVisible();
 });
+
+
+test('PG Estratégia reabre a última missão após reload sem perder o catálogo', async ({ page }) => {
+  await page.goto('./estrategia/');
+  await expect(page.locator('#resume')).toBeHidden();
+  await page.locator('[data-open="est-001"]').click();
+  await page.locator('#exit').click();
+  await expect(page.locator('#resume')).toBeVisible();
+  await page.reload();
+  await page.locator('#resume').click();
+  await expect(page.locator('#arena-id')).toHaveText('EST-001');
+  await expect(page.locator('#arena')).toBeVisible();
+});
