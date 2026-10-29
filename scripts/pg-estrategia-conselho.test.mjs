@@ -72,3 +72,21 @@ test('Conselho: estabilidade exige condições no encerramento, vitória e derro
  }
  assert.equal(second.phase,'won');assert.strictEqual(commandCouncil(second,{type:'fund'}),second);
 });
+
+
+test('Conselho: modo estabilidade Veterano tem vitória alcançável, sem atalhos ou comandos especiais',()=>{
+ let s=createCouncil({mode:'estabilidade',difficulty:'veterano',seed:1});
+ const moves=[
+  ['outreach',0],['outreach',0],['fund'],['fund'],['outreach',0],
+  ['negotiate',0],['negotiate',0],['negotiate',1],['negotiate',1],
+  ['negotiate',1],['negotiate',1],['fund'],
+ ];
+ for(const [type,faction] of moves){
+   assert.equal(s.phase,'playing',JSON.stringify(s));
+   s=commandCouncil(s,Number.isInteger(faction)?{type,faction}:{type});
+ }
+ assert.equal(s.phase,'won',JSON.stringify(s));
+ assert.equal(s.round,s.limit);
+ assert.ok(s.trust>=5);
+ assert.ok(councilVotes(s)>=5);
+});
