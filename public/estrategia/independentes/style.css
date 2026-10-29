@@ -22,6 +22,16 @@ h1,h2,h3,h4,p{margin-block:0}h1,h2,h3{letter-spacing:-.04em}h1{font-size:clamp(3
 @media(max-width:890px){.intro{grid-template-columns:1fr}.intro-art{display:none}.play-grid{grid-template-columns:1fr}.topbar{flex-wrap:wrap}.topbar nav{margin-left:0;justify-content:space-between;width:100%;gap:14px}.stage,.command-panel{padding:16px}}
 @media(max-width:560px){.intro{padding:30px 0 26px}.intro-copy>p:last-child{font-size:14px}.choices{grid-template-columns:1fr}.choice{min-height:96px;padding:13px}.choice-symbol{width:51px;height:51px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.play{padding-bottom:35px}.naval-board{gap:4px}.sea-cell{border-radius:7px}.disclosure{flex-wrap:wrap}.disclosure>a{margin-left:39px}.topbar nav a{font-size:12px}}
 @media(max-width:350px){.shell{padding:0 10px}.naval-board{gap:3px}.stage{padding:10px}.sea-cell{min-height:44px}.hand{gap:6px}.hand-card{padding:9px}.topbar nav{gap:9px}.topbar nav a{font-size:11px}}
+.pg-bot-help{margin:18px 0 0;padding:12px;border:1px solid #53778a;border-radius:13px;background:#102838}
+#pg-bot-toggle{display:flex;align-items:center;gap:11px;text-align:left;width:100%;min-height:48px;background:transparent;border:0;color:#eaf8fc;padding:0;font-weight:850}
+#pg-bot-toggle img{flex:none;object-fit:contain}
+#pg-bot-toggle small{display:block;color:#b5d1df;font-size:11px;font-weight:550;margin-top:3px}
+#pg-bot-body[hidden]{display:none}
+.pg-bot-disclosure{font-size:11px!important;color:#c2d8e3!important;line-height:1.5}
+.pg-bot-topics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.pg-bot-topics button{min-height:44px;padding:7px 2px;min-width:0;font-size:12px;font-weight:700;border-radius:9px;border:1px solid #4c7185;background:#17374c;color:#f3fbff}
+.pg-bot-topics button[aria-pressed="true"]{background:#baf29a;color:#142d24;border-color:#baf29a}
+#pg-bot-answer{min-height:56px;padding:10px 0 0;font-size:13px;line-height:1.55;color:#e0f1fb}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
 

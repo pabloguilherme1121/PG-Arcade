@@ -6,6 +6,7 @@ import { createTowers, commandTowers, TOWER_TYPES, TOWER_PATH } from "./towers.m
 import { createFrontier, commandFrontier, canFrontierAction } from "./frontier.mjs";
 import { createWinter, commandWinter, canWinterAction } from "./winter.mjs";
 import { createDraughts, commandDraughts, legalDraughtsMoves } from "./draughts.mjs";
+import { botMessage, BOT_TOPICS } from "./pg-bot.mjs";
 
 const $ = id => document.getElementById(id);
 const STORAGE = "pg-strategy-original-records-v1";
@@ -22,6 +23,7 @@ const GAMES = {
 let gameId = Object.hasOwn(GAMES, location.hash.slice(1)) ? location.hash.slice(1) : "frota-oculta";
 let current;
 let selectedDraughts = null;
+let botTopic = 'objetivo';
 let records = {};
 try {
   const raw = JSON.parse(localStorage.getItem(STORAGE) || "{}");
@@ -392,6 +394,7 @@ function render() {
   else renderWinter();
   $("message").textContent = current.message;
   $("message").dataset.phase = current.phase;
+  if (!$("pg-bot-body").hidden) $("pg-bot-answer").textContent = botMessage(gameId,current,botTopic);
   $("record").textContent = current.phase === "won"
     ? "Vitória: " + current.score + " pontos. Melhor recorde: " + (records[bestKey()] || current.score)
     : "Recorde neste aparelho: " + (records[bestKey()] || "—");
@@ -408,6 +411,20 @@ $("tower-type").addEventListener("change", () => { if (gameId === "muralha-das-t
 $("frontier-mode").addEventListener("change", () => { if (gameId === "fronteira-orbital") newGame(); });
 $("frontier-action").addEventListener("change", () => { if (gameId === "fronteira-orbital") render(); });
 $("winter-mode").addEventListener("change", () => { if (gameId === "refugio-do-inverno") newGame(); });
+$("pg-bot-toggle").addEventListener("click", () => {
+  const panel=$("pg-bot-body");
+  panel.hidden=!panel.hidden;
+  $("pg-bot-toggle").setAttribute("aria-expanded",String(!panel.hidden));
+  if(!panel.hidden) $("pg-bot-answer").textContent=botMessage(gameId,current,botTopic);
+});
+for(const button of document.querySelectorAll('[data-pg-bot-topic]')){
+  button.addEventListener('click',()=>{
+    if(!BOT_TOPICS.includes(button.dataset.pgBotTopic))return;
+    botTopic=button.dataset.pgBotTopic;
+    document.querySelectorAll('[data-pg-bot-topic]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
+    $("pg-bot-answer").textContent=botMessage(gameId,current,botTopic);
+  });
+}
 $("restart").addEventListener("click", () => newGame());
 window.addEventListener("hashchange", () => {
   const id = location.hash.slice(1);
