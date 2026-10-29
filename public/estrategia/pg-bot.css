@@ -14,3 +14,5 @@
 .pg-bot-answer{min-height:105px;background:#0d1a2d;border:1px solid #405d78;border-radius:12px;padding:15px}
 .pg-bot-dialog .pg-bot-close{min-height:44px;width:100%;margin-top:12px}
 @media(max-width:350px){.pg-bot-panel{padding:14px}.pg-bot-heading h2{font-size:25px}}
+/* The in-arena help control remains reachable alongside the other actions at 320px. */
+@media(max-width:440px){.arena-head{flex-wrap:wrap}.arena-head>span{order:4;flex:1 1 100%;text-align:center}.arena-head #pg-bot-in-arena{min-height:44px}}
