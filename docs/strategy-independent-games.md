@@ -7,9 +7,10 @@
 **Implementado nos primeiros lotes (ainda sujeito à PR/CI):**
 - **Frota Oculta** (`frota-oculta`): dedução naval num tabuleiro 6×6, frota inimiga variável, sonar por linhas, base com vida, reparo, ataques rivais, três dificuldades e vitória/derrota.
 - **Hex Conexão** (`hex-conexao`): jogo de conexão hexagonal 7×7, um jogador contra IA com três modos de dificuldade, condição de vitória norte–sul e derrota leste–oeste, sem reocupação de casas.
+- **Patrulha Tática** (`patrulha-tatica`): motor independente de tática em grade 5×5, dois objetivos (combate/extração), IA adversária, munição, cobertura, kits médicos, 3 dificuldades e vitória/derrota. Esta PR depende da #215.
 - **Cartas de Cerco** (`cartas-de-cerco`): baralho com cartas de ataque, fortificação, curas, geração de energia e compra, reembaralhamento, ataques rivais, três dificuldades e vitória/derrota.
 
-**Títulos independentes novos implementados nos dois lotes:** 3.  
+**Títulos independentes novos implementados nas PRs empilhadas:** 4 (2 na #213, Hex na #215 e Patrulha nesta PR), ainda sujeitos a validação integral e merge.  
 **Títulos já classificados como Estratégia no PG Arcade:** 47 links herdados; preservados, mas requerem auditoria individual para garantir que todos satisfaçam o novo padrão de motor independente.  
 **150 missões da campanha:** permanecem em seis regras compartilhadas; **não contam como 150 títulos independentes**.
 
