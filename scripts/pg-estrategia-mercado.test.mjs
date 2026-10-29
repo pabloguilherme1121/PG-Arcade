@@ -22,7 +22,7 @@ test("Mercado de Rotas respeita estoque, dinheiro, capacidade e rotas", () => {
  const start=createTrade({seed:7});
  assert.equal(commandTrade(start,{type:"sell",good:"graos",units:1}),start);
  assert.notEqual(commandTrade(start,{type:"travel",to:2}),start);
- assert.equal(commandTrade(start,{type:"travel",to:0}),start);
+ assert.equal(commandTrade(start,{type:"travel",to:99}),start);
  const loaded=commandTrade(start,{type:"buy",good:"graos",units:2});
  assert.deepEqual(start.cargo,{graos:0,metal:0,tecnologia:0});
  assert.equal(loaded.cargo.graos,2);
