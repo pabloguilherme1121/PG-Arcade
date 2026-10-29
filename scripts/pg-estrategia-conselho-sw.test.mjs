@@ -34,14 +34,15 @@ test("portal anuncia a contagem real de motores independentes sem duplicar missÃ
  const embedded=[...lab.matchAll(/data-select="([^"]+)"/g)].map(match=>match[1]);
  const linked=[...lab.matchAll(/class="choice[^"]*" href="\.\/([^/]+)\//g)].map(match=>match[1]);
  const ids=[...embedded,...linked];
- assert.ok(ids.length>=10 && ids.length<=12);
+ assert.ok(ids.length>=10 && ids.length<=13);
  assert.equal(new Set(ids).size,ids.length);
  assert.equal(embedded.length,8);
  assert.ok(linked.includes("conselho-de-reinos") && linked.includes("mercado-de-rotas"));
  assert.equal(linked.length,ids.length-8);
  assert.match(lab,new RegExp(String(ids.length)+" motores independentes"));
- assert.match(portal,new RegExp(({10:"Dez",11:"Onze",12:"Doze"})[ids.length]+" jogos candidatos"));
+ assert.match(portal,new RegExp(({10:"Dez",11:"Onze",12:"Doze",13:"Treze"})[ids.length]+" jogos candidatos"));
  assert.match(portal,/href="\.\/independentes\/mercado-de-rotas\/"/);
  assert.match(portal,/href="\.\/independentes\/conselho-de-reinos\/"/);
+ assert.match(portal,/href="\.\/independentes\/comando-de-drones\/"/);
  assert.match(portal,/id="pg-bot-in-arena"/);
 });
