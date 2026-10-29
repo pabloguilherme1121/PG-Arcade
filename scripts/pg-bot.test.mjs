@@ -35,3 +35,17 @@ test("PG Bot é referenciado no Arcade e no portal Estratégia com caminhos rela
   assert.match(strategy, /\.\.\/pg-bot\.js/);
   assert.match(strategy, /\.\.\/pg-bot\.css/);
 });
+
+test("PG Bot oferece estratégia específica para as seis famílias das 150 missões", () => {
+ const { replyFor } = loadRules();
+ const cases = [
+   ["Conquista territorial: Aurora", /casas vizinhas|expan/i],
+   ["Rota crítica: Serra", /bloqueios|caminho/i],
+   ["Comércio & recursos: Horizonte", /influência|créditos/i],
+   ["Defesa de fronteira: Estuário", /pistas|torres/i],
+   ["Expedição tática: Fronteira", /combustível|cargas/i],
+   ["Plano da cidade: Mirante", /energia|água|confiança/i]
+ ];
+ for (const [title, expected] of cases)
+   assert.match(replyFor("dica", title), expected, title);
+});
