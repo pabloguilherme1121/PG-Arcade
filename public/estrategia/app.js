@@ -1,4 +1,5 @@
-import { FAMILIES, MISSIONS, EXISTING_STRATEGY, getMission, getFamily } from './catalog.mjs';
+import { FAMILIES, MISSIONS, getMission, getFamily } from './catalog.mjs';
+import { initStrategyHub } from './strategy-hub.mjs';
 import { initMission, play, undo, legalMoves, progressValue } from './core.mjs';
 const $ = id => document.getElementById(id);
 const STORAGE='pg-estrategia-progress-v1';
@@ -65,7 +66,7 @@ $('battlefield').addEventListener('keydown',e=>{const keys={ArrowUp:-5,ArrowDown
 $('exit').addEventListener('click',closeMission);$('arena').addEventListener('cancel',e=>{e.preventDefault();closeMission();});$('reset').addEventListener('click',()=>{if(active)openMission(active.id);});$('undo').addEventListener('click',()=>{if(active){active=undo(active);renderGame();}});$('favorite').addEventListener('click',()=>{if(active)toggleFavorite(active.id);});$('next').addEventListener('click',()=>{if(!active)return;const n=Number(active.id.slice(4));openMission(`est-${String(n%150+1).padStart(3,'0')}`);});
 $('theme-btn').addEventListener('click',()=>{document.body.dataset.highContrast=document.body.dataset.highContrast==='true'?'false':'true';$('theme-btn').setAttribute('aria-pressed',document.body.dataset.highContrast);});
 window.addEventListener('hashchange',()=>{const id=location.hash.slice(1);if(getMission(id)){if(active?.id!==id)openMission(id);}else if($('arena').open)closeMission();});
-$('classics-list').replaceChildren(...EXISTING_STRATEGY.map(([id,name])=>{const link=document.createElement('a');link.className='classic-item';link.href=`../#/jogar/${encodeURIComponent(id)}`;const icon=document.createElement('span');icon.textContent='◇';link.append(icon,document.createTextNode(name));return link;}));
+initStrategyHub();
 // Other tabs can update favorites and completed missions on the same origin.
 // Keep the visible catalog and its counters in sync rather than overwriting
 // changes from an older in-memory snapshot when another tab acts later.
