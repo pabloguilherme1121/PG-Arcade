@@ -17,6 +17,8 @@ for(const width of [320,390]){
    await expect(page.locator('#classic-player')).toBeVisible();
    await expect(page.locator('#classic-game-frame')).toHaveAttribute('src','../#/jogar/xadrez');
    await expect(page.locator('#classic-open-new')).toHaveAttribute('href','../#/jogar/xadrez');
+   await page.locator('#classic-player-bot summary').click();
+   await expect(page.locator('#classic-bot-tip')).toContainText('PG Bot · Xadrez');
    await page.locator('#classic-player-close').click();
    await expect(page.locator('#classic-player')).not.toBeVisible();
    await expect(page.locator('#classic-game-frame')).not.toHaveAttribute('src',/jogar/);
