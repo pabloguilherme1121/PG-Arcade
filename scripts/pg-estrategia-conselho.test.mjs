@@ -40,7 +40,7 @@ test('Conselho: negociação, influência, apoio e reação rival são determin�
 test('Conselho: aprovar reforma exige maioria, influência e recursos',()=>{
  let s=createCouncil({seed:5});
  assert.strictEqual(commandCouncil(s,{type:'propose'}),s);
- for(let i=0;i<2;i++)s=commandCouncil(s,{type:'negotiate',faction:i+1});
+ s=commandCouncil(s,{type:'negotiate',faction:1});
  const votes=councilVotes(s);
  assert.ok(votes>=5,'negociações devem permitir maioria');
  const next=commandCouncil(s,{type:'propose'});
