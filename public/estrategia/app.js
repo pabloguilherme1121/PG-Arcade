@@ -77,4 +77,16 @@ window.addEventListener('storage', event => {
   if (active) renderGame();
 });
 renderCatalog();const initial=location.hash.slice(1);if(getMission(initial))openMission(initial);
+const helpLauncher = $('pg-bot-open');
+for (const trigger of [helpLauncher, $('pg-bot-in-arena')]) {
+  trigger.addEventListener('click', async () => {
+    try {
+      const { openHelp } = await import('./pg-bot-help.mjs');
+      openHelp(trigger);
+    } catch {
+      notify('Não foi possível carregar a ajuda. Verifique a conexão e tente novamente.');
+    }
+  });
+}
+if (new URLSearchParams(location.search).get('ajuda') === '1' && !getMission(initial)) helpLauncher.click();
 if('serviceWorker'in navigator&&location.protocol==='https:')window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(()=>{});});
