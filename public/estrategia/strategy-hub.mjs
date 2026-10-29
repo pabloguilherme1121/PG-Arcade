@@ -22,6 +22,19 @@ export function filterStrategyLibrary(term='',group='all'){
 export const arcadeGameUrl=id=>legacyNames.has(id)?'../#/jogar/'+encodeURIComponent(id):null;
 export const strategyLaunchUrl=id=>legacyNames.has(id)?'?arcade='+encodeURIComponent(id)+'#classicos':null;
 
+const TIPS=Object.freeze({
+ tabuleiro:'Planeje capturas, bloqueios e as próximas jogadas. Observe as regras na tela, pois cada tabuleiro tem suas próprias condições de vitória.',
+ gestao:'Acompanhe recursos, orçamento e objetivos antes de gastar um turno. Priorize ações com efeitos úteis para as próximas rodadas.',
+ logica:'Examine as pistas, conexões e possíveis movimentos antes de confirmar. Resolver por etapas reduz tentativas desnecessárias.',
+ acao:'Observe o ritmo, as regras do modo solo ou em dupla e as ações disponíveis. Coordene movimentos antes de executar.',
+});
+export function strategyBotTip(id){
+ if(!legacyNames.has(id))return null;
+ return 'PG Bot · '+legacyNames.get(id)+': '+TIPS[strategyGroupFor(id)]+
+  ' Use Tab, Enter ou toque nos comandos disponíveis. Para ajuda específica, veja as instruções do jogo original. Seu progresso permanece no PG Arcade.';
+}
+
+
 export function initStrategyHub(){
  const root=document.getElementById('classics-list');
  const search=document.getElementById('classic-search');
@@ -57,6 +70,8 @@ export function initStrategyHub(){
    heading.textContent='Jogando: '+legacyNames.get(id);
    fullscreen.href=src;
    iframe.title='PG Arcade: '+legacyNames.get(id);
+   document.getElementById('classic-bot-tip').textContent=strategyBotTip(id);
+   document.getElementById('classic-player-bot').open=false;
    dialog.showModal();
    // Delay heavy React / game engine loading until the dialog is actually open.
    iframe.src=src;
