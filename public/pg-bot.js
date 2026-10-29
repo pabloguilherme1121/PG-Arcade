@@ -144,6 +144,19 @@
     panel.append(head, feed, questions, form, nav);
     wrap.append(panel, launcher);
     document.body.append(wrap);
+    // A native showModal() dialog occupies the browser top layer. Move support
+    // inside it while playing so the launcher remains clickable above its backdrop.
+    const modal = document.getElementById("arena");
+    if (modal && typeof MutationObserver !== "undefined") {
+      const placeBot = () => {
+        const target = modal.open ? modal : document.body;
+        if (wrap.parentElement !== target) target.append(wrap);
+      };
+      new MutationObserver(placeBot).observe(modal, {
+        attributes: true, attributeFilter: ["open"]
+      });
+      placeBot();
+    }
     addMessage("Olá! Sou o PG Bot. Posso ajudar com regras, controles e dicas. Minhas respostas são locais e não usam serviços externos.", "answer");
   }
   if (document.readyState === "loading")
