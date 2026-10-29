@@ -98,3 +98,16 @@ h1,h2,h3,h4,p{margin-block:0}h1,h2,h3{letter-spacing:-.04em}h1{font-size:clamp(3
 .draughts-cell[data-piece="-1"],.draughts-cell[data-piece="-2"]{color:#ffc98b}
 .draughts-cell[data-selected="true"]{outline:3px solid #c9f891;outline-offset:-4px}
 .draughts-cell[data-target="true"]{background:#356e54;color:#e3ffbf;border-color:#c9f891;opacity:1}
+
+
+/* PG Bot contextual para os oito motores. */
+.pg-bot-help{margin:18px 0 0;padding:12px;border:1px solid #53778a;border-radius:13px;background:#102838}
+#pg-bot-toggle{display:flex;align-items:center;gap:11px;text-align:left;width:100%;min-height:48px;background:transparent;border:0;color:#eaf8fc;padding:0;font-weight:850}
+#pg-bot-toggle img{flex:none;object-fit:contain}
+#pg-bot-toggle small{display:block;color:#b5d1df;font-size:11px;font-weight:550;margin-top:3px}
+#pg-bot-body[hidden]{display:none}
+.pg-bot-disclosure{font-size:11px!important;color:#c2d8e3!important;line-height:1.5}
+.pg-bot-topics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.pg-bot-topics button{min-height:44px;padding:7px 2px;min-width:0;font-size:12px;font-weight:700;border-radius:9px;border:1px solid #4c7185;background:#17374c;color:#f3fbff}
+.pg-bot-topics button[aria-pressed="true"]{background:#baf29a;color:#142d24;border-color:#baf29a}
+#pg-bot-answer{min-height:56px;padding:10px 0 0;font-size:13px;line-height:1.55;color:#e0f1fb}
