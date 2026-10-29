@@ -1,8 +1,10 @@
 import { createTrade, commandTrade, tradePrice, TRADE_CITIES, TRADE_GOODS, tradeCargoSize } from "./game.mjs";
+import { marketBotAnswer, MARKET_BOT_TOPICS } from "./pg-bot.mjs";
 const $=id=>document.getElementById(id);
 const STORAGE="pg-strategy-mercado-records-v1";
 const LABELS={graos:"Grãos",metal:"Metal",tecnologia:"Tecnologia"};
 let state;
+let selectedBotTopic=null;
 let records={};
 try{
   const raw=JSON.parse(localStorage.getItem(STORAGE)||"{}");
@@ -97,6 +99,7 @@ function render(){
  $("units").disabled=!playing;
  const record=records[currentKey()]||0;
  $("record").textContent="Recorde em "+state.mission+" / "+state.mode+": "+record+" pontos (salvo neste aparelho).";
+ if(selectedBotTopic)$("market-bot-answer").textContent=marketBotAnswer(selectedBotTopic,state);
 }
 $("trade-mode").addEventListener("change",newGame);
 $("trade-difficulty").addEventListener("change",newGame);
@@ -109,6 +112,13 @@ for(const id of ["buy","sell","refuel","upgrade","rest"]){
    commit(id==="buy"||id==="sell"?{type:id,good:$("product").value,units:Number($("units").value)}:{type:id});
  });
 }
+$("pg-bot").addEventListener("click",event=>{
+ const button=event.target.closest("button[data-market-topic]");
+ if(!button||!MARKET_BOT_TOPICS.includes(button.dataset.marketTopic))return;
+ selectedBotTopic=button.dataset.marketTopic;
+ document.querySelectorAll("button[data-market-topic]").forEach(item=>item.setAttribute("aria-pressed",String(item===button)));
+ $("market-bot-answer").textContent=marketBotAnswer(selectedBotTopic,state);
+});
 newGame();
 if("serviceWorker" in navigator&&location.protocol==="https:")
  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{}));
