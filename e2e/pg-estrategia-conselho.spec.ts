@@ -33,3 +33,14 @@ test("Conselho: teclado, pausa e derrota na crise em 390px",async ({page})=>{
  await expect(page.locator("#notice")).toHaveAttribute("data-status","lost");
  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
+
+test("Portal Estratégia expõe os dez motores originais sem inflar as 150 missões",async ({page})=>{
+ await page.setViewportSize({width:320,height:720});
+ await page.goto("./estrategia/");
+ await expect(page.locator("#result-count")).toHaveText("150 missões");
+ const section=page.getByRole("region",{name:"Novos jogos estratégicos originais"});
+ await expect(page.getByRole("link",{name:/Mercado de Rotas/i})).toHaveAttribute("href","./independentes/mercado-de-rotas/");
+ await expect(page.getByRole("link",{name:/Conselho dos Reinos/i})).toHaveAttribute("href","./independentes/conselho-de-reinos/");
+ await page.getByRole("link",{name:/Conselho dos Reinos/i}).click();
+ await expect(page).toHaveTitle(/Conselho dos Reinos/);
+});
