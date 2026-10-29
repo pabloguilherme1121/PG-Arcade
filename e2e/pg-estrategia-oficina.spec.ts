@@ -41,3 +41,35 @@ test("Oficina: teclado acessa o PG Bot e navegação permanece entre os sites",a
  await expect(page.locator("#bot-answer")).toContainText("dois autômatos");
  await expect(page.getByRole("navigation",{name:"Sites PG"}).getByRole("link",{name:"PG Arcade"})).toHaveAttribute("href","../../../");
 });
+
+for (const width of [320,390]) {
+ test("Oficina: Enter preserva foco após atualizar botões e alternar pausa em "+width+"px",async({page})=>{
+  await page.setViewportSize({width,height:780});
+  await page.goto("./estrategia/independentes/oficina-automatos/");
+  const mine=page.getByRole("button",{name:"Mineração: +3 minério"});
+  await mine.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#metrics")).toContainText("1 / 24");
+  await expect(page.getByRole("button",{name:"Mineração: +3 minério"})).toBeFocused();
+  await page.keyboard.press("Space");
+  await expect(page.locator("#metrics")).toContainText("2 / 24");
+  await expect(page.getByRole("button",{name:"Mineração: +3 minério"})).toBeFocused();
+  const pause=page.getByRole("button",{name:"Pausar produção"});
+  await pause.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("button",{name:"Retomar produção"})).toBeFocused();
+  await page.keyboard.press("Space");
+  await expect(page.getByRole("button",{name:"Pausar produção"})).toBeFocused();
+  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ });
+}
+
+test("Oficina: ao desabilitar uma ação, o foco vai para outro comando disponível",async({page})=>{
+ await page.goto("./estrategia/independentes/oficina-automatos/");
+ await page.getByLabel("Objetivo da oficina").selectOption("montagem");
+ const improve=page.getByRole("button",{name:"Melhorar extrator: 8 créditos"});
+ await improve.focus();
+ await page.keyboard.press("Enter");
+ await expect(improve).toBeDisabled();
+ await expect(page.locator("#actions button:enabled").first()).toBeFocused();
+});
