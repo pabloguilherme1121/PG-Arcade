@@ -12,7 +12,7 @@ for (const width of [320, 390]) {
     await page.getByRole("button", { name: "150 jogos?" }).click();
     await expect(page.getByRole("log")).toContainText("150 missões em 6 sistemas");
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await page.locator("#pg-bot-panel").press("Escape");
+    await page.getByRole("textbox", { name: "Pergunta para o PG Bot" }).press("Escape");
     await expect(page.locator("#pg-bot-panel")).toBeHidden();
     await expect(launcher).toBeFocused();
   });
