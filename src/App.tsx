@@ -380,6 +380,11 @@ export default function App() {
                 <ArrowLeft size={19} />
                 Voltar aos jogos
               </a>
+              {game.category === "Estratégia" && (
+                <a className="button" href={`${import.meta.env.BASE_URL}estrategia/?arcade=${encodeURIComponent(game.id)}#classicos`}>
+                  Jogar no PG Estratégia
+                </a>
+              )}
                 <button
                   onClick={(event) => {
                     const menu = event.currentTarget.closest(".player-toolbar")?.querySelector<HTMLDetailsElement>(".player-utilities");
