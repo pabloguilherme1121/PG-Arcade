@@ -43,3 +43,24 @@ test("Portal Estratégia expõe os dez motores originais sem inflar as 150 miss�
  await page.getByRole("link",{name:/Conselho dos Reinos/i}).click();
  await expect(page).toHaveTitle(/Conselho dos Reinos/);
 });
+
+
+test('PG Bot explica objetivos e atualiza situação na partida do Conselho',async({page})=>{
+ await page.setViewportSize({width:320,height:720});
+ await page.goto('./estrategia/independentes/conselho-de-reinos/?seed=7');
+ const bot=page.locator('#pg-bot');
+ await bot.locator('summary').click();
+ await expect(bot.getByText('PG Bot', {exact:true})).toBeVisible();
+ await bot.locator('[data-bot-topic="objective"]').click();
+ await expect(page.locator('#bot-response')).toContainText('3 tratados');
+ await bot.locator('[data-bot-topic="situation"]').click();
+ await expect(page.locator('#bot-response')).toContainText('Rodada 0');
+ await page.locator('[data-faction="0"]').click();
+ await expect(page.locator('#bot-response')).toContainText('negociações 1/2');
+ await page.locator('#pause').click();
+ await expect(page.locator('#bot-response')).toContainText('pausada');
+ await bot.locator('[data-bot-topic="controls"]').focus();
+ await page.keyboard.press('Enter');
+ await expect(page.locator('#bot-response')).toContainText('Tab');
+ await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
