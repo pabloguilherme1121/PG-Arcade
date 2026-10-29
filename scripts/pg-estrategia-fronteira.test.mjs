@@ -48,7 +48,7 @@ test("Fronteira Orbital: rival conquista territórios, derrota e pausa persisten
  assert.equal(commandFrontier(idle,{type:"extract"}),idle);
  s=commandFrontier(idle,{type:"resume"});
  assert.equal(s.paused,false);
- for(let i=0;i<45&&s.phase==="playing";i++)s=commandFrontier(s,{type:"extract"});
+ for(let i=0;i<45&&s.phase==="playing";i++)s=commandFrontier(s,{type:i%2===0?"extract":"research"});
  assert.equal(s.phase,"lost");
  assert.ok(s.owners.filter(o=>o===2).length>1);
  assert.equal(commandFrontier(s,{type:"research"}),s);
@@ -58,7 +58,7 @@ test("Fronteira Orbital: invalidez, paredes e energia finita não corrompem o es
  assert.throws(()=>createFrontier({mission:"inexistente"}),RangeError);
  assert.throws(()=>createFrontier({seed:NaN}),RangeError);
  const s=createFrontier();
- for(const action of [null,{}, {type:"scout",cell:15},{type:"scout",cell:2},{type:"scout",cell:-1},{type:"scout",cell:"1"},{type:"colonize",cell:1},{type:"research",cell:5},{type:"pause",cell:1.5}].slice(0,8)){
+ for(const action of [null,{}, {type:"scout",cell:15},{type:"scout",cell:2},{type:"scout",cell:-1},{type:"scout",cell:"1"},{type:"colonize",cell:1},{type:"invalido",cell:5},{type:"colonize",cell:15}].slice(0,8)){
   assert.equal(commandFrontier(s,action),s);
  }
  const research=commandFrontier(s,{type:"research"});
