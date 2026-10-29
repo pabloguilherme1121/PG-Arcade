@@ -51,6 +51,9 @@ test("Fronteira Orbital: rival conquista territórios, derrota e pausa persisten
  assert.equal(commandFrontier(idle,{type:"extract"}),idle);
  s=commandFrontier(idle,{type:"resume"});
  assert.equal(s.paused,false);
+ s=commandFrontier(s,{type:"scout",cell:1});
+ s=commandFrontier(s,{type:"colonize",cell:1});
+ assert.equal(s.owners[1],1);
  for(let i=0;i<45&&s.phase==="playing";i++)s=commandFrontier(s,{type:i%2===0?"extract":"research"});
  assert.equal(s.phase,"lost");
  assert.ok(s.owners.filter(o=>o===2).length>1);
