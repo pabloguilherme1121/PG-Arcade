@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {EXISTING_STRATEGY} from '../public/estrategia/catalog.mjs';
-import {STRATEGY_GROUPS, strategyGroupFor, filterStrategyLibrary, strategyLaunchUrl, arcadeGameUrl} from '../public/estrategia/strategy-hub.mjs';
+import {STRATEGY_GROUPS, strategyGroupFor, filterStrategyLibrary, strategyLaunchUrl, arcadeGameUrl, strategyBotTip} from '../public/estrategia/strategy-hub.mjs';
 
 test('biblioteca preserva os 47 jogos históricos com IDs estáveis e grupos sem duplicação',()=>{
  assert.equal(EXISTING_STRATEGY.length,47);
@@ -59,4 +59,14 @@ test('service worker da campanha não apaga caches nem intercepta os jogos indep
   handlers.get('fetch')({request:{url:root+path,method:'GET',mode:path.endsWith('/')?'navigate':'cors'},respondWith(){intercepted=true;}});
   assert.equal(intercepted,false,path);
  }
+});
+
+test('PG Bot oferece ajuda local relevante para cada jogo e recusa IDs falsos',()=>{
+ for(const [id,name] of EXISTING_STRATEGY){
+  const answer=strategyBotTip(id);
+  assert.ok(answer.includes(name),id);
+  assert.ok(answer.length>90,id);
+  assert.doesNotMatch(answer,/<\/?[a-z]/i,id);
+ }
+ assert.equal(strategyBotTip('__proto__'),null);
 });
