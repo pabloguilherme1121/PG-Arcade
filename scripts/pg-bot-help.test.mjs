@@ -27,5 +27,5 @@ test('PG Bot usa módulo sob demanda e preserva shell offline independente', () 
   assert.match(html, /id="pg-bot-answer"[^>]*role="status"/);
   assert.match(sw, /\.\/pg-bot-help\.mjs/);
   assert.match(sw, /\.\/pg-bot\.css/);
-  assert.match(sw, /pg-estrategia-shell-v3/);
+  assert.match(sw, /pg-estrategia-shell-v4/);
 });
