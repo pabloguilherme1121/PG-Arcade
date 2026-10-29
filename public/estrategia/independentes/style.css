@@ -64,3 +64,15 @@ h1,h2,h3,h4,p{margin-block:0}h1,h2,h3{letter-spacing:-.04em}h1{font-size:clamp(3
 .tower-cell:disabled{opacity:1}
 .tower-cell:hover:not(:disabled){border-color:var(--lime);filter:brightness(1.2)}
 @media(max-width:350px){.tower-board{gap:2px}.tower-cell{border-radius:5px}}
+
+/* Fronteira Orbital: tabuleiro tático 4×4 com peças acessíveis em mobile. */
+#frontier-mode-wrap[hidden],#frontier-action-wrap[hidden]{display:none!important}
+.choice.frontier .choice-symbol{color:#ded0ff;background:#483e6b}
+.frontier-board{display:grid;grid-template-columns:repeat(4,minmax(44px,1fr));gap:7px;max-width:390px;margin:0 auto}
+.frontier-cell{min-width:44px;min-height:44px;aspect-ratio:1;border:1px solid #60788d;border-radius:12px;background:linear-gradient(140deg,#23394f,#102c40);color:#d3e8f6;font-size:25px;font-weight:850}
+.frontier-cell[data-visible="false"]{background:repeating-linear-gradient(125deg,#111f31,#111f31 9px,#19293e 9px,#19293e 18px);color:#7995b0}
+.frontier-cell[data-owner="1"]{background:linear-gradient(140deg,#3d806c,#173d36);color:#d3ffe3;border-color:#a7ffc4;opacity:1}
+.frontier-cell[data-owner="2"]{background:linear-gradient(140deg,#99556d,#462a43);color:#ffe3e1;border-color:#ffb3c1;opacity:1}
+.frontier-cell:hover:not(:disabled){outline:2px solid #baf1cb;outline-offset:0}
+.frontier-cell:disabled{opacity:1}
+@media(max-width:350px){.frontier-board{gap:4px}.frontier-cell{border-radius:8px}}

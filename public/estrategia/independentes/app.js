@@ -3,6 +3,7 @@ import { createSiege, playSiegeCard, endSiegeTurn, SIEGE_CARDS } from "./siege.m
 import { createHex, playHex } from "./hex.mjs";
 import { createSquad, commandSquad, legalSquadMoves } from "./squad.mjs";
 import { createTowers, commandTowers, TOWER_TYPES, TOWER_PATH } from "./towers.mjs";
+import { createFrontier, commandFrontier, canFrontierAction } from "./frontier.mjs";
 
 const $ = id => document.getElementById(id);
 const STORAGE = "pg-strategy-original-records-v1";
@@ -10,6 +11,7 @@ const GAMES = {
   "frota-oculta": { name: "Frota Oculta", intro: "Localize a frota inimiga num mapa 6×6. Cada disparo consome um turno; use o sonar para deduzir a posição das embarcações.", instructions: "Toque em um quadrante para atacar. Sonar revela o número de navios numa linha, mas gasta um turno. Reparos preservam sua base sob pressão.", init: createNaval },
   "cartas-de-cerco": { name: "Cartas de Cerco", intro: "Monte sua ofensiva com as cartas disponíveis, distribua energia e sobreviva aos ataques de uma fortaleza inimiga.", instructions: "Jogue cartas de sua mão gastando energia. Fortificar bloqueia o próximo ataque; Aríete causa dano elevado. Encerrar o turno permite que o rival ataque.", init: createSiege },
   "hex-conexao": { name: "Hex Conexão", intro: "Conecte de cima até embaixo num tabuleiro hexagonal de 49 casas. O rival tenta unir as bordas esquerda e direita.", instructions: "Selecione uma casa livre para colocar uma pedra. O adversário responde automaticamente. Você ganha ao criar uma cadeia contínua entre as bordas norte e sul.", init: createHex },
+  "fronteira-orbital": { name: "Fronteira Orbital", intro: "Explore um setor 4×4 sob névoa, colonize planetas vizinhos, pesquise tecnologias e dispute o mapa com uma facção rival.", instructions: "Selecione Explorar e toque num setor vizinho revelável. Depois use Colonizar numa área explorada e conectada à sua base. Pesquisa exige pelo menos duas colônias e avança ciência; Extrair repõe recursos. A facção rival cresce a cada rodada, conforme a dificuldade.", init: createFrontier },
   "muralha-das-torres": { name: "Muralha das Torres", intro: "Construa torres, defenda uma rota de 11 casas e administre créditos em ondas crescentes.", instructions: "Escolha Canhão ou Gelo e toque numa casa livre para construir. Toque numa torre de nível 1 para aprimorá-la por 4 créditos. Inicie cada onda e avance os turnos para observar a defesa.", init: createTowers },
   "patrulha-tatica": { name: "Patrulha Tática", intro: "Conduza um esquadrão por um mapa 5×5. Elimine drones ou recupere um sinal e volte à base.", instructions: "Toque ou use Tab/Enter nas casas livres vizinhas para mover. Ataque drones ao alcance de duas casas; também pode se defender ou curar. Troque o objetivo para uma operação de extração.", init: createSquad },
 };
@@ -20,7 +22,7 @@ try {
   const raw = JSON.parse(localStorage.getItem(STORAGE) || "{}");
   if (raw && typeof raw === "object" && !Array.isArray(raw)) {
     records = Object.fromEntries(Object.entries(raw).filter(([key, value]) =>
-      /^(frota-oculta|cartas-de-cerco|hex-conexao):(recruta|tatico|veterano)$|^patrulha-tatica:(recruta|tatico|veterano):(combate|extracao)$|^muralha-das-torres:(recruta|tatico|veterano):(defesa|maratona)$/.test(key) &&
+      /^(frota-oculta|cartas-de-cerco|hex-conexao):(recruta|tatico|veterano)$|^patrulha-tatica:(recruta|tatico|veterano):(combate|extracao)$|^muralha-das-torres:(recruta|tatico|veterano):(defesa|maratona)$|^fronteira-orbital:(recruta|tatico|veterano):(expansao|pesquisa)$/.test(key) &&
       Number.isSafeInteger(value) && value >= 0 && value < 100000));
   }
 } catch { records = {}; }
@@ -45,14 +47,14 @@ function newGame(id = gameId) {
   gameId = id;
   const mode = $("difficulty").value;
   const seed = number(Math.floor(Math.random() * 0xffffffff));
-  current = GAMES[id].init({ difficulty: mode, seed, mission: id === "muralha-das-torres" ? $("tower-mode").value : $("squad-mode").value });
+  current = GAMES[id].init({ difficulty: mode, seed, mission: id === "muralha-das-torres" ? $("tower-mode").value : id === "fronteira-orbital" ? $("frontier-mode").value : $("squad-mode").value });
   if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
   document.querySelectorAll("[data-select]").forEach(button => {
     button.setAttribute("aria-pressed", String(button.dataset.select === id));
   });
   render();
 }
-function bestKey() { return gameId + ":" + current.mode + (["patrulha-tatica","muralha-das-torres"].includes(gameId) ? ":" + current.mission : ""); }
+function bestKey() { return gameId + ":" + current.mode + (["patrulha-tatica","muralha-das-torres","fronteira-orbital"].includes(gameId) ? ":" + current.mission : ""); }
 function update(next) {
   if (next === current) return;
   current = next;
@@ -248,6 +250,43 @@ function renderTowers() {
   actions.append(el("p","intel","Desafio: "+(s.mission==="maratona"?"maratona com duas ondas adicionais":"defesa de "+s.maxWaves+" ondas")+". Cada inimigo que chega ao final reduz a base. Derrotar inimigos rende créditos."));
 }
 
+
+function renderFrontier() {
+  const s=current,board=$("board"),actions=$("actions"),order=$("frontier-action").value;
+  board.className="board frontier-board";
+  board.setAttribute("aria-label","Fronteira Orbital, mapa de quatro linhas e quatro colunas");
+  board.replaceChildren();
+  for(let cell=0;cell<16;cell++){
+    const owned=s.owners[cell]===1,rival=s.owners[cell]===2,visible=s.visible[cell];
+    const legal=canFrontierAction(s,{type:order,cell});
+    const title=owned?"Sua colônia":rival?"Facção rival":!visible?"Setor desconhecido":
+      ("Área "+s.terrain[cell]);
+    const symbol=owned?"◆":rival?"♟":!visible?"?":
+      s.terrain[cell]==="solar"?"☼":s.terrain[cell]==="mineral"?"◇":s.terrain[cell]==="ruinas"?"✧":"·";
+    const button=action(symbol,()=>update(commandFrontier(current,{type:order,cell})),"frontier-cell",!legal);
+    button.dataset.frontier=String(cell);
+    button.dataset.owner=String(s.owners[cell]);
+    button.dataset.visible=String(visible);
+    button.setAttribute("aria-label","Linha "+(Math.floor(cell/4)+1)+", coluna "+(cell%4+1)+": "+title+(legal?", "+(order==="scout"?"explorar":"colonizar"):""));
+    board.append(button);
+  }
+  $("metrics").replaceChildren(
+    metric("Turnos",s.turn+" / "+s.maxTurns),
+    metric("Energia / minério",s.energy+" / "+s.ore),
+    metric("Ciência",s.science+" / 12"),
+    metric("Colônias",s.owners.filter(o=>o===1).length+" / 5")
+  );
+  $("legend").textContent="◆ Sua colônia · ♟ Rival · ? Névoa · ☼ Energia · ◇ Minério · ✧ Ruínas. Objetivo: "+(s.mission==="pesquisa"?"12 pontos de ciência":"5 colônias conectadas")+".";
+  actions.replaceChildren(el("h4","","Centro de pesquisa e suprimentos"));
+  actions.append(action("Pesquisar (+3 ciência)",()=>update(commandFrontier(current,{type:"research"})),"secondary",
+    !canFrontierAction(s,{type:"research"})));
+  actions.append(action("Extrair (+3 recursos)",()=>update(commandFrontier(current,{type:"extract"})),"secondary",
+    !canFrontierAction(s,{type:"extract"})));
+  actions.append(action(s.paused?"Retomar operação":"Pausar operação",()=>update(commandFrontier(current,{type:s.paused?"resume":"pause"})),"secondary",
+    s.phase!=="playing"));
+  actions.append(el("p","intel","Explorar custa 1 energia. Colonizar custa 2 energia e 2 minérios. Pesquisar exige ao menos 2 colônias. Cada turno gera renda básica. O rival se expande sem usar rede ou dados pessoais."));
+}
+
 function render() {
   const config = GAMES[gameId];
   $("game-title").textContent = config.name;
@@ -256,11 +295,14 @@ function render() {
   $("squad-mode-wrap").hidden = gameId !== "patrulha-tatica";
   $("tower-mode-wrap").hidden = gameId !== "muralha-das-torres";
   $("tower-type-wrap").hidden = gameId !== "muralha-das-torres";
+  $("frontier-mode-wrap").hidden = gameId !== "fronteira-orbital";
+  $("frontier-action-wrap").hidden = gameId !== "fronteira-orbital";
   if (gameId === "frota-oculta") renderNaval();
   else if (gameId === "cartas-de-cerco") renderSiege();
   else if (gameId === "hex-conexao") renderHex();
   else if (gameId === "patrulha-tatica") renderSquad();
-  else renderTowers();
+  else if (gameId === "muralha-das-torres") renderTowers();
+  else renderFrontier();
   $("message").textContent = current.message;
   $("message").dataset.phase = current.phase;
   $("record").textContent = current.phase === "won"
@@ -276,6 +318,8 @@ $("difficulty").addEventListener("change", () => newGame());
 $("squad-mode").addEventListener("change", () => { if (gameId === "patrulha-tatica") newGame(); });
 $("tower-mode").addEventListener("change", () => { if (gameId === "muralha-das-torres") newGame(); });
 $("tower-type").addEventListener("change", () => { if (gameId === "muralha-das-torres") render(); });
+$("frontier-mode").addEventListener("change", () => { if (gameId === "fronteira-orbital") newGame(); });
+$("frontier-action").addEventListener("change", () => { if (gameId === "fronteira-orbital") render(); });
 $("restart").addEventListener("click", () => newGame());
 window.addEventListener("hashchange", () => {
   const id = location.hash.slice(1);

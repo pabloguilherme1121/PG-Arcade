@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b1624" />
-  <meta name="description" content="Frota Oculta, Cartas de Cerco, Hex Conexão, Patrulha Tática e Muralha das Torres: jogos originais de estratégia com regras próprias, dificuldades e partida completa dentro do PG Estratégia." />
+  <meta name="description" content="Frota Oculta, Cartas de Cerco, Hex Conexão, Patrulha Tática, Muralha das Torres e Fronteira Orbital: jogos originais de estratégia com regras próprias, dificuldades e partida completa dentro do PG Estratégia." />
   <link rel="canonical" href="https://pabloguilherme1121.github.io/PG-Arcade/estrategia/independentes/" />
   <link rel="icon" href="../icon.svg" type="image/svg+xml" />
   <link rel="manifest" href="./manifest.webmanifest" />
@@ -24,18 +24,19 @@
     <section class="intro">
       <div class="intro-copy">
         <p class="eyebrow">COLEÇÃO ORIGINAL · PRIMEIRO LOTE</p>
-        <h1>Cinco jogos. <em>Cinco formas de pensar.</em></h1>
+        <h1>Seis jogos. <em>Seis formas de pensar.</em></h1>
         <p>Regras independentes, adversários simulados e consequências reais para cada decisão. Esta coleção não confunde missões adicionais com novos jogos.</p>
       </div>
       <div class="intro-art" aria-hidden="true"><span>COMANDO TÁTICO</span><div class="art-grid"><i>◈</i><i>·</i><i>·</i><i>✦</i><i>·</i><i>·</i><i>♜</i><i>·</i><i>·</i><i>·</i><i>·</i><i>·</i><i>◇</i><i>·</i><i>·</i><i>·</i></div><small>ANALISE · EXECUTE · VENÇA</small></div>
     </section>
     <section class="selection" aria-label="Selecionar jogo">
-      <div class="section-header"><div><p class="eyebrow">JOGOS DE VERDADE</p><h2>Selecione seu comando</h2></div><span class="count">05 motores independentes</span></div>
+      <div class="section-header"><div><p class="eyebrow">JOGOS DE VERDADE</p><h2>Selecione seu comando</h2></div><span class="count">06 motores independentes</span></div>
       <div class="choices" role="group" aria-label="Jogo ativo">
         <button type="button" class="choice naval" data-select="frota-oculta" aria-pressed="true"><span class="choice-symbol" aria-hidden="true">◈</span><span><strong>Frota Oculta</strong><small>Dedução naval, sonar e defesa da base</small></span><span aria-hidden="true">↗</span></button>
         <button type="button" class="choice siege" data-select="cartas-de-cerco" aria-pressed="false"><span class="choice-symbol" aria-hidden="true">♜</span><span><strong>Cartas de Cerco</strong><small>Baralho, recursos e combate por turnos</small></span><span aria-hidden="true">↗</span></button>
         <button type="button" class="choice hex" data-select="hex-conexao" aria-pressed="false"><span class="choice-symbol" aria-hidden="true">⬡</span><span><strong>Hex Conexão</strong><small>Conecte territórios antes do adversário</small></span><span aria-hidden="true">↗</span></button>
         <button type="button" class="choice squad" data-select="patrulha-tatica" aria-pressed="false"><span class="choice-symbol" aria-hidden="true">♞</span><span><strong>Patrulha Tática</strong><small>Combate de esquadrão, extração e terreno</small></span><span aria-hidden="true">↗</span></button>
+        <button type="button" class="choice frontier" data-select="fronteira-orbital" aria-pressed="false"><span class="choice-symbol" aria-hidden="true">✧</span><span><strong>Fronteira Orbital</strong><small>Exploração, colônias, pesquisa e IA rival</small></span><span aria-hidden="true">↗</span></button>
         <button type="button" class="choice towers" data-select="muralha-das-torres" aria-pressed="false"><span class="choice-symbol" aria-hidden="true">♜</span><span><strong>Muralha das Torres</strong><small>Construa, aprimore e resista às ondas</small></span><span aria-hidden="true">↗</span></button>
       </div>
     </section>
@@ -45,6 +46,8 @@
         <label id="squad-mode-wrap" class="difficulty" hidden>Objetivo<select id="squad-mode" aria-label="Objetivo tático"><option value="combate">Eliminar drones</option><option value="extracao">Extrair sinal</option></select></label>
         <label id="tower-mode-wrap" class="difficulty" hidden>Operação<select id="tower-mode" aria-label="Modo das torres"><option value="defesa">Defesa</option><option value="maratona">Maratona</option></select></label>
         <label id="tower-type-wrap" class="difficulty" hidden>Construir<select id="tower-type" aria-label="Tipo de torre"><option value="laser">Canhão · 5 créditos</option><option value="gelo">Gelo · 4 créditos</option></select></label>
+        <label id="frontier-mode-wrap" class="difficulty" hidden>Missão<select id="frontier-mode" aria-label="Objetivo orbital"><option value="expansao">Expansão</option><option value="pesquisa">Pesquisa</option></select></label>
+        <label id="frontier-action-wrap" class="difficulty" hidden>Ordem<select id="frontier-action" aria-label="Ação orbital"><option value="scout">Explorar</option><option value="colonize">Colonizar</option></select></label>
         <label class="difficulty">Dificuldade<select id="difficulty" aria-label="Dificuldade">
           <option value="recruta">Recruta</option><option value="tatico">Tático</option><option value="veterano">Veterano</option>
         </select></label>
@@ -65,7 +68,7 @@
         </aside>
       </div>
     </section>
-    <section class="disclosure"><span aria-hidden="true">◎</span><div><h2>Sem duplicar jogos para aumentar o número.</h2><p>Estes são cinco novos títulos com regras próprias. Os 47 atalhos de estratégia do Arcade e as 150 missões em seis sistemas continuam em seus catálogos originais. Pontuações deste laboratório ficam apenas neste aparelho.</p></div><a href="../">Voltar ao PG Estratégia ↗</a></section>
+    <section class="disclosure"><span aria-hidden="true">◎</span><div><h2>Sem duplicar jogos para aumentar o número.</h2><p>Estes são seis novos títulos com regras próprias. Os 47 atalhos de estratégia do Arcade e as 150 missões em seis sistemas continuam em seus catálogos originais. Pontuações deste laboratório ficam apenas neste aparelho.</p></div><a href="../">Voltar ao PG Estratégia ↗</a></section>
   </main>
   <footer><span>PG TECH · JOGOS ORIGINAIS</span><a href="../">PG Estratégia</a><a href="../../">PG Arcade</a></footer>
 </div>
