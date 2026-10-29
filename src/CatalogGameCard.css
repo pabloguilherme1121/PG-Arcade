@@ -93,3 +93,19 @@ html[data-arcade-contrast="true"] .game-metadata::after {
     transform: none !important;
   }
 }
+
+
+/* The first four catalog cards render immediately. Later cards retain DOM,
+   accessible names, search and keyboard focus, while the browser may skip
+   offscreen layout/paint on large grids (101 games). */
+@supports (content-visibility: auto) {
+  .game-grid > .game-card:nth-child(n + 5) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto none auto 400px;
+  }
+  @media (max-width: 560px) {
+    .game-grid > .game-card:nth-child(n + 5) {
+      contain-intrinsic-size: auto none auto 420px;
+    }
+  }
+}
