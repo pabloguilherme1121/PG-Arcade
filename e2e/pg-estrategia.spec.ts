@@ -111,3 +111,26 @@ test('PG Estratégia: contraste é operável no celular sem ocultar a navegaçã
   await expect(page.getByRole('navigation',{name:'Entre os sites'}).getByRole('link',{name:/PG Arcade/})).toBeVisible();
   await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
+
+test('PG Estratégia preserva o foco do filtro de categoria no teclado', async ({page}) => {
+  await page.setViewportSize({width:320,height:720});
+  await page.goto('./estrategia/');
+  const defense = page.locator('#family-tabs button[data-filter="defesa"]');
+  await defense.focus();
+  await page.keyboard.press('Enter');
+  await expect(defense).toHaveAttribute('aria-pressed','true');
+  await expect(defense).toBeFocused();
+  await expect(page.locator('#result-count')).toHaveText('25 missões');
+  await page.keyboard.press('Tab');
+  await expect(page.locator('#family-tabs button[data-filter="logistica"]')).toBeFocused();
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('PG Estratégia não recria os filtros a cada busca no catálogo', async ({page}) => {
+  await page.goto('./estrategia/');
+  const defense = page.locator('#family-tabs button[data-filter="defesa"]');
+  await defense.evaluate((button) => { button.setAttribute('data-stable-test','true'); });
+  await page.getByRole('searchbox',{name:'Pesquisar missões'}).fill('Plano da cidade');
+  await expect(defense).toHaveAttribute('data-stable-test','true');
+  await expect(page.locator('#result-count')).toHaveText('25 missões');
+});
