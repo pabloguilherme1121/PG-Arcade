@@ -20,6 +20,12 @@ function gameMessage(){
  if(topic==='situacao')return current.status==='won'?'Meta alcançada: vitória. Reinicie para tentar outra dificuldade.':current.status==='lost'?'Prazo encerrado. Reinicie e tente outra sequência.':current.status==='paused'?'A oficina está pausada. Toque em Retomar produção.':`Dia ${current.day} de ${current.maxDays}. Energia ${current.energy}; calor ${current.heat}/${current.maxHeat}. Revise a cadeia de produção antes do próximo comando.`;
  return current.mode==='montagem'?'Objetivo: produzir dois autômatos. Mineração → fundição → engrenagens → montagem. Aqueça menos a fábrica com pausas de resfriamento.':'Objetivo: montar um autômato e guardar pelo menos 20 créditos. Venda matéria-prima extra e preserve o caixa.';
 }
+function restoreKeyboardFocus(type,byKeyboard){
+ if(!byKeyboard)return;
+ const enabled=[...$('actions').querySelectorAll('button:not(:disabled)')];
+ const target=enabled.find(button=>button.dataset.action===type)??enabled[0]??$('restart');
+ target.focus({preventScroll:true});
+}
 function render(){
  const s=current;
  $('metrics').replaceChildren(...[
@@ -30,10 +36,10 @@ function render(){
  $('notice').textContent=s.notice;$('notice').dataset.status=s.status;
  $('record').textContent='Melhor recorde local: '+(records[key()]||'—');
  $('actions').replaceChildren(...ACTIONS.map(([type,label])=>{
-  const b=document.createElement('button');b.type='button';b.textContent=type==='mine'&&s.upgraded?'Mineração: +4 minério':label;b.disabled=!canWorkshopAction(s,{type});b.setAttribute('aria-label',b.textContent);b.addEventListener('click',()=>{current=commandWorkshop(current,{type});record();render()});return b;
+  const b=document.createElement('button');b.type='button';b.textContent=type==='mine'&&s.upgraded?'Mineração: +4 minério':label;b.disabled=!canWorkshopAction(s,{type});b.dataset.action=type;b.setAttribute('aria-label',b.textContent);b.addEventListener('click',event=>{current=commandWorkshop(current,{type});record();render();restoreKeyboardFocus(type,event.detail===0)});return b;
  }));
  if(s.status==='playing'||s.status==='paused'){
-  const b=document.createElement('button');b.type='button';b.textContent=s.status==='paused'?'Retomar produção':'Pausar produção';b.addEventListener('click',()=>{current=commandWorkshop(current,{type:current.status==='playing'?'pause':'resume'});render()});$('actions').append(b);
+  const b=document.createElement('button');b.type='button';b.textContent=s.status==='paused'?'Retomar produção':'Pausar produção';b.dataset.action='toggle-pause';b.addEventListener('click',event=>{current=commandWorkshop(current,{type:current.status==='playing'?'pause':'resume'});render();restoreKeyboardFocus('toggle-pause',event.detail===0)});$('actions').append(b);
  }
  if($('pg-bot').open)$('bot-answer').textContent=gameMessage();
 }
