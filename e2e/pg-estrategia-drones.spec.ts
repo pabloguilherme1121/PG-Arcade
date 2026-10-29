@@ -45,11 +45,13 @@ test('Comando de Drones: vitória com sinais e recorde local',async({page})=>{
 });
 test('Comando de Drones: links, operação alternativa e retorno ao Arcade',async({page})=>{
  await page.goto('./estrategia/');
+ // Works for the local root (/) and for the GitHub Pages subpath (/PG-Arcade/).
+ const arcadeUrl = new URL('../', page.url()).href;
  await expect(page.locator('#jogos-originais a[href="./independentes/comando-de-drones/"]')).toBeVisible();
  await page.locator('#jogos-originais a[href="./independentes/comando-de-drones/"]').click();
  await expect(page).toHaveURL(/\/estrategia\/independentes\/comando-de-drones\/$/);
  await page.locator('#mode').selectOption('varredura');
  await expect(page.getByRole('gridcell',{name:/Linha 3, coluna 1: sinal/})).toBeVisible();
  await page.getByRole('navigation',{name:'Navegação entre projetos'}).getByRole('link',{name:'PG Arcade'}).click();
- await expect(page).toHaveURL(/PG-Arcade\/$/);
+ await expect(page).toHaveURL(arcadeUrl);
 });
