@@ -1,9 +1,10 @@
 /* The strategy microsite owns only its subpath. Network-first keeps new deploys
  * fresh and falls back to the most recently cached working version offline. */
-const CACHE = "pg-estrategia-shell-v2";
+const CACHE = "pg-estrategia-shell-v3";
 const FILES = [
   "./", "./index.html", "./style.css", "./app.js", "./catalog.mjs",
   "./core.mjs", "./icon.svg", "./manifest.webmanifest",
+  "../pg-bot.js", "../pg-bot.css",
 ];
 const SCOPE = new URL("./", self.registration.scope);
 const allowedAssets = new Set(FILES.map(path => new URL(path, SCOPE).pathname));
@@ -29,7 +30,7 @@ self.addEventListener("fetch", event => {
   const { request } = event;
   if (request.method !== "GET") return;
   const url = new URL(request.url);
-  if (url.origin !== self.location.origin || !url.pathname.startsWith(SCOPE.pathname)) return;
+  if (url.origin !== self.location.origin || (!url.pathname.startsWith(SCOPE.pathname) && !allowedAssets.has(url.pathname))) return;
   const navigation = request.mode === "navigate";
   if (!navigation && !allowedAssets.has(url.pathname)) return;
   event.respondWith((async () => {
