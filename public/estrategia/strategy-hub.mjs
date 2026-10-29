@@ -12,11 +12,18 @@ const idToGroup=new Map(Object.entries(STRATEGY_GROUPS).flatMap(([group,ids])=>i
 const legacyNames=new Map(EXISTING_STRATEGY);
 const simplify=text=>String(text??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 export const strategyGroupFor=id=>legacyNames.has(id)?idToGroup.get(id)??null:null;
-export function filterStrategyLibrary(term='',group='all'){
- if(group!=='all'&&!Object.hasOwn(STRATEGY_GROUPS,group))return [];
+export function readStrategyFavorites(raw){
+ let data;
+ try { data=typeof raw==='string'?JSON.parse(raw):raw; }catch {return [];}
+ if(!data||!Array.isArray(data.favorites))return [];
+ return [...new Set(data.favorites.filter(id=>typeof id==='string'&&legacyNames.has(id)))];
+}
+export function filterStrategyLibrary(term='',group='all',favoriteIds=[]){
+ if(group!=='all'&&group!=='favorites'&&!Object.hasOwn(STRATEGY_GROUPS,group))return [];
  const search=simplify(term);
+ const liked=group==='favorites'?new Set(favoriteIds):null;
  return EXISTING_STRATEGY
-   .filter(([id,name])=>(group==='all'||strategyGroupFor(id)===group)&&simplify(id+' '+name).includes(search))
+   .filter(([id,name])=>(group==='all'||group==='favorites'&&liked.has(id)||strategyGroupFor(id)===group)&&simplify(id+' '+name).includes(search))
    .map(([id,name])=>({id,name,group:strategyGroupFor(id)}));
 }
 export const arcadeGameUrl=id=>legacyNames.has(id)?'../#/jogar/'+encodeURIComponent(id):null;
@@ -65,8 +72,11 @@ export function initStrategyHub(){
    return link;
  });
  root.replaceChildren(...cards);
+ function readFavorites(){
+   try {return readStrategyFavorites(localStorage.getItem('pg-arcade-progress-v1'));}catch{return [];}
+ }
  function render(){
-   const visible=new Set(filterStrategyLibrary(search.value,select.value).map(g=>g.id));
+   const visible=new Set(filterStrategyLibrary(search.value,select.value,readFavorites()).map(g=>g.id));
    for(const item of cards)item.hidden=!visible.has(item.dataset.arcadeGame);
    count.textContent=visible.size+' '+(visible.size===1?'jogo encontrado':'jogos encontrados');
    empty.hidden=visible.size!==0;
@@ -99,13 +109,15 @@ export function initStrategyHub(){
  continueButton.addEventListener('click',()=>{if(lastId)open(lastId,continueButton);});
  search.addEventListener('input',render);
  select.addEventListener('change',render);
+ window.addEventListener('storage',event=>{if(event.key==='pg-arcade-progress-v1')render();});
  document.getElementById('classic-clear').addEventListener('click',()=>{
    search.value='';select.value='all';render();search.focus();
  });
  document.getElementById('classic-player-close').addEventListener('click',close);
  dialog.addEventListener('close',()=>{
    iframe.removeAttribute('src'); // Stops audio, timers and game loops on exit.
-   const target=launcher?.isConnected?launcher:search;
+   render(); // Favoriting within the iframe updates this library immediately.
+   const target=launcher?.isConnected&&!launcher.hidden?launcher:search;
    launcher=null;target.focus({preventScroll:true});
  });
  dialog.addEventListener('click',event=>{if(event.target===dialog)close();});
