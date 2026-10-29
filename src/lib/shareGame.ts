@@ -9,7 +9,7 @@ export async function shareGame(title: string, url: string, platform: SharePlatf
       return 'shared';
     } catch (error) {
       // Dismissing the system sheet must not silently copy anything.
-      if (error instanceof Error && error.name === 'AbortError') return 'cancelled';
+      if (error && typeof error === 'object' && 'name' in error && error.name === 'AbortError') return 'cancelled';
     }
   }
   try {
