@@ -1,6 +1,6 @@
 /* The strategy microsite owns only its subpath. Network-first keeps new deploys
  * fresh and falls back to the most recently cached working version offline. */
-const CACHE = "pg-estrategia-shell-v3";
+const CACHE = "pg-estrategia-shell-v4";
 const FILES = [
   "./", "./index.html", "./style.css", "./app.js", "./catalog.mjs",
   "./core.mjs", "./icon.svg", "./manifest.webmanifest",
@@ -20,7 +20,7 @@ self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys()
       .then(keys => Promise.all(
-        keys.filter(key => key.startsWith("pg-estrategia-") && key !== CACHE)
+        keys.filter(key => key.startsWith("pg-estrategia-shell-") && key !== CACHE)
           .map(key => caches.delete(key))
       ))
       .then(() => self.clients.claim())
@@ -31,6 +31,8 @@ self.addEventListener("fetch", event => {
   if (request.method !== "GET") return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin || !url.pathname.startsWith(SCOPE.pathname)) return;
+  // O laboratório tem service worker próprio. Não capturar suas páginas nem apagar seu cache.
+  if (url.pathname.startsWith(new URL("independentes/", SCOPE).pathname)) return;
   const navigation = request.mode === "navigate";
   if (!navigation && !allowedAssets.has(url.pathname)) return;
   event.respondWith((async () => {
