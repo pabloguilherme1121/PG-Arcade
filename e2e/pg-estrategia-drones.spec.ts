@@ -45,7 +45,7 @@ test('Comando de Drones: vitória com sinais e recorde local',async({page})=>{
 });
 test('Comando de Drones: links, operação alternativa e retorno ao Arcade',async({page})=>{
  await page.goto('./estrategia/');
- // Works for the local root (/) and for the GitHub Pages subpath (/PG-Arcade/).
+ // Works for local root and the /PG-Arcade/ GitHub Pages subpath.
  const arcadeUrl = new URL('../', page.url()).href;
  await expect(page.locator('#jogos-originais a[href="./independentes/comando-de-drones/"]')).toBeVisible();
  await page.locator('#jogos-originais a[href="./independentes/comando-de-drones/"]').click();
