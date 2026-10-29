@@ -1,0 +1,46 @@
+/* PG Bot: suporte local sem alterar o bundle React ou a arena. */
+#pgbot-open {
+  position:fixed;z-index:20;
+  right:max(12px,env(safe-area-inset-right));
+  bottom:max(12px,env(safe-area-inset-bottom));
+  display:flex;align-items:center;gap:8px;
+  min-height:54px;max-width:calc(100vw - 24px);
+  padding:4px 14px 4px 5px;border:1px solid #b9ff73;
+  border-radius:999px;background:#14283a;color:#f5ffe8;
+  box-shadow:0 10px 30px #0009;
+  font:800 13px/1.2 system-ui,sans-serif;cursor:pointer;
+}
+#pgbot-open img {width:44px;height:44px;object-fit:contain;flex:none}
+#pgbot-game {flex:1 1 140px;min-height:44px}
+#pgbot-dialog {
+  position:fixed;inset:0;margin:auto;
+  width:min(430px,calc(100vw - 20px));max-width:calc(100vw - 20px);
+  height:auto;max-height:calc(100dvh - 20px);
+  padding:0;border:1px solid #718faa;border-radius:18px;
+  background:#112239;color:#f1f8ff;overflow:auto;
+  box-shadow:0 20px 80px #000c;
+}
+#pgbot-dialog[open] {display:block}
+#pgbot-dialog::backdrop {background:#060d18c9}
+.pgbot-header {display:flex;align-items:center;gap:12px;padding:18px;border-bottom:1px solid #425b74}
+.pgbot-header img {width:52px;height:52px;object-fit:contain;flex:none}
+.pgbot-header h2 {font-size:20px;line-height:1.2;margin:0}
+.pgbot-header p {font-size:12px;color:#b6cce0;margin:4px 0 0}
+#pgbot-close {margin-left:auto;flex:none;min-width:44px;min-height:44px;border:1px solid #7991aa;border-radius:10px;background:#263c56;color:#fff;font-size:20px;cursor:pointer}
+.pgbot-log {height:min(245px,34dvh);overflow-y:auto;overscroll-behavior:contain;padding:15px 18px;display:flex;flex-direction:column;gap:8px}
+.pgbot-entry {max-width:94%;padding:11px 12px;border:1px solid #435b76;border-radius:12px;background:#1b334d;font-size:13px;line-height:1.5;margin:0;overflow-wrap:anywhere}
+.pgbot-entry[data-source="person"] {align-self:flex-end;background:#35563d;border-color:#729b72}
+.pgbot-questions {display:flex;flex-wrap:wrap;gap:7px;padding:10px 18px}
+.pgbot-questions button {border:1px solid #7595aa;color:#e7f5ff;background:#263d54;border-radius:10px;padding:8px 10px;min-height:44px;font:700 12px system-ui,sans-serif;cursor:pointer}
+#pgbot-form {display:flex;gap:8px;padding:9px 18px 18px}
+#pgbot-question {flex:1;min-width:0;min-height:48px;border:1px solid #7189a2;background:#0b1a2c;color:#fff;border-radius:10px;font:400 16px system-ui,sans-serif;padding:10px}
+#pgbot-form button {min-height:48px;border:0;border-radius:10px;background:#bbf678;color:#102417;padding:9px 13px;font:800 13px system-ui,sans-serif;cursor:pointer}
+#pgbot-dialog :is(button,input):focus-visible,#pgbot-open:focus-visible,#pgbot-game:focus-visible {outline:3px solid #d5ff8c;outline-offset:3px}
+@media(max-width:350px) {
+  #pgbot-open {padding-right:10px;font-size:12px}
+  .pgbot-header {gap:8px;padding:12px}
+  .pgbot-log {padding:12px}
+  .pgbot-questions {padding:8px 12px}
+  #pgbot-form {padding:8px 12px 14px}
+}
+@media(prefers-reduced-motion:reduce) {#pgbot-dialog *,#pgbot-open {animation:none!important;transition:none!important}}

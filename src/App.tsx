@@ -298,7 +298,9 @@ export default function App() {
   );
   const curated = recommended.map(id => games.find(g => g.id === id)!);
   const visited = games.filter(g => progress.visits[g.id]).sort((a,b) => (b.id === progress.last ? 1 : 0) - (a.id === progress.last ? 1 : 0) || (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)).slice(0,4);
-  const saved = games.filter(g => progress.favorites.includes(g.id)).slice(0,4);
+  // Reuse one indexed favorites lookup across the 150-card catalog render.
+  const favoriteIds = useMemo(() => new Set(progress.favorites), [progress.favorites]);
+  const saved = games.filter(g => favoriteIds.has(g.id)).slice(0,4);
   function renderCard(g: typeof games[number], contextual = false, priority = false) {
     return (
       <CatalogGameCard
@@ -306,7 +308,7 @@ export default function App() {
         game={g}
         contextual={contextual}
         priority={priority}
-        isFavorite={progress.favorites.includes(g.id)}
+        isFavorite={favoriteIds.has(g.id)}
         onOpen={rememberCatalog}
         onFavorite={favorite}
       />

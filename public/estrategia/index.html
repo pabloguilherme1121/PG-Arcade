@@ -8,6 +8,7 @@
   <meta name="description" content="PG Estratégia: 150 desafios de estratégia por turnos, em seis estilos de jogo, com progresso local, controles mobile e conexão com o PG Arcade." />
   <link rel="canonical" href="https://pabloguilherme1121.github.io/PG-Arcade/estrategia/" />
   <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="./pg-bot.css" />
   <link rel="icon" href="./icon.svg" type="image/svg+xml" />
   <link rel="manifest" href="./manifest.webmanifest" />
   <meta property="og:title" content="PG Estratégia | 150 desafios táticos" />
@@ -29,7 +30,7 @@
         <div class="hero-copy"><div class="eyebrow"><span class="eyebrow-dot"></span> NOVA COLEÇÃO · 6 SISTEMAS DE REGRAS</div>
           <h1 id="hero-title">Vença com a <em>próxima jogada.</em></h1>
           <p>Território, economia, defesa, logística e gestão. <strong>150 missões estratégicas</strong> distribuídas em seis modos reais de jogo. Escolha sua estratégia, avance e construa seu histórico.</p>
-          <div class="hero-actions"><a href="#catalogo" class="button primary">Explorar missões <span aria-hidden="true">↗</span></a><button id="surprise" class="button secondary" type="button">Missão surpresa ↗</button></div>
+          <div class="hero-actions"><a href="#catalogo" class="button primary">Explorar missões <span aria-hidden="true">↗</span></a><button id="surprise" class="button secondary" type="button">Missão surpresa ↗</button><button id="resume" class="button secondary" type="button" hidden>Continuar última missão</button></div>
           <div class="hero-disclaimer">150 cenários individuais, construídos sobre seis mecânicas compartilhadas. Sem cadastro ou compras.</div>
         </div>
         <div class="hero-art" aria-hidden="true"><div class="battle-head">SIMULAÇÃO TÁTICA <span>EST·150</span></div><div class="art-board"><span class="art-cell a1">◇</span><span class="art-cell a2"></span><span class="art-cell a3">♜</span><span class="art-cell a4"></span><span class="art-cell a5">✦</span><span class="art-cell a6"></span><span class="art-cell a7">◉</span><span class="art-cell a8"></span><span class="art-cell a9">✣</span><span class="art-cell a10"></span><span class="art-cell a11"></span><span class="art-cell a12">◈</span><span class="art-cell a13">◇</span><span class="art-cell a14"></span><span class="art-cell a15"></span><span class="art-cell a16">▣</span></div><div class="art-foot"><span>OPERAÇÃO EM CURSO</span><span>06 / 25</span></div></div>
@@ -46,8 +47,33 @@
     </main>
     <footer class="footer"><span>PG ESTRATÉGIA <small>· uma coleção do PG Arcade</small></span><div><a href="../">PG Arcade</a><a href="https://pabloguilherme1121.github.io/PG-portfolio/">PG Portfólio</a></div><small>Progresso salvo somente neste navegador; sem conta e sem sincronização entre dispositivos.</small></footer>
   </div>
-  <dialog id="arena" aria-label="Jogo de estratégia"><div class="arena-frame"><div class="arena-head"><button type="button" class="back" id="exit">← Catálogo</button><span id="arena-category">TÁTICA</span><button type="button" id="reset" class="back">↻ Reiniciar</button></div><div class="arena-intro"><div><small id="arena-id">EST-001</small><h2 id="arena-title">Missão</h2><p id="arena-guide"></p></div><div class="arena-turns">TURNO <strong id="arena-turn">0 / 12</strong></div></div><div class="arena-progress"><span id="arena-metric">Progresso</span><span id="arena-progress-text">0 / 1</span></div><div class="progress-track"><div id="arena-progress-bar"></div></div><div id="arena-stats" class="arena-stats"></div><div id="defense-visual" class="defense-visual" aria-label="Panorama das três pistas de defesa" hidden></div><div id="battlefield" class="battlefield" aria-label="Tabuleiro da missão"></div><div id="arena-actions" class="arena-actions"></div><p role="status" aria-live="polite" id="arena-message" class="arena-message"></p><div class="arena-footer"><button type="button" id="undo" class="button secondary">↶ Desfazer</button><button type="button" id="favorite" class="button secondary">☆ Favoritar</button><button type="button" id="next" class="button primary" hidden>Próximo desafio →</button></div></div></dialog>
+  <dialog id="arena" aria-label="Jogo de estratégia"><div class="arena-frame"><div class="arena-head"><button type="button" class="back" id="exit">← Catálogo</button><span id="arena-category">TÁTICA</span><button type="button" id="reset" class="back">↻ Reiniciar</button></div><div class="arena-intro"><div><small id="arena-id">EST-001</small><h2 id="arena-title">Missão</h2><p id="arena-guide"></p></div><div class="arena-turns">TURNO <strong id="arena-turn">0 / 12</strong></div></div><div class="arena-progress"><span id="arena-metric">Progresso</span><span id="arena-progress-text">0 / 1</span></div><div class="progress-track"><div id="arena-progress-bar"></div></div><div id="arena-stats" class="arena-stats"></div><div id="defense-visual" class="defense-visual" aria-label="Panorama das três pistas de defesa" hidden></div><div id="battlefield" class="battlefield" aria-label="Tabuleiro da missão"></div><div id="arena-actions" class="arena-actions"></div><p role="status" aria-live="polite" id="arena-message" class="arena-message"></p><div class="arena-footer"><button type="button" id="undo" class="button secondary">↶ Desfazer</button><button type="button" id="favorite" class="button secondary">☆ Favoritar</button><button type="button" id="pgbot-game" class="button secondary">Ajuda do PG Bot</button><button type="button" id="next" class="button primary" hidden>Próximo desafio →</button></div></div></dialog>
+  <button id="pgbot-open" type="button" aria-label="Abrir PG Bot">
+    <img src="../brand/pg-bot/mascot.webp" alt="" width="44" height="44" decoding="async" />
+    <span>PG Bot · Ajuda</span>
+  </button>
+  <dialog id="pgbot-dialog" aria-label="PG Bot, suporte do jogo">
+    <div class="pgbot-header">
+      <img src="../brand/pg-bot/mascot.webp" alt="" width="52" height="52" decoding="async" loading="lazy" />
+      <div><h2>PG Bot</h2><p>Ajuda local, sem IA conectada e sem cadastro</p></div>
+      <button id="pgbot-close" type="button" aria-label="Fechar PG Bot">×</button>
+    </div>
+    <div id="pgbot-log" class="pgbot-log" role="log" aria-live="polite" aria-label="Conversa com PG Bot">
+      <p class="pgbot-entry" data-source="bot">Posso explicar os controles, o progresso e a estratégia da missão atual.</p>
+    </div>
+    <div class="pgbot-questions">
+      <button type="button" data-pgbot-question="dica">Dica da missão</button>
+      <button type="button" data-pgbot-question="controles">Controles</button>
+      <button type="button" data-pgbot-question="progresso">Progresso</button>
+    </div>
+    <form id="pgbot-form">
+      <label for="pgbot-question" class="sr-only">Perguntar ao PG Bot</label>
+      <input id="pgbot-question" type="text" maxlength="160" autocomplete="off" placeholder="Escreva sua dúvida" />
+      <button type="submit">Perguntar</button>
+    </form>
+  </dialog>
   <div id="toast" role="status" class="toast" aria-live="polite"></div>
   <script src="./app.js" type="module"></script>
+  <script src="./pg-bot.mjs" type="module"></script>
 </body>
 </html>
