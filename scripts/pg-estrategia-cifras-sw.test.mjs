@@ -22,8 +22,8 @@ test('o catálogo não intercepta os filhos existentes nem Cifras Reais',()=>{
 test('Cifras Reais tem cache próprio de regras, interface e PG Bot',()=>{
  const scope='https://example.test/PG-Arcade/estrategia/independentes/cifras-reais/';
  const src=readFileSync('public/estrategia/independentes/cifras-reais/sw.js','utf8');
- assert.match(src,/"\.\/engine\.mjs"/);
- assert.match(src,/"\.\/pg-bot\.mjs"/);
+ assert.match(src,/[\x22\x27]\.\/engine\.mjs[\x22\x27]/);
+ assert.match(src,/[\x22\x27]\.\/pg-bot\.mjs[\x22\x27]/);
  const child=handler('public/estrategia/independentes/cifras-reais/sw.js',scope);
  for(const path of ['', 'index.html','engine.mjs','pg-bot.mjs','app.js']){
   let handled=false;
