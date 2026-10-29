@@ -17,7 +17,7 @@ export function answerPGbot(question, context = {}) {
   const text = normalize(question);
   if (!text) return 'Pergunte sobre dicas, controles, catálogo ou progresso. Posso ajudar sem sair do jogo.';
   if (/progres|salv|record|favorit|sincroniz|backup|dados/.test(text)) {
-    return 'Missões concluídas e favoritas ficam salvas somente neste navegador. Não há conta nem sincronização automática entre dispositivos. Limpar os dados do navegador pode apagar esse progresso.';
+    return 'Missões concluídas e favoritas ficam salvas somente neste navegador. Sem conta e sem sincronização automática entre dispositivos. Limpar os dados do navegador pode apagar esse progresso.';
   }
   if (/control|toqu|teclad|paus|reinic|desfaz|undo/.test(text)) {
     return 'Use toque ou clique nos botões habilitados; Tab e Enter permitem jogar com teclado. Na missão, use Desfazer para voltar uma jogada, Reiniciar para começar outra partida e Catálogo para sair.';
