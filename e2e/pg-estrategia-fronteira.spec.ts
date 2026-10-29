@@ -33,6 +33,10 @@ test("PG Estratégia: pesquisa e adversário mudam com dificuldade sem alterar l
  await page.getByLabel("Objetivo orbital").selectOption("pesquisa");
  await page.getByLabel("Dificuldade").selectOption("veterano");
  await expect(page.locator("#metrics")).toContainText("0 / 18");
+ await expect(page.getByRole("button",{name:"Pesquisar (+3 ciência)"})).toBeDisabled();
+ await page.locator('#board [data-frontier="1"]').click();
+ await page.getByLabel("Ação orbital").selectOption("colonize");
+ await page.locator('#board [data-frontier="1"]').click();
  for(let i=0;i<4;i++)await page.getByRole("button",{name:"Pesquisar (+3 ciência)"}).click();
  await expect(page.locator("#message")).toHaveAttribute("data-phase","won");
  await expect(page.locator("#record")).toContainText("Vitória");
