@@ -1,9 +1,11 @@
 import {createCouncil,commandCouncil,previewVote,FACTIONS,POLICIES} from "./engine.mjs";
+import {councilBotAnswer} from "./pg-bot.mjs";
 const $=id=>document.getElementById(id);
 const STORAGE="pg-conselho-de-reinos-records-v1";
 const params=new URLSearchParams(location.search);
 const fixedSeed=/^\d{1,8}$/.test(params.get("seed")||"")?Number(params.get("seed")):null;
 let state,records={};
+let botTopic=null;
 try{const saved=JSON.parse(localStorage.getItem(STORAGE)||"{}");if(saved&&typeof saved==="object"&&!Array.isArray(saved)){
  records=Object.fromEntries(Object.entries(saved).filter(([k,v])=>/^(tratados|crise):(recruta|tatico|veterano)$/.test(k)&&Number.isSafeInteger(v)&&v>=0&&v<1000000));
 }}catch{/* keep in-memory best score */}
@@ -66,12 +68,19 @@ function render(){
  });
  $("wait").disabled=!active;
  $("record").textContent="Recorde local ("+state.mode+" · "+state.difficulty+"): "+(records[key()]||0)+" pontos.";
+ if(botTopic)$("bot-response").textContent=councilBotAnswer(botTopic,state);
 }
 $("level").addEventListener("change",newGame);
 $("objective-mode").addEventListener("change",newGame);
 $("restart").addEventListener("click",newGame);
 $("pause").addEventListener("click",()=>apply({type:state.status==="paused"?"resume":"pause"}));
 $("wait").addEventListener("click",()=>apply({type:"wait"}));
+$("pg-bot").addEventListener("click",event=>{
+ const button=event.target.closest("button[data-bot-topic]");
+ if(!button)return;
+ botTopic=button.dataset.botTopic;
+ $("bot-response").textContent=councilBotAnswer(botTopic,state);
+});
 newGame();
 if("serviceWorker"in navigator&&location.protocol==="https:")
  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{}));
