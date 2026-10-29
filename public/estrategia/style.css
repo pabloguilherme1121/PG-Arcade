@@ -142,3 +142,9 @@
  .classic-player-note{font-size:11px}
  .classic-filters .button{width:100%}
 }
+
+.classic-player-bot{min-width:0;border:1px solid #416c65;background:#15342f;border-radius:10px}
+.classic-player-bot summary{display:flex;align-items:center;gap:9px;min-height:44px;padding:7px 12px;cursor:pointer;font-size:13px;font-weight:800;color:var(--green)}
+.classic-player-bot summary img{width:25px;height:29px;object-fit:contain}
+.classic-player-bot summary:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+.classic-player-bot p{margin:0;padding:4px 12px 12px;font-size:12px;line-height:1.5;color:#e0f2df}
