@@ -31,6 +31,8 @@ self.addEventListener("fetch", event => {
   if (request.method !== "GET") return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin || !url.pathname.startsWith(SCOPE.pathname)) return;
+  // Independent games own distinct navigation and offline caches.
+  if (url.pathname.startsWith(new URL("independentes/", SCOPE).pathname)) return;
   const navigation = request.mode === "navigate";
   if (!navigation && !allowedAssets.has(url.pathname)) return;
   event.respondWith((async () => {
