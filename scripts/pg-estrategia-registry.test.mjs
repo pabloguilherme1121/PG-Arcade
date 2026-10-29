@@ -8,19 +8,19 @@ const shared=read('public/estrategia/independentes/app.js');
 const ids=[
  'frota-oculta','cartas-de-cerco','hex-conexao','damas-taticas','patrulha-tatica',
  'refugio-do-inverno','fronteira-orbital','muralha-das-torres',
- 'conselho-de-reinos','mercado-de-rotas','reversi-tatico','cifras-reais'
+ 'conselho-de-reinos','mercado-de-rotas','reversi-tatico','cifras-reais','comando-de-drones'
 ];
 const embedded=ids.slice(0,8),subsites=ids.slice(8);
-test('catálogo anuncia exatamente 12 motores, não 150 missões como jogos',()=>{
+test('catálogo anuncia exatamente 13 motores, não 150 missões como jogos',()=>{
  const buttons=[...index.matchAll(/data-select="([^"]+)"/g)].map(m=>m[1]);
  const children=[...index.matchAll(/class="choice[^"]*" href="\.\/([^/]+)\/"/g)].map(m=>m[1]);
  assert.equal(new Set(ids).size,ids.length);
  assert.deepEqual(new Set([...buttons,...children]),new Set(ids));
  assert.equal(buttons.length,8);
- assert.equal(children.length,4);
- assert.match(index,/12 motores independentes/);
- assert.match(index,/Doze jogos/);
- assert.match(portal,/Doze jogos candidatos/);
+ assert.equal(children.length,5);
+ assert.match(index,/13 motores independentes/);
+ assert.match(index,/Treze jogos/);
+ assert.match(portal,/Treze jogos candidatos/);
 });
 test('cada jogo possui um motor e um caminho único e acessível desde o portal',()=>{
  for(const id of embedded){
@@ -31,7 +31,7 @@ test('cada jogo possui um motor e um caminho único e acessível desde o portal'
  for(const id of subsites){
   for(const path of ['index.html','app.js','style.css','sw.js'])
    assert.ok(existsSync('public/estrategia/independentes/'+id+'/'+path),id+'/'+path);
-  assert.ok(existsSync('public/estrategia/independentes/'+id+'/'+(id==='conselho-de-reinos'||id==='reversi-tatico'||id==='cifras-reais'?'engine.mjs':'game.mjs')),id);
+  assert.ok(existsSync('public/estrategia/independentes/'+id+'/'+(id==='conselho-de-reinos'||id==='reversi-tatico'||id==='cifras-reais'||id==='comando-de-drones'?'engine.mjs':'game.mjs')),id);
   assert.match(index,new RegExp('href="\\./'+id+'/"'));
   assert.ok(portal.includes('./independentes/'+id+'/'),id);
  }
