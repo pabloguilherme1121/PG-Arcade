@@ -21,3 +21,15 @@ test("Mercado tem SW próprio sem ser servido pelo catálogo de outros jogos",()
  child({request:{method:"GET",url:root+"mercado-de-rotas/game.mjs",mode:"cors"},respondWith(){childHandled=true;}});
  assert.equal(childHandled,true);
 });
+
+
+test("PG Bot no Mercado de Rotas mantém módulo no cache isolado e versão atual",()=>{
+ const sw=readFileSync("public/estrategia/independentes/mercado-de-rotas/sw.js","utf8");
+ assert.match(sw,/pg-estrategia-mercado-v2/);
+ assert.match(sw,/"\.\/pg-bot\.mjs"/);
+ const root="https://example.test/PG-Arcade/estrategia/independentes/mercado-de-rotas/";
+ const handlerFn=handler("public/estrategia/independentes/mercado-de-rotas/sw.js",root);
+ let handled=false;
+ handlerFn({request:{method:"GET",url:root+"pg-bot.mjs",mode:"cors"},respondWith(){handled=true;}});
+ assert.equal(handled,true);
+});
