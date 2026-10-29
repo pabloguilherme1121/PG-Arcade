@@ -111,3 +111,12 @@ test("SW dos jogos independentes preserva motor de torres somente no seu escopo"
   assert.equal(await (await child.request(towers)).text(),"novo-codigo");
   assert.equal(await child.request(origin+"estrategia/engine.mjs"),null);
 });
+
+test("SW dos jogos independentes guarda motor orbital sem invadir a campanha",async()=>{
+ const sw=simulate("public/estrategia/independentes/sw.js",origin+"estrategia/independentes/");
+ const url=origin+"estrategia/independentes/frontier.mjs";
+ assert.equal(await (await sw.request(url)).text(),"novo-codigo");
+ sw.setOnline(false);
+ assert.equal(await (await sw.request(url)).text(),"novo-codigo");
+ assert.equal(await sw.request(origin+"estrategia/app.js"),null);
+});
