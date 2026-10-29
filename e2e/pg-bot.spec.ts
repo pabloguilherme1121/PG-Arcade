@@ -41,3 +41,19 @@ test("PG Bot fica acessível durante a missão modal no PG Estratégia", async (
   await page.locator("#exit").click();
   await expect(page.locator("body > .pg-bot")).toHaveCount(1);
 });
+
+test("PG Bot não cobre os comandos touch durante tela cheia do Snake", async ({page}) => {
+ await page.setViewportSize({width:320,height:740});
+ await page.addInitScript(() => {
+  Element.prototype.requestFullscreen=()=>Promise.reject(new Error("viewport fallback"));
+ });
+ await page.goto("./#/jogar/snake");
+ await expect(page.locator(".snake-board")).toBeVisible();
+ await page.getByRole("button",{name:"Tela cheia",exact:true}).click();
+ await expect(page.locator(".player")).toHaveAttribute("data-immersive","true");
+ await expect(page.locator("#pg-bot-launcher")).toBeHidden();
+ await page.setViewportSize({width:844,height:390});
+ await expect(page.getByRole("button",{name:"Mover para direita"})).toBeInViewport({ratio:1});
+ await page.getByRole("button",{name:"Sair da tela cheia",exact:true}).click();
+ await expect(page.locator("#pg-bot-launcher")).toBeVisible();
+});
