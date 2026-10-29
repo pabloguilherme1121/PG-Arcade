@@ -1,10 +1,10 @@
 /* The strategy microsite owns only its subpath. Network-first keeps new deploys
  * fresh and falls back to the most recently cached working version offline. */
-const CACHE = "pg-estrategia-shell-v3";
+const CACHE = "pg-estrategia-shell-v4";
 const FILES = [
   "./", "./index.html", "./style.css", "./app.js", "./catalog.mjs",
   "./core.mjs", "./icon.svg", "./manifest.webmanifest",
-  "./pg-bot.css", "./pg-bot-help.mjs",
+  "./pg-bot.css", "./pg-bot-help.mjs", "./strategy-hub.mjs",
 ];
 const SCOPE = new URL("./", self.registration.scope);
 const allowedAssets = new Set(FILES.map(path => new URL(path, SCOPE).pathname));
