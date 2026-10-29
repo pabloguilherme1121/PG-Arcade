@@ -52,3 +52,15 @@ h1,h2,h3,h4,p{margin-block:0}h1,h2,h3{letter-spacing:-.04em}h1{font-size:clamp(3
 .squad-summary{font-size:13px;color:var(--muted);line-height:1.5}
 @media(max-width:350px){.squad-board{gap:4px}.squad-cell{font-size:19px;border-radius:6px}}
 @media(prefers-reduced-motion:reduce){.squad-cell{transition:none}}
+
+/* Muralha das Torres: seis colunas e alvos de toque >= 44px, sem overflow externo. */
+#tower-mode-wrap[hidden],#tower-type-wrap[hidden]{display:none!important}
+.choice.towers .choice-symbol{color:#ffdba2;background:#594b37}
+.tower-board{display:grid;grid-template-columns:repeat(6,minmax(44px,1fr));gap:3px;max-width:410px;margin:0 auto}
+.tower-cell{aspect-ratio:1;min-width:44px;min-height:44px;background:#173246;color:#b9d9d9;border:1px solid #426273;border-radius:8px;font-size:20px;font-weight:800}
+.tower-cell[data-kind="laser"]{background:#6c4b39;color:#ffe9ab;border-color:#efbf7f;opacity:1}
+.tower-cell[data-kind="gelo"]{background:#295b69;color:#c6f6ff;border-color:#79ddec;opacity:1}
+.tower-cell[data-kind="free"]{background:#263f37;color:#b8e6ae}
+.tower-cell:disabled{opacity:1}
+.tower-cell:hover:not(:disabled){border-color:var(--lime);filter:brightness(1.2)}
+@media(max-width:350px){.tower-board{gap:2px}.tower-cell{border-radius:5px}}
