@@ -55,6 +55,20 @@
     </div>
     <div class="actions"><button id="buy" type="button">Comprar</button><button id="sell" type="button">Vender</button><button id="refuel" type="button">Reabastecer · 5</button><button id="upgrade" type="button">Ampliar carga · 10</button><button id="rest" type="button">Esperar um dia</button></div>
     <p id="record" class="hint"></p>
+
+    <details class="pg-bot" id="pg-bot">
+      <summary>PG Bot · Ajuda no Mercado de Rotas</summary>
+      <div class="bot-intro">
+        <img src="../../../brand/pg-bot/mascot.webp" width="52" height="61" alt="" loading="lazy" decoding="async" />
+        <div><strong>PG Bot</strong><small>Dicas prontas e locais. Não é IA conectada e não envia suas perguntas.</small></div>
+      </div>
+      <div class="bot-topics" role="group" aria-label="Assuntos do PG Bot">
+        <button type="button" data-market-topic="objetivo" aria-pressed="false">Objetivo</button>
+        <button type="button" data-market-topic="controles" aria-pressed="false">Controles</button>
+        <button type="button" data-market-topic="situacao" aria-pressed="false">Minha situação</button>
+      </div>
+      <p id="market-bot-answer" role="status" aria-live="polite" class="bot-answer">Escolha um assunto para receber orientação.</p>
+    </details>
    </section>
   </div>
   <section class="rules" aria-labelledby="rules-title"><h2 id="rules-title">Como vencer</h2><p><strong>Contratos:</strong> entregue 2 grãos na Metrópole e 1 metal no Porto Norte. <strong>Capital:</strong> alcance o valor indicado no painel antes do último dia. Use as três dificuldades, pause, retome e reinicie quando quiser.</p></section>

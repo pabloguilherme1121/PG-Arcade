@@ -1,6 +1,6 @@
-const CACHE="pg-estrategia-mercado-v1";
+const CACHE="pg-estrategia-mercado-v2";
 const ROOT=new URL("./",self.registration.scope);
-const FILES=["./","./index.html","./app.js","./game.mjs","./style.css"];
+const FILES=["./","./index.html","./app.js","./game.mjs","./pg-bot.mjs","./style.css"];
 const ASSETS=new Set(FILES.map(file=>new URL(file,ROOT).pathname));
 self.addEventListener("install",event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting()));

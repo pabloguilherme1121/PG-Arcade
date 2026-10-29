@@ -37,3 +37,25 @@ test("Mercado de Rotas: modos, pausa, teclado e derrota por prazo",async ({page}
  await expect(page.locator("#rest")).toBeDisabled();
  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
+
+
+test("PG Bot Mercado de Rotas: dica contextual em 320 e 390 px, teclado e pausa", async({page})=>{
+ for(const width of [320,390]){
+  await page.setViewportSize({width,height:780});
+  await page.goto("./estrategia/independentes/mercado-de-rotas/");
+  const bot=page.locator("#pg-bot");
+  await bot.locator("summary").click();
+  await bot.locator('[data-market-topic="objetivo"]').click();
+  await expect(page.locator("#market-bot-answer")).toContainText("2 grãos");
+  await bot.locator('[data-market-topic="situacao"]').click();
+  await expect(page.locator("#market-bot-answer")).toContainText("Dia 0");
+  await page.locator("#buy").tap();
+  await expect(page.locator("#market-bot-answer")).toContainText("Dia 1");
+  await page.locator("#pause").click();
+  await expect(page.locator("#market-bot-answer")).toContainText("pausada");
+  await bot.locator('[data-market-topic="controles"]').focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#market-bot-answer")).toContainText("Tab e Enter");
+  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ }
+});
