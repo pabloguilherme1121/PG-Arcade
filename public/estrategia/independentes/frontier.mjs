@@ -37,7 +37,7 @@ export function canFrontierAction(s,a){
  if(a.type==="pause")return !s.paused;
  if(a.type==="resume")return s.paused;
  if(s.paused)return false;
- if(a.type==="research")return s.ore>=2&&s.energy>=2;
+ if(a.type==="research")return s.ore>=2&&s.energy>=2&&s.owners.filter(o=>o===1).length>=2;
  if(a.type==="extract")return s.ore<30||s.energy<30;
  if(!validCell(a.cell)||s.owners[a.cell]!==0)return false;
  if(a.type==="scout")return !s.visible[a.cell]&&s.energy>=1&&adjacent(a.cell).some(c=>s.visible[c]);
