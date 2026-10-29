@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {EXISTING_STRATEGY} from '../public/estrategia/catalog.mjs';
-import {STRATEGY_GROUPS, strategyGroupFor, filterStrategyLibrary, strategyLaunchUrl, arcadeGameUrl, strategyBotTip} from '../public/estrategia/strategy-hub.mjs';
+import {STRATEGY_GROUPS, strategyGroupFor, filterStrategyLibrary, strategyLaunchUrl, arcadeGameUrl, readStrategyFavorites, strategyBotTip} from '../public/estrategia/strategy-hub.mjs';
 
 test('biblioteca preserva os 47 jogos históricos com IDs estáveis e grupos sem duplicação',()=>{
  assert.equal(EXISTING_STRATEGY.length,47);
@@ -69,4 +69,22 @@ test('PG Bot oferece ajuda local relevante para cada jogo e recusa IDs falsos',(
   assert.doesNotMatch(answer,/<\/?[a-z]/i,id);
  }
  assert.equal(strategyBotTip('__proto__'),null);
+});
+
+
+test('favoritos do Arcade acompanham a biblioteca sem criar outro armazenamento',()=>{
+ const raw=JSON.stringify({favorites:['xadrez','domino','2048','nao-existe','xadrez']});
+ assert.deepEqual(readStrategyFavorites(raw),['xadrez','domino','2048']);
+ assert.deepEqual(filterStrategyLibrary('', 'favorites',readStrategyFavorites(raw)).map(g=>g.id),
+    ['xadrez','domino','2048']);
+ assert.deepEqual(filterStrategyLibrary('xadrez','favorites',readStrategyFavorites(raw)).map(g=>g.id),['xadrez']);
+ assert.equal(filterStrategyLibrary('domino','favorites',[]).length,0);
+ assert.equal(filterStrategyLibrary('','all',readStrategyFavorites(raw)).length,47);
+});
+test('favoritos inválidos, corrompidos ou de jogos fora da estratégia são ignorados',()=>{
+ assert.deepEqual(readStrategyFavorites(null),[]);
+ assert.deepEqual(readStrategyFavorites('{bad'),[]);
+ assert.deepEqual(readStrategyFavorites(JSON.stringify({favorites:'xadrez'})),[]);
+ assert.deepEqual(readStrategyFavorites(JSON.stringify({favorites:['snake','xadrez',{},null,'__proto__','xadrez']})),['xadrez']);
+ assert.equal(filterStrategyLibrary('','favorites').length,0);
 });
