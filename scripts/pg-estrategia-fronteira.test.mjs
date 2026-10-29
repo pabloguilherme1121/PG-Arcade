@@ -37,9 +37,12 @@ test("Fronteira Orbital: vitória por expansão exige colônias adjacentes reais
 });
 test("Fronteira Orbital: vitória por pesquisa sem disfarçar expansão",()=>{
  let s=createFrontier({mission:"pesquisa",seed:2});
+ assert.equal(commandFrontier(s,{type:"research"}),s,"pesquisa exige infraestrutura");
+ s=commandFrontier(s,{type:"scout",cell:1});
+ s=commandFrontier(s,{type:"colonize",cell:1});
  for(let i=0;i<4;i++)s=commandFrontier(s,{type:"research"});
  assert.equal(s.phase,"won");assert.ok(s.science>=12);
- assert.equal(s.owners.filter(o=>o===1).length,1);
+ assert.equal(s.owners.filter(o=>o===1).length,2);
 });
 test("Fronteira Orbital: rival conquista territórios, derrota e pausa persistentes",()=>{
  let s=createFrontier({difficulty:"veterano",mission:"expansao",seed:44});
@@ -61,7 +64,10 @@ test("Fronteira Orbital: invalidez, paredes e energia finita não corrompem o es
  for(const action of [null,{}, {type:"scout",cell:15},{type:"scout",cell:2},{type:"scout",cell:-1},{type:"scout",cell:"1"},{type:"colonize",cell:1},{type:"invalido",cell:5},{type:"colonize",cell:15}].slice(0,8)){
   assert.equal(commandFrontier(s,action),s);
  }
- const research=commandFrontier(s,{type:"research"});
- assert.ok(research.science>s.science);
- assert.notDeepEqual(research,s);
+ assert.equal(commandFrontier(s,{type:"research"}),s);
+ const scout=commandFrontier(s,{type:"scout",cell:1});
+ const colony=commandFrontier(scout,{type:"colonize",cell:1});
+ const research=commandFrontier(colony,{type:"research"});
+ assert.ok(research.science>colony.science);
+ assert.notDeepEqual(research,colony);
 });
