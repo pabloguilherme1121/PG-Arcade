@@ -60,6 +60,8 @@ test('Cifras Reais tem derrota por limite e nenhum comando após finalização',
   s=submitCipherGuess(s,candidate);
  }
  assert.equal(s.status,'lost');
+ assert.match(s.notice,/A sequência era:/);
+ for(const token of s.secret)assert.match(s.notice,new RegExp(token));
  assert.equal(s.history.length,s.maxAttempts);
  assert.strictEqual(revealCipherHint(s),s);
 });
