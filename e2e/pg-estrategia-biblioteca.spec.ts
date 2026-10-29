@@ -88,11 +88,12 @@ test('PG Estratégia: continuar último jogo abre o título salvo sem cadastro',
 
 
 test('Meus favoritos mostra apenas jogos de estratégia salvos no Arcade, com atualização após jogar',async({page})=>{
- await page.addInitScript(()=>{
-  localStorage.setItem('pg-arcade-progress-v1',JSON.stringify({favorites:['xadrez','snake','domino'],visits:{},records:{},last:null}));
- });
  await page.setViewportSize({width:320,height:740});
  await page.goto('./estrategia/');
+ // Set up state once in the top-level document. addInitScript would also run
+ // in the game iframe (including about:blank on close) and overwrite favorites.
+ await page.evaluate(()=>localStorage.setItem('pg-arcade-progress-v1',JSON.stringify({favorites:['xadrez','snake','domino'],visits:{},records:{},last:null})));
+ await page.reload();
  const library=page.locator('#classic-filter');
  await library.selectOption('favorites');
  await expect(page.locator('#classic-count')).toHaveText('2 jogos encontrados');
