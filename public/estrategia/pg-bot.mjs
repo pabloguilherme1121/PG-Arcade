@@ -52,6 +52,11 @@ if (dialog) {
     input.value = '';
     input.focus();
   });
+  // Acesso explícito pelo rodapé do Arcade abre o suporte imediatamente.
+  if (new URLSearchParams(location.search).get('ajuda') === '1') {
+    lastTrigger = $('pgbot-open');
+    dialog.showModal();
+  }
   dialog.querySelectorAll('[data-pgbot-question]').forEach(button => {
     button.addEventListener('click', () => {
       ask(button.dataset.pgbotQuestion);
