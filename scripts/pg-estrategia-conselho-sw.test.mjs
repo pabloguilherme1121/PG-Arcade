@@ -19,6 +19,9 @@ test("Conselho possui shell isolado do catálogo e do Mercado de Rotas",()=>{
  let handled=false;
  child({request:{method:"GET",url:root+"conselho-de-reinos/engine.mjs",mode:"cors"},respondWith(){handled=true;}});
  assert.equal(handled,true);
+ let botAvailable=false;
+ child({request:{method:"GET",url:root+"conselho-de-reinos/pg-bot.mjs",mode:"cors"},respondWith(){botAvailable=true;}});
+ assert.equal(botAvailable,true,"ajuda do PG Bot precisa pertencer ao cache do Conselho");
  let outside=false;
  child({request:{method:"GET",url:root+"mercado-de-rotas/",mode:"navigate"},respondWith(){outside=true;}});
  assert.equal(outside,false);
