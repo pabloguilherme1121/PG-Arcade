@@ -5,12 +5,14 @@ import { createSquad, commandSquad, legalSquadMoves } from "./squad.mjs";
 import { createTowers, commandTowers, TOWER_TYPES, TOWER_PATH } from "./towers.mjs";
 import { createFrontier, commandFrontier, canFrontierAction } from "./frontier.mjs";
 import { createWinter, commandWinter, canWinterAction } from "./winter.mjs";
+import { createDraughts, commandDraughts, legalDraughtsMoves } from "./draughts.mjs";
 
 const $ = id => document.getElementById(id);
 const STORAGE = "pg-strategy-original-records-v1";
 const GAMES = {
   "frota-oculta": { name: "Frota Oculta", intro: "Localize a frota inimiga num mapa 6×6. Cada disparo consome um turno; use o sonar para deduzir a posição das embarcações.", instructions: "Toque em um quadrante para atacar. Sonar revela o número de navios numa linha, mas gasta um turno. Reparos preservam sua base sob pressão.", init: createNaval },
   "cartas-de-cerco": { name: "Cartas de Cerco", intro: "Monte sua ofensiva com as cartas disponíveis, distribua energia e sobreviva aos ataques de uma fortaleza inimiga.", instructions: "Jogue cartas de sua mão gastando energia. Fortificar bloqueia o próximo ataque; Aríete causa dano elevado. Encerrar o turno permite que o rival ataque.", init: createSiege },
+  "damas-taticas": { name: "Damas Táticas", intro: "Partida de damas 8×8 contra o computador, com captura obrigatória, múltiplos saltos e promoção a dama.", instructions: "Toque numa peça clara e depois na casa destacada para mover. Se houver captura, ela é obrigatória. A dama pode andar nas diagonais nos dois sentidos.", init: createDraughts },
   "hex-conexao": { name: "Hex Conexão", intro: "Conecte de cima até embaixo num tabuleiro hexagonal de 49 casas. O rival tenta unir as bordas esquerda e direita.", instructions: "Selecione uma casa livre para colocar uma pedra. O adversário responde automaticamente. Você ganha ao criar uma cadeia contínua entre as bordas norte e sul.", init: createHex },
   "refugio-do-inverno": { name: "Refúgio do Inverno", intro: "Gerencie um abrigo durante nevascas, com alimentos, lenha, aquecimento e moral dos moradores.", instructions: "Cada ordem consome um dia. Alimente a comunidade e mantenha o aquecimento; escolha sobreviver até o último dia ou construir três sinais para evacuar após cinco dias.", init: createWinter },
   "fronteira-orbital": { name: "Fronteira Orbital", intro: "Explore um setor 4×4 sob névoa, colonize planetas vizinhos, pesquise tecnologias e dispute o mapa com uma facção rival.", instructions: "Selecione Explorar e toque num setor vizinho revelável. Depois use Colonizar numa área explorada e conectada à sua base. Pesquisa exige pelo menos duas colônias e avança ciência; Extrair repõe recursos. A facção rival cresce a cada rodada, conforme a dificuldade.", init: createFrontier },
@@ -19,12 +21,13 @@ const GAMES = {
 };
 let gameId = Object.hasOwn(GAMES, location.hash.slice(1)) ? location.hash.slice(1) : "frota-oculta";
 let current;
+let selectedDraughts = null;
 let records = {};
 try {
   const raw = JSON.parse(localStorage.getItem(STORAGE) || "{}");
   if (raw && typeof raw === "object" && !Array.isArray(raw)) {
     records = Object.fromEntries(Object.entries(raw).filter(([key, value]) =>
-      /^(frota-oculta|cartas-de-cerco|hex-conexao):(recruta|tatico|veterano)$|^patrulha-tatica:(recruta|tatico|veterano):(combate|extracao)$|^muralha-das-torres:(recruta|tatico|veterano):(defesa|maratona)$|^fronteira-orbital:(recruta|tatico|veterano):(expansao|pesquisa)$|^refugio-do-inverno:(recruta|tatico|veterano):(resistencia|evacuacao)$/.test(key) &&
+      /^(frota-oculta|cartas-de-cerco|hex-conexao):(recruta|tatico|veterano)$|^patrulha-tatica:(recruta|tatico|veterano):(combate|extracao)$|^muralha-das-torres:(recruta|tatico|veterano):(defesa|maratona)$|^fronteira-orbital:(recruta|tatico|veterano):(expansao|pesquisa)$|^refugio-do-inverno:(recruta|tatico|veterano):(resistencia|evacuacao)$|^damas-taticas:(recruta|tatico|veterano)$/.test(key) &&
       Number.isSafeInteger(value) && value >= 0 && value < 100000));
   }
 } catch { records = {}; }
@@ -47,6 +50,7 @@ function number(seed) {
 function newGame(id = gameId) {
   if (!Object.hasOwn(GAMES,id)) return;
   gameId = id;
+  selectedDraughts = null;
   const mode = $("difficulty").value;
   const seed = number(Math.floor(Math.random() * 0xffffffff));
   current = GAMES[id].init({ difficulty: mode, seed, mission: id === "muralha-das-torres" ? $("tower-mode").value : id === "fronteira-orbital" ? $("frontier-mode").value : id === "refugio-do-inverno" ? $("winter-mode").value : $("squad-mode").value });
@@ -182,6 +186,46 @@ function renderHex() {
   actions.replaceChildren(el("h4","","Regras Hex"));
   actions.append(el("p","intel",
     "Cada casa aceita uma pedra. As seis vizinhas hexagonais formam as conexões. Não é possível mover uma pedra já colocada. Recruta, Tático e Veterano usam estratégias rivais diferentes."));
+}
+function renderDraughts() {
+  const s = current, board = $("board"), actions = $("actions");
+  const legal = legalDraughtsMoves(s.board, 1, s.chainFrom);
+  const selected = s.chainFrom ?? selectedDraughts;
+  const targets = legal.filter(move => move.from === selected);
+  board.className = "board draughts-board";
+  board.setAttribute("aria-label", "Damas Táticas: tabuleiro de oito linhas e oito colunas");
+  board.replaceChildren();
+  for(let cell = 0; cell < 64; cell++){
+    const piece = s.board[cell], own = piece > 0;
+    const from = legal.some(move => move.from === cell);
+    const target = targets.some(move => move.to === cell);
+    const row = Math.floor(cell / 8) + 1, col = cell % 8 + 1;
+    const symbol = piece === 1 ? "●" : piece === 2 ? "♔" : piece === -1 ? "●" : piece === -2 ? "♚" : target ? "·" : "";
+    const button = action(symbol, () => {
+      if(from && !target) { selectedDraughts = cell; render(); return; }
+      if(target) { selectedDraughts = null; update(commandDraughts(current, {type:"move",from:selected,to:cell})); }
+    }, "draughts-cell", s.paused || s.phase !== "playing" || !(from || target));
+    button.dataset.cell = String(cell);
+    button.dataset.piece = String(piece);
+    button.dataset.tone = (row + col) % 2 === 1 ? "dark" : "light";
+    button.dataset.selected = String(cell === selected);
+    button.dataset.target = String(target);
+    button.setAttribute("aria-label", "Linha " + row + ", coluna " + col + ": " +
+      (piece === 1 ? "sua peça" : piece === 2 ? "sua dama" :
+       piece === -1 ? "peça rival" : piece === -2 ? "dama rival" : target ? "destino permitido" : "casa vazia") +
+      (from ? ", selecionar" : target ? ", mover aqui" : ""));
+    board.append(button);
+  }
+  $("metrics").replaceChildren(
+    metric("Rodada",s.turn + " / " + s.maxTurns),
+    metric("Suas peças",s.board.filter(piece=>piece>0).length),
+    metric("Peças rivais",s.board.filter(piece=>piece<0).length),
+    metric("Capturas",s.captures)
+  );
+  $("legend").textContent = "● Peças claras contra peças âmbar · ♔ Dama. Toque numa peça e depois no destino. Capturas têm prioridade; Tab/Enter também funcionam.";
+  actions.replaceChildren(el("h4","","Comandos de damas"));
+  actions.append(action(s.paused ? "Retomar damas" : "Pausar damas",()=>update(commandDraughts(current,{type:s.paused?"resume":"pause"})),"secondary",s.phase!=="playing"));
+  actions.append(el("p","intel","O rival responde após cada movimento completo. Capturas encadeadas continuam com a mesma peça. Recruta, Tático e Veterano usam escolhas rivais diferentes."));
 }
 function renderSquad() {
   const s=current,board=$("board"),actions=$("actions");
@@ -341,6 +385,7 @@ function render() {
   if (gameId === "frota-oculta") renderNaval();
   else if (gameId === "cartas-de-cerco") renderSiege();
   else if (gameId === "hex-conexao") renderHex();
+  else if (gameId === "damas-taticas") renderDraughts();
   else if (gameId === "patrulha-tatica") renderSquad();
   else if (gameId === "muralha-das-torres") renderTowers();
   else if (gameId === "fronteira-orbital") renderFrontier();

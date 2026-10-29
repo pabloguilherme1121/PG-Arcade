@@ -89,7 +89,7 @@ test("ativação do SW da campanha nunca apaga o cache do subsite independente",
   let pending;
   handlers.get("activate")({ waitUntil(task) { pending = task; } });
   await pending;
-  assert.deepEqual(deleted, ["pg-estrategia-shell-v1"],
+  assert.deepEqual(deleted, ["pg-estrategia-shell-v1", "pg-estrategia-shell-v2"],
     "a campanha só pode limpar gerações antigas do próprio cache");
 });
 
@@ -128,4 +128,14 @@ test("SW mantém o motor de sobrevivência dentro do subsite independente",async
  sw.setOnline(false);
  assert.equal(await (await sw.request(target)).text(),"novo-codigo");
  assert.equal(await sw.request(origin+"estrategia/engine.mjs"),null);
+});
+
+test("SW dos jogos originais atualiza e mantém Damas Táticas offline",async()=>{
+ const child=simulate("public/estrategia/independentes/sw.js",origin+"estrategia/independentes/");
+ const game=origin+"estrategia/independentes/draughts.mjs";
+ assert.equal(await (await child.request(game)).text(),"novo-codigo");
+ child.setOnline(false);
+ assert.equal(await (await child.request(game)).text(),"novo-codigo");
+ const campaign=origin+"estrategia/app.js";
+ assert.equal(await child.request(campaign),null);
 });
