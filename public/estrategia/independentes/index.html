@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b1624" />
-  <meta name="description" content="Frota Oculta, Cartas de Cerco, Hex Conexão, Damas Táticas, Patrulha Tática, Muralha das Torres, Fronteira Orbital e Refúgio do Inverno: jogos originais de estratégia com regras próprias, dificuldades e partida completa dentro do PG Estratégia." />
+  <meta name="description" content="Frota Oculta, Cartas de Cerco, Hex Conexão, Damas Táticas, Patrulha Tática, Muralha das Torres, Fronteira Orbital, Refúgio do Inverno, Mercado de Rotas e Conselho dos Reinos: jogos originais de estratégia com regras próprias, dificuldades e partida completa dentro do PG Estratégia." />
   <link rel="canonical" href="https://pabloguilherme1121.github.io/PG-Arcade/estrategia/independentes/" />
   <link rel="icon" href="../icon.svg" type="image/svg+xml" />
   <link rel="manifest" href="./manifest.webmanifest" />
@@ -24,13 +24,13 @@
     <section class="intro">
       <div class="intro-copy">
         <p class="eyebrow">COLEÇÃO ORIGINAL · PRIMEIRO LOTE</p>
-        <h1>Oito jogos. <em>Oito formas de pensar.</em></h1>
+        <h1>Treze jogos. <em>Treze formas de pensar.</em></h1>
         <p>Regras independentes, adversários simulados e consequências reais para cada decisão. Esta coleção não confunde missões adicionais com novos jogos.</p>
       </div>
       <div class="intro-art" aria-hidden="true"><span>COMANDO TÁTICO</span><div class="art-grid"><i>◈</i><i>·</i><i>·</i><i>✦</i><i>·</i><i>·</i><i>♜</i><i>·</i><i>·</i><i>·</i><i>·</i><i>·</i><i>◇</i><i>·</i><i>·</i><i>·</i></div><small>ANALISE · EXECUTE · VENÇA</small></div>
     </section>
     <section class="selection" aria-label="Selecionar jogo">
-      <div class="section-header"><div><p class="eyebrow">JOGOS DE VERDADE</p><h2>Selecione seu comando</h2></div><span class="count">08 motores independentes</span></div>
+      <div class="section-header"><div><p class="eyebrow">JOGOS DE VERDADE</p><h2>Selecione seu comando</h2></div><span class="count">13 motores independentes</span></div>
       <div class="choices" role="group" aria-label="Jogo ativo">
         <button type="button" class="choice naval" data-select="frota-oculta" aria-pressed="true"><span class="choice-symbol" aria-hidden="true">◈</span><span><strong>Frota Oculta</strong><small>Dedução naval, sonar e defesa da base</small></span><span aria-hidden="true">↗</span></button>
         <button type="button" class="choice siege" data-select="cartas-de-cerco" aria-pressed="false"><span class="choice-symbol" aria-hidden="true">♜</span><span><strong>Cartas de Cerco</strong><small>Baralho, recursos e combate por turnos</small></span><span aria-hidden="true">↗</span></button>
@@ -40,6 +40,11 @@
         <button type="button" class="choice winter" data-select="refugio-do-inverno" aria-pressed="false"><span class="choice-symbol" aria-hidden="true">❄</span><span><strong>Refúgio do Inverno</strong><small>Sobrevivência, clima, resgate e recursos</small></span><span aria-hidden="true">↗</span></button>
         <button type="button" class="choice frontier" data-select="fronteira-orbital" aria-pressed="false"><span class="choice-symbol" aria-hidden="true">✧</span><span><strong>Fronteira Orbital</strong><small>Exploração, colônias, pesquisa e IA rival</small></span><span aria-hidden="true">↗</span></button>
         <button type="button" class="choice towers" data-select="muralha-das-torres" aria-pressed="false"><span class="choice-symbol" aria-hidden="true">♜</span><span><strong>Muralha das Torres</strong><small>Construa, aprimore e resista às ondas</small></span><span aria-hidden="true">↗</span></button>
+        <a class="choice council" href="./conselho-de-reinos/"><span class="choice-symbol" aria-hidden="true">✥</span><span><strong>Conselho dos Reinos</strong><small>Diplomacia, coalizões, votos e influência rival</small></span><span aria-hidden="true">↗</span></a>
+        <a class="choice trade" href="./mercado-de-rotas/"><span class="choice-symbol" aria-hidden="true">◎</span><span><strong>Mercado de Rotas</strong><small>Economia, logística, preços e rivais</small></span><span aria-hidden="true">↗</span></a>
+        <a class="choice reversi" href="./reversi-tatico/"><span class="choice-symbol" aria-hidden="true">●</span><span><strong>Reversi Tático</strong><small>Virar peças, cercar linhas e dominar cantos contra IA</small></span><span aria-hidden="true">↗</span></a>
+        <a class="choice" href="./cifras-reais/"><span class="choice-symbol" aria-hidden="true">◆</span><span><strong>Cifras Reais</strong><small>Dedução, pistas e sequências com dois modos</small></span><span aria-hidden="true">↗</span></a>
+        <a class="choice" href="./comando-de-drones/"><span class="choice-symbol" aria-hidden="true">◉</span><span><strong>Comando de Drones</strong><small>Programação de ordens, patrulha e gestão de energia</small></span><span aria-hidden="true">↗</span></a>
       </div>
     </section>
     <section class="play" aria-labelledby="game-title">
@@ -67,11 +72,23 @@
           <div id="actions" class="actions"></div>
           <p id="message" class="message" role="status" aria-live="polite"></p>
           <p id="record" class="record"></p>
+          <section class="pg-bot-help" aria-label="PG Bot de suporte ao jogo">
+            <button type="button" id="pg-bot-toggle" aria-controls="pg-bot-body" aria-expanded="false"><img src="../../brand/pg-bot/mascot.webp" alt="" width="38" height="44" loading="lazy" decoding="async" /><span>PG Bot <small>Ajuda durante a partida</small></span></button>
+            <div id="pg-bot-body" hidden>
+              <p class="pg-bot-disclosure">Orientações automáticas locais. Não é chat de IA e não coleta mensagens.</p>
+              <div class="pg-bot-topics" role="group" aria-label="Assuntos do PG Bot">
+                <button type="button" data-pg-bot-topic="objetivo" aria-pressed="true">Objetivo</button>
+                <button type="button" data-pg-bot-topic="controles" aria-pressed="false">Controles</button>
+                <button type="button" data-pg-bot-topic="situacao" aria-pressed="false">Situação</button>
+              </div>
+              <p id="pg-bot-answer" role="status" aria-live="polite"></p>
+            </div>
+          </section>
           <button id="restart" type="button" class="restart">↻ Reiniciar partida</button>
         </aside>
       </div>
     </section>
-    <section class="disclosure"><span aria-hidden="true">◎</span><div><h2>Sem duplicar jogos para aumentar o número.</h2><p>Estes são oito novos títulos com regras próprias. Os 47 atalhos de estratégia do Arcade e as 150 missões em seis sistemas continuam em seus catálogos originais. Pontuações deste laboratório ficam apenas neste aparelho.</p></div><a href="../">Voltar ao PG Estratégia ↗</a></section>
+    <section class="disclosure"><span aria-hidden="true">◎</span><div><h2>Sem duplicar jogos para aumentar o número.</h2><p>Estes são treze novos títulos com regras próprias. Os 47 atalhos de estratégia do Arcade e as 150 missões em seis sistemas continuam em seus catálogos originais. Pontuações deste laboratório ficam apenas neste aparelho.</p></div><a href="../">Voltar ao PG Estratégia ↗</a></section>
   </main>
   <footer><span>PG TECH · JOGOS ORIGINAIS</span><a href="../">PG Estratégia</a><a href="../../">PG Arcade</a></footer>
 </div>
