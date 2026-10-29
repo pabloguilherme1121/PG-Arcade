@@ -26,3 +26,21 @@ test("Conselho possui shell isolado do catálogo e do Mercado de Rotas",()=>{
  child({request:{method:"GET",url:root+"mercado-de-rotas/",mode:"navigate"},respondWith(){outside=true;}});
  assert.equal(outside,false);
 });
+
+
+test("portal registra dez motores independentes sem substituir as 150 missões",()=>{
+ const lab=readFileSync("public/estrategia/independentes/index.html","utf8");
+ const portal=readFileSync("public/estrategia/index.html","utf8");
+ const embedded=[...lab.matchAll(/data-select="([^"]+)"/g)].map(match=>match[1]);
+ const linked=[...lab.matchAll(/class="choice[^"]*" href="\.\/([^/]+)\//g)].map(match=>match[1]);
+ const ids=[...embedded,...linked];
+ assert.equal(ids.length,10);
+ assert.equal(new Set(ids).size,10);
+ assert.equal(embedded.length,8);
+ assert.deepEqual(new Set(linked),new Set(["conselho-de-reinos","mercado-de-rotas"]));
+ assert.match(lab,/10 motores independentes/);
+ assert.match(portal,/Dez jogos candidatos/);
+ assert.match(portal,/href="\.\/independentes\/mercado-de-rotas\/"/);
+ assert.match(portal,/href="\.\/independentes\/conselho-de-reinos\/"/);
+ assert.match(portal,/id="pg-bot-in-arena"/);
+});
