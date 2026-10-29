@@ -57,3 +57,14 @@ test("PG Bot não cobre os comandos touch durante tela cheia do Snake", async ({
  await page.getByRole("button",{name:"Sair da tela cheia",exact:true}).click();
  await expect(page.locator("#pg-bot-launcher")).toBeVisible();
 });
+
+test("PG Bot dá dica da família da missão aberta sem sair da arena", async ({page}) => {
+ await page.setViewportSize({width:320,height:720});
+ await page.goto("./estrategia/#est-126");
+ const arena=page.locator("#arena");
+ await expect(arena).toBeVisible();
+ await arena.getByRole("button",{name:"Abrir ajuda PG Bot"}).click();
+ await arena.getByRole("button",{name:"Dica",exact:true}).click();
+ await expect(arena.getByRole("log")).toContainText(/energia|água|confiança/i);
+ await expect(arena).toBeVisible();
+});
