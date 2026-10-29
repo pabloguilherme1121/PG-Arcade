@@ -102,3 +102,12 @@ test("SW dos jogos independentes cacheia o motor tático apenas no seu escopo",a
   assert.equal(await child.request(origin+"estrategia/core.mjs"),null);
   assert.equal(await child.request(origin+"assets/index.js"),null);
 });
+
+test("SW dos jogos independentes preserva motor de torres somente no seu escopo",async()=>{
+  const child=simulate("public/estrategia/independentes/sw.js",origin+"estrategia/independentes/");
+  const towers=origin+"estrategia/independentes/towers.mjs";
+  assert.equal(await (await child.request(towers)).text(),"novo-codigo");
+  child.setOnline(false);
+  assert.equal(await (await child.request(towers)).text(),"novo-codigo");
+  assert.equal(await child.request(origin+"estrategia/engine.mjs"),null);
+});
