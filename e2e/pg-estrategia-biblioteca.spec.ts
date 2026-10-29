@@ -53,6 +53,7 @@ test('Biblioteca de estratégia realmente abre o motor Arcade e preserva favorit
  await page.locator('#classics-list a[data-arcade-game="xadrez"]').click();
  const arcade=page.frameLocator('#classic-game-frame');
  await expect(arcade.locator('[data-current-game="xadrez"]')).toBeVisible();
+ await expect(arcade.getByRole('link',{name:'Jogar no PG Estratégia'})).toHaveCount(0);
  await arcade.locator('.player-utilities summary').click();
  await arcade.getByRole('button',{name:'Favoritar',exact:true}).click();
  await expect(arcade.getByRole('button',{name:'Favoritado',exact:true})).toBeVisible();
