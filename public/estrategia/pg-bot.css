@@ -1,0 +1,16 @@
+/* Ajuda local carregada quando solicitada; nunca cobre o tabuleiro em partida. */
+.pg-bot-launch{display:inline-flex;align-items:center;gap:9px}
+.pg-bot-launch img{width:26px;height:30px;object-fit:contain;flex:none}
+.pg-bot-dialog[open]{padding:12px;overflow:auto}
+.pg-bot-panel{width:min(480px,100%);max-height:calc(100dvh - 24px);overflow:auto;margin:auto;background:#15243b;border:1px solid #7796b6;border-radius:19px;padding:22px;box-shadow:0 16px 60px #000b}
+.pg-bot-heading{display:flex;align-items:center;gap:14px}
+.pg-bot-heading img{object-fit:contain;flex:none;width:60px;height:68px}
+.pg-bot-heading h2{font-size:28px;letter-spacing:-.5px}
+.pg-bot-panel p{color:#d0dbea;line-height:1.55}
+.pg-bot-disclosure{font-size:12px;color:#b1c4d8!important;margin:12px 0 20px}
+.pg-bot-topics{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.pg-bot-topics button{flex:1 1 160px;min-height:44px;text-align:left;padding:10px 12px;border-radius:10px;border:1px solid #68849f;background:#213752;color:#f4f7fb;font-weight:650}
+.pg-bot-topics button:hover{background:#315071}
+.pg-bot-answer{min-height:105px;background:#0d1a2d;border:1px solid #405d78;border-radius:12px;padding:15px}
+.pg-bot-dialog .pg-bot-close{min-height:44px;width:100%;margin-top:12px}
+@media(max-width:350px){.pg-bot-panel{padding:14px}.pg-bot-heading h2{font-size:25px}}
