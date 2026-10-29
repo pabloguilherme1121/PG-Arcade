@@ -114,3 +114,10 @@
   .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .arena-frame, .arena-actions, .arena-stats { min-width: 0; }
 }
+
+/* A ajuda da arena fica recolhida por padrão, sem impedir ações por toque. */
+.arena-bot-tip { margin: 10px 0; border: 1px solid #607b96; border-radius: 12px; background: #15263b; }
+.arena-bot-tip summary { min-height: 44px; display: flex; align-items: center; gap: 10px; padding: 6px 12px; font-weight: 750; cursor: pointer; }
+.arena-bot-tip summary img { object-fit: contain; flex: none; }
+.arena-bot-tip p { margin: 0; padding: 10px 12px 14px; color: #d9e7fa; font-size: 14px; line-height: 1.5; }
+.arena-bot-tip summary:focus-visible { outline: 3px solid #c9f65a; outline-offset: 2px; }
