@@ -45,6 +45,14 @@ export function initStrategyHub(){
  const iframe=document.getElementById('classic-game-frame');
  const fullscreen=document.getElementById('classic-open-new');
  const heading=document.getElementById('classic-player-title');
+ const continueButton=document.getElementById('classic-continue');
+ const LAST='pg-estrategia-last-arcade-v1';
+ let lastId=null;
+ try { const saved=localStorage.getItem(LAST);if(legacyNames.has(saved))lastId=saved; } catch { /* storage optional */ }
+ function renderContinue(){
+   continueButton.hidden=!lastId;
+   if(lastId)continueButton.textContent='Continuar: '+legacyNames.get(lastId);
+ }
  let launcher=null;
  const cards=EXISTING_STRATEGY.map(([id,name])=>{
    const link=document.createElement('a');
@@ -67,6 +75,9 @@ export function initStrategyHub(){
    const src=arcadeGameUrl(id);
    if(!src)return false;
    launcher=trigger;
+   lastId=id;
+   renderContinue();
+   try { localStorage.setItem(LAST,id); } catch { /* storage optional */ }
    heading.textContent='Jogando: '+legacyNames.get(id);
    fullscreen.href=src;
    iframe.title='PG Arcade: '+legacyNames.get(id);
@@ -85,6 +96,7 @@ export function initStrategyHub(){
    event.preventDefault();
    open(link.dataset.arcadeGame,link);
  });
+ continueButton.addEventListener('click',()=>{if(lastId)open(lastId,continueButton);});
  search.addEventListener('input',render);
  select.addEventListener('change',render);
  document.getElementById('classic-clear').addEventListener('click',()=>{
@@ -98,6 +110,7 @@ export function initStrategyHub(){
  });
  dialog.addEventListener('click',event=>{if(event.target===dialog)close();});
  render();
+ renderContinue();
  const requested=new URLSearchParams(location.search).get('arcade');
  if(requested&&legacyNames.has(requested))open(requested);
 }
