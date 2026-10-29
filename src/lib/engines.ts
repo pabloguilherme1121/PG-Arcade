@@ -125,14 +125,13 @@ export function snakeFood(
   size = 16,
   random: () => number = Math.random,
 ): Point | null {
+  const occupied = new Set(body.map((p) => p.y * size + p.x));
   const empty: Point[] = [];
   for (let y = 0; y < size; y++)
     for (let x = 0; x < size; x++)
-      if (!body.some((p) => p.x === x && p.y === y)) empty.push({ x, y });
-  return (
-    empty[Math.min(empty.length - 1, Math.floor(random() * empty.length))] ??
-    null
-  );
+      if (!occupied.has(y * size + x)) empty.push({ x, y });
+  if (!empty.length) return null;
+  return empty[Math.min(empty.length - 1, Math.floor(random() * empty.length))];
 }
 export function shuffledPairs(
   pairs: number,
