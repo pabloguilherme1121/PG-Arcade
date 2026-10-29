@@ -130,10 +130,8 @@ export function snakeFood(
   for (let y = 0; y < size; y++)
     for (let x = 0; x < size; x++)
       if (!occupied.has(y * size + x)) empty.push({ x, y });
-  return (
-    empty[Math.min(empty.length - 1, Math.floor(random() * empty.length))] ??
-    null
-  );
+  if (!empty.length) return null;
+  return empty[Math.min(empty.length - 1, Math.floor(random() * empty.length))];
 }
 export function shuffledPairs(
   pairs: number,
