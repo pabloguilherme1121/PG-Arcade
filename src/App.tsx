@@ -350,6 +350,7 @@ export default function App() {
             Meu progresso
           </a>
         </nav>
+        <button type="button" className="pg-bot-nav-trigger" data-open-pg-bot="true" onClick={() => window.dispatchEvent(new Event("pg-arcade-pause"))}>Ajuda do PG Bot</button>
         <a
           className="portfolio-link"
           href="https://pabloguilherme1121.github.io/PG-portfolio/#projetos"
