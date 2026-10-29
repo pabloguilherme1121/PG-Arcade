@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { botMessage, BOT_TOPICS } from '../public/estrategia/independentes/pg-bot.mjs';
 
-const ids=['frota-oculta','cartas-de-cerco','hex-conexao','damas-taticas','patrulha-tatica','muralha-das-torres','fronteira-orbital','refugio-do-inverno'];
+const ids=['frota-oculta','cartas-de-cerco','hex-conexao','damas-taticas','patrulha-tatica','muralha-das-torres','fronteira-orbital','refugio-do-inverno','mercado-de-sombras'];
 test('PG Bot: cada título recebe objetivo e dica específicos, sem conteúdo HTML',()=>{
   assert.deepEqual(BOT_TOPICS,['objetivo','controles','situacao']);
   for(const id of ids){
@@ -18,6 +18,7 @@ test('PG Bot: adaptação segura ao estado, dificuldade e operação',()=>{
   assert.match(botMessage('patrulha-tatica',{phase:'playing',mode:'veterano',mission:'extracao'},'objetivo'),/sinal.*base/i);
   assert.match(botMessage('fronteira-orbital',{phase:'playing',mode:'recruta',mission:'pesquisa'},'objetivo'),/12 pontos/);
   assert.match(botMessage('muralha-das-torres',{phase:'playing',mode:'tatico',mission:'maratona'},'objetivo'),/Maratona/);
+  assert.match(botMessage('mercado-de-sombras',{phase:'playing',mode:'tatico',mission:'patrimonio'},'objetivo'),/40 pontos/);
   assert.match(botMessage('hex-conexao',{phase:'won',score:15},'situacao'),/venceu/i);
   assert.match(botMessage('frota-oculta',{phase:'lost'},'situacao'),/derrota/i);
   assert.match(botMessage('damas-taticas',{phase:'playing',paused:true},'situacao'),/pausada/i);

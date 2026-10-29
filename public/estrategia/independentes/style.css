@@ -100,6 +100,18 @@ h1,h2,h3,h4,p{margin-block:0}h1,h2,h3{letter-spacing:-.04em}h1{font-size:clamp(3
 .winter-sector strong{font-size:26px;color:#fff}
 @media(max-width:350px){.winter-board{gap:6px}.winter-sector{min-height:110px;padding:8px}}
 
+/* Mercado de Sombras: one accessible bid panel, zero animation loops or remote resources. */
+#market-mode-wrap[hidden]{display:none!important}
+.choice.market .choice-symbol{background:#5b4535;color:#ffe1ac}
+.market-board{max-width:430px;margin:0 auto;display:block}
+.market-lot{display:flex;flex-direction:column;justify-content:center;gap:15px;min-height:230px;padding:24px;background:linear-gradient(145deg,#584334,#19283a 78%);border:1px solid #e4bd8f;border-radius:16px;box-shadow:inset 0 0 36px #9f73421b}
+.market-lot small{font-size:12px;font-weight:850;color:#ffddac;letter-spacing:.08em}
+.market-lot strong{font-size:clamp(21px,4vw,33px);line-height:1.1;color:#fff4d8}
+.market-lot p{margin:0;color:#e8d1b9;font-size:13px;line-height:1.65}
+.market-final{font-size:16px;color:#d8ead8}
+.actions>.market-bid{border-color:#c99f6a;background:#493d34;color:#fff3d7}
+.actions>.market-bid:hover:not(:disabled){background:#69513a}
+@media(max-width:350px){.market-lot{padding:16px;min-height:205px}}
 /* Damas Táticas: casas de 44px e rolagem horizontal contida no painel em 320px. */
 .choice.draughts .choice-symbol{color:#ffe0ab;background:#614a3b}
 .draughts-board{display:grid;grid-template-columns:repeat(8,44px);gap:3px;width:max-content;max-width:none;margin-left:0;padding:5px}
