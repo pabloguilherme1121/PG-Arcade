@@ -114,3 +114,31 @@
   .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .arena-frame, .arena-actions, .arena-stats { min-width: 0; }
 }
+
+
+/* Biblioteca única de estratégia. Apenas o jogo selecionado monta o Arcade. */
+#classicos{scroll-margin-top:18px}
+.classic-filters{display:flex;align-items:end;flex-wrap:wrap;gap:10px;margin:20px 0 18px}
+.classic-filters label{min-width:0;flex:1 1 185px;color:#cfdbed;font-size:12px;font-weight:750;display:grid;gap:7px}
+.classic-filters input,.classic-filters select{width:100%;min-width:0;min-height:46px;padding:10px 13px;color:#f2fbff;background:#182b40;border:1px solid #526b85;border-radius:10px}
+.classic-filters .button{min-height:46px;flex:0 0 auto}
+#classic-count{font-size:12px;font-weight:750;color:var(--green);padding:12px 4px}
+.classic-item[hidden],#classic-empty[hidden]{display:none!important}
+.classics-grid .classic-item:nth-child(n+9):not([hidden]){content-visibility:auto;contain-intrinsic-size:auto 70px}
+.classic-player-dialog[open]{display:grid;place-items:center;overflow:hidden}
+.classic-player-shell{display:flex;flex-direction:column;gap:10px;width:min(1220px,calc(100vw - 20px));height:min(98dvh,970px);min-width:0;max-height:calc(100dvh - 10px);padding:16px;background:#111f32;border:1px solid #607b91;border-radius:16px;box-shadow:0 20px 90px #000d;overflow:hidden}
+.classic-player-top{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}
+.classic-player-top h2{font-size:clamp(21px,3vw,32px);letter-spacing:-.4px;margin-top:8px;overflow-wrap:anywhere}
+.classic-player-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.classic-player-actions .button{min-height:44px;font-size:12px}
+.classic-player-note{color:#b9cce2;margin:0;font-size:12px;line-height:1.5}
+#classic-game-frame{display:block;flex:1 1 auto;min-height:0;width:100%;border:1px solid #526b85;border-radius:9px;background:#0c1727}
+#classic-game-frame:focus-visible{outline:3px solid var(--green);outline-offset:-3px}
+@media(max-width:720px){
+ .classic-player-shell{padding:8px;width:calc(100vw - 8px);height:calc(100dvh - 8px);border-radius:9px;gap:5px}
+ .classic-player-top{align-items:stretch;flex-direction:column;gap:7px}
+ .classic-player-actions{justify-content:stretch}
+ .classic-player-actions .button{flex:1 1 120px;padding:8px;font-size:11px}
+ .classic-player-note{font-size:11px}
+ .classic-filters .button{width:100%}
+}
