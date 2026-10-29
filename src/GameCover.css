@@ -295,3 +295,20 @@ html[data-arcade-contrast="true"] .experience-tools [data-pg-bot="game-help"] {
   .experience-tools [data-pg-bot="game-help"] .pg-bot-game-summary { padding: 6px 8px; }
   .pg-bot-game-content { padding: 4px 10px 12px; }
 }
+
+/* Immersive desktop regression: the bot's 48+px summary consumed more vertical
+   stage space than the previous help. Keep the same 44px control budget while
+   preserving the full accessible label in the DOM. */
+.player[data-immersive="true"] .experience-tools [data-pg-bot="game-help"] .pg-bot-game-summary {
+  min-height: 44px;
+  padding: 2px 8px;
+}
+.player[data-immersive="true"] .pg-bot-game-summary img {
+  width: 30px;
+  height: 36px;
+}
+.player[data-immersive="true"] .pg-bot-game-summary span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
