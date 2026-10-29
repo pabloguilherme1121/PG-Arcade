@@ -29,6 +29,10 @@ const TIPS = Object.freeze({
     objetivo:'Na Expansão, conecte cinco colônias. Na Pesquisa, alcance 12 pontos de ciência. Evite que a facção rival domine o mapa.',
     controles:'Escolha a ordem Explorar ou Colonizar e toque em um setor válido. Use Extrair para recursos e Pesquisar quando possuir colônias suficientes.'
   },
+  'mercado-de-sombras': {
+    objetivo:'Arremate lotes em oito rodadas. Na Coleção, junte quatro famílias; em Patrimônio, alcance 40 pontos. Nos dois casos, supere a coleção rival.',
+    controles:'Em cada rodada, ofereça o lance mínimo, um lance médio ou alto. Passar conserva créditos. Reiniciar cria outro leilão com oito lotes.'
+  },
   'refugio-do-inverno': {
     objetivo:'No modo Resistência, mantenha a comunidade viva até o último dia. Em Evacuação, construa três sinais e resista pelo menos cinco dias.',
     controles:'Cada ordem avança um dia. Coletar alimentos, cortar lenha, aquecer, descansar e construir sinais gastam recursos; observe o clima.'
