@@ -148,3 +148,8 @@
 .classic-player-bot summary img{width:25px;height:29px;object-fit:contain}
 .classic-player-bot summary:focus-visible{outline:3px solid var(--green);outline-offset:2px}
 .classic-player-bot p{margin:0;padding:4px 12px 12px;font-size:12px;line-height:1.5;color:#e0f2df}
+
+
+.classic-shortcuts{display:flex;gap:10px;flex-wrap:wrap}
+#classic-continue[hidden]{display:none!important}
+#classic-continue{min-height:44px}
