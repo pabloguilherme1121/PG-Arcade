@@ -7,6 +7,7 @@ import { createFrontier, commandFrontier, canFrontierAction } from "./frontier.m
 import { createWinter, commandWinter, canWinterAction } from "./winter.mjs";
 import { createDraughts, commandDraughts, legalDraughtsMoves } from "./draughts.mjs";
 import { botMessage, BOT_TOPICS } from "./pg-bot.mjs";
+import { createMarket, commandMarket, marketLot, marketScore } from "./market.mjs";
 
 const $ = id => document.getElementById(id);
 const STORAGE = "pg-strategy-original-records-v1";
@@ -18,6 +19,7 @@ const GAMES = {
   "refugio-do-inverno": { name: "Refúgio do Inverno", intro: "Gerencie um abrigo durante nevascas, com alimentos, lenha, aquecimento e moral dos moradores.", instructions: "Cada ordem consome um dia. Alimente a comunidade e mantenha o aquecimento; escolha sobreviver até o último dia ou construir três sinais para evacuar após cinco dias.", init: createWinter },
   "fronteira-orbital": { name: "Fronteira Orbital", intro: "Explore um setor 4×4 sob névoa, colonize planetas vizinhos, pesquise tecnologias e dispute o mapa com uma facção rival.", instructions: "Selecione Explorar e toque num setor vizinho revelável. Depois use Colonizar numa área explorada e conectada à sua base. Pesquisa exige pelo menos duas colônias e avança ciência; Extrair repõe recursos. A facção rival cresce a cada rodada, conforme a dificuldade.", init: createFrontier },
   "muralha-das-torres": { name: "Muralha das Torres", intro: "Construa torres, defenda uma rota de 11 casas e administre créditos em ondas crescentes.", instructions: "Escolha Canhão ou Gelo e toque numa casa livre para construir. Toque numa torre de nível 1 para aprimorá-la por 4 créditos. Inicie cada onda e avance os turnos para observar a defesa.", init: createTowers },
+  "mercado-de-sombras": { name: "Mercado de Sombras", intro: "Leilões por turnos: arremate oito lotes, planeje créditos e dispute uma coleção com um rival automático.", instructions: "Em cada rodada escolha um lance baixo, médio, alto ou passe. Lances altos aumentam as chances contra o rival, mas reduzem o caixa para as próximas rodadas. Vença reunindo as quatro famílias ou acumulando patrimônio.", init: createMarket },
   "patrulha-tatica": { name: "Patrulha Tática", intro: "Conduza um esquadrão por um mapa 5×5. Elimine drones ou recupere um sinal e volte à base.", instructions: "Toque ou use Tab/Enter nas casas livres vizinhas para mover. Ataque drones ao alcance de duas casas; também pode se defender ou curar. Troque o objetivo para uma operação de extração.", init: createSquad },
 };
 let gameId = Object.hasOwn(GAMES, location.hash.slice(1)) ? location.hash.slice(1) : "frota-oculta";
@@ -29,7 +31,7 @@ try {
   const raw = JSON.parse(localStorage.getItem(STORAGE) || "{}");
   if (raw && typeof raw === "object" && !Array.isArray(raw)) {
     records = Object.fromEntries(Object.entries(raw).filter(([key, value]) =>
-      /^(frota-oculta|cartas-de-cerco|hex-conexao):(recruta|tatico|veterano)$|^patrulha-tatica:(recruta|tatico|veterano):(combate|extracao)$|^muralha-das-torres:(recruta|tatico|veterano):(defesa|maratona)$|^fronteira-orbital:(recruta|tatico|veterano):(expansao|pesquisa)$|^refugio-do-inverno:(recruta|tatico|veterano):(resistencia|evacuacao)$|^damas-taticas:(recruta|tatico|veterano)$/.test(key) &&
+      /^(frota-oculta|cartas-de-cerco|hex-conexao):(recruta|tatico|veterano)$|^patrulha-tatica:(recruta|tatico|veterano):(combate|extracao)$|^muralha-das-torres:(recruta|tatico|veterano):(defesa|maratona)$|^fronteira-orbital:(recruta|tatico|veterano):(expansao|pesquisa)$|^refugio-do-inverno:(recruta|tatico|veterano):(resistencia|evacuacao)$|^damas-taticas:(recruta|tatico|veterano)$|^mercado-de-sombras:(recruta|tatico|veterano):(colecao|patrimonio)$/.test(key) &&
       Number.isSafeInteger(value) && value >= 0 && value < 100000));
   }
 } catch { records = {}; }
@@ -55,14 +57,14 @@ function newGame(id = gameId) {
   selectedDraughts = null;
   const mode = $("difficulty").value;
   const seed = number(Math.floor(Math.random() * 0xffffffff));
-  current = GAMES[id].init({ difficulty: mode, seed, mission: id === "muralha-das-torres" ? $("tower-mode").value : id === "fronteira-orbital" ? $("frontier-mode").value : id === "refugio-do-inverno" ? $("winter-mode").value : $("squad-mode").value });
+  current = GAMES[id].init({ difficulty: mode, seed, mission: id === "muralha-das-torres" ? $("tower-mode").value : id === "fronteira-orbital" ? $("frontier-mode").value : id === "refugio-do-inverno" ? $("winter-mode").value : id === "mercado-de-sombras" ? $("market-mode").value : $("squad-mode").value });
   if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
   document.querySelectorAll("[data-select]").forEach(button => {
     button.setAttribute("aria-pressed", String(button.dataset.select === id));
   });
   render();
 }
-function bestKey() { return gameId + ":" + current.mode + (["patrulha-tatica","muralha-das-torres","fronteira-orbital","refugio-do-inverno"].includes(gameId) ? ":" + current.mission : ""); }
+function bestKey() { return gameId + ":" + current.mode + (["patrulha-tatica","muralha-das-torres","fronteira-orbital","refugio-do-inverno","mercado-de-sombras"].includes(gameId) ? ":" + current.mission : ""); }
 function update(next) {
   if (next === current) return;
   current = next;
@@ -373,6 +375,35 @@ function renderWinter(){
  actions.append(el("p","intel","Recruta, Tático e Veterano alteram estoque, clima e prazo. O modo Evacuação exige sinais completos e sobreviventes. Sem contagem automática do tempo."));
 }
 
+function renderMarket(){
+ const s=current,board=$("board"),actions=$("actions");
+ board.className="board market-board";
+ board.setAttribute("aria-label","Lote em leilão e coleção de artefatos");
+ board.replaceChildren();
+ const lot=s.round<s.maxRounds?marketLot(s.seed,s.round):null;
+ if(lot){
+  const card=el("div","market-lot");
+  card.append(el("small","","LOTE "+(s.round+1)+" / "+s.maxRounds),el("strong","",lot.name),
+    el("p","","Família: "+lot.family+" · Valor estimado: "+lot.value+" · Lance mínimo: "+lot.minBid));
+  board.append(card);
+ } else board.append(el("p","market-final","Leilão encerrado. Sua coleção: "+s.player.length+" lotes."));
+ $("metrics").replaceChildren(
+  metric("Rodada",s.round+" / "+s.maxRounds),
+  metric("Seus créditos",s.credits),
+  metric("Seu valor",marketScore(s.player)),
+  metric("Valor rival",marketScore(s.rival)));
+ $("legend").textContent="Famílias adquiridas: "+new Set(s.player.map(x=>x.family)).size+" / 4. "+(s.mission==="colecao"?"Objetivo: colecionar as quatro famílias e superar o rival.":"Objetivo: acumular ao menos 40 pontos e superar o rival.")+" Lances rivais dependem da dificuldade.";
+ actions.replaceChildren(el("h4","","Suas propostas"));
+ if(lot){
+  for(const offset of [0,3,6]){
+   const amount=lot.minBid+offset;
+   actions.append(action("Ofertar "+amount+" créditos",()=>update(commandMarket(current,{type:"bid",amount})),"market-bid",s.phase!=="playing"||s.paused||s.credits<amount));
+  }
+  actions.append(action("Passar este lote",()=>update(commandMarket(current,{type:"pass"})),"secondary",s.phase!=="playing"||s.paused));
+ }
+ actions.append(action(s.paused?"Retomar leilão":"Pausar leilão",()=>update(commandMarket(current,{type:s.paused?"resume":"pause"})),"secondary",s.phase!=="playing"));
+ actions.append(el("p","intel","Oferta do adversário é calculada localmente. Em empate, Recruta favorece você; nas dificuldades maiores, o rival tem prioridade."));
+}
 function render() {
   const config = GAMES[gameId];
   $("game-title").textContent = config.name;
@@ -384,6 +415,7 @@ function render() {
   $("frontier-mode-wrap").hidden = gameId !== "fronteira-orbital";
   $("frontier-action-wrap").hidden = gameId !== "fronteira-orbital";
   $("winter-mode-wrap").hidden = gameId !== "refugio-do-inverno";
+  $("market-mode-wrap").hidden = gameId !== "mercado-de-sombras";
   if (gameId === "frota-oculta") renderNaval();
   else if (gameId === "cartas-de-cerco") renderSiege();
   else if (gameId === "hex-conexao") renderHex();
@@ -391,6 +423,7 @@ function render() {
   else if (gameId === "patrulha-tatica") renderSquad();
   else if (gameId === "muralha-das-torres") renderTowers();
   else if (gameId === "fronteira-orbital") renderFrontier();
+  else if (gameId === "mercado-de-sombras") renderMarket();
   else renderWinter();
   $("message").textContent = current.message;
   $("message").dataset.phase = current.phase;
@@ -411,6 +444,7 @@ $("tower-type").addEventListener("change", () => { if (gameId === "muralha-das-t
 $("frontier-mode").addEventListener("change", () => { if (gameId === "fronteira-orbital") newGame(); });
 $("frontier-action").addEventListener("change", () => { if (gameId === "fronteira-orbital") render(); });
 $("winter-mode").addEventListener("change", () => { if (gameId === "refugio-do-inverno") newGame(); });
+$("market-mode").addEventListener("change", () => { if (gameId === "mercado-de-sombras") newGame(); });
 $("pg-bot-toggle").addEventListener("click", () => {
   const panel=$("pg-bot-body");
   panel.hidden=!panel.hidden;
