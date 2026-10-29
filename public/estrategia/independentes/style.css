@@ -76,3 +76,16 @@ h1,h2,h3,h4,p{margin-block:0}h1,h2,h3{letter-spacing:-.04em}h1{font-size:clamp(3
 .frontier-cell:hover:not(:disabled){outline:2px solid #baf1cb;outline-offset:0}
 .frontier-cell:disabled{opacity:1}
 @media(max-width:350px){.frontier-board{gap:4px}.frontier-cell{border-radius:8px}}
+
+/* Refúgio do Inverno: painel de sobrevivência independente, legível a 320px. */
+#winter-mode-wrap[hidden]{display:none!important}
+.choice.winter .choice-symbol{color:#d5f3ff;background:#3b586b}
+.winter-board{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-width:430px}
+.winter-sector{display:flex;min-width:0;min-height:125px;align-items:center;justify-content:center;flex-direction:column;gap:8px;padding:12px;border:1px solid #6f8b9d;border-radius:14px;background:linear-gradient(155deg,#385b72,#182b41)}
+.winter-sector[data-resource="heat"]{background:linear-gradient(155deg,#6b4c35,#2e2b37)}
+.winter-sector[data-resource="food"]{background:linear-gradient(155deg,#3a665a,#193c38)}
+.winter-sector[data-resource="people"]{background:linear-gradient(155deg,#504f6a,#272946)}
+.winter-symbol{font-size:29px;color:#c0f4ff}
+.winter-sector small{color:#e2ecf8;font-size:12px;font-weight:700}
+.winter-sector strong{font-size:26px;color:#fff}
+@media(max-width:350px){.winter-board{gap:6px}.winter-sector{min-height:110px;padding:8px}}

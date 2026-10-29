@@ -120,3 +120,12 @@ test("SW dos jogos independentes guarda motor orbital sem invadir a campanha",as
  assert.equal(await (await sw.request(url)).text(),"novo-codigo");
  assert.equal(await sw.request(origin+"estrategia/app.js"),null);
 });
+
+test("SW mantém o motor de sobrevivência dentro do subsite independente",async()=>{
+ const sw=simulate("public/estrategia/independentes/sw.js",origin+"estrategia/independentes/");
+ const target=origin+"estrategia/independentes/winter.mjs";
+ assert.equal(await (await sw.request(target)).text(),"novo-codigo");
+ sw.setOnline(false);
+ assert.equal(await (await sw.request(target)).text(),"novo-codigo");
+ assert.equal(await sw.request(origin+"estrategia/engine.mjs"),null);
+});

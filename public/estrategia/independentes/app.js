@@ -4,6 +4,7 @@ import { createHex, playHex } from "./hex.mjs";
 import { createSquad, commandSquad, legalSquadMoves } from "./squad.mjs";
 import { createTowers, commandTowers, TOWER_TYPES, TOWER_PATH } from "./towers.mjs";
 import { createFrontier, commandFrontier, canFrontierAction } from "./frontier.mjs";
+import { createWinter, commandWinter, canWinterAction } from "./winter.mjs";
 
 const $ = id => document.getElementById(id);
 const STORAGE = "pg-strategy-original-records-v1";
@@ -11,6 +12,7 @@ const GAMES = {
   "frota-oculta": { name: "Frota Oculta", intro: "Localize a frota inimiga num mapa 6×6. Cada disparo consome um turno; use o sonar para deduzir a posição das embarcações.", instructions: "Toque em um quadrante para atacar. Sonar revela o número de navios numa linha, mas gasta um turno. Reparos preservam sua base sob pressão.", init: createNaval },
   "cartas-de-cerco": { name: "Cartas de Cerco", intro: "Monte sua ofensiva com as cartas disponíveis, distribua energia e sobreviva aos ataques de uma fortaleza inimiga.", instructions: "Jogue cartas de sua mão gastando energia. Fortificar bloqueia o próximo ataque; Aríete causa dano elevado. Encerrar o turno permite que o rival ataque.", init: createSiege },
   "hex-conexao": { name: "Hex Conexão", intro: "Conecte de cima até embaixo num tabuleiro hexagonal de 49 casas. O rival tenta unir as bordas esquerda e direita.", instructions: "Selecione uma casa livre para colocar uma pedra. O adversário responde automaticamente. Você ganha ao criar uma cadeia contínua entre as bordas norte e sul.", init: createHex },
+  "refugio-do-inverno": { name: "Refúgio do Inverno", intro: "Gerencie um abrigo durante nevascas, com alimentos, lenha, aquecimento e moral dos moradores.", instructions: "Cada ordem consome um dia. Alimente a comunidade e mantenha o aquecimento; escolha sobreviver até o último dia ou construir três sinais para evacuar após cinco dias.", init: createWinter },
   "fronteira-orbital": { name: "Fronteira Orbital", intro: "Explore um setor 4×4 sob névoa, colonize planetas vizinhos, pesquise tecnologias e dispute o mapa com uma facção rival.", instructions: "Selecione Explorar e toque num setor vizinho revelável. Depois use Colonizar numa área explorada e conectada à sua base. Pesquisa exige pelo menos duas colônias e avança ciência; Extrair repõe recursos. A facção rival cresce a cada rodada, conforme a dificuldade.", init: createFrontier },
   "muralha-das-torres": { name: "Muralha das Torres", intro: "Construa torres, defenda uma rota de 11 casas e administre créditos em ondas crescentes.", instructions: "Escolha Canhão ou Gelo e toque numa casa livre para construir. Toque numa torre de nível 1 para aprimorá-la por 4 créditos. Inicie cada onda e avance os turnos para observar a defesa.", init: createTowers },
   "patrulha-tatica": { name: "Patrulha Tática", intro: "Conduza um esquadrão por um mapa 5×5. Elimine drones ou recupere um sinal e volte à base.", instructions: "Toque ou use Tab/Enter nas casas livres vizinhas para mover. Ataque drones ao alcance de duas casas; também pode se defender ou curar. Troque o objetivo para uma operação de extração.", init: createSquad },
@@ -22,7 +24,7 @@ try {
   const raw = JSON.parse(localStorage.getItem(STORAGE) || "{}");
   if (raw && typeof raw === "object" && !Array.isArray(raw)) {
     records = Object.fromEntries(Object.entries(raw).filter(([key, value]) =>
-      /^(frota-oculta|cartas-de-cerco|hex-conexao):(recruta|tatico|veterano)$|^patrulha-tatica:(recruta|tatico|veterano):(combate|extracao)$|^muralha-das-torres:(recruta|tatico|veterano):(defesa|maratona)$|^fronteira-orbital:(recruta|tatico|veterano):(expansao|pesquisa)$/.test(key) &&
+      /^(frota-oculta|cartas-de-cerco|hex-conexao):(recruta|tatico|veterano)$|^patrulha-tatica:(recruta|tatico|veterano):(combate|extracao)$|^muralha-das-torres:(recruta|tatico|veterano):(defesa|maratona)$|^fronteira-orbital:(recruta|tatico|veterano):(expansao|pesquisa)$|^refugio-do-inverno:(recruta|tatico|veterano):(resistencia|evacuacao)$/.test(key) &&
       Number.isSafeInteger(value) && value >= 0 && value < 100000));
   }
 } catch { records = {}; }
@@ -47,14 +49,14 @@ function newGame(id = gameId) {
   gameId = id;
   const mode = $("difficulty").value;
   const seed = number(Math.floor(Math.random() * 0xffffffff));
-  current = GAMES[id].init({ difficulty: mode, seed, mission: id === "muralha-das-torres" ? $("tower-mode").value : id === "fronteira-orbital" ? $("frontier-mode").value : $("squad-mode").value });
+  current = GAMES[id].init({ difficulty: mode, seed, mission: id === "muralha-das-torres" ? $("tower-mode").value : id === "fronteira-orbital" ? $("frontier-mode").value : id === "refugio-do-inverno" ? $("winter-mode").value : $("squad-mode").value });
   if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
   document.querySelectorAll("[data-select]").forEach(button => {
     button.setAttribute("aria-pressed", String(button.dataset.select === id));
   });
   render();
 }
-function bestKey() { return gameId + ":" + current.mode + (["patrulha-tatica","muralha-das-torres","fronteira-orbital"].includes(gameId) ? ":" + current.mission : ""); }
+function bestKey() { return gameId + ":" + current.mode + (["patrulha-tatica","muralha-das-torres","fronteira-orbital","refugio-do-inverno"].includes(gameId) ? ":" + current.mission : ""); }
 function update(next) {
   if (next === current) return;
   current = next;
@@ -287,6 +289,44 @@ function renderFrontier() {
   actions.append(el("p","intel","Explorar custa 1 energia. Colonizar custa 2 energia e 2 minérios. Pesquisar exige ao menos 2 colônias. Cada turno gera renda básica. O rival se expande sem usar rede ou dados pessoais."));
 }
 
+
+function renderWinter(){
+ const s=current,board=$("board"),actions=$("actions");
+ board.className="board winter-board";
+ board.setAttribute("aria-label","Painel visual do Refúgio do Inverno");
+ board.replaceChildren();
+ const sectors=[
+  {id:"food",name:"Mantimentos",symbol:"✦",value:s.food},
+  {id:"wood",name:"Lenha",symbol:"♧",value:s.wood},
+  {id:"heat",name:"Aquecimento",symbol:"☼",value:s.heat},
+  {id:"people",name:"Moradores",symbol:"♟",value:s.people}
+ ];
+ for(const sector of sectors){
+  const card=el("div","winter-sector");
+  card.dataset.resource=sector.id;
+  card.append(el("span","winter-symbol",sector.symbol),el("small","",sector.name),el("strong","",sector.value));
+  board.append(card);
+ }
+ $("metrics").replaceChildren(
+  metric("Dia",s.day+" / "+s.maxDays),
+  metric("Moral",s.morale+" / 12"),
+  metric("Próximo clima",s.weather==="nevasca"?"Nevasca":s.weather==="frio"?"Frio":"Ameno"),
+  metric("Sinais",s.beacon+" / 3")
+ );
+ $("legend").textContent="A cada dia os moradores consomem 2 alimentos. Frio e nevasca retiram calor. Falta de recursos reduz a moral. "+(s.mission==="evacuacao"?"Construa 3 sinais e resista por 5 dias.":"Sobreviva por "+s.maxDays+" dias.");
+ actions.replaceChildren(el("h4","","Ordens de sobrevivência"));
+ const commands=[
+  ["collect","Coletar alimentos (+5)"],
+  ["chop","Cortar lenha (+4)"],
+  ["stoke","Reforçar fogueira (2 lenhas)"],
+  ["rest","Descansar comunidade (1 alimento)"],
+  ["signal","Construir sinal (2 lenhas e 1 alimento)"]
+ ];
+ for(const [type,label] of commands)actions.append(action(label,()=>update(commandWinter(current,{type})),"secondary",!canWinterAction(s,{type})));
+ actions.append(action(s.paused?"Retomar abrigo":"Pausar abrigo",()=>update(commandWinter(current,{type:s.paused?"resume":"pause"})),"secondary",s.phase!=="playing"));
+ actions.append(el("p","intel","Recruta, Tático e Veterano alteram estoque, clima e prazo. O modo Evacuação exige sinais completos e sobreviventes. Sem contagem automática do tempo."));
+}
+
 function render() {
   const config = GAMES[gameId];
   $("game-title").textContent = config.name;
@@ -297,12 +337,14 @@ function render() {
   $("tower-type-wrap").hidden = gameId !== "muralha-das-torres";
   $("frontier-mode-wrap").hidden = gameId !== "fronteira-orbital";
   $("frontier-action-wrap").hidden = gameId !== "fronteira-orbital";
+  $("winter-mode-wrap").hidden = gameId !== "refugio-do-inverno";
   if (gameId === "frota-oculta") renderNaval();
   else if (gameId === "cartas-de-cerco") renderSiege();
   else if (gameId === "hex-conexao") renderHex();
   else if (gameId === "patrulha-tatica") renderSquad();
   else if (gameId === "muralha-das-torres") renderTowers();
-  else renderFrontier();
+  else if (gameId === "fronteira-orbital") renderFrontier();
+  else renderWinter();
   $("message").textContent = current.message;
   $("message").dataset.phase = current.phase;
   $("record").textContent = current.phase === "won"
@@ -320,6 +362,7 @@ $("tower-mode").addEventListener("change", () => { if (gameId === "muralha-das-t
 $("tower-type").addEventListener("change", () => { if (gameId === "muralha-das-torres") render(); });
 $("frontier-mode").addEventListener("change", () => { if (gameId === "fronteira-orbital") newGame(); });
 $("frontier-action").addEventListener("change", () => { if (gameId === "fronteira-orbital") render(); });
+$("winter-mode").addEventListener("change", () => { if (gameId === "refugio-do-inverno") newGame(); });
 $("restart").addEventListener("click", () => newGame());
 window.addEventListener("hashchange", () => {
   const id = location.hash.slice(1);
