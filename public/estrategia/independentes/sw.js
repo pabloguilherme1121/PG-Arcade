@@ -1,6 +1,8 @@
-const CACHE = "pg-estrategia-originais-shell-v7";
+const CACHE = "pg-estrategia-originais-shell-v9";
 const ROOT = new URL("./", self.registration.scope);
 const FILES = ["./", "./index.html", "./app.js", "./style.css", "./naval.mjs", "./siege.mjs", "./hex.mjs", "./squad.mjs", "./towers.mjs", "./frontier.mjs", "./winter.mjs", "./draughts.mjs", "./manifest.webmanifest"];
+const MARKET_PATH = new URL("mercado-de-rotas/", ROOT).pathname;
+const COUNCIL_PATH = new URL("conselho-de-reinos/", ROOT).pathname;
 const APPROVED = new Set(FILES.map(file => new URL(file, ROOT).pathname));
 
 self.addEventListener("install", event => {
@@ -17,6 +19,8 @@ self.addEventListener("fetch", event => {
   if (request.method !== "GET") return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin || !url.pathname.startsWith(ROOT.pathname)) return;
+  // This game owns a distinct offline shell. Never serve the catalog HTML for its URL.
+  if (url.pathname.startsWith(MARKET_PATH) || url.pathname.startsWith(COUNCIL_PATH)) return;
   if (request.mode !== "navigate" && !APPROVED.has(url.pathname)) return;
   event.respondWith((async () => {
     const key = request.mode === "navigate" ? new URL("index.html", ROOT).href : request;
