@@ -85,3 +85,26 @@ test('PG Estratégia: continuar último jogo abre o título salvo sem cadastro',
  await resume.click();
  await expect(page.locator('#classic-game-frame')).toHaveAttribute('src','../#/jogar/domino');
 });
+
+
+test('Meus favoritos mostra apenas jogos de estratégia salvos no Arcade, com atualização após jogar',async({page})=>{
+ await page.addInitScript(()=>{
+  localStorage.setItem('pg-arcade-progress-v1',JSON.stringify({favorites:['xadrez','snake','domino'],visits:{},records:{},last:null}));
+ });
+ await page.setViewportSize({width:320,height:740});
+ await page.goto('./estrategia/');
+ const library=page.locator('#classic-filter');
+ await library.selectOption('favorites');
+ await expect(page.locator('#classic-count')).toHaveText('2 jogos encontrados');
+ await expect(page.locator('#classics-list a:visible')).toHaveCount(2);
+ await page.locator('#classics-list a[data-arcade-game="xadrez"]').click();
+ const player=page.frameLocator('#classic-game-frame');
+ await expect(player.locator('[data-current-game="xadrez"]')).toBeVisible();
+ await player.locator('.player-utilities summary').click();
+ await player.getByRole('button',{name:'Favoritado',exact:true}).click();
+ await page.locator('#classic-player-close').click();
+ await expect(page.locator('#classic-count')).toHaveText('1 jogo encontrado');
+ await expect(page.locator('#classics-list a[data-arcade-game="xadrez"]')).toBeHidden();
+ await expect(page.locator('#classics-list a[data-arcade-game="domino"]')).toBeVisible();
+ await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
