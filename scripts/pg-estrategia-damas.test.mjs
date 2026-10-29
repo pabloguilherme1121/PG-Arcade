@@ -38,10 +38,10 @@ test('Damas: salto encadeado exige continuar capturando antes do turno rival',()
  assert.equal(second.turn,1);
 });
 test('Damas: promoção torna a peça dama e permite mover para trás',()=>{
- const s=position([[9,1],[63,-1]]);
- const result=commandDraughts(s,{type:'move',from:9,to:2});
- assert.equal(result.board[2],2);
- assert.ok(legalDraughtsMoves(result.board,1).some(m=>m.from===2&&m.to===9));
+ const s=position([[10,1],[62,-1]]);
+ const result=commandDraughts(s,{type:'move',from:10,to:1});
+ assert.equal(result.board[1],2);
+ assert.ok(legalDraughtsMoves(result.board,1).some(m=>m.from===1&&m.to===10));
 });
 test('Damas: vitória, derrota, pausa e partidas terminadas',()=>{
  const s=position([[42,1],[33,-1]]);
@@ -51,6 +51,18 @@ test('Damas: vitória, derrota, pausa e partidas terminadas',()=>{
  const won=commandDraughts(resumed,{type:'move',from:42,to:24});
  assert.equal(won.phase,'won');assert.ok(won.score>0);
  assert.equal(commandDraughts(won,{type:'move',from:24,to:17}),won);
- const trapped=position([[0,1],[9,-1]]);
+ const trapped=position([[1,1],[10,-1]]);
  assert.equal(legalDraughtsMoves(trapped.board,1).length,0);
+});
+
+test('Damas: rival responde de forma determinística e mantém tabuleiro imutável',()=>{
+ const start=createDraughts({difficulty:'veterano',seed:8});
+ const first=commandDraughts(start,{type:'move',from:40,to:33});
+ assert.notEqual(first,start);
+ assert.equal(first.turn,1);
+ assert.deepEqual(first,commandDraughts(start,{type:'move',from:40,to:33}));
+ assert.equal(start.board[40],1);
+ assert.equal(start.board[33],0);
+ assert.equal(first.board[33],1);
+ assert.ok(first.board.filter(p=>p<0).length<=12);
 });
