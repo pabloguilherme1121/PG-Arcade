@@ -26,3 +26,18 @@ test("PG Bot identifica missão no PG Estratégia e responde sem rede", async ({
   await expect(page.getByRole("log")).toContainText("próprio navegador");
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
+
+test("PG Bot fica acessível durante a missão modal no PG Estratégia", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 720 });
+  await page.goto("./estrategia/#est-001");
+  const arena = page.locator("#arena");
+  await expect(arena).toBeVisible();
+  const launcher = arena.getByRole("button", { name: "Abrir ajuda PG Bot" });
+  await expect(launcher).toBeVisible();
+  await launcher.click();
+  await arena.getByRole("button", { name: "Dica", exact: true }).click();
+  await expect(arena.getByRole("log")).toContainText(/objetivo|recursos|limites/i);
+  await arena.getByRole("button", { name: "Fechar ajuda PG Bot" }).last().click();
+  await page.locator("#exit").click();
+  await expect(page.locator("body > .pg-bot")).toHaveCount(1);
+});
