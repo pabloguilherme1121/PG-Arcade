@@ -36,6 +36,7 @@ test('Cifras Reais: derrota por limite, entrada repetida e modo Expedição',asy
   await page.locator('#symbol-'+i).selectOption(token);
  for(let i=0;i<7;i++)await page.locator('#submit').click();
  await expect(page.locator('#status')).toHaveAttribute('data-status','lost');
+ await expect(page.locator('#status')).toContainText('A sequência era:');
  await expect(page.locator('#submit')).toBeDisabled();
  await page.locator('#mode').selectOption('expedicao');
  await expect(page.locator('#slots select')).toHaveCount(5);
