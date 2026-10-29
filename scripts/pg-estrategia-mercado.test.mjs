@@ -66,3 +66,29 @@ test("Mercado de Rotas pode perder por prazo e rejeita ações inválidas", () =
  assert.equal(s.turn,s.maxTurns);
  assert.equal(commandTrade(s,{type:"rest"}),s);
 });
+
+test("Mercado de Rotas: objetivo Capital também admite vitória na dificuldade Veterano", () => {
+ let state=createTrade({difficulty:"veterano",mission:"lucro",seed:7});
+ const actions=[
+  {type:"buy",good:"graos",units:2},
+  {type:"sell",good:"graos",units:1},
+  {type:"buy",good:"graos",units:2},
+  {type:"travel",to:3},
+  {type:"sell",good:"graos",units:2},
+  {type:"buy",good:"tecnologia",units:2},
+  {type:"sell",good:"graos",units:1},
+  {type:"travel",to:2},
+  {type:"sell",good:"tecnologia",units:2},
+  {type:"buy",good:"metal",units:2},
+  {type:"sell",good:"metal",units:2},
+ ];
+ for(const action of actions) {
+  const next=commandTrade(state,action);
+  assert.notEqual(next,state,"a sequência vencedora deve aplicar todas as decisões");
+  state=next;
+ }
+ assert.equal(state.phase,"won");
+ assert.equal(state.credits,70);
+ assert.equal(state.turn,11);
+ assert.ok(state.score>0);
+});
