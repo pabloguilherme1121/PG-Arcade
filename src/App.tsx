@@ -380,7 +380,7 @@ export default function App() {
                 <ArrowLeft size={19} />
                 Voltar aos jogos
               </a>
-              {game.category === "Estratégia" && (
+              {game.category === "Estratégia" && window.self === window.top && (
                 <a className="button" href={`${import.meta.env.BASE_URL}estrategia/?arcade=${encodeURIComponent(game.id)}#classicos`}>
                   Jogar no PG Estratégia
                 </a>
