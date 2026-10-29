@@ -67,6 +67,18 @@
           <div id="actions" class="actions"></div>
           <p id="message" class="message" role="status" aria-live="polite"></p>
           <p id="record" class="record"></p>
+          <section class="pg-bot-help" aria-label="PG Bot de suporte ao jogo">
+            <button type="button" id="pg-bot-toggle" aria-controls="pg-bot-body" aria-expanded="false"><img src="../../brand/pg-bot/mascot.webp" alt="" width="38" height="44" loading="lazy" decoding="async" /><span>PG Bot <small>Ajuda durante a partida</small></span></button>
+            <div id="pg-bot-body" hidden>
+              <p class="pg-bot-disclosure">Orientações automáticas locais. Não é chat de IA e não coleta mensagens.</p>
+              <div class="pg-bot-topics" role="group" aria-label="Assuntos do PG Bot">
+                <button type="button" data-pg-bot-topic="objetivo" aria-pressed="true">Objetivo</button>
+                <button type="button" data-pg-bot-topic="controles" aria-pressed="false">Controles</button>
+                <button type="button" data-pg-bot-topic="situacao" aria-pressed="false">Situação</button>
+              </div>
+              <p id="pg-bot-answer" role="status" aria-live="polite"></p>
+            </div>
+          </section>
           <button id="restart" type="button" class="restart">↻ Reiniciar partida</button>
         </aside>
       </div>
