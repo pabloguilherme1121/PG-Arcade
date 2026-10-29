@@ -11,11 +11,22 @@
     "fronteira orbital": "Na Fronteira Orbital, explore setores vizinhos antes de colonizar. Mantenha as colônias conectadas e escolha entre expansão e pesquisa.",
     "refugio do inverno": "No Refúgio do Inverno, acompanhe alimento, lenha, calor e moral. Reserve suprimentos para nevascas e construa sinais na campanha de evacuação."
   };
+  // Advice grounded in the six actual PG Estratégia campaign rule families.
+  // The title contains the family name before the colon; no network required.
+  const campaignHints = {
+    "conquista territorial": "Objetivo: conquiste casas vizinhas ao seu território antes do rival. Expanda por dois lados quando possível e alcance a meta de áreas dentro do limite de turnos.",
+    "rota critica": "Objetivo: faça um caminho até a saída, sem atravessar bloqueios. Verifique a próxima casa antes de avançar e use Desfazer caso um corredor fique sem saída.",
+    "comercio & recursos": "Objetivo: consiga influência sem acabar com créditos, alimento ou minério. Produza recursos antes de investir; cada ação gasta um turno.",
+    "defesa de fronteira": "Objetivo: sobreviva às ondas de ataque. Observe a pista ameaçada, construa torres nas pistas certas e reforce a defesa antes de avançar.",
+    "expedicao tatica": "Objetivo: recolha as cargas e chegue à saída. Controle o combustível, visite postos de abastecimento e evite caminhos bloqueados.",
+    "plano da cidade": "Objetivo: equilibre energia, água e confiança. Planejamento integrado aumenta os três indicadores lentamente; outras ações sacrificam um recurso para melhorar outro."
+  };
   const normalize = text => String(text || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
   function replyFor(question, gameTitle = "") {
     const q = normalize(question);
     const title = normalize(gameTitle);
     const hint = Object.entries(hints).find(([name]) => title.includes(name))?.[1];
+    const campaignHint = Object.entries(campaignHints).find(([name]) => title.startsWith(name + ":"))?.[1];
     if (/150|quantos jogos|jogos diferentes|missoes/.test(q))
       return "O portal possui 150 missões em 6 sistemas de regras. A coleção de jogos independentes é outra meta, ainda em desenvolvimento. Missões repetem sistemas e não são 150 jogos diferentes.";
     if (/privacidade|dados|cadastro|login|salvamento|progresso|recorde/.test(q))
@@ -28,6 +39,7 @@
       return "Use o comando de pausa do jogo quando existir. Para começar outra partida, selecione Reiniciar. Na campanha Estratégia, Desfazer permite revisar a última decisão.";
     if (/dica|estrategia|vencer|como jogar|jogada|ajuda no jogo|regras/.test(q)) {
       if (hint) return hint;
+      if (campaignHint) return campaignHint;
       return "Escolha um jogo e abra a arena para receber uma dica específica. Observe o objetivo, os recursos e os limites de turno antes de jogar.";
     }
     if (/buscar|pesquisa|filtro|encontrar|onde|jogos|catalogo|arcade/.test(q))
