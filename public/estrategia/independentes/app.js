@@ -207,7 +207,7 @@ function renderDraughts() {
     }, "draughts-cell", s.paused || s.phase !== "playing" || !(from || target));
     button.dataset.cell = String(cell);
     button.dataset.piece = String(piece);
-    button.dataset.tone = (row + col) % 2 === 0 ? "dark" : "light";
+    button.dataset.tone = (row + col) % 2 === 1 ? "dark" : "light";
     button.dataset.selected = String(cell === selected);
     button.dataset.target = String(target);
     button.setAttribute("aria-label", "Linha " + row + ", coluna " + col + ": " +
