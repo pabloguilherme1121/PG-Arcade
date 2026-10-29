@@ -3,7 +3,7 @@
 const CACHE = "pg-estrategia-shell-v3";
 const FILES = [
   "./", "./index.html", "./style.css", "./app.js", "./catalog.mjs",
-  "./core.mjs", "./icon.svg", "./manifest.webmanifest",
+  "./core.mjs", "./navigation.mjs", "./icon.svg", "./manifest.webmanifest",
   "../brand/pg-bot/support.mjs", "../brand/pg-bot/support.css",
   "../brand/pg-bot/mascot.webp",
 ];
