@@ -2418,3 +2418,17 @@ html[data-arcade-contrast="true"] .game-grid .card-mode-tags span {
 }
 
 /* Project discovery stays outside the game and immersive controls. */
+
+
+/* The strategy tab remains part of the Arcade; its hub link is progressive navigation. */
+.strategy-hub-jump{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
+  gap:16px;padding:17px;margin:14px 0 18px;
+  border:1px solid var(--border, #476383);border-radius:14px;
+  background:linear-gradient(110deg,#193a3c,#162b47);color:#f3fafb;
+}
+.strategy-hub-jump>div{flex:1 1 260px;min-width:0}
+.strategy-hub-jump strong{font-size:15px;color:#d6ffb0}
+.strategy-hub-jump p{font-size:13px;line-height:1.6;margin:7px 0 0;color:#d1e2e9}
+.strategy-hub-jump .button{min-height:46px;min-width:0;text-align:center}
+@media(max-width:390px){.strategy-hub-jump{padding:12px}.strategy-hub-jump .button{width:100%}}
