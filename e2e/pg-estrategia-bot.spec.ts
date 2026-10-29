@@ -24,3 +24,13 @@ test('PG Bot oferece ajuda em 320 px, teclado e durante uma missão', async ({ p
   await expect(page.locator('#arena')).toBeVisible();
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
+
+
+test('PG Arcade encaminha para o PG Bot do Estratégia sem novo serviço', async ({ page }) => {
+  await page.goto('./');
+  const link = page.getByRole('link', { name: 'PG Bot · Suporte' });
+  await expect(link).toHaveAttribute('href', /estrategia\/\?ajuda=1$/);
+  await link.click();
+  await expect(page).toHaveURL(/estrategia\/\?ajuda=1$/);
+  await expect(page.getByRole('dialog', { name: 'PG Bot, suporte do jogo' })).toBeVisible();
+});
