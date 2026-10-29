@@ -11,7 +11,7 @@ const GAMES = {
   "frota-oculta": { name: "Frota Oculta", intro: "Localize a frota inimiga num mapa 6×6. Cada disparo consome um turno; use o sonar para deduzir a posição das embarcações.", instructions: "Toque em um quadrante para atacar. Sonar revela o número de navios numa linha, mas gasta um turno. Reparos preservam sua base sob pressão.", init: createNaval },
   "cartas-de-cerco": { name: "Cartas de Cerco", intro: "Monte sua ofensiva com as cartas disponíveis, distribua energia e sobreviva aos ataques de uma fortaleza inimiga.", instructions: "Jogue cartas de sua mão gastando energia. Fortificar bloqueia o próximo ataque; Aríete causa dano elevado. Encerrar o turno permite que o rival ataque.", init: createSiege },
   "hex-conexao": { name: "Hex Conexão", intro: "Conecte de cima até embaixo num tabuleiro hexagonal de 49 casas. O rival tenta unir as bordas esquerda e direita.", instructions: "Selecione uma casa livre para colocar uma pedra. O adversário responde automaticamente. Você ganha ao criar uma cadeia contínua entre as bordas norte e sul.", init: createHex },
-  "fronteira-orbital": { name: "Fronteira Orbital", intro: "Explore um setor 4×4 sob névoa, colonize planetas vizinhos, pesquise tecnologias e dispute o mapa com uma facção rival.", instructions: "Selecione Explorar e toque num setor vizinho revelável. Depois use Colonizar numa área explorada e conectada à sua base. Pesquisa avança ciência; Extrair repõe recursos. A facção rival cresce a cada rodada, conforme a dificuldade.", init: createFrontier },
+  "fronteira-orbital": { name: "Fronteira Orbital", intro: "Explore um setor 4×4 sob névoa, colonize planetas vizinhos, pesquise tecnologias e dispute o mapa com uma facção rival.", instructions: "Selecione Explorar e toque num setor vizinho revelável. Depois use Colonizar numa área explorada e conectada à sua base. Pesquisa exige pelo menos duas colônias e avança ciência; Extrair repõe recursos. A facção rival cresce a cada rodada, conforme a dificuldade.", init: createFrontier },
   "muralha-das-torres": { name: "Muralha das Torres", intro: "Construa torres, defenda uma rota de 11 casas e administre créditos em ondas crescentes.", instructions: "Escolha Canhão ou Gelo e toque numa casa livre para construir. Toque numa torre de nível 1 para aprimorá-la por 4 créditos. Inicie cada onda e avance os turnos para observar a defesa.", init: createTowers },
   "patrulha-tatica": { name: "Patrulha Tática", intro: "Conduza um esquadrão por um mapa 5×5. Elimine drones ou recupere um sinal e volte à base.", instructions: "Toque ou use Tab/Enter nas casas livres vizinhas para mover. Ataque drones ao alcance de duas casas; também pode se defender ou curar. Troque o objetivo para uma operação de extração.", init: createSquad },
 };
@@ -284,7 +284,7 @@ function renderFrontier() {
     !canFrontierAction(s,{type:"extract"})));
   actions.append(action(s.paused?"Retomar operação":"Pausar operação",()=>update(commandFrontier(current,{type:s.paused?"resume":"pause"})),"secondary",
     s.phase!=="playing"));
-  actions.append(el("p","intel","Explorar custa 1 energia. Colonizar custa 2 energia e 2 minérios. Cada turno gera renda básica. O rival se expande sem usar rede ou dados pessoais."));
+  actions.append(el("p","intel","Explorar custa 1 energia. Colonizar custa 2 energia e 2 minérios. Pesquisar exige ao menos 2 colônias. Cada turno gera renda básica. O rival se expande sem usar rede ou dados pessoais."));
 }
 
 function render() {
