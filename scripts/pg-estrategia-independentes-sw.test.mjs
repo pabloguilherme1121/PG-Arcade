@@ -89,7 +89,7 @@ test("ativação do SW da campanha nunca apaga o cache do subsite independente",
   let pending;
   handlers.get("activate")({ waitUntil(task) { pending = task; } });
   await pending;
-  assert.deepEqual(deleted, ["pg-estrategia-shell-v1"],
+  assert.deepEqual(deleted, ["pg-estrategia-shell-v1", "pg-estrategia-shell-v2"],
     "a campanha só pode limpar gerações antigas do próprio cache");
 });
 
