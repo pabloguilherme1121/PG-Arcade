@@ -35,7 +35,7 @@ export function submitCipherGuess(s,guess){
  const result=rateCipherGuess(s.secret,guess);
  const history=[...s.history,{guess:[...guess],...result}];
  const status=result.exact===s.secret.length?'won':history.length>=s.maxAttempts?'lost':'playing';
- const notice=status==='won'?'Vitória! Você decifrou a sequência.':status==='lost'?'Derrota: as tentativas acabaram.':'Resposta recebida. Reavalie os símbolos deslocados.';
+ const notice=status==='won'?'Vitória! Você decifrou a sequência.':status==='lost'?'Derrota: as tentativas acabaram. A sequência era: '+s.secret.join(' / ')+'.':'Resposta recebida. Reavalie os símbolos deslocados.';
  return {...s,history,status,notice};
 }
 export function revealCipherHint(s){
