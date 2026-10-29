@@ -76,7 +76,7 @@ test('favoritos do Arcade acompanham a biblioteca sem criar outro armazenamento'
  const raw=JSON.stringify({favorites:['xadrez','domino','2048','nao-existe','xadrez']});
  assert.deepEqual(readStrategyFavorites(raw),['xadrez','domino','2048']);
  assert.deepEqual(filterStrategyLibrary('', 'favorites',readStrategyFavorites(raw)).map(g=>g.id),
-    ['xadrez','domino','2048']);
+    ['2048','xadrez','domino']);
  assert.deepEqual(filterStrategyLibrary('xadrez','favorites',readStrategyFavorites(raw)).map(g=>g.id),['xadrez']);
  assert.equal(filterStrategyLibrary('domino','favorites',[]).length,0);
  assert.equal(filterStrategyLibrary('','all',readStrategyFavorites(raw)).length,47);
