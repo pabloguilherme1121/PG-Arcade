@@ -11,7 +11,7 @@ function loadRules() {
 }
 test("PG Bot reconhece ajuda de jogos e recomendações específicas", () => {
   const { replyFor } = loadRules();
-  assert.match(replyFor("dica", "Damas Táticas"), /captura obrigat[oó]ria/i);
+  assert.match(replyFor("dica", "Damas Táticas"), /captura (?:é )?obrigat[oó]ria/i);
   assert.match(replyFor("dica", "Hex Conexão"), /conect/i);
   assert.match(replyFor("como jogar", "Frota Oculta"), /tabuleiro|sonar/i);
 });
