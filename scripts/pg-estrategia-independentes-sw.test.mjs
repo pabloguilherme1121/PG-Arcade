@@ -80,7 +80,8 @@ test("ativação do SW da campanha nunca apaga o cache do subsite independente",
     caches: {
       async keys() {
         return ["pg-estrategia-shell-v1", "pg-estrategia-shell-v2",
-          "pg-estrategia-originais-shell-v1", "pg-arcade-2026-10-11-v6"];
+          "pg-estrategia-originais-shell-v1", "pg-estrategia-originais-shell-v2",
+          "pg-estrategia-mercado-v1", "pg-estrategia-conselho-v1", "pg-arcade-2026-10-11-v6"];
       },
       async delete(key) { deleted.push(key); return true; },
     },
@@ -89,8 +90,8 @@ test("ativação do SW da campanha nunca apaga o cache do subsite independente",
   let pending;
   handlers.get("activate")({ waitUntil(task) { pending = task; } });
   await pending;
-  assert.deepEqual(deleted, ["pg-estrategia-shell-v1"],
-    "a campanha só pode limpar gerações antigas do próprio cache");
+  assert.deepEqual(deleted, ["pg-estrategia-shell-v1", "pg-estrategia-shell-v2"],
+    "a campanha limpa apenas versões antigas da sua própria shell, nunca caches dos jogos");
 });
 
 test("SW dos jogos independentes cacheia o motor tático apenas no seu escopo",async()=>{
