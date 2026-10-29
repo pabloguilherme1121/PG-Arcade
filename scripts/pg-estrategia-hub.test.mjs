@@ -28,3 +28,35 @@ test('deep links só aceitam IDs oficiais, preservando a mesma engine e os recor
  assert.equal(arcadeGameUrl('__proto__'),null);
  assert.equal(arcadeGameUrl('../?arcade=x'),null);
 });
+
+
+test('service worker da campanha não apaga caches nem intercepta os jogos independentes',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const {runInNewContext}=await import('node:vm');
+ const root='https://example.test/PG-Arcade/estrategia/';
+ const handlers=new Map(),deleted=[];
+ const old=['pg-estrategia-shell-v3','pg-estrategia-originais-shell-v9','pg-estrategia-mercado-v2','pg-estrategia-reversi-v1'];
+ const self={
+  registration:{scope:root},location:{origin:new URL(root).origin},
+  clients:{async claim(){}},
+  addEventListener(type,callback){handlers.set(type,callback);}
+ };
+ runInNewContext(readFileSync('public/estrategia/sw.js','utf8'),{
+  self,URL,Promise,Set,Response,
+  caches:{
+   async keys(){return old;},
+   async delete(key){deleted.push(key);return true;},
+   async match(){return undefined;},
+   async open(){return {async put(){}};}
+  },fetch:async()=>new Response('ok')
+ });
+ let activation;
+ handlers.get('activate')({waitUntil(promise){activation=promise;}});
+ await activation;
+ assert.deepEqual(deleted,['pg-estrategia-shell-v3']);
+ for(const path of ['independentes/','independentes/naval.mjs','independentes/mercado-de-rotas/','independentes/reversi-tatico/']){
+  let intercepted=false;
+  handlers.get('fetch')({request:{url:root+path,method:'GET',mode:path.endsWith('/')?'navigate':'cors'},respondWith(){intercepted=true;}});
+  assert.equal(intercepted,false,path);
+ }
+});
