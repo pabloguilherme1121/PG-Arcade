@@ -1,0 +1,30 @@
+/* PG Bot independent support widget: 320px mobile, keyboard and reduced motion. */
+.pg-bot{position:fixed;right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));z-index:1000;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f2f7ff;font-size:14px;text-align:left}
+.pg-bot *{box-sizing:border-box}
+.pg-bot button,.pg-bot input{font:inherit}
+.pg-bot button{cursor:pointer;touch-action:manipulation}
+.pg-bot button:focus-visible,.pg-bot a:focus-visible,.pg-bot input:focus-visible{outline:3px solid #baf46e;outline-offset:2px}
+.pg-bot [hidden]{display:none!important}
+.pg-bot-launcher{display:flex;align-items:center;gap:8px;min-height:52px;padding:4px 14px 4px 5px;border:1px solid #a4d764;border-radius:999px;background:#152631;color:#f5faff;box-shadow:0 6px 25px #0009;font-weight:800}
+.pg-bot-launcher:hover{background:#213e40}
+.pg-bot-mascot{width:42px;height:42px;object-fit:contain}
+.pg-bot-panel{position:absolute;right:0;bottom:62px;width:min(352px,calc(100vw - 24px));max-height:min(540px,calc(100dvh - 92px));display:flex;flex-direction:column;overflow:hidden;background:#121e2d;border:1px solid #557987;border-radius:16px;box-shadow:0 12px 40px #000b}
+.pg-bot-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 14px 12px;background:#192b37;border-bottom:1px solid #405662}
+.pg-bot-heading{display:flex;flex-direction:column;gap:2px}
+.pg-bot-heading strong{font-size:16px;color:#e9fbaa}
+.pg-bot-heading small{font-size:11px;color:#c3d2dc}
+.pg-bot-close{min-height:44px;min-width:66px;border:1px solid #6a8999;border-radius:9px;background:#253a48;color:#fff}
+.pg-bot-feed{flex:1;min-height:94px;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:9px;padding:13px;scrollbar-width:thin}
+.pg-bot-message{max-width:94%;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;margin:0;border-radius:12px;padding:10px 12px;color:#eff5fc;font-size:13px}
+.pg-bot-message.answer{align-self:flex-start;background:#253c4b;border:1px solid #3c5b67}
+.pg-bot-message.question{align-self:flex-end;background:#315039;border:1px solid #547d54}
+.pg-bot-questions{display:flex;flex-wrap:wrap;gap:7px;padding:8px 12px 10px}
+.pg-bot-questions button{min-height:40px;padding:6px 11px;border:1px solid #607d7e;border-radius:999px;background:#20343d;color:#f0f7f7}
+.pg-bot-form{display:flex;gap:6px;padding:0 12px 10px}
+.pg-bot-form input{min-width:0;flex:1;min-height:44px;border:1px solid #728c95;background:#0d1722;color:#fff;border-radius:9px;padding:10px}
+.pg-bot-form input::placeholder{color:#adbdc6}
+.pg-bot-form button{min-height:44px;padding:0 12px;border:0;background:#cdf383;color:#101b1d;border-radius:9px;font-weight:800}
+.pg-bot-nav{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;padding:11px 8px;border-top:1px solid #3c5662}
+.pg-bot-nav a{color:#d5f7ac;text-decoration:underline;font-size:12px;line-height:24px}
+@media(max-width:380px){.pg-bot{right:12px;bottom:12px}.pg-bot-panel{bottom:60px}.pg-bot-head{padding:10px 12px}}
+@media(prefers-reduced-motion:reduce){.pg-bot *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
