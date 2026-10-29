@@ -30,7 +30,7 @@
         <div class="hero-copy"><div class="eyebrow"><span class="eyebrow-dot"></span> NOVA COLEÇÃO · 6 SISTEMAS DE REGRAS</div>
           <h1 id="hero-title">Vença com a <em>próxima jogada.</em></h1>
           <p>Território, economia, defesa, logística e gestão. <strong>150 missões estratégicas</strong> distribuídas em seis modos reais de jogo. Escolha sua estratégia, avance e construa seu histórico.</p>
-          <div class="hero-actions"><a href="#catalogo" class="button primary">Explorar missões <span aria-hidden="true">↗</span></a><button id="surprise" class="button secondary" type="button">Missão surpresa ↗</button><button id="pg-bot-open" class="button secondary pg-bot-launch" type="button" aria-haspopup="dialog" aria-controls="pg-bot-dialog"><img src="../brand/pg-bot/mascot.webp" alt="" width="26" height="30" loading="lazy" decoding="async" /> Ajuda do PG Bot</button></div>
+          <div class="hero-actions"><a href="#catalogo" class="button primary">Explorar missões <span aria-hidden="true">↗</span></a><button id="surprise" class="button secondary" type="button">Missão surpresa ↗</button><a href="#classicos" class="button secondary">47 jogos do Arcade ↗</a><button id="pg-bot-open" class="button secondary pg-bot-launch" type="button" aria-haspopup="dialog" aria-controls="pg-bot-dialog"><img src="../brand/pg-bot/mascot.webp" alt="" width="26" height="30" loading="lazy" decoding="async" /> Ajuda do PG Bot</button></div>
           <div class="hero-disclaimer">150 cenários individuais, construídos sobre seis mecânicas compartilhadas. Sem cadastro ou compras.</div>
         </div>
         <div class="hero-art" aria-hidden="true"><div class="battle-head">SIMULAÇÃO TÁTICA <span>EST·150</span></div><div class="art-board"><span class="art-cell a1">◇</span><span class="art-cell a2"></span><span class="art-cell a3">♜</span><span class="art-cell a4"></span><span class="art-cell a5">✦</span><span class="art-cell a6"></span><span class="art-cell a7">◉</span><span class="art-cell a8"></span><span class="art-cell a9">✣</span><span class="art-cell a10"></span><span class="art-cell a11"></span><span class="art-cell a12">◈</span><span class="art-cell a13">◇</span><span class="art-cell a14"></span><span class="art-cell a15"></span><span class="art-cell a16">▣</span></div><div class="art-foot"><span>OPERAÇÃO EM CURSO</span><span>06 / 25</span></div></div>
@@ -60,7 +60,28 @@
           <a class="classic-item" href="./independentes/cifras-reais/">◆ Cifras Reais · dedução de códigos</a>
         </div>
       </section>
-      <section class="classics" aria-labelledby="classics-title"><div class="section-intro"><div><div class="kicker">CONEXÃO COM O SITE ORIGINAL</div><h2 id="classics-title">Estratégia no PG Arcade</h2><p>Os jogos de estratégia já disponíveis no Arcade continuam acessíveis diretamente.</p></div><a class="text-link" href="../">Abrir Arcade ↗</a></div><div id="classics-list" class="classics-grid"></div></section>
+      <section id="classicos" class="classics" aria-labelledby="classics-title">
+        <div class="section-intro"><div><div class="kicker">JOGOS ORIGINAIS · UMA SÓ BIBLIOTECA</div>
+          <h2 id="classics-title">47 jogos clássicos de estratégia</h2>
+          <p>Escolha e jogue aqui. Os motores, favoritos e recordes continuam no PG Arcade, sem cópias ou perdas de progresso.</p>
+        </div><a class="text-link" href="../">Ver catálogo completo ↗</a></div>
+        <div class="classic-shortcuts"><button type="button" class="button secondary" id="classic-continue" hidden>Continuar último jogo</button></div>
+        <div class="classic-filters" role="group" aria-label="Filtrar jogos de estratégia">
+          <label>Buscar jogo<input id="classic-search" type="search" aria-label="Buscar jogos de estratégia" placeholder="Xadrez, dominó, rotas..." autocomplete="off"></label>
+          <label>Tipo de jogo<select id="classic-filter" aria-label="Filtrar tipo de estratégia">
+            <option value="all">Todos os estilos</option>
+            <option value="favorites">Meus favoritos no Arcade</option>
+            <option value="tabuleiro">Tabuleiro e turnos</option>
+            <option value="gestao">Gestão e recursos</option>
+            <option value="logica">Lógica e rotas</option>
+            <option value="acao">Ação e cooperação</option>
+          </select></label>
+          <button type="button" class="button secondary" id="classic-clear">Limpar filtros</button>
+          <span id="classic-count" role="status" aria-live="polite">47 jogos encontrados</span>
+        </div>
+        <div id="classics-list" class="classics-grid"></div>
+        <p id="classic-empty" class="empty" hidden>Nenhum jogo encontrado. Limpe os filtros para mostrar todos os jogos.</p>
+      </section>
     </main>
     <footer class="footer"><span>PG ESTRATÉGIA <small>· uma coleção do PG Arcade</small></span><div><a href="../">PG Arcade</a><a href="https://pabloguilherme1121.github.io/PG-portfolio/">PG Portfólio</a></div><small>Progresso salvo somente neste navegador; sem conta e sem sincronização entre dispositivos.</small></footer>
   </div>
@@ -75,6 +96,7 @@
       <p class="pg-bot-disclosure">Respostas prontas. Este mascote não é uma IA nem um atendimento humano. Nenhum dado é enviado.</p>
       <div class="pg-bot-topics" role="group" aria-label="Assuntos da ajuda">
         <button type="button" data-help-topic="como-jogar">Como jogar</button>
+        <button type="button" data-help-topic="dica-missao">Dica da missão</button>
         <button type="button" data-help-topic="progresso">Salvar progresso</button>
         <button type="button" data-help-topic="offline">Jogar offline</button>
         <button type="button" data-help-topic="reiniciar">Desfazer ou reiniciar</button>
@@ -82,6 +104,24 @@
       </div>
       <p id="pg-bot-answer" class="pg-bot-answer" role="status" aria-live="polite">Selecione um assunto para começar.</p>
       <button type="button" id="pg-bot-close" class="button secondary pg-bot-close">Fechar ajuda</button>
+    </div>
+  </dialog>
+  <dialog id="classic-player" class="classic-player-dialog" aria-labelledby="classic-player-title">
+    <div class="classic-player-shell">
+      <div class="classic-player-top">
+        <div><p class="kicker">PG ESTRATÉGIA · JOGO DO ARCADE</p><h2 id="classic-player-title">Jogo</h2></div>
+        <div class="classic-player-actions">
+          <a id="classic-open-new" class="button secondary" href="../" target="_blank" rel="noopener">Abrir no Arcade em tela completa ↗</a>
+          <button id="classic-player-close" class="button primary" type="button">Fechar jogo</button>
+        </div>
+      </div>
+      <p class="classic-player-note">O jogo original é carregado somente ao abrir. Os mesmos controles e recordes do Arcade são preservados.</p>
+
+      <details class="classic-player-bot" id="classic-player-bot">
+        <summary><img src="../brand/pg-bot/mascot.webp" alt="" width="25" height="29" loading="lazy"> PG Bot · ajuda do jogo</summary>
+        <p id="classic-bot-tip" role="status" aria-live="polite">Selecione um jogo para receber orientações.</p>
+      </details>
+      <iframe id="classic-game-frame" title="Jogo do PG Arcade" allow="fullscreen" allowfullscreen></iframe>
     </div>
   </dialog>
   <div id="toast" role="status" class="toast" aria-live="polite"></div>
