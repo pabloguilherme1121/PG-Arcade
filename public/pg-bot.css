@@ -28,3 +28,8 @@
 .pg-bot-nav a{color:#d5f7ac;text-decoration:underline;font-size:12px;line-height:24px}
 @media(max-width:380px){.pg-bot{right:12px;bottom:12px}.pg-bot-panel{bottom:60px}.pg-bot-head{padding:10px 12px}}
 @media(prefers-reduced-motion:reduce){.pg-bot *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+/* Immersive play has priority over the floating assistant. A launcher at the
+   viewport bottom obscured Snake's D-pad in 844×390 landscape. Restore it
+   immediately when the player exits full screen; never weaken the hit-test. */
+body:has(.player[data-immersive="true"]) .pg-bot{display:none!important}
