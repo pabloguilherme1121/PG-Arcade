@@ -1,17 +1,17 @@
 import { useScopedRecord } from "./RecordScope";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Pause, Play, RotateCcw } from "lucide-react";
 import {
   queueSnakeDirection,
   directionFromKey,
   directionFromSwipe,
-  samePoint,
   stepSnake,
   snakeFood,
   type Direction,
   type Point,
 } from "../lib/engines";
 import Controls from "./Controls";
+import { snakeCellClasses } from "../lib/snakeCellClasses";
 import { revealPlayfield } from "../lib/revealPlayfield";
 import { snakeTickDelay } from "../lib/snakePacing";
 import { useAutoPause } from "./useAutoPause";
@@ -42,6 +42,7 @@ export default function Snake({
   const [record, onRecord] = useScopedRecord(`${mode}-${speed}-${progressive ? "progressive" : "constant"}`, legacyRecord, saveLegacy);
   const [queuedPreview, setQueuedPreview] = useState<Direction[]>([]);
   const delay = snakeTickDelay(speed, score, progressive);
+  const cellClasses = useMemo(() => snakeCellClasses(body, food), [body, food]);
   const current = useRef<Direction>("right");
   const queued = useRef<Direction[]>([]);
   const touch = useRef<[number, number] | null>(null);
@@ -182,23 +183,7 @@ export default function Snake({
             if (d) direction(d);
           }}
         >
-          {Array.from({ length: 256 }, (_, i) => {
-            const p = { x: i % 16, y: Math.floor(i / 16) };
-            return (
-              <span
-                key={i}
-                className={
-                  samePoint(p, body[0])
-                    ? "snake-head"
-                    : body.some((b) => samePoint(b, p))
-                      ? "snake-body"
-                      : food && samePoint(p, food)
-                        ? "snake-food"
-                        : ""
-                }
-              />
-            );
-          })}
+          {cellClasses.map((kind, index) => <span key={index} className={kind} />)}
           {status !== "running" && (
             <div className="board-overlay">
               <strong>
