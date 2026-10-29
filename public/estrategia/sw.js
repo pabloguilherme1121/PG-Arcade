@@ -4,7 +4,7 @@ const CACHE = "pg-estrategia-shell-v4";
 const FILES = [
   "./", "./index.html", "./style.css", "./app.js", "./catalog.mjs",
   "./core.mjs", "./icon.svg", "./manifest.webmanifest",
-  "./pg-bot.css", "./pg-bot-help.mjs",
+  "./pg-bot.css", "./pg-bot-help.mjs", "./strategy-hub.mjs",
 ];
 const SCOPE = new URL("./", self.registration.scope);
 const allowedAssets = new Set(FILES.map(path => new URL(path, SCOPE).pathname));
@@ -31,7 +31,6 @@ self.addEventListener("fetch", event => {
   if (request.method !== "GET") return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin || !url.pathname.startsWith(SCOPE.pathname)) return;
-  // O laboratório tem service worker próprio. Não capturar suas páginas nem apagar seu cache.
   if (url.pathname.startsWith(new URL("independentes/", SCOPE).pathname)) return;
   const navigation = request.mode === "navigate";
   if (!navigation && !allowedAssets.has(url.pathname)) return;

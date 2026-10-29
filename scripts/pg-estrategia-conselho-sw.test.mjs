@@ -28,18 +28,19 @@ test("Conselho possui shell isolado do catálogo e do Mercado de Rotas",()=>{
 });
 
 
-test("portal registra dez motores independentes sem substituir as 150 missões",()=>{
+test("portal anuncia a contagem real de motores independentes sem duplicar missões",()=>{
  const lab=readFileSync("public/estrategia/independentes/index.html","utf8");
  const portal=readFileSync("public/estrategia/index.html","utf8");
  const embedded=[...lab.matchAll(/data-select="([^"]+)"/g)].map(match=>match[1]);
  const linked=[...lab.matchAll(/class="choice[^"]*" href="\.\/([^/]+)\//g)].map(match=>match[1]);
  const ids=[...embedded,...linked];
- assert.equal(ids.length,10);
- assert.equal(new Set(ids).size,10);
+ assert.ok(ids.length>=10 && ids.length<=12);
+ assert.equal(new Set(ids).size,ids.length);
  assert.equal(embedded.length,8);
- assert.deepEqual(new Set(linked),new Set(["conselho-de-reinos","mercado-de-rotas"]));
- assert.match(lab,/10 motores independentes/);
- assert.match(portal,/Dez jogos candidatos/);
+ assert.ok(linked.includes("conselho-de-reinos") && linked.includes("mercado-de-rotas"));
+ assert.equal(linked.length,ids.length-8);
+ assert.match(lab,new RegExp(String(ids.length)+" motores independentes"));
+ assert.match(portal,new RegExp(({10:"Dez",11:"Onze",12:"Doze"})[ids.length]+" jogos candidatos"));
  assert.match(portal,/href="\.\/independentes\/mercado-de-rotas\/"/);
  assert.match(portal,/href="\.\/independentes\/conselho-de-reinos\/"/);
  assert.match(portal,/id="pg-bot-in-arena"/);

@@ -380,6 +380,11 @@ export default function App() {
                 <ArrowLeft size={19} />
                 Voltar aos jogos
               </a>
+              {game.category === "Estratégia" && window.self === window.top && (
+                <a className="button" href={`${import.meta.env.BASE_URL}estrategia/?arcade=${encodeURIComponent(game.id)}#classicos`}>
+                  Jogar no PG Estratégia
+                </a>
+              )}
                 <button
                   onClick={(event) => {
                     const menu = event.currentTarget.closest(".player-toolbar")?.querySelector<HTMLDetailsElement>(".player-utilities");
@@ -639,6 +644,17 @@ export default function App() {
                   ),
                 )}
               </div>
+              {category === "Estratégia" && page === "catalogo" && (
+                <section className="strategy-hub-jump" aria-label="Central dos jogos de estratégia">
+                  <div>
+                    <strong>PG Estratégia · Central de jogos</strong>
+                    <p>Os 47 jogos de estratégia do Arcade em uma biblioteca com busca e filtros. Seus favoritos e recordes continuam os mesmos.</p>
+                  </div>
+                  <a href={`${import.meta.env.BASE_URL}estrategia/#classicos`} className="button primary">
+                    Abrir PG Estratégia · 47 jogos <ArrowRight size={18} aria-hidden="true"/>
+                  </a>
+                </section>
+              )}
               <div className="smart-mode-discovery" role="region" aria-label="Encontre seu modo de jogar">
                 <div className="smart-mode-header">
                   <strong>Seu estilo de jogo</strong>
