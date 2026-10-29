@@ -43,3 +43,25 @@ test('Conselho: modo estabilidade, dificuldade Veterano e derrota por confiança
  await expect(page.locator('[data-action="fund"]')).toBeDisabled();
  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
+
+
+test('Conselho: vitória legítima em Estabilidade Veterano após doze decisões',async({page})=>{
+ await page.setViewportSize({width:390,height:780});
+ await page.addInitScript(()=>{Math.random=()=>1/0x7fffffff;});
+ await page.goto('./estrategia/independentes/conselho-de-aliancas/');
+ await page.locator('#mode').selectOption('estabilidade');
+ await page.locator('#difficulty').selectOption('veterano');
+ const choices=[
+  ['outreach','0'],['outreach','0'],['fund',null],['fund',null],['outreach','0'],
+  ['negotiate','0'],['negotiate','0'],['negotiate','1'],['negotiate','1'],
+  ['negotiate','1'],['negotiate','1'],['fund',null],
+ ];
+ for(const [action,faction] of choices){
+  const selector='[data-action="'+action+'"]'+(faction!==null?'[data-faction="'+faction+'"]':'');
+  await page.locator(selector).click();
+ }
+ await expect(page.locator('#round')).toContainText('12 / 12');
+ await expect(page.locator('#status')).toContainText('Vitória');
+ await expect(page.locator('#record')).toContainText('Melhor pontuação');
+ await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
