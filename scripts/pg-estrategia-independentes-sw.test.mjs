@@ -129,3 +129,13 @@ test("SW mantém o motor de sobrevivência dentro do subsite independente",async
  assert.equal(await (await sw.request(target)).text(),"novo-codigo");
  assert.equal(await sw.request(origin+"estrategia/engine.mjs"),null);
 });
+
+test("SW dos jogos originais atualiza e mantém Damas Táticas offline",async()=>{
+ const child=simulate("public/estrategia/independentes/sw.js",origin+"estrategia/independentes/");
+ const game=origin+"estrategia/independentes/draughts.mjs";
+ assert.equal(await (await child.request(game)).text(),"novo-codigo");
+ child.setOnline(false);
+ assert.equal(await (await child.request(game)).text(),"novo-codigo");
+ const campaign=origin+"estrategia/app.js";
+ assert.equal(await child.request(campaign),null);
+});
