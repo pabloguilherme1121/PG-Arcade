@@ -12,6 +12,8 @@ test('PG Bot responde no PG Estratégia sem cobrir a arena no celular', async ({
   await page.goto('./estrategia/#est-076');
   await expect(page.locator('#battlefield')).toBeHidden();
   await expect(page.locator('.defense-lane')).toHaveCount(3);
+  await page.locator('.arena-bot-tip summary').click();
+  await expect(page.locator('#arena-bot-text')).toContainText('pista');
 });
 
 test('PG Bot é operável por teclado no Arcade e mostra ajuda de controles', async ({ page }) => {
