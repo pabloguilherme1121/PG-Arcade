@@ -61,3 +61,26 @@ test('Biblioteca de estratégia realmente abre o motor Arcade e preserva favorit
  await page.locator('.player-utilities summary').click();
  await expect(page.getByRole('button',{name:'Favoritado',exact:true})).toBeVisible();
 });
+
+
+test('Arcade: jogo estratégico tem atalho direto para o mesmo jogo no PG Estratégia',async({page})=>{
+ await page.goto('./#/jogar/xadrez');
+ const link=page.getByRole('link',{name:'Jogar no PG Estratégia'});
+ await expect(link).toHaveAttribute('href',/estrategia\/\?arcade=xadrez#classicos$/);
+ await link.click();
+ await expect(page).toHaveURL(/\/estrategia\/\?arcade=xadrez#classicos$/);
+ await expect(page.locator('#classic-player')).toBeVisible();
+ await expect(page.locator('#classic-game-frame')).toHaveAttribute('src','../#/jogar/xadrez');
+});
+test('PG Estratégia: continuar último jogo abre o título salvo sem cadastro',async({page})=>{
+ await page.goto('./estrategia/');
+ const resume=page.locator('#classic-continue');
+ await expect(resume).toBeHidden();
+ await page.locator('#classics-list a[data-arcade-game="domino"]').click();
+ await page.locator('#classic-player-close').click();
+ await expect(resume).toBeVisible();
+ await page.reload();
+ await expect(resume).toContainText('Dominó');
+ await resume.click();
+ await expect(page.locator('#classic-game-frame')).toHaveAttribute('src','../#/jogar/domino');
+});
