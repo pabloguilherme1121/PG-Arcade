@@ -486,15 +486,30 @@ export default function App() {
               <details
                 ref={quickHelp}
                 key={game.id}
+                data-pg-bot="game-help"
                 onToggle={(event) => {
                   if (event.currentTarget.open)
                     window.dispatchEvent(new Event("pg-arcade-pause"));
                 }}
               >
-                <summary aria-keyshortcuts="Alt+Shift+H">
-                  Ajuda rápida e controles
+                <summary className="pg-bot-game-summary" aria-keyshortcuts="Alt+Shift+H">
+                  <img
+                    src={import.meta.env.BASE_URL + "brand/pg-bot/mascot.webp"}
+                    alt=""
+                    width="36"
+                    height="42"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span>PG Bot · Ajuda rápida e controles de {game.name}</span>
                 </summary>
-                <Suspense fallback={<p>Carregando instruções do jogo…</p>}><QuickHelpText id={game.id}/></Suspense>
+                <div className="pg-bot-game-content">
+                  <p>PG Bot oferece respostas prontas para este jogo. Não é uma conversa com IA nem um atendimento humano.</p>
+                  <Suspense fallback={<p>Carregando instruções do jogo…</p>}><QuickHelpText id={game.id}/></Suspense>
+                  <a href={import.meta.env.BASE_URL + "estrategia/?ajuda=1"}>
+                    PG Estratégia · Ajuda para missões
+                  </a>
+                </div>
               </details>
             </div>
             <dialog

@@ -242,3 +242,73 @@ html[data-arcade-contrast="true"] :is(.smart-mode-discovery,.smart-mode-chips bu
   .smart-mode-chips button{transition:none}
 }
 html[data-arcade-motion="reduced"] .smart-mode-chips button{transition:none}
+
+
+/* PG Bot inside gameplay: reuse the lightweight mascot and existing lazy help. */
+.experience-tools [data-pg-bot="game-help"] {
+  min-width: 0;
+  border: 1px solid #5f8796;
+  border-radius: 12px;
+  background: #132839;
+}
+.experience-tools [data-pg-bot="game-help"] .pg-bot-game-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 7px 12px;
+  cursor: pointer;
+}
+.pg-bot-game-summary img {
+  flex: none;
+  width: 36px;
+  height: 42px;
+  object-fit: contain;
+}
+.pg-bot-game-summary span {
+  min-width: 0;
+  flex: 1;
+  overflow-wrap: anywhere;
+  font-weight: 750;
+}
+.pg-bot-game-content {
+  padding: 4px 14px 14px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.pg-bot-game-content p {
+  color: #e0edf7;
+}
+.pg-bot-game-content > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #e3ffac;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+html[data-arcade-contrast="true"] .experience-tools [data-pg-bot="game-help"] {
+  border-color: #fff;
+  background: #000;
+}
+@media (max-width: 390px) {
+  .experience-tools [data-pg-bot="game-help"] .pg-bot-game-summary { padding: 6px 8px; }
+  .pg-bot-game-content { padding: 4px 10px 12px; }
+}
+
+/* Immersive desktop regression: the bot's 48+px summary consumed more vertical
+   stage space than the previous help. Keep the same 44px control budget while
+   preserving the full accessible label in the DOM. */
+.player[data-immersive="true"] .experience-tools [data-pg-bot="game-help"] .pg-bot-game-summary {
+  min-height: 44px;
+  padding: 2px 8px;
+}
+.player[data-immersive="true"] .pg-bot-game-summary img {
+  width: 30px;
+  height: 36px;
+}
+.player[data-immersive="true"] .pg-bot-game-summary span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
