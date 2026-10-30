@@ -43,3 +43,9 @@ Três candidatos novos, ainda não integrados à `main`:
 - **Central de Resgates** (`central-resgates`): distribuição de atendimentos por prioridade, duração e prazo. Dois objetivos e três dificuldades, planejamento de turnos e limite de tempo.
 
 O conjunto totaliza **22 candidatos distintos** somente quando as PRs dos motores 17–19 e este lote forem integradas com todos os testes. Permanecem **16 motores na `main`** até a integração desses lotes. Não são 150 jogos independentes; as 150 missões continuam separadas. Não mesclar antes da matriz de CI completa, CodeQL e revisão, nem afirmar publicação/Android físico sem evidência.
+
+## 23º candidato independente: Linha de Contenção
+
+Linha de Contenção (ID linha-contencao): simulação espacial de propagação de incêndio, duas ações por rodada, faixas de proteção, água, localidades protegidas e fumaça. Dois objetivos (proteger e resistir), três dificuldades (grades 4×4, 5×5 e 6×6), geração determinística, vitória/derrota, pausa, desfazer, dicas, recordes locais, PG Bot e PWA com cache próprio. Difere de Guardiões dos Biomas por utilizar propagação espacial de incêndios e posicionamento de barreiras no mapa, não gestão de regiões e previsão de clima.
+
+Contagem: 23 candidatos apenas se integrados os PRs 17–22 e este. A main permanece com 16 até revisão, CI, merge e verificação do HTTPS público. São 150 missões de campanha compartilhando seis regras, não 150 jogos. Após integrar os 23 títulos distintos, restariam 127.
