@@ -1,6 +1,6 @@
-const CACHE = "pg-estrategia-originais-shell-v14";
+const CACHE = "pg-estrategia-originais-shell-v15";
 const ROOT = new URL("./", self.registration.scope);
-const FILES = ["./", "./index.html", "./app.js", "./pg-bot.mjs", "./style.css", "./naval.mjs", "./siege.mjs", "./hex.mjs", "./squad.mjs", "./towers.mjs", "./frontier.mjs", "./winter.mjs", "./draughts.mjs", "./manifest.webmanifest"];
+const FILES = ["./", "./index.html", "./app.js", "./pg-bot.mjs", "./style.css", "./naval.mjs", "./siege.mjs", "./hex.mjs", "./squad.mjs", "./towers.mjs", "./frontier.mjs", "./winter.mjs", "./draughts.mjs", "./market.mjs", "./manifest.webmanifest"];
 const MARKET_PATH = new URL("mercado-de-rotas/", ROOT).pathname;
 const COUNCIL_PATH = new URL("conselho-de-reinos/", ROOT).pathname;
 const REVERSI_PATH = new URL("reversi-tatico/", ROOT).pathname;
