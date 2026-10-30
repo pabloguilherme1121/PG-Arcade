@@ -242,3 +242,77 @@ html[data-arcade-contrast="true"] :is(.smart-mode-discovery,.smart-mode-chips bu
   .smart-mode-chips button{transition:none}
 }
 html[data-arcade-motion="reduced"] .smart-mode-chips button{transition:none}
+
+/* PG Bot na ajuda já existente: mantém o rótulo legado usado por teclado e E2E. */
+.experience-tools [data-pg-bot="game-help"] {
+  min-width: 0;
+  border: 1px solid #65899c;
+  border-radius: 12px;
+  background: #132839;
+}
+.experience-tools [data-pg-bot="game-help"] .pg-bot-game-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+.pg-bot-game-summary img {
+  display: block;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 40px;
+  object-fit: contain;
+}
+.pg-bot-game-summary .pg-bot-summary-text {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  font-weight: 750;
+}
+.pg-bot-game-summary .pg-bot-game-context,
+.pg-bot-game-summary .pg-bot-summary-text small {
+  color: #c9e5f3;
+  font-size: 11px;
+  font-weight: 600;
+}
+.pg-bot-game-content {
+  padding: 4px 13px 13px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.pg-bot-game-content > p { color: #e2eef7; }
+.pg-bot-game-content > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #e3ffac;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.experience-tools [data-pg-bot="game-help"] summary:focus-visible,
+.experience-tools [data-pg-bot="game-help"] a:focus-visible {
+  outline: 3px solid #d7ff9f;
+  outline-offset: 3px;
+}
+html[data-arcade-contrast="true"] .experience-tools [data-pg-bot="game-help"] {
+  border-color: #fff;
+  background: #000;
+}
+@media (max-width: 390px) {
+  .experience-tools [data-pg-bot="game-help"] .pg-bot-game-summary { padding: 5px 8px; }
+  .pg-bot-game-content { padding: 4px 10px 12px; }
+}
+.player[data-immersive="true"] .experience-tools [data-pg-bot="game-help"] .pg-bot-game-summary {
+  min-height: 44px;
+  padding: 2px 8px;
+}
+.player[data-immersive="true"] .pg-bot-game-summary img {
+  flex-basis: 30px;
+  width: 30px;
+  height: 36px;
+}
+.player[data-immersive="true"] .pg-bot-game-summary .pg-bot-summary-text small { display: none; }
