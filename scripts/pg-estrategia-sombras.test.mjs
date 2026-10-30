@@ -49,3 +49,29 @@ test('Mercado: rota de vitória e derrota em oito turnos',()=>{
  assert.equal(commandMarket(winning,{type:'pass'}),winning);
  assert.equal(commandMarket(losing,{type:'pass'}),losing);
 });
+function hasWinningAuctionPath(state,deadEnds=new Set()){
+ if(state.phase!=='playing')return state.phase==='won';
+ // The exact record of acquired lots matters for score, rival score and family diversity.
+ const key=[state.round,state.credits,state.rivalCredits,state.player.map(x=>x.name).join(','),state.rival.map(x=>x.name).join(',')].join('|');
+ if(deadEnds.has(key))return false;
+ const lot=marketLot(state.seed,state.round);
+ for(const amount of [lot.minBid+6,lot.minBid+3,lot.minBid,0]){
+  const action=amount===0?{type:'pass'}:{type:'bid',amount};
+  const after=commandMarket(state,action);
+  if(after!==state&&hasWinningAuctionPath(after,deadEnds))return true;
+ }
+ deadEnds.add(key);
+ return false;
+}
+for(const seed of [32,40,41]){
+ test('Mercado Veterano / Coleção: deve existir rota de vitória com seed '+seed,()=>{
+  assert.equal(hasWinningAuctionPath(createMarket({difficulty:'veterano',mission:'colecao',seed})),true,
+   'Todas as partidas publicadas devem ter uma rota de vitória sem lances ocultos ou repetição');
+ });
+}
+test('Mercado Veterano: todo ciclo de 24 deals tem solução para ambos objetivos',()=>{
+ for(const mission of ['colecao','patrimonio'])for(let seed=0;seed<24;seed++){
+  assert.equal(hasWinningAuctionPath(createMarket({difficulty:'veterano',mission,seed})),true,
+   'Negociação impossível para '+mission+' na semente '+seed);
+ }
+});
