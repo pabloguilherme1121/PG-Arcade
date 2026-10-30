@@ -14,7 +14,7 @@ main{padding:32px 0 48px}.eyebrow{letter-spacing:.13em;font-size:11px;font-weigh
 .settings button{flex:1 1 144px;max-width:180px;font-weight:800}
 .layout{display:grid;grid-template-columns:minmax(0,1.38fr) minmax(0,.62fr);gap:15px;align-items:start}
 .arena,aside{min-width:0;background:#15364a;border:1px solid var(--line);border-radius:15px;padding:clamp(12px,2.4vw,22px)}
-.arena-head{display:flex;gap:10px;align-items:center;justify-content:space-between}h2{font-size:22px;margin:0 0 12px}
+.arena-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}.arena-head h2{min-width:0;overflow-wrap:anywhere}h2{font-size:22px;margin:0 0 12px}
 #phase{border:1px solid #87a9b7;border-radius:30px;min-height:32px;white-space:nowrap;padding:7px 11px;font-size:12px;font-weight:800}
 #phase[data-phase=won]{color:#d4ffa6;border-color:#c6ff9d}#phase[data-phase=lost]{color:#ffd0c7;border-color:#ffb8ab}
 .metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
