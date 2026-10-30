@@ -34,13 +34,13 @@ test("portal anuncia a contagem real de motores independentes sem duplicar missÃ
  const embedded=[...lab.matchAll(/data-select="([^"]+)"/g)].map(match=>match[1]);
  const linked=[...lab.matchAll(/class="choice[^"]*" href="\.\/([^/]+)\//g)].map(match=>match[1]);
  const ids=[...embedded,...linked];
- assert.ok(ids.length>=10 && ids.length<=19);
+ assert.ok(ids.length>=10 && ids.length<=22);
  assert.equal(new Set(ids).size,ids.length);
  assert.equal(embedded.length,9);
  assert.ok(linked.includes("conselho-de-reinos") && linked.includes("mercado-de-rotas"));
  assert.equal(linked.length,ids.length-9);
  assert.match(lab,new RegExp(String(ids.length)+" motores independentes"));
- assert.match(portal,new RegExp(({10:"Dez",11:"Onze",12:"Doze",13:"Treze",14:"Quatorze",15:"Quinze",16:"Dezesseis",17:"Dezessete",18:"Dezoito",19:"Dezenove"})[ids.length]+" jogos candidatos"));
+ assert.match(portal,new RegExp(({10:"Dez",11:"Onze",12:"Doze",13:"Treze",14:"Quatorze",15:"Quinze",16:"Dezesseis",17:"Dezessete",18:"Dezoito",19:"Dezenove",20:"Vinte",21:"Vinte e um",22:"Vinte e dois"})[ids.length]+" jogos candidatos"));
  assert.match(portal,/href="\.\/independentes\/mercado-de-rotas\/"/);
  assert.match(portal,/href="\.\/independentes\/conselho-de-reinos\/"/);
  assert.match(portal,/href="\.\/independentes\/comando-de-drones\/"/);
