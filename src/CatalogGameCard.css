@@ -106,3 +106,18 @@ html[data-arcade-contrast="true"] .game-metadata::after {
     }
   }
 }
+
+/* O botão continua 44px e mantém seu nome acessível; apenas o ícone decorativo deixa de criar SVGs. */
+.game-grid .game-card .favorite-glyph,
+.curated-grid .curated-card .favorite-glyph,
+.personal-grid .curated-card .favorite-glyph {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  font-family: system-ui, sans-serif;
+  font-size: 25px;
+  font-weight: 600;
+  line-height: 1;
+  pointer-events: none;
+}
