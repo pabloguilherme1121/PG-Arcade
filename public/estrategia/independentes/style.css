@@ -111,3 +111,16 @@ h1,h2,h3,h4,p{margin-block:0}h1,h2,h3{letter-spacing:-.04em}h1{font-size:clamp(3
 .pg-bot-topics button{min-height:44px;padding:7px 2px;min-width:0;font-size:12px;font-weight:700;border-radius:9px;border:1px solid #4c7185;background:#17374c;color:#f3fbff}
 .pg-bot-topics button[aria-pressed="true"]{background:#baf29a;color:#142d24;border-color:#baf29a}
 #pg-bot-answer{min-height:56px;padding:10px 0 0;font-size:13px;line-height:1.55;color:#e0f1fb}
+
+/* Mercado de Sombras: one accessible bid panel, zero animation loops or remote resources. */
+#market-mode-wrap[hidden]{display:none!important}
+.choice.market .choice-symbol{background:#5b4535;color:#ffe1ac}
+.market-board{max-width:430px;margin:0 auto;display:block}
+.market-lot{display:flex;flex-direction:column;justify-content:center;gap:15px;min-height:230px;padding:24px;background:linear-gradient(145deg,#584334,#19283a 78%);border:1px solid #e4bd8f;border-radius:16px;box-shadow:inset 0 0 36px #9f73421b}
+.market-lot small{font-size:12px;font-weight:850;color:#ffddac;letter-spacing:.08em}
+.market-lot strong{font-size:clamp(21px,4vw,33px);line-height:1.1;color:#fff4d8}
+.market-lot p{margin:0;color:#e8d1b9;font-size:13px;line-height:1.65}
+.market-final{font-size:16px;color:#d8ead8}
+.actions>.market-bid{border-color:#c99f6a;background:#493d34;color:#fff3d7}
+.actions>.market-bid:hover:not(:disabled){background:#69513a}
+@media(max-width:350px){.market-lot{padding:16px;min-height:205px}}

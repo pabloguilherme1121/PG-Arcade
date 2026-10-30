@@ -7,20 +7,20 @@ const portal=read('public/estrategia/index.html');
 const shared=read('public/estrategia/independentes/app.js');
 const ids=[
  'frota-oculta','cartas-de-cerco','hex-conexao','damas-taticas','patrulha-tatica',
- 'refugio-do-inverno','fronteira-orbital','muralha-das-torres',
+ 'refugio-do-inverno','fronteira-orbital','muralha-das-torres','mercado-de-sombras',
  'conselho-de-reinos','mercado-de-rotas','reversi-tatico','cifras-reais','comando-de-drones','oficina-automatos'
 ];
-const embedded=ids.slice(0,8),subsites=ids.slice(8);
-test('catálogo anuncia exatamente 14 motores, não 150 missões como jogos',()=>{
+const embedded=ids.slice(0,9),subsites=ids.slice(9);
+test('catálogo anuncia exatamente 15 motores, não 150 missões como jogos',()=>{
  const buttons=[...index.matchAll(/data-select="([^"]+)"/g)].map(m=>m[1]);
  const children=[...index.matchAll(/class="choice[^"]*" href="\.\/([^/]+)\/"/g)].map(m=>m[1]);
  assert.equal(new Set(ids).size,ids.length);
  assert.deepEqual(new Set([...buttons,...children]),new Set(ids));
- assert.equal(buttons.length,8);
+ assert.equal(buttons.length,9);
  assert.equal(children.length,6);
- assert.match(index,/14 motores independentes/);
- assert.match(index,/Quatorze jogos/);
- assert.match(portal,/Quatorze jogos candidatos/);
+ assert.match(index,/15 motores independentes/);
+ assert.match(index,/Quinze jogos/);
+ assert.match(portal,/Quinze jogos candidatos/);
 });
 test('cada jogo possui um motor e um caminho único e acessível desde o portal',()=>{
  for(const id of embedded){
