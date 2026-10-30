@@ -1,5 +1,5 @@
 // Mercado de Sombras: leilões táticos determinísticos com rival por rodada.
-const DIFFICULTY=Object.freeze({recruta:{credits:52,rival:28,pressure:0},tatico:{credits:44,rival:38,pressure:2},veterano:{credits:37,rival:45,pressure:4}});
+const DIFFICULTY=Object.freeze({recruta:{credits:52,rival:28,pressure:0},tatico:{credits:44,rival:38,pressure:2},veterano:{credits:37,rival:44,pressure:4}});
 const MISSIONS=['colecao','patrimonio'];
 const LOTS=Object.freeze([
  {name:'Carta das Marés',family:'mapas',value:12,minBid:5},
