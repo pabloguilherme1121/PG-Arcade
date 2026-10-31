@@ -131,3 +131,11 @@ html[data-arcade-contrast="true"] .player .snake-board[data-play-status] {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.08); }
 }
+/* Capture swipe steering only while a run is active.
+   Paused/ready states allow natural vertical scrolling on touch devices. */
+.player .snake-board[data-play-status="running"] {
+  touch-action: none;
+}
+.player .snake-board:not([data-play-status="running"]) {
+  touch-action: pan-y;
+}
