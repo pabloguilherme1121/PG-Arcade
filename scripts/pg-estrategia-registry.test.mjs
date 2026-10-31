@@ -8,19 +8,19 @@ const shared=read('public/estrategia/independentes/app.js');
 const ids=[
  'frota-oculta','cartas-de-cerco','hex-conexao','damas-taticas','patrulha-tatica',
  'refugio-do-inverno','fronteira-orbital','muralha-das-torres','mercado-de-sombras',
- 'conselho-de-reinos','mercado-de-rotas','reversi-tatico','cifras-reais','comando-de-drones','oficina-automatos','controle-trafego','malha-energia','pontes-arquipelago','torre-logistica'
+ 'conselho-de-reinos','mercado-de-rotas','reversi-tatico','cifras-reais','comando-de-drones','oficina-automatos','controle-trafego','malha-energia','pontes-arquipelago','torre-logistica','guardioes-biomas','rede-frequencias','central-resgates'
 ];
 const embedded=ids.slice(0,9),subsites=ids.slice(9);
-test('catálogo anuncia exatamente 19 motores, não 150 missões como jogos',()=>{
+test('catálogo anuncia exatamente 22 motores, não 150 missões como jogos',()=>{
  const buttons=[...index.matchAll(/data-select="([^"]+)"/g)].map(m=>m[1]);
  const children=[...index.matchAll(/class="choice[^"]*" href="\.\/([^/]+)\/"/g)].map(m=>m[1]);
  assert.equal(new Set(ids).size,ids.length);
  assert.deepEqual(new Set([...buttons,...children]),new Set(ids));
  assert.equal(buttons.length,9);
- assert.equal(children.length,10);
- assert.match(index,/19 motores independentes/);
- assert.match(index,/Dezenove jogos/);
- assert.match(portal,/Dezenove jogos candidatos/);
+ assert.equal(children.length,13);
+ assert.match(index,/22 motores independentes/);
+ assert.match(index,/Vinte e dois jogos/);
+ assert.match(portal,/Vinte e dois jogos candidatos/);
 });
 test('cada jogo possui um motor e um caminho único e acessível desde o portal',()=>{
  for(const id of embedded){
@@ -31,7 +31,7 @@ test('cada jogo possui um motor e um caminho único e acessível desde o portal'
  for(const id of subsites){
   for(const path of ['index.html','app.js','style.css','sw.js'])
    assert.ok(existsSync('public/estrategia/independentes/'+id+'/'+path),id+'/'+path);
-  assert.ok(existsSync('public/estrategia/independentes/'+id+'/'+(id==='conselho-de-reinos'||id==='reversi-tatico'||id==='cifras-reais'||id==='comando-de-drones'||id==='oficina-automatos'||id==='controle-trafego'||id==='malha-energia'||id==='pontes-arquipelago'||id==='torre-logistica'?'engine.mjs':'game.mjs')),id);
+  assert.ok(existsSync('public/estrategia/independentes/'+id+'/'+(id==='conselho-de-reinos'||id==='reversi-tatico'||id==='cifras-reais'||id==='comando-de-drones'||id==='oficina-automatos'||id==='controle-trafego'||id==='malha-energia'||id==='pontes-arquipelago'||id==='torre-logistica'||id==='guardioes-biomas'||id==='rede-frequencias'||id==='central-resgates'?'engine.mjs':'game.mjs')),id);
   assert.match(index,new RegExp('href="\\./'+id+'/"'));
   assert.ok(portal.includes('./independentes/'+id+'/'),id);
  }

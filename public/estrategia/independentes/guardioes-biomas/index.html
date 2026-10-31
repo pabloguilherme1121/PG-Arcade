@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0d302a">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Guardiões dos Biomas: jogo de estratégia com eventos climáticos, proteção, restauração, suprimentos, três dificuldades e dois objetivos.">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <title>Guardiões dos Biomas | PG Estratégia</title>
+</head>
+<body>
+<a class="skip" href="#main">Pular para o jogo</a>
+<div class="shell">
+  <header>
+    <a class="brand" href="../">PG <strong>ESTRATÉGIA</strong></a>
+    <nav aria-label="Navegação de projetos"><a href="../">Jogos originais</a><a href="../../">Missões</a><a href="../../../">PG Arcade</a></nav>
+  </header>
+  <main id="main">
+    <p class="eyebrow">JOGO ORIGINAL · GESTÃO ECOLÓGICA EM TURNOS</p>
+    <h1>Guardiões <em>dos Biomas</em></h1>
+    <p class="intro">Proteja Mata, Costa e Serra contra o clima. Antes de cada rodada, você vê onde a próxima ameaça vai atingir. Decida como distribuir proteção, restauração e suprimentos.</p>
+    <section class="settings" aria-label="Configurar partida">
+      <label>Objetivo<select id="mode"><option value="conservar">Conservar · sobreviver a todas as rodadas</option><option value="recuperar">Recuperar · terminar com vida mínima 5</option></select></label>
+      <label>Dificuldade<select id="difficulty"><option value="recruta">Recruta · 8 rodadas</option><option value="tatico">Tático · 10 rodadas</option><option value="veterano">Veterano · 12 rodadas</option></select></label>
+      <button type="button" id="new">Reiniciar missão</button>
+    </section>
+    <div class="layout">
+      <section class="arena" aria-labelledby="arena-title">
+        <div class="arena-heading"><h2 id="arena-title">Centro de conservação</h2><span id="phase" data-phase="playing">Em andamento</span></div>
+        <div class="metrics">
+          <p>Rodada <strong id="round">1/8</strong></p>
+          <p>Suprimentos <strong id="supplies">7</strong></p>
+          <p>Ações restantes <strong id="actions">2</strong></p>
+          <p>Melhor pontuação <strong id="record">Nenhuma</strong></p>
+        </div>
+        <p class="forecast" id="forecast" role="status" aria-live="polite"></p>
+        <div class="regions" id="regions" role="group" aria-label="Regiões para proteger">
+          <article class="region" data-index="0"><div class="region-top"><h3>Mata</h3><span class="forecast-tag">Próxima ameaça</span></div><p>Vida: <strong data-health>7/9</strong> · Proteção: <strong data-shield>0</strong></p><div class="region-actions"><button type="button" data-action="blindar">Proteger · 2</button><button type="button" data-action="restaurar">Restaurar · 1</button></div></article>
+          <article class="region" data-index="1"><div class="region-top"><h3>Costa</h3><span class="forecast-tag">Próxima ameaça</span></div><p>Vida: <strong data-health>7/9</strong> · Proteção: <strong data-shield>0</strong></p><div class="region-actions"><button type="button" data-action="blindar">Proteger · 2</button><button type="button" data-action="restaurar">Restaurar · 1</button></div></article>
+          <article class="region" data-index="2"><div class="region-top"><h3>Serra</h3><span class="forecast-tag">Próxima ameaça</span></div><p>Vida: <strong data-health>7/9</strong> · Proteção: <strong data-shield>0</strong></p><div class="region-actions"><button type="button" data-action="blindar">Proteger · 2</button><button type="button" data-action="restaurar">Restaurar · 1</button></div></article>
+        </div>
+        <div class="controls"><button id="collect" type="button">Coletar +2 suprimentos</button><button id="advance" type="button" class="primary">Avançar rodada</button><button id="pause" type="button">Pausar</button><button id="undo" type="button">Desfazer</button></div>
+        <p id="status" role="status" aria-live="polite" class="status"></p>
+      </section>
+      <aside class="instructions">
+        <h2>Como jogar</h2>
+        <p>Você tem até <strong>duas ações por rodada</strong>. Proteger custa 2 suprimentos e absorve até 3 impactos. Restaurar custa 1 e recupera 1 de vida. Coletar devolve 2 suprimentos.</p>
+        <p>Ao avançar, o clima atinge a região anunciada. Se qualquer bioma chegar a 0 de vida, a partida termina. No modo Recuperar, os três devem terminar com pelo menos 5 de vida.</p>
+        <p>Use toque, mouse ou teclado. Enter e Espaço acionam os botões. Os resultados ficam somente neste navegador.</p>
+        <details id="pg-bot"><summary>PG Bot · Ajuda local</summary><p>Respostas locais, sem envio de dados ou serviço externo.</p><div class="topics"><button type="button" data-help="objetivo">Objetivo</button><button type="button" data-help="controles">Controles</button><button type="button" data-help="situacao">Situação</button></div><p id="bot-answer" role="status" aria-live="polite">Escolha uma pergunta para ver a resposta.</p></details>
+      </aside>
+    </div>
+  </main>
+  <footer><a href="../">Outros jogos</a><a href="../../">PG Estratégia</a><a href="../../../">PG Arcade</a><small>Gratuito · Sem conta · Recordes locais</small></footer>
+</div>
+<script type="module" src="./app.js"></script>
+</body>
+</html>

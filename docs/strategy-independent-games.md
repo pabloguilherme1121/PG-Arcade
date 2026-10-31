@@ -33,3 +33,13 @@ Separar jogos em lotes pequenos, idealmente 2–5 por PR, até concluir 150 tít
 Este lote é uma PR empilhada sobre a PR #211 do microsite (a #212 implementa retomada das missões de campanha separadamente). Integrar primeiro o microsite e resolver conflito da camada de retomada se necessário. Exigir `quality`, 12 shards E2E, `validate`, CodeQL e deploy GitHub Pages da `main`. Android físico e HTTP 200 externo são aceites independentes após publicação.
 
 `public/estrategia/independentes/` permanece isolado do service worker da campanha e do Arcade, possuindo PWA e manifest próprios. Não afirmar publicação externa antes de evidência real.
+
+## Lote experimental de 20º a 22º motor (PR empilhada sobre 19º)
+
+Três candidatos novos, ainda não integrados à `main`:
+
+- **Guardiões dos Biomas** (`guardioes-biomas`): gestão ambiental, previsão de ameaças, proteção de regiões e restauração. Dois objetivos e três dificuldades, vitória/derrota, PG Bot e recordes locais.
+- **Rede de Frequências** (`rede-frequencias`): alocação de canais sobre um grafo com interferência entre pontos adjacentes. Dois objetivos, três dificuldades, dicas, desfazer e pontuação.
+- **Central de Resgates** (`central-resgates`): distribuição de atendimentos por prioridade, duração e prazo. Dois objetivos e três dificuldades, planejamento de turnos e limite de tempo.
+
+O conjunto totaliza **22 candidatos distintos** somente quando as PRs dos motores 17–19 e este lote forem integradas com todos os testes. Permanecem **16 motores na `main`** até a integração desses lotes. Não são 150 jogos independentes; as 150 missões continuam separadas. Não mesclar antes da matriz de CI completa, CodeQL e revisão, nem afirmar publicação/Android físico sem evidência.
