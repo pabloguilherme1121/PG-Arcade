@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#102638"><meta name="color-scheme" content="dark">
+<meta name="description" content="Moinhos de Pedra: estratégia de alinhamento, captura e movimentação em tabuleiro. Dois modos e três dificuldades.">
+<link rel="stylesheet" href="./style.css"><link rel="manifest" href="./manifest.webmanifest">
+<title>Moinhos de Pedra | PG Estratégia</title>
+</head>
+<body>
+<a href="#main" class="skip">Pular para o jogo</a>
+<div class="shell">
+<header class="masthead"><a href="../" class="brand">PG <strong>ESTRATÉGIA</strong></a>
+<nav aria-label="Navegação entre projetos"><a href="../">Jogos originais</a><a href="../../">Missões</a><a href="../../../">PG Arcade</a></nav></header>
+<main id="main">
+<section class="intro"><p class="eyebrow">MOTOR ORIGINAL 27 · JOGO DE ALINHAMENTO</p><h1>Moinhos <em>de Pedra</em></h1>
+<p>Forme linhas de três pedras para retirar peças adversárias. Depois da colocação, mova-se pelos caminhos. Com três pedras, você pode voar para qualquer casa vazia.</p></section>
+<div class="layout">
+<section class="panel arena" aria-label="Arena Moinhos de Pedra">
+<div class="panel-head"><h2>Tabuleiro</h2><span id="turn-badge">Sua vez</span></div>
+<div class="board-wrap"><div id="board" class="board" role="group" aria-label="24 pontos do tabuleiro">
+<svg class="paths" viewBox="0 0 600 600" aria-hidden="true" focusable="false">
+<g fill="none" stroke="currentColor" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+<rect x="30" y="30" width="540" height="540"/><rect x="120" y="120" width="360" height="360"/><rect x="210" y="210" width="180" height="180"/>
+<path d="M300 30V210 M570 300H390 M300 570V390 M30 300H210"/>
+</g></svg>
+</div></div>
+<p class="guide">Escolha um ponto vazio para colocar uma pedra. Para mover, selecione primeiro sua pedra e depois o destino. O teclado também funciona.</p>
+</section>
+<aside class="panel controls" aria-label="Configurações do jogo">
+<div class="selectors"><label>Modo<select id="mode"><option value="rapido">Rápido · 6 pedras</option><option value="classico">Clássico · 9 pedras</option></select></label>
+<label>Dificuldade<select id="difficulty"><option value="recruta">Recruta</option><option value="tatico">Tático</option><option value="veterano">Veterano</option></select></label></div>
+<div class="stats"><div>Suas pedras<strong id="human-pieces">0/6</strong></div><div>Rival<strong id="bot-pieces">0/6</strong></div><div>Rodadas<strong id="turns">0</strong></div><div>Vitórias<strong id="record">0</strong></div></div>
+<p id="status" class="status" role="status" aria-live="polite">Comece colocando uma pedra.</p>
+<div class="actions"><button type="button" id="pause">Pausar</button><button type="button" id="undo">Desfazer</button><button type="button" id="reset">Reiniciar</button></div>
+<details class="pg-bot" id="pg-bot"><summary>PG Bot · Suporte tático</summary>
+<p>Ajuda local, sem conexão ou coleta de mensagens.</p>
+<div class="bot-actions"><button type="button" data-topic="objective">Objetivo</button><button type="button" data-topic="controls">Controles</button><button type="button" data-topic="situation">Situação</button></div>
+<p id="bot-answer" aria-live="polite">Selecione uma orientação.</p></details>
+</aside></div>
+<section class="rules"><h2>Como vencer</h2><p>Alinhe três pedras em um moinho para capturar uma adversária. Após colocar todas as peças, mova pelas linhas do tabuleiro. Você vence quando o rival fica com menos de três pedras ou não consegue realizar movimentos. Há empate por limite de rodadas.</p></section>
+</main><footer><a href="../">Jogos originais</a><a href="../../../">PG Arcade</a><span>PG Estratégia · motor independente</span></footer>
+</div><script type="module" src="./app.js"></script></body></html>

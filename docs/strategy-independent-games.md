@@ -33,3 +33,43 @@ Separar jogos em lotes pequenos, idealmente 2–5 por PR, até concluir 150 tít
 Este lote é uma PR empilhada sobre a PR #211 do microsite (a #212 implementa retomada das missões de campanha separadamente). Integrar primeiro o microsite e resolver conflito da camada de retomada se necessário. Exigir `quality`, 12 shards E2E, `validate`, CodeQL e deploy GitHub Pages da `main`. Android físico e HTTP 200 externo são aceites independentes após publicação.
 
 `public/estrategia/independentes/` permanece isolado do service worker da campanha e do Arcade, possuindo PWA e manifest próprios. Não afirmar publicação externa antes de evidência real.
+
+## Lote experimental de 20º a 22º motor (PR empilhada sobre 19º)
+
+Três candidatos novos, ainda não integrados à `main`:
+
+- **Guardiões dos Biomas** (`guardioes-biomas`): gestão ambiental, previsão de ameaças, proteção de regiões e restauração. Dois objetivos e três dificuldades, vitória/derrota, PG Bot e recordes locais.
+- **Rede de Frequências** (`rede-frequencias`): alocação de canais sobre um grafo com interferência entre pontos adjacentes. Dois objetivos, três dificuldades, dicas, desfazer e pontuação.
+- **Central de Resgates** (`central-resgates`): distribuição de atendimentos por prioridade, duração e prazo. Dois objetivos e três dificuldades, planejamento de turnos e limite de tempo.
+
+O conjunto totaliza **22 candidatos distintos** somente quando as PRs dos motores 17–19 e este lote forem integradas com todos os testes. Permanecem **16 motores na `main`** até a integração desses lotes. Não são 150 jogos independentes; as 150 missões continuam separadas. Não mesclar antes da matriz de CI completa, CodeQL e revisão, nem afirmar publicação/Android físico sem evidência.
+
+## 23º candidato independente: Linha de Contenção
+
+Linha de Contenção (ID linha-contencao): simulação espacial de propagação de incêndio, duas ações por rodada, faixas de proteção, água, localidades protegidas e fumaça. Dois objetivos (proteger e resistir), três dificuldades (grades 4×4, 5×5 e 6×6), geração determinística, vitória/derrota, pausa, desfazer, dicas, recordes locais, PG Bot e PWA com cache próprio. Difere de Guardiões dos Biomas por utilizar propagação espacial de incêndios e posicionamento de barreiras no mapa, não gestão de regiões e previsão de clima.
+
+Contagem: 23 candidatos apenas se integrados os PRs 17–22 e este. A main permanece com 16 até revisão, CI, merge e verificação do HTTPS público. São 150 missões de campanha compartilhando seis regras, não 150 jogos. Após integrar os 23 títulos distintos, restariam 127.
+
+## 24º candidato independente: Espelhos de Sinal
+
+Espelhos de Sinal (ID espelhos-sinal): quebra-cabeça de óptica geométrica com feixes refletidos nos espelhos de duas orientações, emissor e receptor. Um ou dois circuitos (modos simples e duplo), três dificuldades (4×4, 5×5, 6×6), decoys, limites de jogadas, pausa, desfazer, dica, PG Bot, recordes locais, teclado e toque. PWA próprio isolado do catálogo e dos demais jogos. Diferente de Malha de Energia, que alterna células e vizinhos por paridade; a vitória depende do traçado espacial dos feixes.
+
+Somente após integrar todas as PRs empilhadas serão 24 motores independentes, ainda faltando 126 para chegar à meta 150. Não contabilizar as 150 missões como jogos distintos. Integrar apenas após CI e validação real.
+
+## 25º candidato independente: Armazém Tático
+
+Armazém Tático (ID armazem-tatico) é um puzzle de empurrar caixas para destinos com paredes, regras Sokoban e planejamento de rotas. Dois modos (entrega e economia), três dificuldades (5x5 com uma carga, 6x6 com duas ou três cargas), sementes determinísticas orientando o mapa, movimentos limitados, vitória/derrota, pausa, desfazer, dicas por busca em largura (BFS) do estado real, recordes locais por modalidade, touch e teclado, PG Bot contextual offline, manifest e service worker próprio. É distinto de Pontes (grafo), Espelhos (ray tracing), Malha (paridade) e Torre (pilhas).
+
+25 motores distintos somente após integração da #267 e desta PR; continuam faltando 125 até 150. As 150 missões existentes não contam como novos motores. Não mesclar sem CI integral, HTTPS público e testes físicos Android em etapa separada.
+
+## 26º candidato independente: Nonograma Tático
+
+Nonograma Tático (`nonograma-tatico`) utiliza pistas de blocos consecutivos por linha e coluna, com três dimensões (5×5, 6×6, 7×7), dois modos (Exploração e Precisão), limites de jogadas e erros, pausa, desfazer, dicas contextuais, navegação touch/teclado e PG Bot local. Regras distintas de empurrar caixas, óptica, grafos e paridade. A meta de 150 exige mais 124 motores após integrar todos os 26. Não contar o candidato como publicado sem CI integral e HTTPS real.
+## 27º candidato independente: Moinhos de Pedra
+
+Moinhos de Pedra (`moinhos-pedra`) implementa um tabuleiro de 24 posições e 16 alinhamentos, com fases de colocação, movimento por adjacência, formação de linhas de três, captura obrigatória, voo com três peças, adversário determinístico e estados de vitória, derrota e empate. Possui dois modos (Rápido, seis peças; Clássico, nove peças), três dificuldades, pausa, desfazer por jogada humana e resposta da IA, recordes locais por modo/dificuldade, suporte PG Bot local e service worker com cache isolado. Um novo jogo é contado somente após integração e certificação completa dos testes, não como nova missão. No HEAD desta branch há 26 candidatos; a main pode permanecer com menos.
+
+Critérios ainda pendentes: matriz completa de CI, CodeQL, revisão, publicação pública HTTPS e teste no Android físico. São necessários mais 124 jogos originais após a integração dos 26, sem contabilizar 150 missões compartilhadas ou 47 atalhos antigos.
+
+
+Nota de integração: há 27 motores independentes neste ramo, 123 ainda faltam para 150. As 150 missões existentes não contam. O texto histórico de PRs anteriores é preservado como histórico, não como estado atual.

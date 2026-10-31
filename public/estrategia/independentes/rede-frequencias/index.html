@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#152d4a">
+<meta name="description" content="Rede de Frequências: estratégia de alocação de canais sem interferência, três dificuldades, dicas seguras e jogabilidade mobile.">
+<title>Rede de Frequências | PG Estratégia</title>
+<link rel="stylesheet" href="./style.css">
+<link rel="manifest" href="./manifest.webmanifest">
+</head>
+<body>
+<a class="skip" href="#main">Pular para o jogo</a>
+<div class="shell">
+<header class="topbar">
+<a class="brand" href="../">PG <strong>ESTRATÉGIA</strong></a>
+<nav aria-label="Navegação de projetos"><a href="../">Jogos independentes</a><a href="../../">Missões</a><a href="../../../">PG Arcade</a></nav>
+</header>
+<main id="main">
+<p class="eyebrow">JOGO ORIGINAL · REDES E INTERFERÊNCIA</p>
+<h1>Rede de <em>Frequências</em></h1>
+<p class="intro">Cada estação precisa de um canal. Estações conectadas não podem usar o mesmo canal. Use a lista de conexões para distribuir as frequências sem esgotar suas alterações.</p>
+<section class="settings" aria-label="Configurar partida">
+<label>Modo<select id="mode" aria-label="Modo"><option value="distribuir">Distribuir · três canais</option><option value="economizar">Economizar · dois canais</option></select></label>
+<label>Dificuldade<select id="difficulty" aria-label="Dificuldade"><option value="recruta">Recruta · 6 estações</option><option value="tatico">Tático · 8 estações</option><option value="veterano">Veterano · 11 estações</option></select></label>
+<button id="new" type="button">Nova rede</button>
+</section>
+<div class="layout">
+<section class="arena" aria-labelledby="arena-title">
+<div class="arena-header"><h2 id="arena-title">Painel de distribuição</h2><span id="phase" data-phase="playing">Em andamento</span></div>
+<div class="metrics">
+<p>Estações configuradas <strong id="progress">0/6</strong></p>
+<p>Alterações <strong id="moves">0/18</strong></p>
+<p>Melhor resultado <strong id="record">Nenhum</strong></p>
+</div>
+<p id="selected-label" class="selected">Canal selecionado: 1</p>
+<div id="channels" class="channels" role="group" aria-label="Escolha o canal de frequência">
+<button type="button" class="channel" data-channel="0" aria-pressed="true">Canal 1</button>
+<button type="button" class="channel" data-channel="1" aria-pressed="false">Canal 2</button>
+<button type="button" class="channel" data-channel="2" aria-pressed="false">Canal 3</button>
+</div>
+<div id="network" class="network" role="group" aria-label="Estações da rede"></div>
+<p id="status" class="status" role="status" aria-live="polite"></p>
+<div class="controls">
+<button id="clear-mode" type="button" aria-pressed="false">Remover canal: não</button>
+<button id="undo" type="button">Desfazer</button>
+<button id="hint" type="button">Mostrar dica</button>
+<button id="pause" type="button" aria-pressed="false">Pausar</button>
+</div>
+<p id="hint-text" class="hint" role="status" aria-live="polite">Dica disponível sem custo.</p>
+</section>
+<aside class="help">
+<h2>Como jogar</h2>
+<p>Escolha um canal e toque em uma estação. Leia suas conexões: nenhuma estação vizinha pode ter o mesmo canal. Você pode trocar um canal, remover uma atribuição ou desfazer a última alteração.</p>
+<p><strong>Distribuir:</strong> três canais e redes com um triângulo de interferência. <strong>Economizar:</strong> apenas dois canais, exigindo separação eficiente dos grupos.</p>
+<p>Os níveis mudam a quantidade de estações, as conexões e o limite de alterações. Uma dica indica um movimento compatível com uma solução completa, sem jogar automaticamente.</p>
+<details id="pg-bot"><summary>PG Bot · Ajuda local</summary>
+<p>Suporte contextual sem conexão externa ou envio de dados.</p>
+<div class="topics"><button type="button" data-help="objetivo">Objetivo</button><button type="button" data-help="controles">Controles</button><button type="button" data-help="situacao">Situação</button></div>
+<p id="bot-answer" role="status" aria-live="polite">Escolha uma pergunta para ver a resposta.</p>
+</details>
+</aside>
+</div>
+</main>
+<footer><a href="../">Outros jogos</a><a href="../../">PG Estratégia</a><a href="../../../">PG Arcade</a><small>Gratuito · Recordes apenas neste navegador</small></footer>
+</div>
+<script type="module" src="./app.js"></script>
+</body>
+</html>
