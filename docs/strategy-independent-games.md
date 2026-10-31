@@ -61,3 +61,7 @@ Somente após integrar todas as PRs empilhadas serão 24 motores independentes, 
 Armazém Tático (ID armazem-tatico) é um puzzle de empurrar caixas para destinos com paredes, regras Sokoban e planejamento de rotas. Dois modos (entrega e economia), três dificuldades (5x5 com uma carga, 6x6 com duas ou três cargas), sementes determinísticas orientando o mapa, movimentos limitados, vitória/derrota, pausa, desfazer, dicas por busca em largura (BFS) do estado real, recordes locais por modalidade, touch e teclado, PG Bot contextual offline, manifest e service worker próprio. É distinto de Pontes (grafo), Espelhos (ray tracing), Malha (paridade) e Torre (pilhas).
 
 25 motores distintos somente após integração da #267 e desta PR; continuam faltando 125 até 150. As 150 missões existentes não contam como novos motores. Não mesclar sem CI integral, HTTPS público e testes físicos Android em etapa separada.
+
+## 26º candidato independente: Nonograma Tático
+
+Nonograma Tático (`nonograma-tatico`) utiliza pistas de blocos consecutivos por linha e coluna, com três dimensões (5×5, 6×6, 7×7), dois modos (Exploração e Precisão), limites de jogadas e erros, pausa, desfazer, dicas contextuais, navegação touch/teclado e PG Bot local. Regras distintas de empurrar caixas, óptica, grafos e paridade. A meta de 150 exige mais 124 motores após integrar todos os 26. Não contar o candidato como publicado sem CI integral e HTTPS real.
