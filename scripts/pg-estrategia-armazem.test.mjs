@@ -64,3 +64,21 @@ test("Armazém: movimentos inúteis levam à derrota sem travar reinício",()=>{
  assert.equal(toggleWarehousePause(game),game);
  assert.equal(createWarehouse({seed:0}).phase,"playing");
 });
+
+test("Armazém: missões Tático e Veterano exigem decisões laterais, não apenas empurrar em linha reta",()=>{
+ for(const difficulty of ["tatico","veterano"]){
+  const game=createWarehouse({difficulty,seed:0});
+  assert.ok(game.goals.some((goal,i)=>goal%game.size!==game.boxes[i]%game.size),difficulty);
+  const verticalPath=game.boxes.map(box=>box+2*game.size);
+  assert.notDeepEqual(verticalPath.sort((a,b)=>a-b),game.goals,difficulty);
+  assert.ok(game.walls.length>4*(game.size-1),"layout precisa de obstáculos");
+  let state=game;
+  for(let i=0;i<100&&state.phase==="playing";i++){
+   const hint=getWarehouseHint(state);
+   assert.ok(hint,"a complexidade não pode gerar fase impossível");
+   state=moveWarehouse(state,hint.direction);
+  }
+  assert.equal(state.phase,"won",difficulty);
+  assert.ok(state.moves>game.boxes.length*2,difficulty);
+ }
+});

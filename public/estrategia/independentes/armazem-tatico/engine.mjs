@@ -38,12 +38,13 @@ export function createWarehouse({mode="entrega",difficulty="recruta",seed=0}={})
   throw new RangeError("Modo, dificuldade ou semente inválidos.");
  const rules=WAREHOUSE_LEVELS[difficulty],size=rules.size;
  const columns=rules.boxes===1?[2]:rules.boxes===2?[2,3]:[1,2,3];
+ const targetColumns=rules.boxes===1?[2]:rules.boxes===2?[1,3]:[1,2,4];
  const cell=(r,c)=>r*size+c,turns=seed%4;
  const walls=[];
  for(let r=0;r<size;r++)for(let c=0;c<size;c++)
   if(r===0||c===0||r===size-1||c===size-1)walls.push(cell(r,c));
- walls.push(cell(size-2,size-2));
- const goals=columns.map(c=>cell(size-2,c));
+ walls.push(rules.boxes===1?cell(size-2,size-2):cell(3,rules.boxes===2?4:3));
+ const goals=targetColumns.map(c=>cell(size-2,c));
  const boxes=columns.map(c=>cell(2,c));
  const player=cell(1,columns[0]);
  const maxMoves=mode==="economia"?Math.floor(rules.maxMoves*0.8):rules.maxMoves;
