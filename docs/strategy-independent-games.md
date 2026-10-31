@@ -73,3 +73,7 @@ Critérios ainda pendentes: matriz completa de CI, CodeQL, revisão, publicaçã
 
 
 Nota de integração: há 27 motores independentes neste ramo, 123 ainda faltam para 150. As 150 missões existentes não contam. O texto histórico de PRs anteriores é preservado como histórico, não como estado atual.
+
+## 28º candidato independente: Satélites Orbitais
+
+Satélites Orbitais (satelites-orbitais) é um desafio de agendamento de observações em janelas de contato, com energia recarregável e intervalos de tempestade. Possui dois modos, três dificuldades, geração determinística, pistas BFS a partir das regras reais, vitória e derrota, pausa, desfazer, controles touch e teclado, PG Bot offline e SW isolado. É diferente de Fronteira Orbital: não possui colonização, pesquisa ou exploração 4X. Após integrar os 28 candidatos ainda faltarão 122 motores independentes para a meta 150. Não contar as missões da campanha como jogos diferentes. Esta branch depende da integração da PR #271 e não está publicada na main.
