@@ -1,5 +1,5 @@
 import {test,expect} from '@playwright/test';
-const url='/estrategia/independentes/moinhos-pedra/';
+const url='./estrategia/independentes/moinhos-pedra/';
 for(const width of [320,390]){
  test('Moinhos: toque, pausa, desfazer e bot em '+width+'px',async({page})=>{
   await page.setViewportSize({width,height:760});
@@ -39,7 +39,7 @@ test('Moinhos: dois modos, três dificuldades e navegação de retorno',async({p
  await expect(page).toHaveURL(/\/estrategia\/independentes\/#frota-oculta$/);
 });
 test('Moinhos: portal aponta para o 27º jogo',async({page})=>{
- await page.goto('/estrategia/');
+ await page.goto('./estrategia/');
  await page.getByRole('link',{name:/Moinhos de Pedra/}).click();
  await expect(page).toHaveURL(/\/estrategia\/independentes\/moinhos-pedra\/$/);
 });

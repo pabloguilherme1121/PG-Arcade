@@ -26,6 +26,8 @@
   overflow: hidden;
   position: relative;
   isolation: isolate;
+  /* Isolate layout and paint of decorative covers in the catalog grid. */
+  contain: layout paint;
   pointer-events: none;
 }
 .game-cover svg {
