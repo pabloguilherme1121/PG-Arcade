@@ -5,6 +5,10 @@ test("Snake mantém rolagem normal parado e reserva gestos ao tabuleiro em jogo"
  const board=page.locator(".snake-board");
  await expect(board).toBeVisible();
  await expect.poll(()=>board.evaluate(el=>getComputedStyle(el).touchAction)).toBe("pan-y");
+ // A navegação por toque não depende do limite de tempo para bater na parede:
+ // o modo Portal mantém a partida jogável mesmo em um runner WebKit ocupado.
+ await page.getByLabel("Modo do Snake").selectOption("wrap");
+ await page.getByLabel("Velocidade").selectOption("220");
  await page.getByRole("button",{name:"Jogar",exact:true}).click();
  await expect(board).toHaveAttribute("data-play-status","running");
  await expect.poll(()=>board.evaluate(el=>getComputedStyle(el).touchAction)).toBe("none");

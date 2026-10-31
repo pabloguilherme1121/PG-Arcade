@@ -465,6 +465,6 @@ window.addEventListener("hashchange", () => {
   if (Object.hasOwn(GAMES,id) && id !== gameId) newGame(id);
 });
 newGame(gameId);
-if ("serviceWorker" in navigator && location.protocol === "https:") {
+if ("serviceWorker" in navigator && window.isSecureContext) {
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(() => {}));
 }

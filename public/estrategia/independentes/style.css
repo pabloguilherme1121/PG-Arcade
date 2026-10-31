@@ -124,3 +124,11 @@ h1,h2,h3,h4,p{margin-block:0}h1,h2,h3{letter-spacing:-.04em}h1{font-size:clamp(3
 .actions>.market-bid{border-color:#c99f6a;background:#493d34;color:#fff3d7}
 .actions>.market-bid:hover:not(:disabled){background:#69513a}
 @media(max-width:350px){.market-lot{padding:16px;min-height:205px}}
+
+/* Busca progressiva; os links permanecem no HTML para navegação e indexação. */
+.independent-filter{display:grid;gap:8px;padding:10px 0 18px;max-width:520px}
+.independent-filter label{font-weight:750;font-size:14px}
+.independent-filter input{font:inherit;font-size:16px;padding:12px 14px;border:1px solid #63869a;border-radius:12px;background:#102b3c;color:white;width:100%;min-height:44px}
+.independent-filter input:focus-visible{outline:3px solid #ffe38d;outline-offset:2px}
+#independent-results,#independent-empty{margin:0;font-size:13px;color:#b7d9df}
+.choices .choice[hidden]{display:none!important}
