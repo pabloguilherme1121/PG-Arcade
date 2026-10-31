@@ -33,3 +33,15 @@ test("Travessia: mudança de dificuldade, modo e retorno ao Arcade",async({page}
  await expect(page).toHaveURL(/\/(?:PG-Arcade\/)?$/);
  await expect(page.locator(".game-grid .game-card").first()).toBeVisible();
 });
+test("Travessia: armazenamento local corrompido não impede vitória ou recorde",async({page})=>{
+ await page.addInitScript(()=>{localStorage.setItem("pg-estrategia-vale-recordes-v1","42");});
+ const errors:string[]=[];page.on("pageerror",error=>errors.push(error.message));
+ await page.goto(route);
+ for(let turn=0;turn<35;turn++){
+  if(await page.locator("#phase").textContent()==="Vitória")break;
+  await page.locator("#hint").click();await page.locator("#cross").click();
+ }
+ await expect(page.locator("#phase")).toHaveText("Vitória");
+ await expect(page.locator("#record")).toContainText("pontos");
+ expect(errors).toEqual([]);
+});

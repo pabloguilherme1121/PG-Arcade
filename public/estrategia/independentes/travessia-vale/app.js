@@ -1,7 +1,7 @@
 import {newCrossing,moveCrossing,undoCrossing,toggleCrossingPause,hintCrossing} from "./engine.mjs";
 const $=id=>document.getElementById(id),PREF="pg-estrategia-vale-config-v1",SAVE="pg-estrategia-vale-recordes-v1";
 const read=key=>{try{return JSON.parse(localStorage.getItem(key)||"null");}catch{return null;}};
-const pref=read(PREF),records=read(SAVE)||{};
+const pref=read(PREF),saved=read(SAVE),records=saved&&typeof saved==='object'&&!Array.isArray(saved)?saved:{};
 if(["classico","expedicao"].includes(pref?.mode))$("mode").value=pref.mode;
 if(["recruta","tatico","veterano"].includes(pref?.difficulty))$("difficulty").value=pref.difficulty;
 const LABEL={lobo:"Lobo",cabra:"Cabra",repolho:"Repolho",ferramentas:"Ferramentas",remedios:"Remédios"};
