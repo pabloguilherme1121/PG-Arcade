@@ -51,3 +51,11 @@ test("Cofre: dados locais inválidos não quebram partida",async({page})=>{
  await expect(page.locator("#phase")).toHaveText("Vitória");
  expect(errors).toEqual([]);
 });
+
+test("Cofre: botão + seleciona símbolo válido em posição vazia no mobile",async({page})=>{
+ await page.setViewportSize({width:320,height:780});
+ await page.goto(route);
+ await page.getByRole("button",{name:"Próximo símbolo da posição 1"}).click();
+ await expect(page.getByRole("button",{name:"Posição 1: símbolo 0"})).toBeVisible();
+ await expect(page.locator(".slot").first()).toContainText("◆");
+});

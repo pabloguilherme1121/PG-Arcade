@@ -39,7 +39,7 @@ function render(){
   const previous=document.createElement("button");previous.type="button";previous.className="adjust";previous.textContent="−";previous.setAttribute("aria-label","Símbolo anterior da posição "+(index+1));previous.disabled=choose.disabled;
   previous.addEventListener("click",()=>setSymbol(index,(value===null?game.palette:value+game.palette-1)%game.palette));
   const next=document.createElement("button");next.type="button";next.className="adjust";next.textContent="+";next.setAttribute("aria-label","Próximo símbolo da posição "+(index+1));next.disabled=choose.disabled;
-  next.addEventListener("click",()=>setSymbol(index,(value===null?-1:value+1)%game.palette));
+  next.addEventListener("click",()=>setSymbol(index,(value===null?0:value+1)%game.palette));
   cell.append(previous,choose,next);slots.append(cell);
  });
  $("slots").replaceChildren(slots);
