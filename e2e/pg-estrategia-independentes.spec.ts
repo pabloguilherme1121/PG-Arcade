@@ -14,7 +14,7 @@ for (const width of [320, 390]) {
     await page.getByRole("button", { name: /Linha 1, coluna 1/ }).tap();
     await expect(page.locator(".metric").first()).toContainText("1 /");
     await page.getByRole("button", { name: "Usar sonar na linha 2" }).tap();
-    await expect(page.getByRole("status")).toContainText("Sonar");
+    await expect(page.locator("#message[role='status']")).toContainText("Sonar");
     await page.getByRole("button", { name: "Reiniciar partida" }).tap();
     await expect(page.locator(".metric").first()).toContainText("0 /");
     await page.getByLabel("Dificuldade").selectOption("veterano");
