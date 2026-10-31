@@ -49,3 +49,9 @@ O conjunto totaliza **22 candidatos distintos** somente quando as PRs dos motore
 Linha de Contenção (ID linha-contencao): simulação espacial de propagação de incêndio, duas ações por rodada, faixas de proteção, água, localidades protegidas e fumaça. Dois objetivos (proteger e resistir), três dificuldades (grades 4×4, 5×5 e 6×6), geração determinística, vitória/derrota, pausa, desfazer, dicas, recordes locais, PG Bot e PWA com cache próprio. Difere de Guardiões dos Biomas por utilizar propagação espacial de incêndios e posicionamento de barreiras no mapa, não gestão de regiões e previsão de clima.
 
 Contagem: 23 candidatos apenas se integrados os PRs 17–22 e este. A main permanece com 16 até revisão, CI, merge e verificação do HTTPS público. São 150 missões de campanha compartilhando seis regras, não 150 jogos. Após integrar os 23 títulos distintos, restariam 127.
+
+## 24º candidato independente: Espelhos de Sinal
+
+Espelhos de Sinal (ID espelhos-sinal): quebra-cabeça de óptica geométrica com feixes refletidos nos espelhos de duas orientações, emissor e receptor. Um ou dois circuitos (modos simples e duplo), três dificuldades (4×4, 5×5, 6×6), decoys, limites de jogadas, pausa, desfazer, dica, PG Bot, recordes locais, teclado e toque. PWA próprio isolado do catálogo e dos demais jogos. Diferente de Malha de Energia, que alterna células e vizinhos por paridade; a vitória depende do traçado espacial dos feixes.
+
+Somente após integrar todas as PRs empilhadas serão 24 motores independentes, ainda faltando 126 para chegar à meta 150. Não contabilizar as 150 missões como jogos distintos. Integrar apenas após CI e validação real.
