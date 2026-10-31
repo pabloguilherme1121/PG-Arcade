@@ -93,3 +93,31 @@ html[data-arcade-contrast="true"] .game-metadata::after {
     transform: none !important;
   }
 }
+
+
+/* Desktop-only optimization: WebKit mobile touch regression showed that
+   content containment could disturb navigation while cards enter the viewport.
+   Preserve normal mobile layout/paint until physical-device evidence exists. */
+@supports (content-visibility: auto) {
+  @media (min-width: 900px) {
+    .game-grid > .game-card:nth-child(n + 5) {
+      content-visibility: auto;
+      contain-intrinsic-size: auto none auto 400px;
+    }
+  }
+}
+
+/* O botão continua 44px e mantém seu nome acessível; apenas o ícone decorativo deixa de criar SVGs. */
+.game-grid .game-card .favorite-glyph,
+.curated-grid .curated-card .favorite-glyph,
+.personal-grid .curated-card .favorite-glyph {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  font-family: system-ui, sans-serif;
+  font-size: 25px;
+  font-weight: 600;
+  line-height: 1;
+  pointer-events: none;
+}

@@ -296,9 +296,14 @@ export default function App() {
     () => selectCatalog(games, { query: normalizedQuery, category, mode, modeFilter, swipeOnly }, progress, page === "favoritos"),
     [normalizedQuery, category, mode, modeFilter, swipeOnly, progress, page, searchHelpReady],
   );
-  const curated = recommended.map(id => games.find(g => g.id === id)!);
-  const visited = games.filter(g => progress.visits[g.id]).sort((a,b) => (b.id === progress.last ? 1 : 0) - (a.id === progress.last ? 1 : 0) || (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)).slice(0,4);
-  const saved = games.filter(g => progress.favorites.includes(g.id)).slice(0,4);
+  // Keep these catalog summaries stable while the visitor types or changes filters.
+  const favoriteIds = useMemo(() => new Set(progress.favorites), [progress.favorites]);
+  const curated = useMemo(() => recommended.map(id => games.find(g => g.id === id)!), []);
+  const visited = useMemo(() => games.filter(g => progress.visits[g.id])
+    .sort((a,b) => (b.id === progress.last ? 1 : 0) - (a.id === progress.last ? 1 : 0)
+      || (progress.visits[b.id] || 0) - (progress.visits[a.id] || 0)).slice(0,4),
+    [progress.visits, progress.last]);
+  const saved = useMemo(() => games.filter(g => favoriteIds.has(g.id)).slice(0,4), [favoriteIds]);
   function renderCard(g: typeof games[number], contextual = false, priority = false) {
     return (
       <CatalogGameCard
@@ -306,7 +311,7 @@ export default function App() {
         game={g}
         contextual={contextual}
         priority={priority}
-        isFavorite={progress.favorites.includes(g.id)}
+        isFavorite={favoriteIds.has(g.id)}
         onOpen={rememberCatalog}
         onFavorite={favorite}
       />
@@ -380,6 +385,11 @@ export default function App() {
                 <ArrowLeft size={19} />
                 Voltar aos jogos
               </a>
+              {game.category === "Estratégia" && window.self === window.top && (
+                <a className="button" href={`${import.meta.env.BASE_URL}estrategia/?arcade=${encodeURIComponent(game.id)}#classicos`}>
+                  Jogar no PG Estratégia
+                </a>
+              )}
                 <button
                   onClick={(event) => {
                     const menu = event.currentTarget.closest(".player-toolbar")?.querySelector<HTMLDetailsElement>(".player-utilities");
@@ -481,15 +491,31 @@ export default function App() {
               <details
                 ref={quickHelp}
                 key={game.id}
+                data-pg-bot="game-help"
                 onToggle={(event) => {
                   if (event.currentTarget.open)
                     window.dispatchEvent(new Event("pg-arcade-pause"));
                 }}
               >
-                <summary aria-keyshortcuts="Alt+Shift+H">
-                  Ajuda rápida e controles
+                <summary className="pg-bot-game-summary" aria-keyshortcuts="Alt+Shift+H">
+                  <img
+                    src={import.meta.env.BASE_URL + "brand/pg-bot/mascot.webp"}
+                    alt=""
+                    width="34"
+                    height="40"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span className="pg-bot-summary-text">
+                    <span>Ajuda rápida e controles</span>
+                    <small>PG Bot · {game.name}</small>
+                  </span>
                 </summary>
-                <Suspense fallback={<p>Carregando instruções do jogo…</p>}><QuickHelpText id={game.id}/></Suspense>
+                <div className="pg-bot-game-content">
+                  <p>PG Bot mostra respostas prontas para este jogo. Não é uma conversa com IA ou atendimento humano.</p>
+                  <Suspense fallback={<p>Carregando instruções do jogo…</p>}><QuickHelpText id={game.id}/></Suspense>
+                  <a href={import.meta.env.BASE_URL + "estrategia/?ajuda=1"}>PG Estratégia · Ajuda para missões</a>
+                </div>
               </details>
             </div>
             <dialog
@@ -639,6 +665,17 @@ export default function App() {
                   ),
                 )}
               </div>
+              {category === "Estratégia" && page === "catalogo" && (
+                <section className="strategy-hub-jump" aria-label="Central dos jogos de estratégia">
+                  <div>
+                    <strong>PG Estratégia · Central de jogos</strong>
+                    <p>Os 47 jogos de estratégia do Arcade em uma biblioteca com busca e filtros. Seus favoritos e recordes continuam os mesmos.</p>
+                  </div>
+                  <a href={`${import.meta.env.BASE_URL}estrategia/#classicos`} className="button primary">
+                    Abrir PG Estratégia · 47 jogos <ArrowRight size={18} aria-hidden="true"/>
+                  </a>
+                </section>
+              )}
               <div className="smart-mode-discovery" role="region" aria-label="Encontre seu modo de jogar">
                 <div className="smart-mode-header">
                   <strong>Seu estilo de jogo</strong>

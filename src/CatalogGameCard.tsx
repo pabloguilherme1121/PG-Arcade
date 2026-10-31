@@ -1,4 +1,3 @@
-import { Heart } from "lucide-react";
 import { memo } from "react";
 import GameCover from "./GameCover";
 import "./CatalogGameCard.css";
@@ -49,7 +48,7 @@ function CatalogGameCard({
         aria-label={`${contextual ? "Seleção: " : ""}${isFavorite ? "Remover" : "Adicionar"} ${game.name} ${isFavorite ? "dos" : "aos"} favoritos`}
         aria-pressed={isFavorite}
       >
-        <Heart size={19} fill={isFavorite ? "currentColor" : "none"} />
+        <span className="favorite-glyph" aria-hidden="true">{isFavorite ? "♥" : "♡"}</span>
       </button>
     </article>
   );

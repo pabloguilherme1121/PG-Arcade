@@ -6,7 +6,7 @@ function lockOrientation(value: "portrait" | "landscape" | null): () => void {
   const orientation = screen.orientation as ScreenOrientation & {
     lock?: (value: "portrait" | "landscape") => Promise<void>;
   };
-  if (!orientation?.lock || !matchMedia("(pointer: coarse)").matches) return () => {};
+  if (!orientation?.lock || typeof matchMedia !== "function" || !matchMedia("(pointer: coarse)").matches) return () => {};
   let disposed = false;
   let locked = false;
   const unlock = () => { try { orientation.unlock(); } catch { /* Unsupported browser. */ } };

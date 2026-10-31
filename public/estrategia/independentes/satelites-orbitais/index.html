@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#102a3d"><meta name="color-scheme" content="dark">
+<meta name="description" content="Satélites Orbitais: coordene janelas de contato, energia e observações em três dificuldades.">
+<title>Satélites Orbitais | PG Estratégia</title>
+<link rel="stylesheet" href="./style.css"><link rel="manifest" href="./manifest.webmanifest">
+</head><body>
+<a class="skip" href="#main">Pular para o jogo</a>
+<div class="shell">
+<header class="masthead"><a class="brand" href="../">PG <strong>ESTRATÉGIA</strong></a>
+<nav aria-label="Navegação entre projetos"><a href="../">Jogos originais</a><a href="../../">Missões</a><a href="../../../">PG Arcade</a></nav></header>
+<main id="main"><section class="intro"><p class="eyebrow">MOTOR INDEPENDENTE 28 · CONTROLE ORBITAL</p>
+<h1>Satélites <em>Orbitais</em></h1>
+<p>Agende transmissões nas janelas de contato. A energia é limitada, os intervalos de tempestade bloqueiam o sinal e cada órbita avança o relógio.</p></section>
+<div class="layout">
+<section class="panel arena" aria-label="Partida Satélites Orbitais">
+<div class="panel-head"><h2>Central de operações</h2><strong id="phase">Em andamento</strong></div>
+<div class="orbit" aria-label="Linha do tempo orbital" id="timeline"></div>
+<div class="stats" aria-label="Indicadores da missão">
+<div><span>Janela</span><strong id="turn">1/8</strong></div>
+<div><span>Energia</span><strong id="energy">4/4</strong></div>
+<div><span>Alvos capturados</span><strong id="captured">0/3</strong></div>
+<div><span>Recorde</span><strong id="record">Nenhum</strong></div></div>
+<h3>Alvos para transmitir</h3><div class="targets" id="targets"></div>
+</section>
+<aside class="panel controls" aria-label="Planejamento orbital">
+<div class="selectors"><label>Modo
+<select id="mode"><option value="cobertura">Cobertura total</option><option value="economia">Eficiência energética</option></select></label>
+<label>Dificuldade<select id="difficulty"><option value="recruta">Recruta</option><option value="tatico">Tático</option><option value="veterano">Veterano</option></select></label></div>
+<p id="mission" class="mission"></p>
+<p id="status-text" role="status" aria-live="polite">Pronto para jogar.</p>
+<div class="actions"><button id="wait" type="button">Avançar órbita (+1 energia)</button>
+<button id="pause" type="button">Pausar</button><button id="undo" type="button">Desfazer</button>
+<button id="hint" type="button">Pedir dica</button><button id="reset" type="button">Reiniciar missão</button></div>
+<p id="hint-text" aria-live="polite"></p>
+<details id="pg-bot"><summary>PG Bot · Ajuda local</summary>
+<div class="bot-actions"><button type="button" data-bot="situation">Situação</button><button type="button" data-bot="strategy">Estratégia</button><button type="button" data-bot="controls">Controles</button></div>
+<p id="bot-answer" aria-live="polite">Escolha uma opção de ajuda.</p>
+</details></aside></div>
+<section class="rules"><h2>Regras</h2><p>Cada transmissão consome duas unidades de energia e um turno. A bateria recupera uma unidade ao final de qualquer turno, respeitando o limite máximo. Não é possível transmitir em janelas bloqueadas por tempestade. Cobertura exige todos os alvos; Eficiência exige o valor de observação definido para a missão. Ao esgotar os turnos sem cumprir a meta, a partida termina.</p></section>
+</main><footer><a href="../">Jogos independentes</a><a href="../../../">PG Arcade</a></footer></div>
+<script type="module" src="./app.js"></script>
+</body></html>
