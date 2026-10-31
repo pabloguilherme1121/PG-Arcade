@@ -37,3 +37,23 @@ test("Nonograma: quatro erros encerram o modo precisão e novo jogo reinicia",()
  assert.equal(state.phase,"lost");assert.equal(playNonogram(state,5,"fill"),state);
  assert.equal(createNonogram({mode:"precisao"}).phase,"playing");
 });
+
+test("Nonograma: pistas definem solução única em todas as dificuldades e orientações",()=>{
+ const clues=bits=>{const seq=[];let current=0;for(const value of bits){if(value)current++;else if(current){seq.push(current);current=0;}}if(current)seq.push(current);return JSON.stringify(seq.length?seq:[0]);};
+ for(const difficulty of Object.keys(NONOGRAM_LEVELS))for(let seed=0;seed<8;seed++){
+  const game=createNonogram({difficulty,seed}),n=game.size;
+  const all=Array.from({length:2**n},(_,mask)=>Array.from({length:n},(_,i)=>Boolean(mask&(1<<i))));
+  const allowedRows=game.rows.map(row=>all.filter(bits=>clues(bits)===JSON.stringify(row)));
+  const allowedColumns=game.columns.map(column=>all.filter(bits=>clues(bits)===JSON.stringify(column)));
+  let solutions=0;
+  function walk(rows){
+   if(solutions>1)return;
+   if(rows.length===n){solutions++;return;}
+   for(const row of allowedRows[rows.length]){
+    if(allowedColumns.every((options,c)=>options.some(option=>rows.every((existing,r)=>existing[c]===option[r])&&row[c]===option[rows.length])))walk([...rows,row]);
+   }
+  }
+  walk([]);
+  assert.equal(solutions,1,difficulty+"/"+seed+" não deve admitir solução alternativa");
+ }
+});

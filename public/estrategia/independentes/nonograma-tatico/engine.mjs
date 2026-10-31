@@ -6,7 +6,14 @@ const runs=values=>{const result=[];let count=0;for(const value of values){if(va
 export function createNonogram({mode="exploracao",difficulty="recruta",seed=0}={}){
  if(!NONOGRAM_MODES.includes(mode)||!Object.hasOwn(NONOGRAM_LEVELS,difficulty)||!Number.isSafeInteger(seed)||seed<0||seed>999999999)throw new RangeError("Parâmetros inválidos.");
  const size=NONOGRAM_LEVELS[difficulty];
- const solution=Array.from({length:size*size},(_,i)=>{const r=Math.floor(i/size),c=i%size;return (r*7+c*11+seed*3)%9<4||(r+c+seed)%5===0;});
+ // Bases com solução única; rotações e reflexos preservam essa propriedade.
+ const basisSeed=size===6?1:0,orientation=seed%8;
+ const solution=Array.from({length:size*size},(_,i)=>{
+  let r=Math.floor(i/size),c=i%size;
+  if(orientation>=4)c=size-1-c;
+  for(let turn=0;turn<orientation%4;turn++){const next=c;c=size-1-r;r=next;}
+  return (r*7+c*11+basisSeed*3)%9<4||(r+c+basisSeed)%5===0;
+ });
  const rows=Array.from({length:size},(_,r)=>runs(solution.slice(r*size,(r+1)*size)));
  const columns=Array.from({length:size},(_,c)=>runs(Array.from({length:size},(_,r)=>solution[r*size+c])));
  return {mode,difficulty,seed,size,solution,rows,columns,marks:Array(size*size).fill(null),history:[],moves:0,maxMoves:mode==="precisao"?size*size+Math.ceil(size*size/2):size*size*3,errors:0,maxErrors:mode==="precisao"?4:Infinity,phase:"playing",paused:false,message:"Use as pistas para preencher ou descartar casas."};
