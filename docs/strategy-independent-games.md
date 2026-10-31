@@ -61,3 +61,9 @@ Somente após integrar todas as PRs empilhadas serão 24 motores independentes, 
 Armazém Tático (ID armazem-tatico) é um puzzle de empurrar caixas para destinos com paredes, regras Sokoban e planejamento de rotas. Dois modos (entrega e economia), três dificuldades (5x5 com uma carga, 6x6 com duas ou três cargas), sementes determinísticas orientando o mapa, movimentos limitados, vitória/derrota, pausa, desfazer, dicas por busca em largura (BFS) do estado real, recordes locais por modalidade, touch e teclado, PG Bot contextual offline, manifest e service worker próprio. É distinto de Pontes (grafo), Espelhos (ray tracing), Malha (paridade) e Torre (pilhas).
 
 25 motores distintos somente após integração da #267 e desta PR; continuam faltando 125 até 150. As 150 missões existentes não contam como novos motores. Não mesclar sem CI integral, HTTPS público e testes físicos Android em etapa separada.
+
+## 26º candidato independente: Moinhos de Pedra
+
+Moinhos de Pedra (`moinhos-pedra`) implementa um tabuleiro de 24 posições e 16 alinhamentos, com fases de colocação, movimento por adjacência, formação de linhas de três, captura obrigatória, voo com três peças, adversário determinístico e estados de vitória, derrota e empate. Possui dois modos (Rápido, seis peças; Clássico, nove peças), três dificuldades, pausa, desfazer por jogada humana e resposta da IA, recordes locais por modo/dificuldade, suporte PG Bot local e service worker com cache isolado. Um novo jogo é contado somente após integração e certificação completa dos testes, não como nova missão. No HEAD desta branch há 26 candidatos; a main pode permanecer com menos.
+
+Critérios ainda pendentes: matriz completa de CI, CodeQL, revisão, publicação pública HTTPS e teste no Android físico. São necessários mais 124 jogos originais após a integração dos 26, sem contabilizar 150 missões compartilhadas ou 47 atalhos antigos.
