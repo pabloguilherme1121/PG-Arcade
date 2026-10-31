@@ -1,0 +1,17 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0d2a36"><meta name="color-scheme" content="dark">
+<meta name="description" content="Relógios da Maré: sincronize mostradores acoplados em dois modos e três dificuldades.">
+<title>Relógios da Maré | PG Estratégia</title><link rel="stylesheet" href="./style.css"><link rel="manifest" href="./manifest.webmanifest"></head>
+<body><a class="skip" href="#main">Pular para o jogo</a><div class="shell"><header><a class="brand" href="../">PG <strong>ESTRATÉGIA</strong></a><nav aria-label="Navegação entre projetos"><a href="../">Jogos independentes</a><a href="../../">Missões</a><a href="../../../">PG Arcade</a></nav></header>
+<main id="main"><section class="intro"><p class="eyebrow">MOTOR INDEPENDENTE 31 · SINCRONIZAÇÃO MODULAR</p><h1>Relógios <em>da Maré</em></h1><p>Toque num relógio para avançá-lo uma posição. Seus vizinhos também giram. Coloque todos no zero para sincronizar a estação marítima.</p></section>
+<div class="layout"><section class="panel"><div class="panel-head"><h2>Estação de marés</h2><strong id="phase">Em andamento</strong></div>
+<div class="stats"><div><small>Movimentos</small><strong id="moves">0/48</strong></div><div><small>Alinhados</small><strong id="aligned">0/4</strong></div><div><small>Recorde</small><strong id="record">Nenhum</strong></div></div>
+<div id="board" class="board" role="group" aria-label="Mostradores acoplados"></div>
+<p class="board-note">Os valores percorrem 0 → 1 → 2 → 0. O modo Anel conecta também o primeiro e o último relógio.</p></section>
+<aside class="panel"><div class="settings">
+<label>Modo<select id="mode"><option value="linha">Linha costeira</option><option value="anel">Anel oceânico</option></select></label>
+<label>Dificuldade<select id="difficulty"><option value="recruta">Recruta · 4 relógios</option><option value="tatico">Tático · 5 relógios</option><option value="veterano">Veterano · 6 relógios</option></select></label></div>
+<p id="status-text" role="status" aria-live="polite">Missão preparada.</p>
+<div class="actions"><button id="hint" type="button">Pedir dica</button><button id="undo" type="button">Desfazer</button><button id="pause" type="button">Pausar</button><button id="reset" type="button">Reiniciar</button></div>
+<p id="hint-text" aria-live="polite"></p>
+<details id="pg-bot"><summary>PG Bot · Ajuda contextual</summary><div class="bot-actions"><button type="button" data-bot="situation">Situação</button><button type="button" data-bot="strategy">Estratégia</button><button type="button" data-bot="controls">Controles</button></div><p id="bot-answer" aria-live="polite">Selecione uma opção.</p></details></aside></div>
+<section class="rules"><h2>Regras</h2><p>A meta é zerar todos os relógios antes do limite de movimentos. Em Linha, o toque move o relógio escolhido e os vizinhos imediatos. Em Anel, o primeiro também é vizinho do último. Pausar bloqueia movimentos; desfazer recupera a jogada anterior; a dica calcula um movimento que aproxima de uma solução válida.</p></section></main><footer><a href="../">Jogos independentes</a><a href="../../../">PG Arcade</a></footer></div><script type="module" src="./app.js"></script></body></html>

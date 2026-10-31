@@ -85,3 +85,7 @@ Motor de logística com balsa, capacidade de 1 ou 2 passageiros, itens com incom
 ## 30º candidato independente: Cofre de Códigos
 
 Mecânica de dedução de sequência secreta com feedback de símbolos exatos e deslocados; não é cópia dos jogos de criptografia por substituição. São dois modos (com e sem símbolos repetidos), três dificuldades (4, 5 e 6 posições), feedback correto para multiconjuntos, limites de tentativas, desfazer, pausa, recordes locais, dicas de posição com penalidade de pontos, controles touch/teclado, PG Bot contextual e cache PWA isolado. Com 30 motores independentes candidatos, ainda faltam 120 para 150. Esta branch depende das PRs #271, #273 e #274. Não conta as 150 missões da campanha como títulos.
+
+## 31º candidato independente: Relógios da Maré
+
+Desafio modular de sincronização: um toque avança um mostrador e seus vizinhos. Linha costeira e Anel oceânico, com 4, 5 ou 6 relógios. O estado é gerado por embaralhamento reversível, e as dicas BFS calculam passos reais até zerar os mostradores. Possui 48 movimentos máximos, pausa, desfazer, recordes por modo/dificuldade, teclado/touch, PG Bot local e PWA isolado. É distinto de Cofre de Códigos, rede elétrica e óptica. Com 31 candidatos restam 119 jogos independentes para a meta. Branch empilhada sobre #275, sem publicação na main.
