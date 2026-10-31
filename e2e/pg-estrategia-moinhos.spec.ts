@@ -38,7 +38,7 @@ test('Moinhos: dois modos, três dificuldades e navegação de retorno',async({p
  await page.getByRole('link',{name:'Jogos originais'}).first().click();
  await expect(page).toHaveURL(/\/estrategia\/independentes\/#frota-oculta$/);
 });
-test('Moinhos: portal aponta para o 26º jogo',async({page})=>{
+test('Moinhos: portal aponta para o 27º jogo',async({page})=>{
  await page.goto('/estrategia/');
  await page.getByRole('link',{name:/Moinhos de Pedra/}).click();
  await expect(page).toHaveURL(/\/estrategia\/independentes\/moinhos-pedra\/$/);
