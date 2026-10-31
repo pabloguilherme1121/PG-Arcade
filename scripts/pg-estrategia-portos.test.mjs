@@ -71,3 +71,21 @@ test("portos: parâmetros e barcos inexistentes são recusados sem mutação",()
   assert.equal(dispatchHarbor(g,id,"profundo"),g);
  assert.equal(dispatchHarbor(g,"N1","inexistente"),g);
 });
+
+// Regressions from the review of PR #282.
+test("portos: hint solves veteran deadline schedule on seed 117", () => {
+ let game = createHarbor({mode: "prazo", difficulty: "veterano", seed: 117});
+ for (let turn = 0; game.phase === "playing" && turn < 80; turn++) {
+  const hint = hintHarbor(game);
+  assert.ok(hint, `Hint absent at hour ${game.clock}, completed: ${game.completed.join(",")}`);
+  game = hint === "wait" ? waitHarbor(game) : dispatchHarbor(game, hint.id, hint.berth);
+ }
+ assert.equal(game.phase, "won", "Seed 117 should have a winning schedule");
+});
+
+test("portos: mode description must not promise a fixed waiting allowance", async () => {
+ const { readFile } = await import("node:fs/promises");
+ const html = await readFile(new URL("../public/estrategia/independentes/portos-em-turnos/index.html", import.meta.url), "utf8");
+ assert.doesNotMatch(html, /2 horas de espera permitidas/i);
+ assert.match(html, /prazo.*espera.*navios/i);
+});

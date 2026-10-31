@@ -103,7 +103,7 @@ export function hintHarbor(game){
  function solve(current){
   if(current.phase==="won")return [];
   if(current.phase!=="playing")return null;
-  const key=current.clock+"|"+current.completed.join(",")+"|"+HARBOR_BERTHS.map(b=>current.active[b]?.id||"-").join(":");
+  const key=current.clock+"|"+current.completed.join(",")+"|"+HARBOR_BERTHS.map(b=>current.active[b] ? current.active[b].id+"@"+current.active[b].remaining : "-").join(":");
   if(failed.has(key))return null;
   const used=started(current);
   const options=current.ships.filter(s=>!used.has(s.id)&&s.arrival<=current.clock)
