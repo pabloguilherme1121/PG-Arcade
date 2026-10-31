@@ -65,3 +65,11 @@ Armazém Tático (ID armazem-tatico) é um puzzle de empurrar caixas para destin
 ## 26º candidato independente: Nonograma Tático
 
 Nonograma Tático (`nonograma-tatico`) utiliza pistas de blocos consecutivos por linha e coluna, com três dimensões (5×5, 6×6, 7×7), dois modos (Exploração e Precisão), limites de jogadas e erros, pausa, desfazer, dicas contextuais, navegação touch/teclado e PG Bot local. Regras distintas de empurrar caixas, óptica, grafos e paridade. A meta de 150 exige mais 124 motores após integrar todos os 26. Não contar o candidato como publicado sem CI integral e HTTPS real.
+## 27º candidato independente: Moinhos de Pedra
+
+Moinhos de Pedra (`moinhos-pedra`) implementa um tabuleiro de 24 posições e 16 alinhamentos, com fases de colocação, movimento por adjacência, formação de linhas de três, captura obrigatória, voo com três peças, adversário determinístico e estados de vitória, derrota e empate. Possui dois modos (Rápido, seis peças; Clássico, nove peças), três dificuldades, pausa, desfazer por jogada humana e resposta da IA, recordes locais por modo/dificuldade, suporte PG Bot local e service worker com cache isolado. Um novo jogo é contado somente após integração e certificação completa dos testes, não como nova missão. No HEAD desta branch há 26 candidatos; a main pode permanecer com menos.
+
+Critérios ainda pendentes: matriz completa de CI, CodeQL, revisão, publicação pública HTTPS e teste no Android físico. São necessários mais 124 jogos originais após a integração dos 26, sem contabilizar 150 missões compartilhadas ou 47 atalhos antigos.
+
+
+Nota de integração: há 27 motores independentes neste ramo, 123 ainda faltam para 150. As 150 missões existentes não contam. O texto histórico de PRs anteriores é preservado como histórico, não como estado atual.
