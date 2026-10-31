@@ -89,3 +89,9 @@ Mecânica de dedução de sequência secreta com feedback de símbolos exatos e 
 ## 31º candidato independente: Relógios da Maré
 
 Desafio modular de sincronização: um toque avança um mostrador e seus vizinhos. Linha costeira e Anel oceânico, com 4, 5 ou 6 relógios. O estado é gerado por embaralhamento reversível, e as dicas BFS calculam passos reais até zerar os mostradores. Possui 48 movimentos máximos, pausa, desfazer, recordes por modo/dificuldade, teclado/touch, PG Bot local e PWA isolado. É distinto de Cofre de Códigos, rede elétrica e óptica. Com 31 candidatos restam 119 jogos independentes para a meta. Branch empilhada sobre #275, sem publicação na main.
+
+## 32º candidato independente: Sudoku da Fortaleza
+
+Sudoku da Fortaleza (`sudoku-fortaleza`) usa motor próprio de restrições numéricas com tabuleiros 4×4 (blocos 2×2), 6×6 (2×3) e 9×9 (3×3). Os modos Clássico e Diagonal verificam linhas, colunas, blocos e, quando ativado, duas diagonais. A geração tem semente determinística, solução completa e remoção de pistas condicionada a **uma única solução válida**, comprovada por busca. Interações de seleção e teclado numérico, limite de erros, derrota, vitória, dicas da solução real com penalização, pausa, desfazer, recorde por modo/dificuldade, PG Bot contextual local e PWA isolado estão implementados. Não é uma variante de Nonograma (padrões de grupos), Cifras Reais (criptograma) ou Cofre de Códigos (feedback parcial por palpites).
+
+A branch baseada na integração #278 conta **32 motores candidatos**, não 32 publicados. O número integrado à main deve ser checado à parte; a meta de 150 ainda requer 118 motores adicionais, certificação, CI e Android/HTTPS antes de afirmar entrega. O bundle inicial do PG Arcade não deve subir pelo uso de scripts estáticos e carregamento da página independente sob demanda.
