@@ -81,3 +81,7 @@ Satélites Orbitais (satelites-orbitais) é um desafio de agendamento de observa
 ## 29º candidato independente: Travessia do Vale
 
 Motor de logística com balsa, capacidade de 1 ou 2 passageiros, itens com incompatibilidades que não podem ficar juntos sem supervisão, três dificuldades e dois modos, vitória e derrota por prazo, desfazer, pausa e dica BFS calculada pelo motor. Diferente de Pontes do Arquipélago (redes) e Torre Logística (discos). Possui controles touch, responsividade 320–1200 px, recordes locais, PG Bot contextual offline e SW isolado. Após integração serão 29 jogos independentes, faltando 121 para chegar a 150. Esta branch depende das PRs #271 e #273; não conta missões de campanha como títulos.
+
+## 30º candidato independente: Cofre de Códigos
+
+Mecânica de dedução de sequência secreta com feedback de símbolos exatos e deslocados; não é cópia dos jogos de criptografia por substituição. São dois modos (com e sem símbolos repetidos), três dificuldades (4, 5 e 6 posições), feedback correto para multiconjuntos, limites de tentativas, desfazer, pausa, recordes locais, dicas de posição com penalidade de pontos, controles touch/teclado, PG Bot contextual e cache PWA isolado. Com 30 motores independentes candidatos, ainda faltam 120 para 150. Esta branch depende das PRs #271, #273 e #274. Não conta as 150 missões da campanha como títulos.
