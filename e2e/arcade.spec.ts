@@ -10,10 +10,10 @@ test("catalog favorites persist across navigation and reload", async ({
   if (browserName !== "chromium") test.setTimeout(60_000);
   await page.goto("./");
   await expect(page.locator(".game-card")).toHaveCount(games.length);
-  // Read the icon once without resolving an extra remote element handle and
+  // Measure the actual favorite glyph after removing SVG markup, without an extra remote element handle, and
   // recording another full-catalog snapshot in Firefox.
   expect(await page.evaluate(() =>
-    document.querySelector(".favorite svg")?.getBoundingClientRect().width || 0,
+    document.querySelector(".favorite .favorite-glyph")?.getBoundingClientRect().width || 0,
   )).toBeGreaterThanOrEqual(16);
   await page
     .getByRole("button", { name: "Adicionar Snake aos favoritos", exact: true })
