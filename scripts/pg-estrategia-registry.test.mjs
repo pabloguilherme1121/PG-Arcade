@@ -19,8 +19,8 @@ test('catálogo anuncia exatamente 31 motores, não 150 missões como jogos',()=
  assert.equal(buttons.length,9);
  assert.equal(children.length,22);
  assert.match(index,/31 motores independentes/);
- assert.match(index,/Trinta e um jogos/);
- assert.match(portal,/Trinta e um jogos candidatos/);
+ assert.match(index,/<h1>31 jogos/);
+ assert.match(portal,/31 jogos independentes/);
 });
 test('cada jogo possui um motor e um caminho único e acessível desde o portal',()=>{
  for(const id of embedded){

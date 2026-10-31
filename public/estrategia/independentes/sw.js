@@ -1,23 +1,6 @@
-const CACHE = "pg-estrategia-originais-shell-v26";
+const CACHE = "pg-estrategia-originais-shell-v27";
 const ROOT = new URL("./", self.registration.scope);
-const FILES = ["./", "./index.html", "./app.js", "./pg-bot.mjs", "./style.css", "./naval.mjs", "./siege.mjs", "./hex.mjs", "./squad.mjs", "./towers.mjs", "./frontier.mjs", "./winter.mjs", "./draughts.mjs", "./market.mjs", "./manifest.webmanifest"];
-const MARKET_PATH = new URL("mercado-de-rotas/", ROOT).pathname;
-const COUNCIL_PATH = new URL("conselho-de-reinos/", ROOT).pathname;
-const REVERSI_PATH = new URL("reversi-tatico/", ROOT).pathname;
-const CIPHER_PATH = new URL("cifras-reais/", ROOT).pathname;
-const DRONES_PATH = new URL("comando-de-drones/", ROOT).pathname;
-const WORKSHOP_PATH = new URL("oficina-automatos/", ROOT).pathname;
-const TRAFFIC_PATH = new URL("controle-trafego/", ROOT).pathname;
-const ENERGY_PATH = new URL("malha-energia/", ROOT).pathname;
-const BRIDGES_PATH = new URL("pontes-arquipelago/", ROOT).pathname;
-const TOWER_PATH = new URL("torre-logistica/", ROOT).pathname;
-const BIOMES_PATH = new URL("guardioes-biomas/", ROOT).pathname;
-const FREQUENCY_PATH = new URL("rede-frequencias/", ROOT).pathname;
-const DISPATCH_PATH = new URL("central-resgates/", ROOT).pathname;
-const FIRELINE_PATH = new URL("linha-contencao/", ROOT).pathname;
-const MIRROR_PATH = new URL("espelhos-sinal/", ROOT).pathname;
-const WAREHOUSE_PATH = new URL("armazem-tatico/", ROOT).pathname;
-const MILLS_PATH = new URL("moinhos-pedra/", ROOT).pathname;
+const FILES = ["./", "./index.html", "./app.js", "./pg-bot.mjs", "./style.css", "./search.js", "./naval.mjs", "./siege.mjs", "./hex.mjs", "./squad.mjs", "./towers.mjs", "./frontier.mjs", "./winter.mjs", "./draughts.mjs", "./market.mjs", "./manifest.webmanifest"];
 const APPROVED = new Set(FILES.map(file => new URL(file, ROOT).pathname));
 
 self.addEventListener("install", event => {
@@ -34,8 +17,10 @@ self.addEventListener("fetch", event => {
   if (request.method !== "GET") return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin || !url.pathname.startsWith(ROOT.pathname)) return;
-  // This game owns a distinct offline shell. Never serve the catalog HTML for its URL.
-  if (url.pathname.startsWith(MARKET_PATH) || url.pathname.startsWith(COUNCIL_PATH) || url.pathname.startsWith(REVERSI_PATH) || url.pathname.startsWith(CIPHER_PATH) || url.pathname.startsWith(DRONES_PATH) || url.pathname.startsWith(WORKSHOP_PATH) || url.pathname.startsWith(TRAFFIC_PATH) || url.pathname.startsWith(ENERGY_PATH) || url.pathname.startsWith(BRIDGES_PATH) || url.pathname.startsWith(TOWER_PATH) || url.pathname.startsWith(BIOMES_PATH) || url.pathname.startsWith(FREQUENCY_PATH) || url.pathname.startsWith(DISPATCH_PATH) || url.pathname.startsWith(FIRELINE_PATH) || url.pathname.startsWith(MIRROR_PATH) || url.pathname.startsWith(WAREHOUSE_PATH) || url.pathname.startsWith(MILLS_PATH)) return;
+  // Apenas o shell pode responder por navegações do catálogo.
+  // Cada sub-jogo gerencia a própria rota e cache sem interferência.
+  const isCatalogNavigation = url.pathname === ROOT.pathname || url.pathname === new URL("index.html", ROOT).pathname;
+  if (request.mode === "navigate" && !isCatalogNavigation) return;
   if (request.mode !== "navigate" && !APPROVED.has(url.pathname)) return;
   event.respondWith((async () => {
     const key = request.mode === "navigate" ? new URL("index.html", ROOT).href : request;
