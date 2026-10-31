@@ -77,3 +77,7 @@ Nota de integração: há 27 motores independentes neste ramo, 123 ainda faltam 
 ## 28º candidato independente: Satélites Orbitais
 
 Satélites Orbitais (satelites-orbitais) é um desafio de agendamento de observações em janelas de contato, com energia recarregável e intervalos de tempestade. Possui dois modos, três dificuldades, geração determinística, pistas BFS a partir das regras reais, vitória e derrota, pausa, desfazer, controles touch e teclado, PG Bot offline e SW isolado. É diferente de Fronteira Orbital: não possui colonização, pesquisa ou exploração 4X. Após integrar os 28 candidatos ainda faltarão 122 motores independentes para a meta 150. Não contar as missões da campanha como jogos diferentes. Esta branch depende da integração da PR #271 e não está publicada na main.
+
+## 29º candidato independente: Travessia do Vale
+
+Motor de logística com balsa, capacidade de 1 ou 2 passageiros, itens com incompatibilidades que não podem ficar juntos sem supervisão, três dificuldades e dois modos, vitória e derrota por prazo, desfazer, pausa e dica BFS calculada pelo motor. Diferente de Pontes do Arquipélago (redes) e Torre Logística (discos). Possui controles touch, responsividade 320–1200 px, recordes locais, PG Bot contextual offline e SW isolado. Após integração serão 29 jogos independentes, faltando 121 para chegar a 150. Esta branch depende das PRs #271 e #273; não conta missões de campanha como títulos.

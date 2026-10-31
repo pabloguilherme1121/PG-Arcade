@@ -8,19 +8,19 @@ const shared=read('public/estrategia/independentes/app.js');
 const ids=[
  'frota-oculta','cartas-de-cerco','hex-conexao','damas-taticas','patrulha-tatica',
  'refugio-do-inverno','fronteira-orbital','muralha-das-torres','mercado-de-sombras',
- 'conselho-de-reinos','mercado-de-rotas','reversi-tatico','cifras-reais','comando-de-drones','oficina-automatos','controle-trafego','malha-energia','pontes-arquipelago','torre-logistica','guardioes-biomas','rede-frequencias','central-resgates','linha-contencao','espelhos-sinal','armazem-tatico','nonograma-tatico','moinhos-pedra','satelites-orbitais'
+ 'conselho-de-reinos','mercado-de-rotas','reversi-tatico','cifras-reais','comando-de-drones','oficina-automatos','controle-trafego','malha-energia','pontes-arquipelago','torre-logistica','guardioes-biomas','rede-frequencias','central-resgates','linha-contencao','espelhos-sinal','armazem-tatico','nonograma-tatico','moinhos-pedra','satelites-orbitais','travessia-vale'
 ];
 const embedded=ids.slice(0,9),subsites=ids.slice(9);
-test('catálogo anuncia exatamente 28 motores, não 150 missões como jogos',()=>{
+test('catálogo anuncia exatamente 29 motores, não 150 missões como jogos',()=>{
  const buttons=[...index.matchAll(/data-select="([^"]+)"/g)].map(m=>m[1]);
  const children=[...index.matchAll(/class="choice[^"]*" href="\.\/([^/]+)\/"/g)].map(m=>m[1]);
  assert.equal(new Set(ids).size,ids.length);
  assert.deepEqual(new Set([...buttons,...children]),new Set(ids));
  assert.equal(buttons.length,9);
- assert.equal(children.length,19);
- assert.match(index,/28 motores independentes/);
- assert.match(index,/Vinte e oito jogos/);
- assert.match(portal,/Vinte e oito jogos candidatos/);
+ assert.equal(children.length,20);
+ assert.match(index,/29 motores independentes/);
+ assert.match(index,/Vinte e nove jogos/);
+ assert.match(portal,/Vinte e nove jogos candidatos/);
 });
 test('cada jogo possui um motor e um caminho único e acessível desde o portal',()=>{
  for(const id of embedded){
@@ -31,7 +31,7 @@ test('cada jogo possui um motor e um caminho único e acessível desde o portal'
  for(const id of subsites){
   for(const path of ['index.html','app.js','style.css','sw.js'])
    assert.ok(existsSync('public/estrategia/independentes/'+id+'/'+path),id+'/'+path);
-  assert.ok(existsSync('public/estrategia/independentes/'+id+'/'+(id==='conselho-de-reinos'||id==='reversi-tatico'||id==='cifras-reais'||id==='comando-de-drones'||id==='oficina-automatos'||id==='controle-trafego'||id==='malha-energia'||id==='pontes-arquipelago'||id==='torre-logistica'||id==='guardioes-biomas'||id==='rede-frequencias'||id==='central-resgates'||id==='linha-contencao'||id==='espelhos-sinal'||id==='armazem-tatico'||id==='nonograma-tatico'||id==='moinhos-pedra'||id==='satelites-orbitais'?'engine.mjs':'game.mjs')),id);
+  assert.ok(existsSync('public/estrategia/independentes/'+id+'/'+(id==='conselho-de-reinos'||id==='reversi-tatico'||id==='cifras-reais'||id==='comando-de-drones'||id==='oficina-automatos'||id==='controle-trafego'||id==='malha-energia'||id==='pontes-arquipelago'||id==='torre-logistica'||id==='guardioes-biomas'||id==='rede-frequencias'||id==='central-resgates'||id==='linha-contencao'||id==='espelhos-sinal'||id==='armazem-tatico'||id==='nonograma-tatico'||id==='moinhos-pedra'||id==='satelites-orbitais'||id==='travessia-vale'?'engine.mjs':'game.mjs')),id);
   assert.match(index,new RegExp('href="\\./'+id+'/"'));
   assert.ok(portal.includes('./independentes/'+id+'/'),id);
  }
