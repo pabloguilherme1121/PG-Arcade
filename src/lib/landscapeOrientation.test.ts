@@ -39,6 +39,13 @@ it("does not request rotation for a desktop pointer", () => {
   preferLandscape()();
   expect(lock).not.toHaveBeenCalled();
 });
+it("does not throw when matchMedia is unavailable in an embedded browser", () => {
+  const lock = vi.fn();
+  setup(lock);
+  vi.stubGlobal("matchMedia", undefined);
+  expect(() => preferLandscape()()).not.toThrow();
+  expect(lock).not.toHaveBeenCalled();
+});
 it("handles missing or synchronously failing orientation APIs", () => {
   vi.stubGlobal("screen", {});
   expect(preferLandscape() ).toBeTypeOf("function");
