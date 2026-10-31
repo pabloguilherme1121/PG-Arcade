@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#102c38"><meta name="color-scheme" content="dark">
+<meta name="description" content="Nonograma Tático: jogo independente de dedução lógica com pistas, três dificuldades, dois modos e PG Bot.">
+<link rel="stylesheet" href="./style.css"><link rel="manifest" href="./manifest.webmanifest">
+<title>Nonograma Tático | PG Estratégia</title></head><body>
+<a href="#main" class="skip">Pular para o jogo</a><div class="shell">
+<header class="masthead"><a class="brand" href="../">PG <strong>ESTRATÉGIA</strong></a>
+<nav aria-label="Navegação entre projetos"><a href="../">Jogos originais</a><a href="../../">Missões</a><a href="../../../">PG Arcade</a></nav></header>
+<main id="main"><section class="intro"><p class="eyebrow">MOTOR ORIGINAL 26 · DEDUÇÃO LÓGICA</p>
+<h1>Nonograma <em>Tático</em></h1><p>Use as sequências de números nas linhas e colunas para descobrir as casas preenchidas. Marque também as vazias para concluir a investigação.</p></section>
+<div class="layout"><section class="panel arena" aria-label="Partida de Nonograma Tático">
+<div class="panel-head"><h2>Grade lógica</h2><span class="live-indicator">PUZZLE ATIVO</span></div>
+<div class="board-scroll"><div id="puzzle" class="puzzle" role="grid" aria-label="Pistas de linhas e colunas"></div></div>
+<p class="direction-help">Escolha preencher ou descartar. Toque em uma casa ou use Tab e Enter; as setas movem o foco na grade.</p>
+</section><aside class="panel controls" aria-label="Configurações e progresso">
+<div class="selectors"><label for="mode">Modo<select id="mode"><option value="exploracao">Exploração</option><option value="precisao">Precisão · 4 erros</option></select></label>
+<label for="difficulty">Dificuldade<select id="difficulty"><option value="recruta">Recruta · 5×5</option><option value="tatico">Tático · 6×6</option><option value="veterano">Veterano · 7×7</option></select></label></div>
+<div class="stats"><div><span class="stat-label">Jogadas</span><strong id="moves">0</strong></div>
+<div><span class="stat-label">Erros</span><strong id="errors">0</strong></div>
+<div><span class="stat-label">Acertos</span><strong id="correct">0</strong></div>
+<div><span class="stat-label">Estado</span><strong id="phase">Em andamento</strong></div></div>
+<p id="status-text" class="status" role="status" aria-live="polite">Pronto para jogar.</p>
+<div class="actions"><button id="fill" type="button" aria-pressed="true">◆ Preencher</button>
+<button id="empty" type="button" aria-pressed="false">× Descartar</button>
+<button id="pause" type="button">Pausar</button><button id="undo" type="button">Desfazer</button>
+<button id="hint" type="button">Pedir dica</button><button id="reset" type="button">Reiniciar</button></div>
+<p id="hint-text" aria-live="polite"></p>
+<details id="pg-bot" class="pg-bot"><summary>PG Bot · Suporte da operação</summary>
+<p>Ajuda local e contextual. Nenhuma informação enviada para um servidor.</p>
+<div class="bot-actions"><button type="button" data-bot="situation">Situação</button>
+<button type="button" data-bot="strategy">Estratégia</button><button type="button" data-bot="controls">Controles</button></div>
+<p id="bot-answer" role="status" aria-live="polite">Escolha uma opção.</p></details>
+</aside></div>
+<section class="disclosure"><h2>Como resolver</h2><p>Cada sequência indica blocos consecutivos preenchidos. Entre blocos há pelo menos uma casa vazia. Marque todas as casas conforme as pistas para vencer. O modo Precisão limita erros; o modo Exploração permite experimentar.</p></section>
+</main><footer><a href="../">Jogos originais</a><a href="../../../">PG Arcade</a></footer></div>
+<script type="module" src="./app.js"></script></body></html>

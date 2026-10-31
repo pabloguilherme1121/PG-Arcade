@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#153a47">
+  <meta name="description" content="Central de Resgates, jogo de estratégia em que você organiza atendimentos sob prazos, prioridades e tempo limitado.">
+  <title>Central de Resgates | PG Estratégia</title>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="manifest" href="./manifest.webmanifest">
+</head>
+<body>
+<a class="skip" href="#main">Pular para o jogo</a>
+<div class="shell">
+  <header>
+    <a class="brand" href="../">PG <strong>ESTRATÉGIA</strong></a>
+    <nav aria-label="Navegação entre projetos"><a href="../">Jogos independentes</a><a href="../../">Missões</a><a href="../../../">PG Arcade</a></nav>
+  </header>
+  <main id="main">
+    <p class="eyebrow">JOGO ORIGINAL · GESTÃO DE CRISES</p>
+    <h1>Central de <em>Resgates</em></h1>
+    <p class="intro">Os chamados estão chegando. Cada serviço exige tempo e tem prazo. Escolha a ordem dos atendimentos para alcançar a meta antes que o turno termine. Chamar fora do prazo consome tempo, mas não rende pontos.</p>
+    <section class="settings" aria-label="Preparar partida">
+      <label>Objetivo<select id="mode"><option value="prioridade">Prioridade · somar pontos de impacto</option><option value="pontualidade">Pontualidade · cumprir mais chamados no prazo</option></select></label>
+      <label>Dificuldade<select id="difficulty"><option value="recruta">Recruta · 6 chamados</option><option value="tatico">Tático · 8 chamados</option><option value="veterano">Veterano · 10 chamados</option></select></label>
+      <button id="new" type="button">Nova operação</button>
+    </section>
+    <div class="layout">
+      <section class="arena" aria-labelledby="arena-heading">
+        <div class="arena-heading"><h2 id="arena-heading">Quadro de operações</h2><span id="phase" data-phase="playing">Em andamento</span></div>
+        <div class="metrics">
+          <p>Tempo <strong id="time">0/12</strong></p>
+          <p>Pontuação <strong id="score">0</strong></p>
+          <p>Meta <strong id="target">0</strong></p>
+          <p>Recorde <strong id="record">Nenhum</strong></p>
+        </div>
+        <p class="round-hint">Priorize chamadas com prazo curto, duração pequena ou valor alto. Não existe uma única ordem vencedora.</p>
+        <div id="jobs" class="jobs" role="group" aria-label="Chamados disponíveis"></div>
+        <p id="status" role="status" aria-live="polite" class="status">Preparando operação.</p>
+        <div class="controls">
+          <button id="undo" type="button">Desfazer</button>
+          <button id="hint" type="button">Pedir dica</button>
+          <button id="pause" type="button" aria-pressed="false">Pausar</button>
+        </div>
+        <p id="hint-text" role="status" aria-live="polite" class="hint">Dica opcional disponível.</p>
+      </section>
+      <aside class="help">
+        <h2>Regras e estratégia</h2>
+        <p>Escolha um chamado tocando no cartão. O relógio avança conforme a duração do serviço. Atendimentos concluídos dentro do prazo rendem pontos; atrasados não rendem.</p>
+        <p><strong>Prioridade:</strong> ganhe pontos conforme o valor de cada serviço. <strong>Pontualidade:</strong> cada serviço no prazo vale um ponto. A meta é calculada com base na melhor ordem possível para este turno.</p>
+        <p>Você pode pausar ou desfazer uma escolha. A dica recomenda um próximo atendimento com uma rota comprovada para maximizar a pontuação restante, mas não executa a ação automaticamente.</p>
+        <details id="pg-bot"><summary>PG Bot · Ajuda contextual</summary>
+          <p>Ajuda local, sem conta e sem troca de informações com servidores.</p>
+          <div class="topics"><button type="button" data-help="objetivo">Objetivo</button><button type="button" data-help="controles">Controles</button><button type="button" data-help="situacao">Situação</button></div>
+          <p id="bot-answer" role="status" aria-live="polite">Selecione uma pergunta para ver a resposta.</p>
+        </details>
+      </aside>
+    </div>
+  </main>
+  <footer><a href="../">Outros jogos</a><a href="../../">PG Estratégia</a><a href="../../../">PG Arcade</a><small>Gratuito · Sem login · Resultados salvos apenas neste navegador</small></footer>
+</div>
+<script type="module" src="./app.js"></script>
+</body>
+</html>
