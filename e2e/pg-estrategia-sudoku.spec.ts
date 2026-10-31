@@ -23,6 +23,8 @@ for(const width of [320,390]){
   const usable=await page.locator('#keypad [data-digit="1"]').boundingBox();
   expect(usable).not.toBeNull();
   expect(usable!.height).toBeGreaterThanOrEqual(44);
+  const clippedControls=await page.evaluate(()=>Array.from(document.querySelectorAll('#keypad, #keypad button, .selectors, .selectors label, .selectors select')).filter(el=>el.scrollWidth>el.clientWidth+1).map(el=>el.id||el.className||el.tagName));
+  expect(clippedControls).toEqual([]);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
  });
 }

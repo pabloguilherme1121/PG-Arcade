@@ -17,8 +17,10 @@ h1{font-size:clamp(34px,6vw,64px);line-height:1.07;margin:8px 0}h1 em{font-style
 .cell:disabled{cursor:not-allowed}.cell:focus-visible,button:focus-visible,select:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid #f3dd89;outline-offset:2px;z-index:2}
 .board-help{font-size:13px}.keypad{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:12px}
 button:not(.cell),select{font:inherit;min-height:44px;border:1px solid #6d9eae;background:#1d4860;color:#fff;border-radius:10px;padding:9px;cursor:pointer}
-button:disabled{opacity:.48;cursor:not-allowed}.keypad button{min-height:46px;font-size:16px;font-weight:750}
-.selectors{align-items:stretch;gap:10px}.selectors label{display:grid;gap:6px;flex:1;min-width:120px}
+button:disabled{opacity:.48;cursor:not-allowed}.keypad button{min-height:46px;font-size:16px;font-weight:750;min-width:0}
+.keypad button[data-digit="0"]{grid-column:1/-1}
+.selectors{align-items:stretch;gap:10px}.selectors label{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;flex:1;min-width:120px}
+.selectors select{width:100%;min-width:0;max-width:100%}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0}.stats>div{display:grid;gap:6px;background:#091e2d;border:1px solid #3d5b6b;border-radius:12px;padding:12px}
 .stats strong{font-size:23px;color:#9de9ce}.stats small{font-size:13px;color:#d4e6ed}
 #status-text{min-height:60px;line-height:1.5;font-weight:650}.actions{justify-content:flex-start}.hint-text{line-height:1.5;color:#d1e8ef;min-height:22px}
