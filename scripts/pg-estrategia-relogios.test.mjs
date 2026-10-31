@@ -53,3 +53,13 @@ test('relógios: derrota por jogadas esgotadas e vitória travam tabuleiro',()=>
  const lost=rotateTide(forced,0);assert.equal(lost.phase,'lost');
  assert.equal(rotateTide(lost,0),lost);assert.equal(pauseTide(lost),lost);
 });
+
+test('relógios: dica não promete vitória quando o limite impede completar a solução',()=>{
+ const initial=createTides({mode:'linha',difficulty:'recruta',seed:0});
+ const noTime={...initial,moves:initial.limit-1};
+ assert.ok(Array.from({length:noTime.size},(_,i)=>rotateTide(noTime,i)).every(next=>next.phase!=='won'));
+ assert.equal(hintTides(noTime),null);
+ const oneMove={...initial,ticks:[2,2,0,0],moves:initial.limit-1};
+ assert.equal(hintTides(oneMove),0);
+ assert.equal(rotateTide(oneMove,0).phase,'won');
+});

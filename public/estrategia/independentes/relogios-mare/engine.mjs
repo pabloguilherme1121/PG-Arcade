@@ -15,13 +15,13 @@ function update(ticks,index,mode,amount){
 const plans=new Map();
 function makePlan(mode,size){
  const key=mode+':'+size;if(plans.has(key))return plans.get(key);
- const solved=Array(size).fill(0),routes=new Map([[solved.join(''),null]]),queue=[solved];
+ const solved=Array(size).fill(0),routes=new Map([[solved.join(''),{button:null,distance:0}]]),queue=[solved];
  for(let i=0;i<queue.length;i++){
-  const ticks=queue[i];
+  const ticks=queue[i],distance=routes.get(ticks.join('')).distance;
   for(let button=0;button<size;button++){
    const prior=update(ticks,button,mode,-1),id=prior.join('');
    if(routes.has(id))continue;
-   routes.set(id,button);queue.push(prior);
+   routes.set(id,{button,distance:distance+1});queue.push(prior);
   }
  }
  plans.set(key,routes);return routes;
@@ -53,5 +53,6 @@ export function pauseTide(game){
 }
 export function hintTides(game){
  if(!game||game.phase!=='playing'||game.paused)return null;
- return makePlan(game.mode,game.size).get(game.ticks.join(''))??null;
+ const plan=makePlan(game.mode,game.size).get(game.ticks.join(''));
+ return plan&&plan.button!==null&&plan.distance<=game.limit-game.moves?plan.button:null;
 }
