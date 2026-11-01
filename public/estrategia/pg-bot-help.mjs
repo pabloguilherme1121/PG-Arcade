@@ -28,28 +28,95 @@ export function responseFor(topic, missionTitle = '') {
   return Object.hasOwn(TOPICS, topic) ? TOPICS[topic] : 'Selecione um assunto para ver a orientação disponível.';
 }
 
+/**
+ * Perguntas interpretadas localmente por intenções explícitas. Não é um modelo
+ * generativo, não guarda o texto digitado e não acessa serviços externos.
+ */
+export function answerQuestion(question, context = {}) {
+  const raw = typeof question === 'string' && question.length <= 240 ? question.trim() : '';
+  const q = normalize(raw);
+  const fallback = 'Posso responder perguntas sobre como jogar, dicas da missão, turnos, progresso, favoritos, offline, reinício e acessibilidade. Escolha um assunto acima ou faça outra pergunta.';
+  if (!q || raw.length > 240 || /^[^a-z0-9]*$/.test(q)) return { topic: 'fallback', answer: fallback };
+  let topic = 'fallback';
+  if (/offline|sem (internet|rede|conexao)|desconectad/.test(q)) topic = 'offline';
+  else if (/salv|favorit|record|pontua|backup|progresso (salvo|guardado)/.test(q)) topic = 'progresso';
+  else if (/teclad|tab\b|acessib|contraste|leitor de tela|movimento reduzido/.test(q)) topic = 'acessibilidade';
+  else if (/desfaz|desfazer|reinici|recomec|repetir|reset/.test(q)) topic = 'reiniciar';
+  else if (/turno|situacao|status|estado atual|quantas jogadas|quanto falta|minha partida|objetivo atual/.test(q)) topic = 'estado-missao';
+  else if (/dica|estrateg|venc|ganh|passar (desta|essa|a) missao|missao|rota|proximo passo/.test(q)) topic = 'dica-missao';
+  else if (/como jog|jogar|comec|inicio|regras|ajuda|controles/.test(q)) topic = 'como-jogar';
+  if (topic === 'fallback') return { topic, answer: fallback };
+  if (topic === 'estado-missao') {
+    const title = typeof context.missionTitle === 'string' ? context.missionTitle.slice(0, 120).trim() : '';
+    if (!title) return { topic, answer: 'Abra uma missão para consultar seu turno e progresso atuais. O PG Bot não inventa o estado de partidas que não estão abertas.' };
+    const turn = /^\d+\s*\/\s*\d+$/.test(context.turn || '') ? context.turn : '';
+    const progress = /^\d+\s*\/\s*\d+$/.test(context.progress || '') ? context.progress : '';
+    return { topic, answer: 'Missão em andamento: ' + title + '. ' +
+      (turn ? 'Turno: ' + turn + '. ' : 'Turno não disponível. ') +
+      (progress ? 'Progresso: ' + progress + '. ' : 'Progresso não disponível. ') +
+      'Confira o objetivo e os recursos na arena para decidir a próxima jogada.' };
+  }
+  return { topic, answer: responseFor(topic, context.missionTitle || '') };
+}
+
+function currentMissionContext() {
+  const arena = document.querySelector('#arena[open]');
+  return arena ? {
+    missionTitle: arena.querySelector('#arena-title')?.textContent?.trim() || '',
+    turn: (arena.querySelector('#arena-turn')?.textContent || '').trim(),
+    progress: (arena.querySelector('#arena-progress-text')?.textContent || '').trim(),
+  } : {};
+}
 let initialized = false;
 let focusReturn = null;
+function showAnswer(dialog, result) {
+  const output = dialog.querySelector('#pg-bot-answer');
+  if (output) output.textContent = result.answer;
+  const label = dialog.querySelector('#pg-bot-answer-topic');
+  if (label) label.textContent = {
+    'como-jogar': 'Como jogar', 'dica-missao': 'Dica da missão',
+    'estado-missao': 'Situação da missão', progresso: 'Progresso',
+    offline: 'Offline', reiniciar: 'Controles da partida',
+    acessibilidade: 'Acessibilidade', fallback: 'Assuntos disponíveis',
+  }[result.topic] || 'Orientação';
+  for (const button of dialog.querySelectorAll('[data-help-topic]')) {
+    button.setAttribute('aria-pressed', String(button.dataset.helpTopic === result.topic));
+  }
+}
 export function openHelp(trigger = document.activeElement) {
-  focusReturn = trigger;
   const dialog = document.getElementById('pg-bot-dialog');
   if (!dialog) return false;
+  focusReturn = trigger;
   if (!initialized) {
     for (const button of dialog.querySelectorAll('[data-help-topic]')) {
       button.addEventListener('click', () => {
-        const answer = dialog.querySelector('#pg-bot-answer');
-        if (answer) answer.textContent = responseFor(button.dataset.helpTopic,
-          document.querySelector('#arena[open] #arena-title')?.textContent || '');
+        const topic = button.dataset.helpTopic;
+        const context = currentMissionContext();
+        const answer = topic === 'estado-missao' ?
+          answerQuestion('situação da missão', context) :
+          {topic, answer: responseFor(topic, context.missionTitle || '')};
+        showAnswer(dialog, answer);
       });
     }
+    const form = dialog.querySelector('#pg-bot-question-form');
+    form?.addEventListener('submit', event => {
+      event.preventDefault();
+      const input = dialog.querySelector('#pg-bot-question');
+      showAnswer(dialog, answerQuestion(input?.value || '', currentMissionContext()));
+    });
     dialog.querySelector('#pg-bot-close')?.addEventListener('click', () => dialog.close());
     dialog.addEventListener('close', () => {
       const target = focusReturn?.isConnected ? focusReturn : document.getElementById('pg-bot-open');
-      target?.focus({ preventScroll: true });
+      target?.focus({preventScroll:true});
     });
     initialized = true;
   }
   if (!dialog.open) dialog.showModal();
-  dialog.querySelector('[data-help-topic]')?.focus({ preventScroll: true });
+  if (currentMissionContext().missionTitle) {
+    showAnswer(dialog, answerQuestion('situação da missão', currentMissionContext()));
+  } else {
+    showAnswer(dialog, {topic:'como-jogar',answer:responseFor('como-jogar')});
+  }
+  dialog.querySelector('[data-help-topic]')?.focus({preventScroll:true});
   return true;
 }

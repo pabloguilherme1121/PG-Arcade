@@ -11,7 +11,17 @@
 .pg-bot-topics{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
 .pg-bot-topics button{flex:1 1 160px;min-height:44px;text-align:left;padding:10px 12px;border-radius:10px;border:1px solid #68849f;background:#213752;color:#f4f7fb;font-weight:650}
 .pg-bot-topics button:hover{background:#315071}
-.pg-bot-answer{min-height:105px;background:#0d1a2d;border:1px solid #405d78;border-radius:12px;padding:15px}
+.pg-bot-topics button[aria-pressed="true"]{background:#31556d;border-color:#e0ffae;box-shadow:inset 3px 0 #d6fa90}
+.pg-bot-question-form{margin:12px 0 15px}
+.pg-bot-question-form label{display:block;font-weight:760;font-size:14px;margin-bottom:7px;color:#f3f9ff}
+.pg-bot-question-form small{display:block;margin-top:7px;color:#cbd6e6;font-size:12px;line-height:1.45}
+.pg-bot-question-row{display:flex;flex-wrap:wrap;gap:8px}
+.pg-bot-question-row input{min-width:0;flex:1 1 175px;min-height:48px;border:1px solid #829fba;border-radius:10px;padding:10px 12px;background:#0c1b2e;color:#fff;font:inherit}
+.pg-bot-question-row button{min-height:48px;flex:0 0 auto;border:1px solid #b6dda0;border-radius:10px;padding:10px 14px;color:#102219;background:#caffb3;font:inherit;font-weight:800;cursor:pointer}
+.pg-bot-question-row input:focus-visible,.pg-bot-question-row button:focus-visible,.pg-bot-topics button:focus-visible{outline:3px solid #deffa9;outline-offset:2px}
+.pg-bot-response{background:#0d1a2d;border:1px solid #506e87;border-radius:12px;padding:13px 15px}
+.pg-bot-answer-topic{font-size:12px;color:#b5eed5;letter-spacing:.04em}
+.pg-bot-answer{min-height:72px;margin:7px 0 0;padding:0;background:transparent;border:none;overflow-wrap:anywhere}
 .pg-bot-dialog .pg-bot-close{min-height:44px;width:100%;margin-top:12px}
 @media(max-width:350px){.pg-bot-panel{padding:14px}.pg-bot-heading h2{font-size:25px}}
 /* The in-arena help control remains reachable alongside the other actions at 320px. */
