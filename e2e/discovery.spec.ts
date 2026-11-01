@@ -4,14 +4,18 @@ import { test, expect } from "@playwright/test";
 test("catalog covers and objectives remain usable without optional preview requests", async ({ page }) => {
   const pageErrors: string[] = [];
   page.on("pageerror", error => pageErrors.push(error.message));
-  // Covers are inline SVGs: failed preview chunks or illustrations cannot blank the catalog.
+  // Covers have a CSS gradient and local artwork: optional preview failures cannot blank the catalog.
   await page.route(/\/(?:assets\/GamePreview-[^/]+\.js|previews\/[^/]+\.svg)(?:\?.*)?$/, route => route.abort());
   await page.goto("./");
   await page.waitForFunction(count => {
     const cover=document.querySelector('[data-game-cover="flood"]');
     const rect=cover?.getBoundingClientRect();
+    const backdrop=cover?.querySelector(".cover-backdrop");
+    const artwork=cover?.querySelector("img.cover-mechanic");
     return document.querySelectorAll('.game-card').length===count
-      && document.querySelectorAll('.game-card [data-game-cover] svg').length===count
+      && document.querySelectorAll('.game-card .cover-backdrop').length===count
+      && !!backdrop && getComputedStyle(backdrop).backgroundImage.includes("linear-gradient")
+      && !!artwork && artwork.src.endsWith("/covers/flood.svg")
       && !!rect && rect.width>0 && rect.height>0;
   }, CATALOG_SIZE);
 
@@ -19,12 +23,13 @@ test("catalog covers and objectives remain usable without optional preview reque
   // The unfiltered Hanoi cover already exists while deferred search commits.
   // Its visibility alone cannot establish that search has finished.
   await page.waitForFunction(() => document.querySelectorAll('.game-card').length===1
-    && !!document.querySelector('.game-card [data-game-cover="hanoi"] svg'));
+    && !!document.querySelector('.game-card [data-game-cover="hanoi"] .cover-backdrop')
+    && !!document.querySelector('.game-card [data-game-cover="hanoi"] img.cover-mechanic'));
   await expect(page.locator('.game-card[data-catalog-game="hanoi"] p')).toContainText("Transfira os discos");
   expect(pageErrors).toEqual([]);
 });
 test("all catalog previews have visible contents across responsive widths", async ({ page, browserName }) => {
-  // Firefox trace snapshots of the SVG catalog can outlast the default 5s poll.
+  // Firefox rendering of all covers can outlast the default short poll.
   if (browserName === "firefox") test.setTimeout(120_000);
   await page.goto("./");
   await expect(page.locator(".game-card")).toHaveCount(CATALOG_SIZE);
@@ -34,9 +39,16 @@ test("all catalog previews have visible contents across responsive widths", asyn
       count: previews.length,
       invalid: previews.filter(p => {
         const rect=p.getBoundingClientRect();
-        const svg=p.querySelector("svg");
-        const svgRect=svg?.getBoundingClientRect();
-        return rect.width<20 || rect.height<20 || !svgRect || svgRect.width<20 || svgRect.height<20 || !p.children.length;
+        const backdrop=p.querySelector(".cover-backdrop");
+        const backdropRect=backdrop?.getBoundingClientRect();
+        const background=backdrop ? getComputedStyle(backdrop).backgroundImage : "";
+        const artwork=p.querySelector("img.cover-mechanic");
+        const source=artwork?.getAttribute("src") ?? "";
+        return rect.width<20 || rect.height<20
+          || !backdropRect || backdropRect.width<20 || backdropRect.height<20
+          || !background.includes("linear-gradient")
+          || !artwork || !source.includes("/covers/") || !source.endsWith(".svg")
+          || artwork.width<20 || artwork.height<20;
       }).length,
       overflow: document.documentElement.scrollWidth > innerWidth,
     })), { message: `visible previews at ${width}px`, timeout: browserName === "firefox" ? 15_000 : 5_000 })
