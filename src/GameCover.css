@@ -34,17 +34,18 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background:
-    radial-gradient(circle at calc(78% - var(--cover-shift)) 24%, color-mix(in srgb, var(--cover-secondary) 12%, transparent), transparent 49%),
-    radial-gradient(circle at 13% 94%, color-mix(in srgb, var(--cover-accent) 12%, transparent), transparent 61%),
-    linear-gradient(135deg, var(--cover-background), #080d1b);
+  /* Uma camada de gradiente: evita várias operações de pintura ao rolar 150 capas. */
+  background: linear-gradient(135deg, var(--cover-background), #080d1b);
 }
 .cover-backdrop::before {
   content: "";
   position: absolute;
-  inset: 0;
-  opacity: .13;
-  background: repeating-linear-gradient(116deg, transparent 0 35px, var(--cover-secondary) 36px 37px, transparent 38px 65px);
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 4px;
+  opacity: .65;
+  background: var(--cover-accent);
 }
 .cover-backdrop::after {
   content: "";

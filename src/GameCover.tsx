@@ -11,7 +11,6 @@ function GameCover({ id, name, category, compact = false, priority = false }: Co
     "--cover-background": art.background,
     "--cover-accent": art.accent,
     "--cover-secondary": art.secondary,
-    "--cover-shift": art.offset + "px",
   } as CSSProperties;
   return (
     <div className={`preview game-cover${compact ? " game-cover-compact" : ""}`}
