@@ -39,6 +39,7 @@ import { useReducedMotion } from "./useReducedMotion";
 import { useImmersivePlayer } from "./lib/useImmersivePlayer";
 const ShareGameButton = lazy(() => import("./ShareGameButton").catch(() => ({default: () => <span role="status">Copie o endereço da barra do navegador para compartilhar este jogo.</span>})));
 const QuickHelpText = lazy(() => import("./QuickHelpText").catch(() => ({default: ({ leadOnly }: { id: GameId; leadOnly?: boolean }) => leadOnly ? <span>Consulte os controles da arena.</span> : <p>Instruções indisponíveis nesta sessão offline. Consulte os controles do jogo.</p>})));
+const CatalogPGBot = lazy(() => import("./CatalogPGBot").catch(() => ({default: () => <p role="status">PG Bot indisponível nesta sessão offline. A busca do catálogo continua funcionando.</p>})));
 const PlayerRecordHint = lazy(() => import("./PlayerRecordHint").catch(() => ({default: () => <small data-player-record>Consulte os resultados no jogo.</small>})));
 const ProgressPage = lazy(() => import("./ProgressPage"));
 const CatalogSpotlight = lazy(() => import("./CatalogSpotlight").catch(() => ({default: () => null})));
@@ -608,6 +609,7 @@ export default function App() {
               </div>
               <img src={`${import.meta.env.BASE_URL}assets/arcade-hero.webp`} alt="" width="1707" height="924" fetchPriority="high"/>
             </section>}
+            {page === "catalogo" && <Suspense fallback={<p role="status">Carregando ajuda do PG Bot.</p>}><CatalogPGBot /></Suspense>}
             {page === "catalogo" && !query && category === "Todos" && mode === "Todos" && modeFilter === "todos" && !swipeOnly && <div className="discovery">
               <section className="experience-selection" aria-labelledby="experience-title">
                 <div className="section-title"><h2 id="experience-title">Qual é o seu ritmo?</h2><p>Encontre uma partida para este momento.</p></div>

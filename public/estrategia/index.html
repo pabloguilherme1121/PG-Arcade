@@ -125,8 +125,20 @@
         <button type="button" data-help-topic="offline">Jogar offline</button>
         <button type="button" data-help-topic="reiniciar">Desfazer ou reiniciar</button>
         <button type="button" data-help-topic="acessibilidade">Teclado e contraste</button>
+        <button type="button" data-help-topic="estado-missao">Situação atual</button>
       </div>
-      <p id="pg-bot-answer" class="pg-bot-answer" role="status" aria-live="polite">Selecione um assunto para começar.</p>
+      <form id="pg-bot-question-form" class="pg-bot-question-form" autocomplete="off">
+        <label for="pg-bot-question">Pergunte ao PG Bot</label>
+        <div class="pg-bot-question-row">
+          <input id="pg-bot-question" type="search" name="pergunta" maxlength="240" enterkeyhint="send" placeholder="Ex.: como vencer esta missão?" aria-describedby="pg-bot-question-info" />
+          <button type="submit">Perguntar</button>
+        </div>
+        <small id="pg-bot-question-info">Perguntas interpretadas no seu aparelho, sem IA conectada ou envio de mensagens.</small>
+      </form>
+      <section class="pg-bot-response" aria-label="Resposta do PG Bot">
+        <strong id="pg-bot-answer-topic" class="pg-bot-answer-topic">Como jogar</strong>
+        <p id="pg-bot-answer" class="pg-bot-answer" role="status" aria-live="polite">Selecione um assunto para começar.</p>
+      </section>
       <button type="button" id="pg-bot-close" class="button secondary pg-bot-close">Fechar ajuda</button>
     </div>
   </dialog>
