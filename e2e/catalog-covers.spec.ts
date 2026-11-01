@@ -3,15 +3,15 @@ import { expect, test } from "@playwright/test";
 import { games } from "../src/lib/catalog";
 
 for (const width of [320,390,1280]) {
-  test(`100 capas exclusivas, navegáveis e sem overflow em ${width}px`, async ({page})=>{
+  test(`150 capas exclusivas, navegáveis e sem overflow em ${width}px`, async ({page})=>{
     test.setTimeout(120_000);
     await page.setViewportSize({width,height:width===320?740:844});
     await page.goto("./");
     const cards=page.locator(".game-card");
     const covers=page.locator(".game-card [data-game-cover]");
     await expect(cards).toHaveCount(games.length);
-    // mechanicCovers.test.ts verifies every one of the 100 on-disk SVGs.
-    // Avoid 100 extra HTTP requests per viewport: they contend with Firefox's
+    // mechanicCovers.test.ts verifies every on-disk SVG artwork.
+    // Avoid 150 extra HTTP requests per viewport: they contend with Firefox's
     // image decoding and can starve unrelated catalog interactions.
     const reference = await page.request.get("covers/2048.svg");
     expect(reference.ok()).toBe(true);
@@ -20,9 +20,10 @@ for (const width of [320,390,1280]) {
     expect(new Set(ids).size).toBe(games.length);
     const fingerprints=await covers.evaluateAll(nodes=>nodes.map(node=>node.getAttribute("data-cover-fingerprint")));
     expect(new Set(fingerprints).size).toBe(games.length);
-    const gradients=await page.locator("[data-game-cover] linearGradient").evaluateAll(nodes=>nodes.map(node=>node.id));
-    expect(new Set(gradients).size).toBe(gradients.length);
-    await expect(cards.first().locator(".game-cover svg")).toBeVisible();
+    const backgrounds=await covers.evaluateAll(nodes=>nodes.map(node=>getComputedStyle(node.querySelector(".cover-backdrop")!).backgroundImage));
+    expect(backgrounds).toHaveLength(games.length);
+    expect(backgrounds.every(value=>value.includes("linear-gradient"))).toBe(true);
+    await expect(cards.first().locator(".cover-backdrop")).toBeVisible();
     await expect(cards.first().locator(".cover-mechanic")).toBeVisible();
     await cards.first().scrollIntoViewIfNeeded();
     // Poll in the page: repeated locator resolution + evaluation can consume
