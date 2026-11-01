@@ -107,10 +107,17 @@ h1,h2,h3,h4,p{margin-block:0}h1,h2,h3{letter-spacing:-.04em}h1{font-size:clamp(3
 #pg-bot-toggle small{display:block;color:#b5d1df;font-size:11px;font-weight:550;margin-top:3px}
 #pg-bot-body[hidden]{display:none}
 .pg-bot-disclosure{font-size:11px!important;color:#c2d8e3!important;line-height:1.5}
-.pg-bot-topics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.pg-bot-topics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
 .pg-bot-topics button{min-height:44px;padding:7px 2px;min-width:0;font-size:12px;font-weight:700;border-radius:9px;border:1px solid #4c7185;background:#17374c;color:#f3fbff}
 .pg-bot-topics button[aria-pressed="true"]{background:#baf29a;color:#142d24;border-color:#baf29a}
-#pg-bot-answer{min-height:56px;padding:10px 0 0;font-size:13px;line-height:1.55;color:#e0f1fb}
+.pg-bot-question-form{margin-top:13px}
+.pg-bot-question-form label{display:block;margin-bottom:8px;font-size:12px;font-weight:750;color:#edf7ff}
+.pg-bot-question-row{display:flex;flex-wrap:wrap;gap:7px}
+.pg-bot-question-row input{min-width:0;flex:1 1 160px;min-height:44px;background:#0b1e2e;border:1px solid #7898ac;color:#fff;border-radius:9px;padding:9px 10px}
+.pg-bot-question-row button{min-height:44px;padding:9px 12px;border:1px solid #baf29a;background:#baf29a;color:#132a24;border-radius:9px;font-weight:800}
+.pg-bot-question-form small{display:block;font-size:11px;line-height:1.45;color:#c2dbe6;margin-top:7px}
+.pg-bot-question-row input:focus-visible,.pg-bot-question-row button:focus-visible{outline:3px solid #d7ff9a;outline-offset:2px}
+#pg-bot-answer{min-height:56px;padding:10px 0 0;font-size:13px;line-height:1.55;color:#e0f1fb;overflow-wrap:anywhere}
 
 /* Mercado de Sombras: one accessible bid panel, zero animation loops or remote resources. */
 #market-mode-wrap[hidden]{display:none!important}
