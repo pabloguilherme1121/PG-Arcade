@@ -1,4 +1,4 @@
-/* Lightweight shared artwork for all 100 catalog entries. */
+/* Lightweight shared artwork for the full 150-card catalog. */
 .mode-count {display:inline-grid;place-items:center;min-width:22px;margin-left:5px;padding:2px 5px;border-radius:99px;background:#08152266;font-size:11px;font-variant-numeric:tabular-nums;}
 .game-cover .cover-mechanic {
   position: absolute;
@@ -30,11 +30,47 @@
   contain: layout paint;
   pointer-events: none;
 }
-.game-cover svg {
-  display: block;
-  width: 100%;
-  height: 100%;
+.game-cover .cover-backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at calc(78% - var(--cover-shift)) 24%, color-mix(in srgb, var(--cover-secondary) 12%, transparent), transparent 49%),
+    radial-gradient(circle at 13% 94%, color-mix(in srgb, var(--cover-accent) 12%, transparent), transparent 61%),
+    linear-gradient(135deg, var(--cover-background), #080d1b);
 }
+.cover-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: .13;
+  background: repeating-linear-gradient(116deg, transparent 0 35px, var(--cover-secondary) 36px 37px, transparent 38px 65px);
+}
+.cover-backdrop::after {
+  content: "";
+  position: absolute;
+  left: 6%;
+  top: 11%;
+  width: 14%;
+  height: 13%;
+  border-left: 3px solid var(--cover-secondary);
+  border-top: 3px solid var(--cover-secondary);
+  border-radius: 2px 0 0;
+  opacity: .8;
+}
+.cover-backdrop .cover-label,
+.cover-backdrop .cover-chapter {
+  position: absolute;
+  z-index: 1;
+  bottom: 11%;
+  color: #f7f9fe;
+  font-size: clamp(9px, 1.2vw, 14px);
+  letter-spacing: .11em;
+  font-weight: 800;
+  line-height: 1;
+}
+.cover-backdrop .cover-label { left: 6%; }
+.cover-backdrop .cover-chapter { right: 7%; color: var(--cover-secondary); font-family: ui-monospace, monospace; }
 .game-card .game-cover {
   border: 1px solid #526b8d;
   box-shadow: inset 0 1px #ffffff24, 0 9px 22px #0005;
