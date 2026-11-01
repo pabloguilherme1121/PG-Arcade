@@ -45,10 +45,11 @@ test("Territórios: escolha de modo, tabuleiro 9x9 e navegação por teclado",as
  await page.getByRole("button",{name:"Nova partida"}).click();
  await expect(page.locator("#moves")).toHaveText("0");
 });
-test("Territórios: catálogo anuncia o 35º jogo independente sem placeholders",async({page})=>{
+test("Territórios: catálogo preserva a rota do jogo após expandir para 36 motores",async({page})=>{
  await page.goto("./estrategia/independentes/");
  await expect(page.locator(".choices a.choice[href='./territorios-de-pedra/']")).toHaveCount(1);
- await expect(page.locator(".selection .count")).toHaveText("35 motores independentes");
+ await expect(page.locator(".selection .count")).toHaveText("36 motores independentes");
+ await expect(page.locator(".choices .choice")).toHaveCount(36);
  await page.getByRole("link",{name:/Territórios de Pedra/}).click();
  await expect(page.getByRole("heading",{name:/Territórios de Pedra/})).toBeVisible();
 });
