@@ -6,10 +6,10 @@ for(const width of [320,390,1200]){
   const input=page.getByRole("searchbox",{name:"Buscar jogos independentes"});
   await expect(input).toBeVisible();
   const all=page.locator(".choices .choice");
-  await expect(all).toHaveCount(36);
+  await expect(all).toHaveCount(37);
   await input.fill("NONOGRAMA");await expect(all.filter({visible:true})).toHaveCount(1);
   await expect(page.getByRole("link",{name:/Nonograma Tático/})).toBeVisible();
-  await expect(page.locator("#independent-results")).toContainText("1 de 36");
+  await expect(page.locator("#independent-results")).toContainText("1 de 37");
   await input.fill("relogios");await expect(all.filter({visible:true})).toHaveCount(1);
   await expect(page.getByRole("link",{name:/Relógios da Maré/})).toBeVisible();
   await input.fill("labirinto");await expect(all.filter({visible:true})).toHaveCount(1);
@@ -20,6 +20,8 @@ for(const width of [320,390,1200]){
   await expect(page.getByRole("link",{name:/Territórios de Pedra/})).toBeVisible();
   await input.fill("conves");await expect(all.filter({visible:true})).toHaveCount(1);
   await expect(page.getByRole("link",{name:/Convés Modular/})).toBeVisible();
+  await input.fill("gravidade");await expect(all.filter({visible:true})).toHaveCount(1);
+  await expect(page.getByRole("link",{name:/Gravidade dos Cristais/})).toBeVisible();
 
 
   await input.fill("não existe esse jogo");
@@ -27,7 +29,7 @@ for(const width of [320,390,1200]){
   await expect(page.locator("#independent-empty")).toBeVisible();
   await input.press("Escape");
   await expect(input).toHaveValue("");
-  await expect(all.filter({visible:true})).toHaveCount(36);
+  await expect(all.filter({visible:true})).toHaveCount(37);
   await expect(page.locator("#independent-empty")).toBeHidden();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  });
