@@ -30,7 +30,8 @@ function CatalogGameCard({
       <a
         className="game-link"
         href={`#/jogar/${game.id}`}
-        onClick={() => onOpen(game.id)}
+        // Preserve the departure scroll before WebKit adjusts focus/viewport during link activation.
+        onClickCapture={() => onOpen(game.id)}
       >
         <span className="sr-only">{contextual ? "Começar com" : "Jogar"} {game.name}. </span>
         <GameCover id={game.id} name={game.name} category={game.category} priority={priority} />
