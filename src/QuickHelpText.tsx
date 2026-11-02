@@ -40,6 +40,7 @@ function QuickHelpPanel({ id }: {id: GameId}) {
       </div>
     </form>
     <p className="pg-bot-arcade-disclosure">As respostas são orientações locais, não uma IA conectada. Nenhuma pergunta é enviada ou armazenada.</p>
+    <p><a href={"https://pabloguilherme1121.github.io/PG-Bot/?projeto=arcade&jogo="+encodeURIComponent(id)} target="_blank" rel="noopener noreferrer">PG Bot completo deste jogo</a></p>
     <div className="pg-bot-arcade-response">
       <strong>Resposta do PG Bot</strong>
       <p role="status" aria-live="polite" data-pg-bot-answer>{answer}</p>

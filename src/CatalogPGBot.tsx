@@ -20,6 +20,7 @@ export default function CatalogPGBot(){
    <span><strong>PG Bot · encontre seu próximo jogo</strong><small>Indicações por estilo, ajuda com progresso e offline</small></span></summary>
   <div className="catalog-pg-bot-body">
    <p>Descreva o que quer jogar ou selecione um assunto. As respostas são locais, sem IA conectada e sem enviar suas perguntas.</p>
+   <p className="catalog-pg-bot-site"><a href="https://pabloguilherme1121.github.io/PG-Bot/" target="_blank" rel="noopener noreferrer">Abrir site do PG Bot</a></p>
    <div className="catalog-pg-bot-topics" role="group" aria-label="Assuntos do PG Bot no catálogo">
     {quick.map(t=><button type="button" key={t.question} aria-pressed={selected===t.question} onClick={()=>choose(t.question)}>{t.label}</button>)}
    </div>

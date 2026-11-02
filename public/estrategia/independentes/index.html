@@ -110,7 +110,16 @@
                 <button type="button" data-pg-bot-topic="objetivo" aria-pressed="true">Objetivo</button>
                 <button type="button" data-pg-bot-topic="controles" aria-pressed="false">Controles</button>
                 <button type="button" data-pg-bot-topic="situacao" aria-pressed="false">Situação</button>
+                <button type="button" data-pg-bot-topic="dica" aria-pressed="false">Dica de estratégia</button>
               </div>
+              <form id="pg-bot-question-form" class="pg-bot-question-form" autocomplete="off">
+                <label for="pg-bot-question">Pergunte ao PG Bot sobre o jogo atual</label>
+                <div class="pg-bot-question-row">
+                  <input id="pg-bot-question" type="search" name="pergunta" maxlength="240" enterkeyhint="send" placeholder="Ex.: qual a melhor estratégia?" />
+                  <button type="submit">Perguntar</button>
+                </div>
+                <small>Respostas calculadas no aparelho, sem enviar perguntas a servidores.</small>
+              </form>
               <p id="pg-bot-answer" role="status" aria-live="polite"></p>
             </div>
           </section>

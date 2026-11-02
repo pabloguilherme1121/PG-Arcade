@@ -19,6 +19,8 @@
 .catalog-pg-bot-answer{background:#092333;border:1px solid #456978;border-radius:12px;padding:12px 15px;margin-top:13px}
 .catalog-pg-bot-answer p{margin:0;color:#ebf6fb;font-size:13px;line-height:1.65}
 .catalog-pg-bot-links{display:flex;flex-wrap:wrap;gap:9px;margin-top:10px}
+.catalog-pg-bot-site a{display:inline-flex;min-height:44px;align-items:center;padding:4px 8px;color:#ddffa8;text-decoration:underline;text-underline-offset:3px}
+.catalog-pg-bot-site a:focus-visible{outline:3px solid #deff9c;outline-offset:2px}
 .catalog-pg-bot-links a{min-height:44px;display:inline-flex;align-items:center;color:#ddffa8;text-decoration:underline;text-underline-offset:3px;padding:4px 8px}
 .catalog-pg-bot-topics button:focus-visible,.catalog-pg-bot-form-row input:focus-visible,.catalog-pg-bot-form-row button:focus-visible,.catalog-pg-bot-links a:focus-visible{outline:3px solid #deff9c;outline-offset:2px}
 @media(max-width:350px){.catalog-pg-bot>summary{padding:10px}.catalog-pg-bot-body{padding:12px}}
