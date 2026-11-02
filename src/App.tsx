@@ -22,6 +22,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { games, isGameId, type GameId } from "./lib/catalog";
+import { pgBotSiteUrl } from "./lib/pgBotSiteLinks";
 
 import { discoveryFilters, filterByMode, chooseSurprise, modeTags, modeLabel, type DiscoveryFilter } from "./lib/smartDiscovery";
 import GameCover from "./GameCover";
@@ -515,6 +516,7 @@ export default function App() {
                 <div className="pg-bot-game-content">
                   <p>PG Bot mostra respostas prontas para este jogo. Não é uma conversa com IA ou atendimento humano.</p>
                   <Suspense fallback={<p>Carregando instruções do jogo…</p>}><QuickHelpText id={game.id}/></Suspense>
+                  <a data-pg-bot-site="arcade-game" href={pgBotSiteUrl("arcade",game.id)} target="_blank" rel="noopener noreferrer">PG Bot completo · {game.name} <ExternalLink size={14} aria-hidden="true"/></a>
                   <a href={import.meta.env.BASE_URL + "estrategia/?ajuda=1"}>PG Estratégia · Ajuda para missões</a>
                 </div>
               </details>
