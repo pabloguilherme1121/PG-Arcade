@@ -25,9 +25,17 @@ for (const slug of independentes) {
     await bot.locator("summary").click();
     await expect(bot).toHaveAttribute("open", "");
     const topic = bot.locator("button").first();
+    const answer = bot.locator("#bot-answer, #bot-response, #market-bot-answer, [data-bot-answer]");
     await expect(topic).toBeVisible();
+    await expect(answer).toHaveCount(1);
+    const initial = (await answer.textContent())?.trim() || "";
     await topic.click();
-    await expect(bot.locator("#bot-answer, [data-bot-answer], [role=status]").last()).not.toBeEmpty();
+    await expect(answer).toHaveText(/\S/);
+    // Alguns jogos iniciam com o primeiro assunto já respondido. Confira outro tópico.
+    if (initial && (await answer.textContent())?.trim() === initial && await bot.locator("button").count() > 1) {
+      await bot.locator("button").nth(1).click();
+      await expect(answer).not.toHaveText(initial);
+    }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     expect(errors).toEqual([]);
 
