@@ -247,9 +247,16 @@ export default function App() {
     if (lastRoute.current !== page) {
       heading.current?.focus();
       if (isGameId(lastRoute.current) && (page === "catalogo" || page === "favoritos")) {
+        const savedScroll = catalogView.current.scroll;
+        const savedFocus = catalogView.current.focusId;
         window.requestAnimationFrame(() => {
-          document.querySelector<HTMLElement>(`[data-catalog-game="${catalogView.current.focusId}"] .game-link`)?.focus({ preventScroll: true });
-          window.scrollTo({ top: catalogView.current.scroll, behavior: "instant" });
+          document.querySelector<HTMLElement>(`[data-catalog-game="${savedFocus}"] .game-link`)?.focus({ preventScroll: true });
+          window.scrollTo({ top: savedScroll, behavior: "instant" });
+          // WebKit may readjust the viewport after focus or delayed card layout.
+          // Restore once more after the first paint, without changing user scroll later.
+          window.requestAnimationFrame(() => {
+            window.scrollTo({ top: savedScroll, behavior: "instant" });
+          });
         });
       } else window.scrollTo({ top: 0 });
       lastRoute.current = page;
