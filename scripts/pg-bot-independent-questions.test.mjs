@@ -42,3 +42,9 @@ test("dicas contextualizadas não inventam placar e não apresentam HTML da perg
  assert.equal(botQuestion("__proto__",{},"qual o objetivo?").topic,"fallback");
  assert.equal(botQuestion("frota-oculta",{},"x".repeat(3000)).topic,"fallback");
 });
+
+test("Cartas de Cerco: dica não sugere guardar energia para encerrar turno",()=>{
+ const hint=botMessage("cartas-de-cerco",{phase:"playing",mode:"tatico"},"dica");
+ assert.match(hint,/fortificar|carta defensiva|prote[cç][aã]o/i);
+ assert.doesNotMatch(hint,/reserv[ea] energia para finalizar o turno|guardar energia para encerrar o turno/i);
+});
