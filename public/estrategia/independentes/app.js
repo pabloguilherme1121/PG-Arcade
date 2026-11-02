@@ -6,7 +6,7 @@ import { createTowers, commandTowers, TOWER_TYPES, TOWER_PATH } from "./towers.m
 import { createFrontier, commandFrontier, canFrontierAction } from "./frontier.mjs";
 import { createWinter, commandWinter, canWinterAction } from "./winter.mjs";
 import { createDraughts, commandDraughts, legalDraughtsMoves } from "./draughts.mjs";
-import { botMessage, BOT_TOPICS } from "./pg-bot.mjs";
+import { botMessage, botQuestion, BOT_TOPICS } from "./pg-bot.mjs";
 import { createMarket, commandMarket, marketLot, marketScore } from "./market.mjs";
 
 const $ = id => document.getElementById(id);
@@ -53,6 +53,12 @@ function number(seed) {
 }
 function newGame(id = gameId) {
   if (!Object.hasOwn(GAMES,id)) return;
+  if (id !== gameId) {
+    botTopic = 'objetivo';
+    $("pg-bot-question").value = '';
+    document.querySelectorAll('[data-pg-bot-topic]').forEach(button =>
+      button.setAttribute('aria-pressed', String(button.dataset.pgBotTopic === botTopic)));
+  }
   gameId = id;
   selectedDraughts = null;
   const mode = $("difficulty").value;
@@ -445,6 +451,14 @@ $("frontier-mode").addEventListener("change", () => { if (gameId === "fronteira-
 $("frontier-action").addEventListener("change", () => { if (gameId === "fronteira-orbital") render(); });
 $("winter-mode").addEventListener("change", () => { if (gameId === "refugio-do-inverno") newGame(); });
 $("market-mode").addEventListener("change", () => { if (gameId === "mercado-de-sombras") newGame(); });
+$("pg-bot-question-form").addEventListener("submit", event => {
+  event.preventDefault();
+  const reply = botQuestion(gameId, current, $("pg-bot-question").value);
+  if (BOT_TOPICS.includes(reply.topic)) botTopic = reply.topic;
+  document.querySelectorAll('[data-pg-bot-topic]').forEach(button =>
+    button.setAttribute('aria-pressed', String(button.dataset.pgBotTopic === reply.topic)));
+  $("pg-bot-answer").textContent = reply.answer;
+});
 $("pg-bot-toggle").addEventListener("click", () => {
   const panel=$("pg-bot-body");
   panel.hidden=!panel.hidden;

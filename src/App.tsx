@@ -618,7 +618,7 @@ export default function App() {
               </div>
               <img src={`${import.meta.env.BASE_URL}assets/arcade-hero.webp`} alt="" width="1707" height="924" fetchPriority="high"/>
             </section>}
-            {page === "catalogo" && <Suspense fallback={<p role="status">Carregando ajuda do PG Bot.</p>}><CatalogPGBot /></Suspense>}
+            {page === "catalogo" && <Suspense fallback={<div role="status" aria-label="Carregando ajuda do PG Bot." style={{ margin: "14px 0 23px", minHeight: 70, boxSizing: "border-box", padding: "16px", border: "1px solid #618b9a", borderRadius: 16 }}>Carregando ajuda do PG Bot.</div>}><CatalogPGBot /></Suspense>}
             {page === "catalogo" && !query && category === "Todos" && mode === "Todos" && modeFilter === "todos" && !swipeOnly && <div className="discovery">
               <section className="experience-selection" aria-labelledby="experience-title">
                 <div className="section-title"><h2 id="experience-title">Qual é o seu ritmo?</h2><p>Encontre uma partida para este momento.</p></div>

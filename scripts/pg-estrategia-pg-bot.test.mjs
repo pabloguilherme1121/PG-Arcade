@@ -4,7 +4,7 @@ import { botMessage, BOT_TOPICS } from '../public/estrategia/independentes/pg-bo
 
 const ids=['frota-oculta','cartas-de-cerco','hex-conexao','damas-taticas','patrulha-tatica','muralha-das-torres','fronteira-orbital','refugio-do-inverno','mercado-de-sombras'];
 test('PG Bot: cada título recebe objetivo e dica específicos, sem conteúdo HTML',()=>{
-  assert.deepEqual(BOT_TOPICS,['objetivo','controles','situacao']);
+  assert.deepEqual(BOT_TOPICS,['objetivo','controles','situacao','dica']);
   for(const id of ids){
     const objective=botMessage(id,{phase:'playing', mode:'tatico'},'objetivo');
     const controls=botMessage(id,{phase:'playing', mode:'tatico'},'controles');
