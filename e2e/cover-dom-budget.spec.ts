@@ -1,7 +1,7 @@
 import { CATALOG_SIZE } from "../src/lib/catalogRelease";
 import { expect, test } from "@playwright/test";
 
-test("all 100 covers preserve artwork while keeping decorative SVG DOM lightweight", async ({ page }) => {
+test("all 150 covers preserve original artwork without decorative inline SVG", async ({ page }) => {
   await page.goto("./");
   const result = await page.locator(".game-grid [data-game-cover]").evaluateAll(covers => {
     const gradients = covers.flatMap(cover =>
@@ -17,8 +17,8 @@ test("all 100 covers preserve artwork while keeping decorative SVG DOM lightweig
   });
   expect(result.covers).toBe(CATALOG_SIZE);
   expect(result.artImages).toBe(CATALOG_SIZE);
-  expect(result.gradients).toBe(CATALOG_SIZE);
-  expect(result.uniqueGradients).toBe(CATALOG_SIZE);
-  // 100 covers × one ornament path + one framing path; allow small future variation.
-  expect(result.decorativePaths).toBeLessThanOrEqual(300);
+  expect(result.gradients).toBe(0);
+  expect(result.uniqueGradients).toBe(0);
+  // 150 covers × no decorative inline SVG; artwork remains as separately loaded SVG images.
+  expect(result.decorativePaths).toBe(0);
 });
