@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import "./CatalogPGBot.css";
 import { catalogBotAnswer } from "./lib/pgBotCatalog";
+import { pgBotSiteUrl } from "./lib/pgBotSiteLinks";
 
 const quick=[
  {label:"Partida rápida",question:"Quero um jogo rápido"},
@@ -20,6 +21,7 @@ export default function CatalogPGBot(){
    <span><strong>PG Bot · encontre seu próximo jogo</strong><small>Indicações por estilo, ajuda com progresso e offline</small></span></summary>
   <div className="catalog-pg-bot-body">
    <p>Descreva o que quer jogar ou selecione um assunto. As respostas são locais, sem IA conectada e sem enviar suas perguntas.</p>
+   <a className="catalog-pg-bot-standalone" href={pgBotSiteUrl("arcade")} target="_blank" rel="noopener noreferrer">Abrir site completo do PG Bot <span aria-hidden="true">↗</span></a>
    <div className="catalog-pg-bot-topics" role="group" aria-label="Assuntos do PG Bot no catálogo">
     {quick.map(t=><button type="button" key={t.question} aria-pressed={selected===t.question} onClick={()=>choose(t.question)}>{t.label}</button>)}
    </div>
