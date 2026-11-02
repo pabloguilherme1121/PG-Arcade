@@ -9,6 +9,9 @@
 .catalog-pg-bot>summary small{color:#c6dbe5;font-size:12px;line-height:1.4}
 .catalog-pg-bot-body{border-top:1px solid #496e80;padding:15px 16px}
 .catalog-pg-bot-body>p{color:#d9eaf1;font-size:13px;line-height:1.6}
+.catalog-pg-bot-standalone{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:9px 11px;border-radius:10px;border:1px solid #94baaa;background:#1a423c;color:#e5ffe5;font-size:12px;font-weight:800;text-decoration:none}
+.catalog-pg-bot-standalone:hover{background:#28574d}
+.catalog-pg-bot-standalone:focus-visible{outline:3px solid #deff9c;outline-offset:2px}
 .catalog-pg-bot-topics{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 16px}
 .catalog-pg-bot-topics button{min-height:44px;padding:8px 12px;cursor:pointer;border:1px solid #7ca3b3;border-radius:10px;background:#26475a;color:#f5faff;font:inherit;font-size:12px;font-weight:750}
 .catalog-pg-bot-topics button[aria-pressed="true"]{background:#285f54;border-color:#dcffa4}
