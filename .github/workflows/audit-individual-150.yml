@@ -1,0 +1,39 @@
+name: Auditoria individual dos 150 jogos
+on:
+  pull_request:
+    paths:
+      - 'audit/**'
+      - 'playwright.audit.config.ts'
+      - '.github/workflows/audit-individual-150.yml'
+      - 'package.json'
+  schedule:
+    - cron: '13 7 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Carregar e interagir com 150 jogos
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npx playwright test --config=playwright.audit.config.ts
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: auditoria-150-jogos
+          path: |
+            artifacts/individual-150.json
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
