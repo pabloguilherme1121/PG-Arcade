@@ -42,7 +42,7 @@ const MODES=Object.freeze({recruta:'Recruta',tatico:'Tático',veterano:'Veterano
 // Uma orientação concreta de decisão por mecânica, não uma promessa de vitória.
 const HINTS=Object.freeze({
   'frota-oculta':'Use o sonar numa linha com contatos não identificados e compare os disparos anteriores. Não repita um quadrante já investigado; reserve reparos para proteger a base quando a integridade cair.',
-  'cartas-de-cerco':'Antes de gastar energia, conte a força do próximo ataque rival. Uma carta defensiva pode preservar mais vida que uma ofensiva; reserve energia para finalizar o turno com segurança.',
+  'cartas-de-cerco':'Antes de gastar energia, conte a força do próximo ataque rival. Uma carta defensiva pode preservar mais vida que uma ofensiva; use 1 ponto de energia para jogar Fortificar antes de encerrar o turno, quando a carta estiver disponível.',
   'hex-conexao':'Crie duas possíveis rotas entre suas bordas em vez de depender de um único corredor. Feche pontes entre pedras e observe os espaços que o adversário pode ocupar.',
   'damas-taticas':'Confira capturas obrigatórias antes de mover. Evite entregar uma peça em sequência de saltos; procure avançar sem abandonar a defesa das diagonais.',
   'patrulha-tatica':'No combate, foque um drone de cada vez e proteja os agentes feridos. Na extração, faça um caminho seguro até o sinal central e planeje também o retorno à base.',
