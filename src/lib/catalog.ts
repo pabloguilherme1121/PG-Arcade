@@ -176,6 +176,9 @@ export const games = [
   },
 ] as const;
 export type GameId = (typeof games)[number]["id"];
+// Reused by imported progress validation: O(1) lookup rather than scanning
+// the entire catalog for every recorded game and calendar entry.
+const gameIds: ReadonlySet<string> = new Set(games.map((game) => game.id));
 export function isGameId(value: unknown): value is GameId {
-  return games.some((g) => g.id === value);
+  return typeof value === "string" && gameIds.has(value);
 }
