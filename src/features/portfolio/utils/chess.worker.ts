@@ -1,4 +1,10 @@
-import { chooseChessBotMove, type ChessState, type ChessDifficulty } from "./chess";
-self.onmessage = (event: MessageEvent<{ state: ChessState; difficulty: ChessDifficulty }>) => {
-  self.postMessage(chooseChessBotMove(event.data.state, "black", event.data.difficulty, Math.random, { maxMs: 1200 }));
+import { chooseChessBotMove, isChessWorkerRequest } from "./chess";
+
+self.onmessage = (event: MessageEvent<unknown>) => {
+  if (!isChessWorkerRequest(event.data)) {
+    self.postMessage(null);
+    return;
+  }
+  const { state, difficulty } = event.data;
+  self.postMessage(chooseChessBotMove(state, "black", difficulty, Math.random, { maxMs: 1200 }));
 };

@@ -28,6 +28,48 @@ export type ChessState = {
   enPassant: number | null;
 };
 
+/**
+ * Checks structured-clone messages before running the expensive chess bot.
+ * A dedicated Worker has no reliable MessageEvent.origin; validate its payload.
+ */
+export function isChessWorkerRequest(value: unknown): value is {
+  state: ChessState;
+  difficulty: ChessDifficulty;
+} {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const request = value as Record<string, unknown>;
+  if (!["easy", "normal", "hard", "master", "expert"].includes(request.difficulty as string))
+    return false;
+  const raw = request.state;
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return false;
+  const state = raw as Record<string, unknown>;
+  if (state.turn !== "black" || !Array.isArray(state.board) || state.board.length !== 64)
+    return false;
+  const flags = state.castling;
+  if (!flags || typeof flags !== "object" || Array.isArray(flags)) return false;
+  const rights = flags as Record<string, unknown>;
+  if (!["whiteKingSide", "whiteQueenSide", "blackKingSide", "blackQueenSide"]
+    .every(name => typeof rights[name] === "boolean")) return false;
+  const target = state.enPassant;
+  if (target !== null && (typeof target !== "number" || !Number.isInteger(target) || target < 0 || target > 63))
+    return false;
+  let occupied = 0, whiteKings = 0, blackKings = 0;
+  for (const cell of state.board) {
+    if (cell === null) continue;
+    if (!cell || typeof cell !== "object" || Array.isArray(cell)) return false;
+    const piece = cell as Record<string, unknown>;
+    if (piece.color !== "white" && piece.color !== "black") return false;
+    if (!["pawn", "knight", "bishop", "rook", "queen", "king"].includes(piece.type as string))
+      return false;
+    occupied++;
+    if (piece.type === "king") {
+      if (piece.color === "white") whiteKings++;
+      else blackKings++;
+    }
+  }
+  return occupied <= 32 && whiteKings === 1 && blackKings === 1;
+}
+
 const BOARD = 8;
 const rc = (index: number) => ({
   row: Math.floor(index / BOARD),
