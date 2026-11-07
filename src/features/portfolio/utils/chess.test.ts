@@ -123,3 +123,31 @@ describe("chess promotion choice", () => {
     expect(state.board[8]?.type).toBe("pawn");
   });
 });
+
+
+describe("chess worker message boundary", () => {
+  it("accepts a legal black-to-move snapshot without changing it", async () => {
+    const { isChessWorkerRequest } = await import("./chess");
+    const state = applyChessMove(createInitialChessState(), { from: 52, to: 36 })!;
+    const before = structuredClone(state);
+    expect(isChessWorkerRequest({ state, difficulty: "normal" })).toBe(true);
+    expect(state).toEqual(before);
+  });
+  it("rejects malformed and oversized worker payloads before chess search", async () => {
+    const { isChessWorkerRequest } = await import("./chess");
+    const state = applyChessMove(createInitialChessState(), { from: 52, to: 36 })!;
+    const request = { state, difficulty: "hard" };
+    const invalid = [
+      null, {}, {state:null,difficulty:"hard"},
+      {...request,difficulty:"unknown"},
+      {...request,state:{...state,board:[]}},
+      {...request,state:{...state,turn:"white"}},
+      {...request,state:{...state,castling:null}},
+      {...request,state:{...state,enPassant:92}},
+      {...request,state:{...state,board:[...state.board.slice(0,4),{color:"black",type:"dragon"},...state.board.slice(5)]}},
+      {...request,state:{...state,board:Array.from({length:64},()=>({color:"black",type:"queen"}))}},
+      {...request,state:{...state,board:state.board.map(p=>p?.type==="king"?null:p)}},
+    ];
+    for(const data of invalid)expect(isChessWorkerRequest(data),JSON.stringify(data).slice(0,120)).toBe(false);
+  });
+});
