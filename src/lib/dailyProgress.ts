@@ -46,7 +46,7 @@ export function normalizeDailyActivity(raw: unknown): DailyActivity {
 }
 
 export function addDailyVisit(activity: DailyActivity, game: GameId, now: Date): DailyActivity {
-  if (!Number.isFinite(now.getTime())) return normalizeDailyActivity(activity);
+  if (!isGameId(game) || !Number.isFinite(now.getTime())) return normalizeDailyActivity(activity);
   const next = normalizeDailyActivity(activity);
   const key = localDay(now);
   const count = next.days[key]?.[game] ?? 0;
@@ -63,6 +63,7 @@ export function readDailyActivity(store?: DailyStore): DailyActivity {
 }
 
 export function recordDailyVisit(game: GameId, now = new Date(), store?: DailyStore): boolean {
+  if (!isGameId(game) || !(now instanceof Date) || !Number.isFinite(now.getTime())) return false;
   try {
     const target = store ?? localStorage;
     target.setItem(dailyStorageKey, JSON.stringify(addDailyVisit(readDailyActivity(target), game, now)));

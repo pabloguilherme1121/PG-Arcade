@@ -98,3 +98,30 @@ it('retains the newest 400 real days after accepting a longer calendar', () => {
   expect(normalized.days['2025-01-01']).toBeUndefined();
   expect(normalized.days['2026-02-05']).toEqual({ snake: 1 });
 });
+
+it("ignores runtime-invalid game IDs instead of recording fabricated daily visits", () => {
+  const day = new Date(2026, 9, 12, 12);
+  const initial = addDailyVisit(emptyDailyActivity(), "snake", day);
+  const fake = "__proto__" as never;
+  expect(addDailyVisit(initial, fake, day)).toEqual(initial);
+  expect(addDailyVisit(initial, "not-a-game" as never, day)).toEqual(initial);
+  expect(addDailyVisit(emptyDailyActivity(), fake, day)).toEqual(emptyDailyActivity());
+
+  const values = new Map<string, string>();
+  const storage = {
+    getItem: (key: string) => values.get(key) ?? null,
+    setItem: (key: string, value: string) => { values.set(key, value); },
+  };
+  expect(recordDailyVisit(fake, day, storage)).toBe(false);
+  expect(recordDailyVisit("not-a-game" as never, day, storage)).toBe(false);
+  expect([...values.entries()]).toEqual([]);
+});
+it("rejects invalid dates before writing a daily record", () => {
+  const values = new Map<string, string>();
+  const storage = {
+    getItem: (key: string) => values.get(key) ?? null,
+    setItem: (key: string, value: string) => { values.set(key, value); },
+  };
+  expect(recordDailyVisit("snake", new Date(Number.NaN), storage)).toBe(false);
+  expect([...values.entries()]).toEqual([]);
+});
